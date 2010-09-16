@@ -1,0 +1,270 @@
+----------------- CHANGE HISTORY --------------------------------------------
+
+-------------- Version 2.8.4.1 (Released 13 September 2010 by Shane Cusson) ------------
+
+1. Changed encoding of IBController.ini to ANSI. Unicode was causing issues for Linux
+users. No changes to IBControlelr source or .jar.
+
+-------------- Version 2.8.4 (Released 2 September 2010 by Richard King) ------------
+
+1. Modified the main window handler to recognise the new main window title
+introduced in TWS 907.
+
+
+-------------- Version 2.8.3 (Released 31 August 2010 by Richard King) ------------
+
+1. Added handlers for the Password Notice and NSE Compliance dialogs displayed by
+Indian versions of TWS. By default the Password Notice is not dismissed, but the
+NSE Compliance notice is dismissed. This behaviour may be overridden using the
+new DismissPasswordExpiryWarning and DismissNSEComplianceNotice options.
+
+
+-------------- Version 2.8.2 (Released 28 July 2010 by Richard King) ------------
+
+1. Addressed some threading and synchronization issues. Thanks to Brent Boyer
+for pointing them out.
+
+2. Commands to IBControllerServer now produce the following responses:
+	OK info
+ 	ERROR info
+	INFO info
+
+	where 'info' is a text string. 
+
+OK and ERROR are final responses. 
+
+INFO is an intermediate response that may be sent to provide information about the 
+command's progess. INFO's may be suppressed using the SuppressInfoMessages option 
+(see item 4).
+
+3. Added a CommandPrompt option. The specified string is output by the server when
+the connection to IBControllerServer is first opened and after the completion
+of each command. If no string is specified, no prompt is issued.
+
+4. Added a SuppressInfoMessages option. If set to 'yes', only the final response from
+a command to IBControllerServer is sent - any intermediate information messages
+are suppressed. The default is 'yes'.
+
+
+-------------- Version 2.8.1 (Released 21 May 2010 by Richard King) ------------
+
+1. Modified the gateway login handler to cope with a problem experienced by some
+users where the login attempt was ignored.
+
+
+-------------- Version 2.8.0 (Released 21 Apr 2010 by Richard King) ------------
+
+1. Support for the IB Gateway added. Only the IB API mode of the gateway is 
+supported, not the FIX mode.
+
+2. Fixed a bug where the tidy shutdown time was not accurately observed.
+
+
+-------------- Version 2.7.5 (Released 19 Apr 2010 by Richard King) ------------
+
+1. The 'Newer Version' notification in TWS 903 was not caught by IBController,
+due to it now being a JFrame rather than a JDialog as previously. Both versions
+are now handled.
+
+2. Improved login dialog handling to keep periodically clicking the Login button after
+enabling it, until it becomes disabled. This overcomes the problem that the
+necessary delay time in the original approach was unknown, and seemed to vary
+from machine to machine and from time to time.
+
+
+-------------- Version 2.7.4 (Released 31 Mar 2010 by Richard King) ------------
+
+1. Fixed a bug where streams of error messages were written to System.err if an 
+IBControllerServer client disconnected by resetting the connection (as opposed to 
+using the Exit command).
+
+
+-------------- Version 2.7.3 (Released 29 Mar 2010 by Richard King) ------------
+
+1. Fixed a bug where the ENABLEAPI command was not handled correctly if issued 
+before TWS's main window was loaded.
+
+
+-------------- Version 2.7.2 (Released 22 Mar 2010 by Richard King) ------------
+
+1. In TWS 903, the title of TWS's 'Tip of the Day' dialog has changed. This new
+version is now recognised by IBController.
+
+2. In TWS903, TWS's Login dialog no longer enables the Login button when the
+username and password are filled in by IBController. To work around this, 
+IBController uses a TimerTask with a short delay (currently 1 second) which
+enables the Login button and then clicks it. 
+
+
+-------------- Version 2.7.1 (Released 4 Feb 2010 by Richard King) ------------
+
+1. Fixed a bug where the Login dialog was handled every time it became the
+active window, rather than just when it first opened.
+
+2. Changed so that if username and/or password are not supplied in either the
+commnd line args or the config file, then TWS prompts for them rather than
+IBController shutting down with an error.
+
+
+-------------- Version 2.7 (Released 2 Feb 2010 by Richard King) --------------
+
+1. Added a PasswordEncypted option. If set to 'no', the password in the .ini file 
+   is treated as not encrypted. The default is 'yes'.
+
+2. Added timestamps to system.out writes.
+
+3. Now recognises the German Exit Session dialogue.
+
+4. The code has been completely refactored to improve readability and 
+   maintainability. Some redundant code has been removed.
+
+5. Added a MinimizeMainWindow option. Setting this to 'yes' causes the TWS main
+   window to be minimised when TWS is started. The default is 'no'.
+
+6. Added an AllowBlindTrading option. Setting this to 'yes' causes the warning 
+   message output by TWS to be dismissed (by clicking the 'Yes'button) when 
+   attempting to place an order for a contract for which the user has no market 
+   data subscription. The default is 'no'.
+
+7. Added a StoreSettingsOnServer option. Setting this to 'yes' sets the 
+   corresponding option in the TWS login dialog, resulting in TWS settings being 
+   stored on IB's servers. The default is 'no'.
+
+8. The WAITINIT command to IBController Server has been changed to ENABLEAPI.
+
+
+-------------- Version 2.6 (Released 5 Mar 2007 by Richard King) --------------
+
+1. Fixed a bug in the implementation of the WAITINIT command.
+
+2. Fixed a bug in ConfigureApiTask.
+
+3. Username and password can now be supplied as args[1] and args[2] on the command 
+   line rather than via the .ini file.
+
+4. Removed the check for null title in 'newer version' dialogs because Linux TWSs 
+   sometimes display this dialog with a non-null title.
+
+5. For the Linux versions of the 'newer version' dialog, click 'No' instead of 'Yes'.
+
+6. Added private static final long serialVersionUID to ScriptProperties.java to 
+   avoid a warning given by some compilers.
+
+7. Included IBControllerLoader program, which shows how to run IBController from
+   a separate Java program. This code also works in .Net if compiled with J#.
+
+-------------- Version 2.5 (Released 5 Feb 2007 by Richard King) --------------
+
+1. In the Linux version of TWS 865.7, IB introduced a variant of the 'Newer version' 
+   dialog that contains 'Yes' and 'No' buttons rather than an 'OK' button. 
+   IBController has been amended to handle both variants.
+
+2. Fixed a minor bug in the autologoff handling. Thanks to Parimal Patel for
+   pointing out this bug.
+
+-------------- Version 2.4 (Released 5 Apr 2006 by Richard King) --------------
+
+1. In Version 8.57 of TWS, IB changed the login dialog title from "New Login" to
+   "Login". IBController has been amended to recognise both versions.
+
+2. A new setting has been added to the .ini file to request IBController to shut 
+   down TWS at a specified day of the week and time. This is useful if you're 
+   keeping TWS running all week and want to ensure an automatic tidy closedown 
+   when trading has ceased at the end of the week.
+   The new setting is called ClosedownAt, and its value takes the form
+   <dayOfWeek hh:mm>. For example:
+
+   ClosedownAt=Friday 22:00
+
+   will cause IBController to shut down TWS tidily on Fridays at 22:00
+
+   If this setting is omitted or no value is supplied, IBController will continue
+   running until it is stopped by other means.
+
+   If the value given to this setting is invalid, IBController will treat it as if 
+   a value had not been supplied.
+
+   Please note that no warning will be given of the impending shutdown. If
+   anyone requires such a warning, an additional setting could be added in a 
+   future release.
+
+3. Fixed an insignificant bug in the autologoff handling.
+
+4. The compiled class files are no longer included in the download. Instead an
+   IBController.jar file (jar = Java Archive) is included. Note that this will 
+   necessitate a change to existing command files for running IBController: 
+   instead of the class path including the directory containing the classfiles, 
+   it should contain the path and name of the jar file itself.
+
+
+-------------- Version 2.3 (Released 3 Feb 2006 by Richard King) --------------
+
+1. When TWS pops-up its dialog advising the user that a newer version of the  
+   application is available, IBController did not correctly detect the dialog
+   because it was checking for the wrong string. This has been corrected.
+
+2. In recent TWS versions (later than TWS 8.48) there has been a difference in the
+   way TWS handles the Exit Session Setting dialog which it pops up 5 minutes before 
+   autologging off. In these newer version, If the user changes the autologoff time 
+   and closes the dialog, TWS pops it up again a few seconds later (for reasons best 
+   known to the IB developers!). This caused IB controller to reset the autologoff time
+   to its original setting, because it worked by alternating the AM and PM option buttons.
+   Then TWS would pop it up again, and IBController would again change the autologoff
+   time. This sequence would continue, and the net result was that on some occasions
+   TWS would shut down at the original autologoff time. To avoid this problem, the way 
+   this works has been changed: IBController now sets the autologoff time to 5 minutes 
+   before the current time.
+
+-------------- Version 2.2 (Released 2 Aug 2004 by Steven Kearns) -------------
+
+1. The ini file should now have the name IBController.<UserName>.ini, where
+   <UserName> is replaced by your username on the local machine, with spaces
+   replaced by underscores and all lowercase.  
+   For instance, on my machine the user name is
+   "Steven Kearns" and so the ini file should be named IBController.steven_kearns.ini.
+   
+   For those of us that don't know our user name, IBController prints out the 
+   java properties when it starts, and there is a property called "user.name" which
+   contains the user name.
+   
+   The benefit of this change is that you can maintain different ini files on different
+   machines (which is necessary because often the paths are different on different 
+   machines).  
+   
+   You can also pass the path to the ini file in as a command line argument when you
+   start the application, and in this case you can name it anything.  Here is an
+   example:
+   "C:\javaLatest\jre\bin\java.exe" -server -cp  C:\\InteractiveBrokers\\JTS\\jts.jar;c:\\InteractiveBrokers\\JTS\\jcommon-0.9.0.jar;C:\InteractiveBrokers\JTS\jfreechart-0.9.15.jar;C:\\myprograms\\mystocksoftware\\IBController\\bin ibcontroller.IBController C:\\myprograms\\mystocksoftware\\IBController.ini
+
+2. Used System.exit() to ensure that the application actually terminated when the TWS is closed.
+
+
+-------------- Version 2.1 (Released 18 Mar 2004 due to Richard King)----------
+
+1.  The IBController.ini file now has an entry named 
+    IbAutoClosedown. This governs whether IBController
+    keeps TWS running continuously, or allows it to 
+    auto-closedown at its configured time. 
+
+    To allow auto closedown use:
+    
+    IbAutoClosedown=yes
+
+    To keep TWS running continuously use:
+
+    IbAutoClosedown=no
+
+    If you omit the IbAutoClosedown setting from 
+    IBController.ini, the code assumes a value of no.
+
+2.  If you connect an API program to TWS 818.5 (and possibly 
+    some earlier versions) after it has lost its connection
+    to the IB server and recovered it, the "Accept incoming
+    connection" dialog has a different title that IBController
+    v2 doesn't recognise. IBController v2.1 recognises both
+    formats.
+
+3.  IBController.bat, the command file for starting IBController,
+    has been amended to work with TWS 819.3 and later. A version
+    that works with earlier versions of TWS is included as 
+    IBControllerStartForTWS818andBefore.bat
