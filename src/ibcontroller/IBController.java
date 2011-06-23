@@ -1,6 +1,6 @@
 // This file is part of the "IBController".
 // Copyright (C) 2004 Steven M. Kearns (skearns23@yahoo.com )
-// Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Richard L King (rlking@aultan.com)
+// Copyright (C) 2004 - 2011 Richard L King (rlking@aultan.com)
 // For conditions of distribution and use, see copyright notice in COPYING.txt
 
 // IBController is free software: you can redistribute it and/or modify
@@ -14,7 +14,7 @@
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+// along with IBController.  If not, see <http://www.gnu.org/licenses/>.
 
 package ibcontroller;
 
@@ -142,15 +142,26 @@ import java.util.concurrent.Executor;
  *  20100902 Richard King          41       Changed MainWindowFrameHandler to recognise the new main window title introduced
  *                                          in TWS 907.
  *  20100905 Shane Cusson          42       Added GPL licensing, added to SourceForge.net
+ *  20110623 Richard King          43       Changed some window handlers to reflect changes in titles etc in TWS 918.6.
+ *                                 44       Enhanced the ENABLEAPI command implementation to cater for the fact that
+ *                                          the Configure top-level menu was removed in TWS 909. API configuration can
+ *                                          now only be done via the Edit > Global Configuration... menu.
+ *                                 45       Added an AutoConfirmOrders option. If set to yes, then when orders are placed using the
+ *                                          BookTrader in TWS, the confirmation dialog is automatically handled, thereby
+ *                                          effectively restoring the one-click trading that was removed in TWS 906. The default
+ *                                          is 'no', requiring the user to manually confirm each trade.
+ *                                 46       Fixed the NewerVersionDialogHandler: the text to be searched for (in current TWS versions)
+ *                                          is contained in a JOptionPane, not a JLabel.
  */
+
 public class IBController {
 
     /**
      * starts up the TWS app.
-     * @param args -  
-	 *    If length == 1, then args[0] is the path to the ini file.  
+     * @param args -
+	 *    If length == 1, then args[0] is the path to the ini file.
 	 *    If length == 0, we assume that the ini file is located in the current user
-     *                    directory in a file called "IBController.ini".  
+     *                    directory in a file called "IBController.ini".
 	 *    If length == 2 and args[0] is "encrypt", we print out the encryption of args[1].
      */
     public static void main(String[] args) {
@@ -243,6 +254,8 @@ public class IBController {
         _WindowHandlers.add(new TipOfTheDayDialogHandler());
         _WindowHandlers.add(new NSEComplianceFrameHandler());
         _WindowHandlers.add(new PasswordExpiryWarningFrameHandler());
+        _WindowHandlers.add(new GlobalConfigurationDialogHandler());
+        _WindowHandlers.add(new OrderConfirmationDialogHandler());
     }
 
     private static void getSettings(String[] args) {
@@ -337,7 +350,7 @@ public class IBController {
     }
 
     private static String getComputerUserName() {
-        StringBuffer sb = new StringBuffer(System.getProperty("user.name"));
+        StringBuilder sb = new StringBuilder(System.getProperty("user.name"));
         int i;
         for (i = 0; i < sb.length(); i++) {
             char c = sb.charAt(i);
@@ -392,7 +405,7 @@ public class IBController {
                            (new SimpleDateFormat("yyyy/MM/dd HH:mm")).format(shutdownTime));
             _Timer.schedule(new TimerTask() {
                 public void run() {
-                    (new GuiExecutor()).execute(new StopTask(_GatewayOnly, null));
+                    GuiExecutor.instance().execute(new StopTask(_GatewayOnly, null));
                     _Timer.cancel();
                 }
             }, shutdownTime);

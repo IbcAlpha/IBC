@@ -20,12 +20,11 @@ set IBCINI=C:\IBController\ibcontroller.ini
 set TWSDIR=C:\Jts\
 
 
-::   The classpath for TWS. The value below is correct for versions of
-::   TWS up to and including Build 903.7 (you can verify which version
-::   of TWS you are using by going to the Help | ABout Trader Workstation
-::   menu in TWS).
+::   The classpath for TWS. The value below is correct for version
+::   918.6 (you can verify which version of TWS you are using by going
+::   to the Help | ABout Trader Workstation menu in TWS).
 ::
-::   For later versions of TWS, the information needed may change.
+::   For other versions of TWS, the information needed may change.
 ::   You can find the required information in the shortcut created when you 
 ::   installed TWS. To locate this, right click on the start menu entry for 
 ::   TWS and click Properties. In the field labelled 'Target', select 
@@ -33,7 +32,7 @@ set TWSDIR=C:\Jts\
 ::   then press Ctrl-C to copy it to the clipboard, then paste it into the 
 ::   following command, replacing everything after the "=" character:
 
-set TWSCP=jts.jar;pluginsupport.jar;hsqldb.jar;jcommon-1.0.12.jar;jfreechart-1.0.9.jar;jhall.jar;other.jar;rss.jar;riskfeed.jar
+set TWSCP=jts.jar;hsqldb.jar;jcommon-1.0.12.jar;jfreechart-1.0.9.jar;jhall.jar;other.jar;rss.jar
 
 
 ::   Other Java VM options for TWS. You can find this information in the 
@@ -41,7 +40,7 @@ set TWSCP=jts.jar;pluginsupport.jar;hsqldb.jar;jcommon-1.0.12.jar;jfreechart-1.0
 ::   jclient.LoginFrame is NOT part of the Java options, nor is anything 
 ::   that comes after it, so don't include that here):
 
-set JAVAOPTS=-Dsun.java2d.noddraw=true -Xmx512M
+set JAVAOPTS=-Dsun.java2d.noddraw=true -Xmx512M -XX:MaxPermSize=128M
 
 
 pushd %TWSDIR%

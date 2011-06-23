@@ -1,6 +1,6 @@
 // This file is part of the "IBController".
 // Copyright (C) 2004 Steven M. Kearns (skearns23@yahoo.com )
-// Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Richard L King (rlking@aultan.com)
+// Copyright (C) 2004 - 2011 Richard L King (rlking@aultan.com)
 // For conditions of distribution and use, see copyright notice in COPYING.txt
 
 // IBController is free software: you can redistribute it and/or modify
@@ -14,12 +14,13 @@
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+// along with IBController.  If not, see <http://www.gnu.org/licenses/>.
 
 package ibcontroller;
 
 import java.awt.Window;
 import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 
 class NewerVersionDialogHandler implements WindowHandler {
     public void handleWindow(Window window, int eventID) {
@@ -33,7 +34,10 @@ class NewerVersionDialogHandler implements WindowHandler {
     public boolean recogniseWindow(Window window) {
         if (!(window instanceof JDialog)) return false;
 
-        return (Utils.findLabel(window, "Newer Version") != null);
+        if (Utils.findLabel(window, "Newer Version") != null) return true;
+        JOptionPane op = Utils.findOptionPane(window);
+        return (op != null && op.getMessage() != null && op.getMessage().toString().contains("Newer Version"));
     }
+
 }
 

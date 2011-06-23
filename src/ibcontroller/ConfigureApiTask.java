@@ -1,6 +1,6 @@
 // This file is part of the "IBController".
 // Copyright (C) 2004 Steven M. Kearns (skearns23@yahoo.com )
-// Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Richard L King (rlking@aultan.com)
+// Copyright (C) 2004 - 2011 Richard L King (rlking@aultan.com)
 // For conditions of distribution and use, see copyright notice in COPYING.txt
 
 // IBController is free software: you can redistribute it and/or modify
@@ -14,14 +14,19 @@
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+// along with IBController.  If not, see <http://www.gnu.org/licenses/>.
 
 package ibcontroller;
 
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JTree;
+import javax.swing.tree.TreePath;
 
 class ConfigureApiTask implements Runnable{
 
@@ -50,8 +55,53 @@ class ConfigureApiTask implements Runnable{
         }
     }
 
+    private void completeConfigureItViaEditMenu() {
+        Utils.logToConsole("Completing ENABLEAPI configuration");
+        JDialog configDialog = TwsListener.getConfigDialog();
+        if (configDialog == null) {
+            System.err.println("IBControllerServer: could not find the Global Configuration dialog");
+            mChannel.writeNack("Global Configuration dialog not found");
+            return;
+        }
+        JTree configTree = Utils.findTree(configDialog);
+        if (configTree == null) {
+            System.err.println("IBControllerServer: could not find the config tree in the Global Configuration dialog");
+            mChannel.writeNack("config tree not found");
+            return;
+        }
+        TreePath tp = new TreePath(configTree.getModel().getRoot());
+        Object node = Utils.findChildNode(configTree.getModel(), configTree.getModel().getRoot(), "API");
+        tp = tp.pathByAddingChild(node);
+
+        // later versions of TWS have a Settings node below the API node
+        node = Utils.findChildNode(configTree.getModel(), node, "Settings");
+        if (!(node == null)) tp = tp.pathByAddingChild(node);
+
+        Utils.logToConsole("getExpandsSelectedPaths = " + configTree.getExpandsSelectedPaths());
+        Utils.logToConsole("Selection path = " + tp.toString());
+        configTree.setSelectionPath(tp);
+
+        JCheckBox cb = Utils.findCheckBox(configDialog, "Enable ActiveX and Socket Clients");
+        if (cb == null) {
+            System.err.println("IBControllerServer: Could not find Enable ActiveX checkbox inside API menu.");
+            mChannel.writeNack("Enable ActiveX checkbox not found");
+            return;
+        }
+        if (!cb.isSelected()) {
+            cb.doClick();
+            Utils.clickButton(configDialog, "OK");
+            Utils.logToConsole("TWS has been configured to accept API connections.");
+            mChannel.writeAck("configured");
+        } else {
+            Utils.logToConsole("TWS is already configured to accept API connections.");
+            mChannel.writeAck("already configured");
+        }
+
+        configDialog.setVisible(false);
+    }
+
     private void configureAPI() {
-        (new GuiSynchronousExecutor()).execute(new Runnable(){
+        GuiSynchronousExecutor.instance().execute(new Runnable(){
             public void run() {configureIt();}
         });
     }
@@ -60,44 +110,46 @@ class ConfigureApiTask implements Runnable{
         JFrame jf = TwsListener.getMainWindow();
         if (jf == null) {
             System.err.println("IBControllerServer: could not find main window to configure API");
+             mChannel.writeNack("main window not found");
             return;
         }
 
         Utils.logToConsole("Attempting to configure API");
 
-        JMenuBar jmb = Utils.findMenuBar(jf);
-        if (jmb == null) {
-            System.err.println("IBControllerServer: Could not find JMenuBar inside main window.");
-            return;
+        JMenuItem jmi = Utils.findMenuItem(jf, new String[] {"Configure", "API", "Enable ActiveX and Socket Clients"});
+        if (jmi != null) {
+            configureItViaConfigureMenu((JCheckBoxMenuItem)jmi);
+        } else {
+            jmi = Utils.findMenuItem(jf, new String[] {"Edit", "Global Configuration..."});
+            if (jmi != null) {
+                configureItViaEditMenu(jmi);
+            } else {
+                System.err.println("IBControllerServer: could not find Configure > API > Enable ActiveX or Edit > Global Configuration menus");
+                mChannel.writeNack("Configure > API > Enable ActiveX or Edit > Global Configuration menus not found");
+            }
         }
+   }
 
-        JMenuItem jmi = Utils.findMenuItem(jmb, "Configure");
-        if (jmi == null) {
-            System.err.println("IBControllerServer: Could not find Configure menu inside menubar.");
-            return;
-        }
-
-        jmi = Utils.findMenuItem(jmi, "API");
-        if (jmi == null) {
-            System.err.println("IBControllerServer: Could not find API menu inside Configure menu.");
-            return;
-        }
-
-        jmi = Utils.findMenuItem(jmi,"Enable ActiveX and Socket Clients");
-        if (jmi == null || !(jmi instanceof JCheckBoxMenuItem)) {
-            System.err.println("IBControllerServer: Could not find Enable ActiveX menu inside API menu.");
-            return;
-        }
-
-        JCheckBoxMenuItem cmi = (JCheckBoxMenuItem) jmi;
+    private boolean configureItViaConfigureMenu(JCheckBoxMenuItem cmi) {
         if (!cmi.isSelected()) {
             cmi.doClick();
             Utils.logToConsole("TWS has been configured to accept API connections.");
-            mChannel.writeAck("TWS has been configured to accept API connections.");
+            mChannel.writeAck("configured");
         } else {
             Utils.logToConsole("TWS is already configured to accept API connections.");
-            mChannel.writeAck("TWS is already configured to accept API connections.");
+            mChannel.writeAck("already configured");
         }
+        return true;
+    }
+
+    private void configureItViaEditMenu(JMenuItem jmi) {
+        Utils.logToConsole("Click Edit > Global Configuration...");
+        jmi.doClick();
+
+        GuiDeferredExecutor.instance().execute(new Runnable(){
+            public void run() {completeConfigureItViaEditMenu();}
+        });
+
     }
 
     private Boolean waitForMainWindow() {

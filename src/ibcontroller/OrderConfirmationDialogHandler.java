@@ -19,21 +19,19 @@
 package ibcontroller;
 
 import java.awt.Window;
-import javax.swing.JFrame;
+import javax.swing.JDialog;
 
-class NewerVersionFrameHandler implements WindowHandler {
+public class OrderConfirmationDialogHandler implements WindowHandler {
     public void handleWindow(Window window, int eventID) {
-        if (Utils.clickButton(window, "OK")) {
-        } else if (Utils.clickButton(window, "No")) { // ie no we don't want the opportunity to upgrade now - Linux version only
+        if (Utils.clickButton(window, "Transmit")) {
         } else {
-            System.err.println("IBController: could not dismiss Newer Version because we could not find one of the controls.");
+            System.err.println("IBController: could not transmit because we could not find one of the controls.");
         }
     }
 
     public boolean recogniseWindow(Window window) {
-        if (!(window instanceof JFrame)) return false;
+        if (! (window instanceof JDialog)) return false;
 
-        return (Utils.findLabel(window, "Newer Version") != null);
+        return (Utils.titleContains(window, "Order Confirmation"));
     }
 }
-

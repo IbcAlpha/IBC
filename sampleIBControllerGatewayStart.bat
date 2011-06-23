@@ -23,12 +23,11 @@ set IBCINI=C:\IBController\ibcontroller.ini
 set TWSDIR=C:\Jts\
 
 
-::   The classpath for the IB Gateway. The value below is correct for versions of
-::   TWS up to and including Build 903.7 (you can verify which version
-::   of TWS you are using by going to the Help | ABout Trader Workstation
-::   menu in TWS).
+::   The classpath for the IB Gateway. The value below is correct for version 
+::   918.6 (you can verify which version of the Gateway you are using by going
+::   to the Help | About IB Gateway menu in the Gateway UI).
 ::
-::   For later versions of the IB Gateway, the information needed may change.
+::   For other versions of the IB Gateway, the information needed may change.
 ::   You can find the required information in the gateway shortcut created when you 
 ::   installed TWS. To locate this, right click on the start menu entry for 
 ::   the IB Gateway and click Properties. In the field labelled 'Target', select 
@@ -44,7 +43,7 @@ set TWSCP=jts.jar;hsqldb.jar;jcommon-1.0.12.jar;jhall.jar;other.jar;rss.jar
 ::   ibgateway.GWClient is NOT part of the Java options, nor is anything 
 ::   that comes after it, so don't include that here):
 
-set JAVAOPTS=-Dsun.java2d.noddraw=true -Xmx512M
+set JAVAOPTS=-Dsun.java2d.noddraw=true -Xmx512M -XX:MaxPermSize=128M
 
 
 pushd %TWSDIR%

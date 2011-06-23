@@ -19,21 +19,18 @@
 package ibcontroller;
 
 import java.awt.Window;
-import javax.swing.JFrame;
+import java.awt.event.WindowEvent;
+import javax.swing.JDialog;
 
-class NewerVersionFrameHandler implements WindowHandler {
+class GlobalConfigurationDialogHandler implements WindowHandler {
     public void handleWindow(Window window, int eventID) {
-        if (Utils.clickButton(window, "OK")) {
-        } else if (Utils.clickButton(window, "No")) { // ie no we don't want the opportunity to upgrade now - Linux version only
-        } else {
-            System.err.println("IBController: could not dismiss Newer Version because we could not find one of the controls.");
-        }
+        if (eventID != WindowEvent.WINDOW_OPENED) return;
+        TwsListener.setConfigDialog((JDialog) window);
     }
 
     public boolean recogniseWindow(Window window) {
-        if (!(window instanceof JFrame)) return false;
+        if (! (window instanceof JDialog)) return false;
 
-        return (Utils.findLabel(window, "Newer Version") != null);
+        return (Utils.titleContains(window, "Trader Workstation Configuration"));
     }
 }
-

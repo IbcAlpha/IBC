@@ -18,22 +18,17 @@
 
 package ibcontroller;
 
-import java.awt.Window;
-import javax.swing.JFrame;
+import java.util.concurrent.Executor;
+import javax.swing.SwingUtilities;
 
-class NewerVersionFrameHandler implements WindowHandler {
-    public void handleWindow(Window window, int eventID) {
-        if (Utils.clickButton(window, "OK")) {
-        } else if (Utils.clickButton(window, "No")) { // ie no we don't want the opportunity to upgrade now - Linux version only
-        } else {
-            System.err.println("IBController: could not dismiss Newer Version because we could not find one of the controls.");
-        }
-    }
+class GuiDeferredExecutor implements Executor {
+    private static final GuiDeferredExecutor instance = new GuiDeferredExecutor();
 
-    public boolean recogniseWindow(Window window) {
-        if (!(window instanceof JFrame)) return false;
+    private GuiDeferredExecutor() {}
 
-        return (Utils.findLabel(window, "Newer Version") != null);
+    static GuiDeferredExecutor instance() {return instance;}
+
+    public void execute(Runnable task) {
+        SwingUtilities.invokeLater(task);
     }
 }
-
