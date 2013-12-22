@@ -225,7 +225,7 @@ where TWS and IBController are actually installed.
 	properly. They contain detailed comments to help you specify the correct 
 	information.
 
-	I suggest you copy the samplecommand files first rather than edit them
+	I suggest you copy the sample command files first rather than edit them
 	directly so you still have the originals if you make a mistake.
 
 	Linux users should have no difficulty adapting the sample command
@@ -249,6 +249,9 @@ where TWS and IBController are actually installed.
 	when TWS was installed (note that TWS needs more jar files than the
 	IB Gateway to support its richer functionality).
 
+	NB: in later TWS versions there is only a single jar file that replaces
+	the several files for earlier versions.
+
 	The command for running IBController has the following basic form:
 
 	java -cp <classpath> <otherOptions> <entryPoint> [<config file>|NULL] [<loginId> <password>]
@@ -269,6 +272,10 @@ where TWS and IBController are actually installed.
 		Workstation 4.0 > Trader Workstation 4.0). Right click on this
 		entry and select Properties from the pop-up menu. The command
 		is in the field labelled 'Target'. 
+
+		NB: for Windows 8 onwards, to locate the relevant shortcut,
+		right click on the tile for TWS/gateway on the Start screen and
+		select 'Open file location' on the menu bar.
 
 		Note that the classpath in the TWS shortcut assumes that the 
 		TWS files are in the same folder as the shortcut. If your
@@ -316,16 +323,15 @@ where TWS and IBController are actually installed.
 		Note that if you don't supply <loginId> and <password> in the command
 		then they must be in the configuration file as described in 3.3.
 
-	Unix example for TWS 865, using a configuration file called demo.ini:
-
-	    $ cd opt/IBJts
-	    $ java -server -cp jts.jar:hsqldb.jar:jcommon-1.0.12.jar:jhall.jar:\
-            > other.jar:rss.jar:/opt/IBController.jar \
-	    > ibcontroller.IBController /opt/IBController/demo.ini
 
 	For Windows users, please see the included specimen 
 	sampleIBControllerStart.bat and sampleIBControllerGatewayStart.bat 
 	command files.
+
+	For Linux/MacOsX users, please see the included specimen 
+	sampleIBControllerStart.sh and sampleIBControllerGatewayStart.sh 
+	shell scripts.
+
 
 
 3.5	Building IBController
@@ -350,7 +356,7 @@ where TWS and IBController are actually installed.
 	editing program, and build it from the command prompt, the 
 	following example commands are provided.
 
-	For Unix users:
+	For Unix/Linux/Macos users:
 
 	    $ cd /opt/IBController/src/ibcontroller
 	    $ javac -d opt/IBController/classes -cp ~/IBJts/jts.jar *.java
@@ -406,7 +412,7 @@ where TWS and IBController are actually installed.
 	If you do this, you must make sure that the machine is already 
 	logged on before the scheduled task runs. Otherwise the task
 	will still run, but you won't be able to see and interact with TWS, 
-	even if you subsequently log on.
+	even if you subsequently log on. 
 
 	Remember also to change the task settings to prevent Windows 
 	automatically ending it after a certain time.
@@ -419,6 +425,58 @@ where TWS and IBController are actually installed.
 
 5.	CHANGE HISTORY
 ======================
+
+-------------- Version 2.10.0 (Released 23 December 2013 by Richard King) ------------
+
+1. Modified the AcceptIncomingConnectionDialogHandler to improve recognition of
+this dialog, since it varies with different versions of TWS
+
+2. Added an AcceptIncomingConnectionAction setting. If set to 'accept', IBController
+automatically accepts the incoming connection request. If set to 'reject', IBController
+automatically rejects the incoming connection request. If set to 'manual', IBController
+does nothing and the user must decide whether to accept or reject the incoming connection 
+request. The default is 'accept'.
+
+3. Improved handling of the Exit Session Setting dialog. In TWS 942, the caption is 
+only included first time the dialog is displayed. However TWS always displays the same 
+instance of the dialog, so a reference to the dialog is stored the first time it is 
+displayed, and used to detect subsequent displays.
+
+4. Added a ShowAllTrades setting. If this is set to yes, IBController causes TWS to 
+display the Trades log at startup, and sets the 'All' checkbox to ensure that the 
+API reports all executions that have occurred during the past week. Moreover, any 
+attempt by the user to change any of the 'Show trades' checkboxes is ignored; 
+similarly if the user closes the Trades log, it is immediately re-displayed with the 
+'All' checkbox set. If set to 'no', IBController does not interact with the Trades 
+log. The default is no.
+
+5. Added RECONNECTACCOUNT and RECONNECTDATA commands. RECONNECTACCOUNT causes TWS to 
+disconnect from the IB account server and then reconnect (the same as the user 
+pressing Ctrl-Alt-R). RECONNECTDATA causes TWS to disconnect from all market data 
+farms and then reconnect (the sameas the user pressing Ctrl-Alt-F). Thanks to Cheung 
+Kwok Fai for suggesting this and supplying the relevant code edits.
+
+6. Added an ExistingSessionDetectedAction setting. When TWS logs on it checks to see 
+whether the account is already logged in. If so it displays a dialog: this setting 
+instructs TWS how to proceed. If set to 'primary', TWS ends the existing session and 
+continues with the new session. If set to 'secondary', TWS exits so that the existing 
+session is unaffected. If set to 'manual', the user must handle the dialog. The 
+default is 'manual'. Note that when set to 'primary', if another TWS session is started
+and manually told to end the primary session, the primary session is automatically
+reconnected. Also note that if two primary sessions are started, they will both keep 
+reconnecting and disconnecting the other: therefore care needs to be exercised in
+the use of this setting.
+
+7. The AutoConfirmOrders setting has been removed because firstly, it was not 
+correctly implemented, and secondly current versions of TWS enable the user to 
+instruct TWS not to show the order confirmation dialog. The legal restrictions that 
+resulted in one-click trading via the BookTrader being removed in TWS906 appear 
+to have been lifted.
+
+8. Added a LogToConsole setting. If set to 'yes', all logging output from IBController 
+is to the console and may be directed into a file using the normal > or >> command 
+line redirection operators. If set to 'no', output from IBController that is logged 
+after it has loaded TWS appears in the TWS logfile. The default is 'no'.
 
 -------------- Version 2.9.0 (Released 23 June 2011 by Richard King) ------------
 

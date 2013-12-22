@@ -24,26 +24,32 @@ set TWSDIR=C:\Jts\
 
 
 ::   The classpath for the IB Gateway. The value below is correct for version 
-::   918.6 (you can verify which version of the Gateway you are using by going
+::   942 (you can verify which version of the Gateway you are using by going
 ::   to the Help | About IB Gateway menu in the Gateway UI).
 ::
 ::   For other versions of the IB Gateway, the information needed may change.
 ::   You can find the required information in the gateway shortcut created when you 
-::   installed TWS. To locate this, right click on the start menu entry for 
-::   the IB Gateway and click Properties. In the field labelled 'Target', select 
-::   everything after "-cp " up to the first subsequent space character, 
-::   then press Ctrl-C to copy it to the clipboard, then paste it into the 
-::   following command, replacing everything after the "=" character:
+::   installed TWS. 
+::
+::   To locate this in Windows 7, right click on the start menu entry for 
+::   the IB Gateway and click Properties. In Windows 8, locate the tile for the 
+::   IB Gateway in the start screen, right click it, and select 'Open file location'
+::   on the menu bar at the bottom of the screen. 
+::
+::   In the field labelled 'Target', select everything after "-cp " up to the 
+::   first subsequent space character, then press Ctrl-C to copy it to the 
+::   clipboard, then paste it into the following command, replacing everything 
+::   after the "=" character:
 
-set TWSCP=jts.jar;hsqldb.jar;jcommon-1.0.12.jar;jhall.jar;other.jar;rss.jar
+set TWSCP=jts.jar;total.2012.jar
 
 
 ::   Other Java VM options for the IB Gateway. You can find this information in the 
-::   shortcut created when you installed TWS. (Note that in the shortcut, 
-::   ibgateway.GWClient is NOT part of the Java options, nor is anything 
+::   properties for the shortcut created when you installed TWS. (Note that in the 
+::   shortcut, ibgateway.GWClient is NOT part of the Java options, nor is anything 
 ::   that comes after it, so don't include that here):
 
-set JAVAOPTS=-Dsun.java2d.noddraw=true -Xmx512M -XX:MaxPermSize=128M
+set JAVAOPTS=-Dsun.java2d.noddraw=true -Dswing.boldMetal=false -Dsun.locale.formatasdefault=true -Xmx768M -XX:MaxPermSize=128M
 
 
 pushd %TWSDIR%
