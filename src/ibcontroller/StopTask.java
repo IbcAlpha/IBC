@@ -60,7 +60,7 @@ class StopTask
 
         JMenuItem jmi = Utils.findMenuItem(jf, new String [] {"File", stopCommand});
         if (jmi == null) {
-            System.err.println("IBController: Could not find File > " + stopCommand + " menu.");
+            Utils.err.println("IBController: Could not find File > " + stopCommand + " menu.");
             writeNack("File > " + stopCommand + " menu not found");
             return;
         }

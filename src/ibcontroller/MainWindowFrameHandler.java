@@ -21,14 +21,27 @@ package ibcontroller;
 import java.awt.Window;
 import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
+import javax.swing.JMenuItem;
 
 class MainWindowFrameHandler implements WindowHandler {
+    public boolean filterEvent(Window window, int eventId) {
+        switch (eventId) {
+            case WindowEvent.WINDOW_OPENED:
+                return true;
+            default:
+                return false;
+        }
+    }
+
     public void handleWindow(Window window, int eventID) {
         if (eventID != WindowEvent.WINDOW_OPENED) return;
 
         TwsListener.setMainWindow((JFrame) window);
         if (Settings.getBoolean("MinimizeMainWindow", false)) {
             TwsListener.getMainWindow().setExtendedState(java.awt.Frame.ICONIFIED);
+        }
+        if (Settings.getBoolean("ShowAllTrades", false)) {
+            TwsListener.showTradesLogWindow();
         }
     }
 

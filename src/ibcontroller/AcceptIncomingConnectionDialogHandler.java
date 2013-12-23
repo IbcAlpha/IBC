@@ -19,22 +19,48 @@
 package ibcontroller;
 
 import java.awt.Window;
+import java.awt.event.WindowEvent;
 import javax.swing.JDialog;
 
 class AcceptIncomingConnectionDialogHandler implements WindowHandler {
+    public boolean filterEvent(Window window, int eventId) {
+        switch (eventId) {
+            case WindowEvent.WINDOW_OPENED:
+                return true;
+            default:
+                return false;
+        }
+    }
+
     public void handleWindow(Window window, int eventID) {
-        if (Utils.clickButton(window, "OK")) {
-        } else if (Utils.clickButton(window, "Yes")) {
+        final String Accept = "accept";
+        final String Reject = "reject";
+        final String Manual = "manual";
+        
+        String acceptIncomingConnectionAction = Settings.getString("AcceptIncomingConnectionAction", Accept);
+        
+        if (acceptIncomingConnectionAction.equalsIgnoreCase(Manual)) return;
+
+        if (acceptIncomingConnectionAction.equalsIgnoreCase(Accept)) {
+            if (Utils.clickButton(window, "OK")) {
+            } else if (Utils.clickButton(window, "Yes")) {
+            } else {
+                Utils.err.println("IBController: could not accept incoming connection because we could not find one of the controls.");
+            }
+        } else if (acceptIncomingConnectionAction.equalsIgnoreCase(Reject)) {
+            if (Utils.clickButton(window, "No")) {
+            } else {
+                Utils.err.println("IBController: could not accept incoming connection because we could not find one of the controls.");
+            }
         } else {
-            System.err.println("IBController: could not accept incoming connection because we could not find one of the controls.");
+                Utils.err.println("IBController: could not accept incoming connection because the AcceptIncomingConnectionAction setting is invalid.");
         }
     }
 
     public boolean recogniseWindow(Window window) {
         if (! (window instanceof JDialog)) return false;
 
-        return (Utils.titleContains(window, "IB TWS") &&
-               Utils.findLabel(window, "Accept incoming connection") != null);
+        return (Utils.findLabel(window, "Accept incoming connection") != null);
     }
 }
 

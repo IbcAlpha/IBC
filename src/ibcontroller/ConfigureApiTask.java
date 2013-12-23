@@ -59,13 +59,13 @@ class ConfigureApiTask implements Runnable{
         Utils.logToConsole("Completing ENABLEAPI configuration");
         JDialog configDialog = TwsListener.getConfigDialog();
         if (configDialog == null) {
-            System.err.println("IBControllerServer: could not find the Global Configuration dialog");
+            Utils.err.println("IBControllerServer: could not find the Global Configuration dialog");
             mChannel.writeNack("Global Configuration dialog not found");
             return;
         }
         JTree configTree = Utils.findTree(configDialog);
         if (configTree == null) {
-            System.err.println("IBControllerServer: could not find the config tree in the Global Configuration dialog");
+            Utils.err.println("IBControllerServer: could not find the config tree in the Global Configuration dialog");
             mChannel.writeNack("config tree not found");
             return;
         }
@@ -83,7 +83,7 @@ class ConfigureApiTask implements Runnable{
 
         JCheckBox cb = Utils.findCheckBox(configDialog, "Enable ActiveX and Socket Clients");
         if (cb == null) {
-            System.err.println("IBControllerServer: Could not find Enable ActiveX checkbox inside API menu.");
+            Utils.err.println("IBControllerServer: Could not find Enable ActiveX checkbox inside API menu.");
             mChannel.writeNack("Enable ActiveX checkbox not found");
             return;
         }
@@ -109,7 +109,7 @@ class ConfigureApiTask implements Runnable{
     private void configureIt() {
         JFrame jf = TwsListener.getMainWindow();
         if (jf == null) {
-            System.err.println("IBControllerServer: could not find main window to configure API");
+            Utils.err.println("IBControllerServer: could not find main window to configure API");
              mChannel.writeNack("main window not found");
             return;
         }
@@ -124,7 +124,7 @@ class ConfigureApiTask implements Runnable{
             if (jmi != null) {
                 configureItViaEditMenu(jmi);
             } else {
-                System.err.println("IBControllerServer: could not find Configure > API > Enable ActiveX or Edit > Global Configuration menus");
+                Utils.err.println("IBControllerServer: could not find Configure > API > Enable ActiveX or Edit > Global Configuration menus");
                 mChannel.writeNack("Configure > API > Enable ActiveX or Edit > Global Configuration menus not found");
             }
         }
@@ -165,7 +165,7 @@ class ConfigureApiTask implements Runnable{
             mChannel.writeInfo("Waiting for TWS to load");
             while (TwsListener.getMainWindow() == null) {
                 if (count++ >= maxcount) {
-                    System.err.println("IBControllerServer: IB TWS did not load successfully.");
+                    Utils.err.println("IBControllerServer: IB TWS did not load successfully.");
                     mChannel.writeNack("IBControllerServer: IB TWS did not load successfully.");
                     return false;
                 }

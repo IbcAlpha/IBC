@@ -23,9 +23,16 @@ import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
 
 class GatewayMainWindowFrameHandler  implements WindowHandler {
-    public void handleWindow(Window window, int eventID) {
-        if (eventID != WindowEvent.WINDOW_OPENED) return;
+    public boolean filterEvent(Window window, int eventId) {
+        switch (eventId) {
+            case WindowEvent.WINDOW_OPENED:
+                return true;
+            default:
+                return false;
+        }
+    }
 
+    public void handleWindow(Window window, int eventID) {
         TwsListener.setMainWindow((JFrame) window);
         if (Settings.getBoolean("MinimizeMainWindow", false)) {
             TwsListener.getMainWindow().setExtendedState(java.awt.Frame.ICONIFIED);

@@ -21,6 +21,7 @@ package ibcontroller;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Window;
+import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.swing.JButton;
@@ -40,7 +41,10 @@ import javax.swing.tree.TreeModel;
 class Utils {
 
     static final SimpleDateFormat _DateFormatter = new SimpleDateFormat("HH:mm:ss:SSS");
-
+    
+    static PrintStream out = System.out;
+    static PrintStream err = System.err;
+    
     static boolean clickButton(final Window window, final String buttonText) {
         final JButton button = findButton(window, buttonText);
         if (button == null) return false;
@@ -329,14 +333,14 @@ class Utils {
      * writes a text message prefixed with the current time to the console
      */
     static void logToConsole(String msg) {
-        System.out.println(_DateFormatter.format(
+        out.println(_DateFormatter.format(
                 new Date()) + " IBController: " + msg);
     }
 
     static void logWindowComponents(Window window) {
         for (Component component : window.getComponents()) logComponent(component, "");
     }
-
+    
     /**
      * sleeps for millis milliseconds, approximately.
      */
@@ -346,7 +350,7 @@ class Utils {
         } catch (InterruptedException ie) {
         }
     }
-
+    
     static boolean setCheckBoxSelected(Window window, String buttonText, final boolean value) {
         final JCheckBox cb = findCheckBox(window, buttonText);
         if (cb == null) return false;

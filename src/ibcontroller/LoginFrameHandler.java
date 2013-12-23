@@ -27,12 +27,21 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JFrame;
 
 class LoginFrameHandler implements WindowHandler {
+    public boolean filterEvent(Window window, int eventId) {
+        switch (eventId) {
+            case WindowEvent.WINDOW_OPENED:
+                return true;
+            default:
+                return false;
+        }
+    }
+
     public void handleWindow(Window window, int eventID) {
         if (eventID != WindowEvent.WINDOW_OPENED) return;
         TwsListener.setLoginFrame((JFrame) window);
 
         if (! setFieldsAndClick(window)) {
-            System.err.println("IBController: could not login because we could not find one of the controls.");
+            Utils.err.println("IBController: could not login because we could not find one of the controls.");
         }
     }
 

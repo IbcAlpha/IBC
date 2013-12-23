@@ -19,12 +19,23 @@
 package ibcontroller;
 
 import java.awt.Window;
+import java.awt.event.WindowEvent;
 import javax.swing.JDialog;
 
 class TipOfTheDayDialogHandler implements WindowHandler {
+    public boolean filterEvent(Window window, int eventId) {
+        switch (eventId) {
+            case WindowEvent.WINDOW_OPENED:
+            case WindowEvent.WINDOW_ACTIVATED:
+                return true;
+            default:
+                return false;
+        }
+    }
+
     public void handleWindow(Window window, int eventID) {
         if (! Utils.clickButton(window, "Close")) {
-            System.err.println("IBController: could not dismiss Tip of the Day because we could not find one of the controls.");
+            Utils.err.println("IBController: could not dismiss Tip of the Day because we could not find one of the controls.");
         }
     }
 

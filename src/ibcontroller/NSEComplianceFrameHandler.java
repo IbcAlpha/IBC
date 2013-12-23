@@ -19,9 +19,20 @@
 package ibcontroller;
 
 import java.awt.Window;
+import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
 
 public class NSEComplianceFrameHandler  implements WindowHandler {
+    public boolean filterEvent(Window window, int eventId) {
+        switch (eventId) {
+            case WindowEvent.WINDOW_OPENED:
+            case WindowEvent.WINDOW_ACTIVATED:
+                return true;
+            default:
+                return false;
+        }
+    }
+
     public void handleWindow(Window window, int eventID) {
         if (! Settings.getBoolean("DismissNSEComplianceNotice", true)) return;
         window.setVisible(false);

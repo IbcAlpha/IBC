@@ -19,14 +19,24 @@
 package ibcontroller;
 
 import java.awt.Window;
+import java.awt.event.WindowEvent;
 import javax.swing.JDialog;
 
 class BlindTradingWarningDialogHandler implements WindowHandler {
+    public boolean filterEvent(Window window, int eventId) {
+        switch (eventId) {
+            case WindowEvent.WINDOW_OPENED:
+                return true;
+            default:
+                return false;
+        }
+    }
+
     public void handleWindow(Window window, int eventID) {
         if (! Settings.getBoolean("AllowBlindTrading", false)) return;
 
         if (! Utils.clickButton(window, "Yes")) {
-            System.err.println("IBController: could not dismiss blind trading warning dialog.");
+            Utils.err.println("IBController: could not dismiss blind trading warning dialog.");
         }
     }
 

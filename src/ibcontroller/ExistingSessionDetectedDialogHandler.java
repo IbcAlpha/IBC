@@ -1,0 +1,64 @@
+// This file is part of the "IBController".
+// Copyright (C) 2004 Steven M. Kearns (skearns23@yahoo.com )
+// Copyright (C) 2004 - 2011 Richard L King (rlking@aultan.com)
+// For conditions of distribution and use, see copyright notice in COPYING.txt
+
+// IBController is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// IBController is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with IBController.  If not, see <http://www.gnu.org/licenses/>.
+
+package ibcontroller;
+
+import java.awt.Window;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowEvent;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+
+public class ExistingSessionDetectedDialogHandler implements WindowHandler {
+    public boolean filterEvent(Window window, int eventId) {
+        switch (eventId) {
+            case WindowEvent.WINDOW_OPENED:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public void handleWindow(Window window, int eventID) {
+        String setting = Settings.getString("ExistingSessionDetectedAction", "manual");
+        if (setting.equalsIgnoreCase("primary")) {
+            Utils.logToConsole("End the other session and continue this one");
+            if (!Utils.clickButton(window, "OK") && 
+                    !Utils.clickButton(window, "Continue Login") &&
+                    !Utils.clickButton(window, "Reconnect This Session"))  {
+                Utils.err.println("IBController: could not handle 'Existing session detected' dialog because the 'OK' or 'Continue Login' or 'Reconnect This Session' button wasn't found.");
+            }
+        } else if (setting.equalsIgnoreCase("secondary")) {
+            Utils.logToConsole("End this session and let the other session proceed");
+            if (!Utils.clickButton(window, "Cancel") && !Utils.clickButton(window, "Exit Application")) {
+                Utils.err.println("IBController: could not handle 'Existing session detected' dialog because the 'Cancel' or 'Exit Application' button wasn't found.");
+            }
+        } else if (setting.equalsIgnoreCase("manual")) {
+            Utils.logToConsole("User must choose");
+            // nothing to do
+        } else {
+            Utils.err.println("IBController: could not handle 'Existing session detected' dialog because the ExistingSessionDetectedAction setting is invalid.");
+        }
+    }
+
+    public boolean recogniseWindow(Window window) {
+        if (! (window instanceof JDialog)) return false;
+
+        return (Utils.titleContains(window, "Existing session detected"));
+    }
+}

@@ -19,17 +19,35 @@
 package ibcontroller;
 
 import java.awt.Window;
+import java.awt.event.WindowEvent;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import javax.swing.JFrame;
 
 class ExitSessionFrameHandler implements WindowHandler {
+    
+    private JFrame exitSessionFrame = null;
+
+    public boolean filterEvent(Window window, int eventId) {
+        switch (eventId) {
+            case WindowEvent.WINDOW_OPENED:
+            case WindowEvent.WINDOW_ACTIVATED:
+                return true;
+            default:
+                return false;
+        }
+    }
+
     public void handleWindow(Window window, int eventID) {
+        if (eventID == WindowEvent.WINDOW_OPENED) {
+            exitSessionFrame = (JFrame) window;
+        }
+
         if (Settings.getBoolean("IbAutoClosedown", false)) return;
 
         if (! adjustExitSessionTime(window)) {
-            System.err.println("IBController: could not change AutoLogoff time because we could not find one of the controls.");
+            Utils.err.println("IBController: could not change AutoLogoff time because we could not find one of the controls.");
         }
     }
 
@@ -37,7 +55,8 @@ class ExitSessionFrameHandler implements WindowHandler {
         if (! (window instanceof JFrame))  return false;
 
         return (Utils.titleContains(window, "Exit Session Setting")  ||
-                    Utils.titleContains(window, "Session-Exit-Einstellung") );
+                    Utils.titleContains(window, "Session-Exit-Einstellung") || 
+                    exitSessionFrame == (JFrame)window);
     }
 
     private boolean adjustExitSessionTime(Window window) {

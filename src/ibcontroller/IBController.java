@@ -128,7 +128,7 @@ import java.util.concurrent.Executor;
  *                                              INFO info
  *                                          Where 'info' is a text string. OK and ERROR are final responses. INFO is an
  *                                          intermediate response that may be sent to provide information about the command's
- *                                          progess. INFO's may be suppressed using the SuppressInfoMessages option (see change 39).
+ *                                          progress. INFO's may be suppressed using the SuppressInfoMessages option (see change 39).
  *                                 38       Added a CommandPrompt option. The specified string is output by the server when
  *                                          the connection to IBControllerServer is first opened and after the completion
  *                                          of each command. If no string is specified, no prompt is issued.
@@ -152,6 +152,41 @@ import java.util.concurrent.Executor;
  *                                          is 'no', requiring the user to manually confirm each trade.
  *                                 46       Fixed the NewerVersionDialogHandler: the text to be searched for (in current TWS versions)
  *                                          is contained in a JOptionPane, not a JLabel.
+ *  20131218 Richard King          47       Modified the AcceptIncomingConnectionDialogHandler to not check the contents of the 
+ *                                          title bar, since this varies with different versions of TWS and is not necessary
+ *                                          to successfully identify the dialog.
+ *                                 48       Added an AcceptIncomingConnectionAction setting. If set to 'accept', IBController
+ *                                          automatically accepts the incoming connection request. If set to 'reject', IBController
+ *                                          automatically rejects the incoming connection request. If set to 'manual', IBController
+ *                                          does nothing and the user must decide whether to accept or reject the incoming connection 
+ *                                          request. The default is 'accept'.
+ *                                 49       Improved handling of the Exit Session Setting dialog. In TWS 942, the caption is only included
+ *                                          the first time the dialog is displayed. However TWS always displays the same instance
+ *                                          of the dialog, so a reference to the dialog is stored the first time it is displayed, and
+ *                                          is used to detect subsequent displays.
+ *                                 50       Added a ShowAllTrades setting. If this is set to yes, IBController causes TWS to display the 
+ *                                          Trades log at startup, and sets the 'All' checkbox to ensure that the API reports all executions
+ *                                          that have occurred during the past week. Moreover, any attempt by the user to change any of the 
+ *                                          'Show trades' checkboxes is ignored; similarly if the user closes the Trades log, it is 
+ *                                          immediately re-displayed with the 'All' checkbox set. If set to 'no', IBController does not
+ *                                          interact with the Trades log. The default is no.
+ *                                 51       Added RECONNECTACCOUNT and RECONNECTDATA commands. RECONNECTACCOUNT causes TWS to disconnect from
+ *                                          the IB account server and then reconnect (the same as the user pressing Ctrl-Alt-R). 
+ *                                          RECONNECTDATA causes TWS to disconnect from all market data farms and then reconnect (the same 
+ *                                          as the user pressing Ctrl-Alt-F). Thanks to Cheung Kwok Fai for suggesting this and supplying the
+ *                                          relevant code edits.
+ *                                 52       Added an ExistingSessionDetectedAction setting. When TWS logs on it checks to see whether the 
+ *                                          account is already logged in. If so it displays a dialog: this setting instructs TWS how to proceed. If set
+ *                                          to 'primary', TWS ends the other session and continues with the new session. If set to
+ *                                          'secondary', TWS exits so that the other session is unaffected. If set to 'manual', the user must 
+ *                                          handle the dialog. The default is 'manual'.
+ *                                 53       Change # 45 above has been removed because firstly, it was not correctly implemented, and
+ *                                          secondly current versions of TWS enable the user to instruct TWS not to show the order
+ *                                          confirmation dialog. The legal restrictions that resulted in one-click trading via the BookTrader
+ *                                          being removed in TWS906 appear to have been lifted.
+ *                                 54       Added a LogToConsole setting. If set to 'yes', all logging output from IBController is to the console
+ *                                          and may be directed into a file using the normal > or >> command line redirection operators. If set to 'no', 
+ *                                          output from IBController that is logged after it has loaded TWS appears in the TWS logfile. The default is 'no'.
  */
 
 public class IBController {
@@ -221,15 +256,15 @@ public class IBController {
     private static void checkArguments(String[] args) {
         if (args.length == 2) {
             if (args[0].equalsIgnoreCase("encrypt")) {
-                System.out.println("========================================================================");
-                System.out.println("");
+                Utils.out.println("========================================================================");
+                Utils.out.println("");
                 Utils.logToConsole("encryption of \"" + args[1] + "\" is \"" +
                                Encryptor.encrypt(args[1]) + "\"");
-                System.out.println("");
-                System.out.println("========================================================================");
+                Utils.out.println("");
+                Utils.out.println("========================================================================");
                 System.exit(0);
             } else {
-                System.err.println("IBController: 2 arguments passed, but args[0] is not 'encrypt'. quitting...");
+                Utils.err.println("IBController: 2 arguments passed, but args[0] is not 'encrypt'. quitting...");
                 System.exit(1);
             }
         }
@@ -255,7 +290,8 @@ public class IBController {
         _WindowHandlers.add(new NSEComplianceFrameHandler());
         _WindowHandlers.add(new PasswordExpiryWarningFrameHandler());
         _WindowHandlers.add(new GlobalConfigurationDialogHandler());
-        _WindowHandlers.add(new OrderConfirmationDialogHandler());
+        _WindowHandlers.add(new TradesFrameHandler());
+        _WindowHandlers.add(new ExistingSessionDetectedDialogHandler());
     }
 
     private static void getSettings(String[] args) {
@@ -267,7 +303,7 @@ public class IBController {
         }
         File finiPath = new File(iniPath);
         if (!finiPath.isFile() || !finiPath.exists()) {
-            System.err.println("IBController: ini file \"" + iniPath +
+            Utils.err.println("IBController: ini file \"" + iniPath +
                                "\" either does not exist, or is a directory.  quitting...");
             System.exit(1);
         }
@@ -300,7 +336,7 @@ public class IBController {
                     cal.add(Calendar.DAY_OF_MONTH, 7);
                 }
             } catch (ParseException e) {
-                System.err.println("Invalid ClosedownAt setting: should be: <day hh:mm>   eg Friday 22:00");
+                Utils.err.println("Invalid ClosedownAt setting: should be: <day hh:mm>   eg Friday 22:00");
                 System.exit(1);
             }
             return cal.getTime();
@@ -318,7 +354,7 @@ public class IBController {
     private static String getTWSSettingsDirectory() {
         String dir = Settings.getString("IbDir", "");
         if (dir.length() == 0) {
-            System.err.println("IBController:  missing IbDir= entry in IBController.ini.  quitting...");
+            Utils.err.println("IBController:  missing IbDir= entry in IBController.ini.  quitting...");
             System.exit(1);
         }
         return dir;
@@ -377,15 +413,23 @@ public class IBController {
     private static void printProperties() {
         Properties p = System.getProperties();
         Enumeration i = p.keys();
-        System.out.println("System Properties");
-        System.out.println("------------------------------------------------------------");
+        Utils.out.println("System Properties");
+        Utils.out.println("------------------------------------------------------------");
         while (i.hasMoreElements()) {
             String props = (String) i.nextElement();
-            System.out.println(props + " = " + (String) p.get(props));
+            Utils.out.println(props + " = " + (String) p.get(props));
         }
-        System.out.println("------------------------------------------------------------");
+        Utils.out.println("------------------------------------------------------------");
     }
 
+    private static void redirectOutandErrStreams() {
+        if (!Settings.getBoolean("LogToConsole", false)) {
+            // pick up the standard out and err streams as redirected by TWS to its log file
+            Utils.out = System.out;
+            Utils.err = System.err;
+        }
+    }
+    
     private static void startGateway() {
         String[] twsArgs = new String[1];
         twsArgs[0] = getTWSSettingsDirectory();
@@ -424,6 +468,7 @@ public class IBController {
         } else {
             startTws();
         }
+        redirectOutandErrStreams();
     }
 
 }

@@ -18,9 +18,11 @@
 
 package ibcontroller;
 
+import java.awt.event.KeyEvent;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import javax.swing.JFrame;
 
 class CommandDispatcher
         implements Runnable {
@@ -43,6 +45,10 @@ class CommandDispatcher
                 handleStopCommand();
             } else if (cmd.equalsIgnoreCase("ENABLEAPI")) {
                 handleEnableAPICommand();
+            } else if (cmd.equalsIgnoreCase("RECONNECTDATA")) {
+            	handleReconnectDataCommand();
+            } else if (cmd.equalsIgnoreCase("RECONNECTACCOUNT")) {
+            	handleReconnectAccountCommand();
             } else {
                 handleInvalidCommand(cmd);
             }
@@ -54,7 +60,7 @@ class CommandDispatcher
 
     private void handleInvalidCommand(String cmd) {
         mChannel.writeNack("Command invalid");
-        System.err.println("IBControllerServer: invalid command received: " + cmd);
+        Utils.err.println("IBControllerServer: invalid command received: " + cmd);
     }
 
     private void handleEnableAPICommand() {
@@ -73,6 +79,44 @@ class CommandDispatcher
             ee.printStackTrace();
         }
    }
+
+    private void handleReconnectDataCommand() {
+        JFrame jf = TwsListener.getMainWindow();
+        if (jf == null) {
+            Utils.logToConsole("main window not yet found");
+            mChannel.writeNack("main window not yet found");
+            return;
+        }
+
+        int modifiers = KeyEvent.CTRL_DOWN_MASK | KeyEvent.ALT_DOWN_MASK;
+        KeyEvent pressed=new KeyEvent(jf,  KeyEvent.KEY_PRESSED, System.currentTimeMillis(), modifiers, KeyEvent.VK_F, KeyEvent.CHAR_UNDEFINED);
+        KeyEvent typed=new KeyEvent(jf, KeyEvent.KEY_TYPED, System.currentTimeMillis(), modifiers, KeyEvent.VK_UNDEFINED, 'F' );
+        KeyEvent released=new KeyEvent(jf, KeyEvent.KEY_RELEASED, System.currentTimeMillis(), modifiers, KeyEvent.VK_F,  KeyEvent.CHAR_UNDEFINED );
+        jf.dispatchEvent(pressed);
+        jf.dispatchEvent(typed);
+        jf.dispatchEvent(released);
+      
+        mChannel.writeAck("");
+   }
+
+    private void handleReconnectAccountCommand() {
+        JFrame jf = TwsListener.getMainWindow();
+        if (jf == null) {
+            Utils.logToConsole("main window not yet found");
+            mChannel.writeNack("main window not yet found");
+            return;
+        }
+
+        int modifiers = KeyEvent.CTRL_DOWN_MASK | KeyEvent.ALT_DOWN_MASK;
+        KeyEvent pressed=new KeyEvent(jf,  KeyEvent.KEY_PRESSED, System.currentTimeMillis(), modifiers, KeyEvent.VK_R, KeyEvent.CHAR_UNDEFINED);
+        KeyEvent typed=new KeyEvent(jf, KeyEvent.KEY_TYPED, System.currentTimeMillis(), modifiers, KeyEvent.VK_UNDEFINED, 'R' );
+        KeyEvent released=new KeyEvent(jf, KeyEvent.KEY_RELEASED, System.currentTimeMillis(), modifiers, KeyEvent.VK_R,  KeyEvent.CHAR_UNDEFINED );
+        jf.dispatchEvent(pressed);
+        jf.dispatchEvent(typed);
+        jf.dispatchEvent(released);
+
+        mChannel.writeAck("");
+    }
 
     private void handleStopCommand() {
         GuiExecutor.instance().execute(new StopTask(mGateway, mChannel));

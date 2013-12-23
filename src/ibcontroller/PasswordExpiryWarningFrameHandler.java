@@ -19,13 +19,24 @@
 package ibcontroller;
 
 import java.awt.Window;
+import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
 
 public class PasswordExpiryWarningFrameHandler  implements WindowHandler {
+    public boolean filterEvent(Window window, int eventId) {
+        switch (eventId) {
+            case WindowEvent.WINDOW_OPENED:
+            case WindowEvent.WINDOW_ACTIVATED:
+                return true;
+            default:
+                return false;
+        }
+    }
+
     public void handleWindow(Window window, int eventID) {
         if (! Settings.getBoolean("DismissPasswordExpiryWarning", false)) return;
         if (! Utils.clickButton(window, "OK")) {
-            System.err.println("IBController: could not dismiss Password Expiry Warning because we could not find one of the controls.");
+            Utils.err.println("IBController: could not dismiss Password Expiry Warning because we could not find one of the controls.");
         }
     }
 

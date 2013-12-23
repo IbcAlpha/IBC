@@ -25,6 +25,7 @@ import java.awt.event.WindowEvent;
 import java.util.List;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JMenuItem;
 
 class TwsListener
         implements AWTEventListener {
@@ -51,14 +52,18 @@ class TwsListener
 
     public void eventDispatched(AWTEvent event) {
         int eventID = event.getID();
-        if (eventID != WindowEvent.WINDOW_OPENED &&
-                eventID != WindowEvent.WINDOW_ACTIVATED) return;
 
         Window window =((WindowEvent) event).getWindow();
-        logWindow(window, eventID);
+
+        if (eventID == WindowEvent.WINDOW_OPENED ||
+                eventID == WindowEvent.WINDOW_ACTIVATED ||
+                eventID == WindowEvent.WINDOW_CLOSING ||
+                eventID == WindowEvent.WINDOW_CLOSED) {
+            logWindow(window, eventID);
+        }
 
         for (WindowHandler wh : _WindowHandlers) {
-            if (wh.recogniseWindow(window)) {
+            if (wh.recogniseWindow(window) && wh.filterEvent(window, eventID))  {
                 wh.handleWindow(window, eventID);
                 break;
             }
@@ -87,7 +92,8 @@ class TwsListener
     }
 
     private static void logWindow(Window window,int eventID) {
-        String event = (eventID == WindowEvent.WINDOW_OPENED)? "Opened": "Activated";
+        String event = windowEventToString(eventID);
+
         if (window instanceof JFrame) {
             Utils.logToConsole("detected frame entitled: " + ((JFrame) window).getTitle() + "; event=" + event);
         } else if (window instanceof JDialog) {
@@ -101,7 +107,7 @@ class TwsListener
     static void setConfigDialog(JDialog window) {
         _ConfigDialog = window;
     }
-
+    
     static void setLoginFrame(JFrame window) {
         _LoginFrame = window;
     }
@@ -109,6 +115,43 @@ class TwsListener
     static void setMainWindow(JFrame window) {
         Utils.logToConsole("Found TWS main window");
         _MainWindow = window;
+    }
+    
+    static void showTradesLogWindow() {
+        final JMenuItem jmi = Utils.findMenuItem(_MainWindow, new String[] {"Account", "Trade Log"});
+        if (jmi != null) {
+                Utils.logToConsole("Showing trades log window");
+                jmi.doClick();
+        } else {
+            Utils.err.println("IBControllerServer: could not find Account > Trade Log menu");
+        }
+    }
+
+    static String windowEventToString(int eventID) {
+        switch (eventID) { 
+            case WindowEvent.WINDOW_ACTIVATED:
+                return "Activated";
+            case WindowEvent.WINDOW_CLOSED:
+                return "Closed";
+            case WindowEvent.WINDOW_CLOSING:
+                return "Closing";
+            case WindowEvent.WINDOW_DEACTIVATED:
+                return "Deactivated";
+            case WindowEvent.WINDOW_DEICONIFIED:
+                return "Deiconfied";
+            case WindowEvent.WINDOW_GAINED_FOCUS:
+                return "Focused";
+            case WindowEvent.WINDOW_ICONIFIED:
+                return "Iconified";
+            case WindowEvent.WINDOW_LOST_FOCUS:
+                return "Lost focus";
+            case WindowEvent.WINDOW_OPENED:
+                return "Opened";
+            case WindowEvent.WINDOW_STATE_CHANGED:
+                return "State changed";
+            default:
+                return "???";
+        }
     }
 
 }

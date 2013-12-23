@@ -23,8 +23,16 @@ import java.awt.event.WindowEvent;
 import javax.swing.JDialog;
 
 class GlobalConfigurationDialogHandler implements WindowHandler {
+    public boolean filterEvent(Window window, int eventId) {
+        switch (eventId) {
+            case WindowEvent.WINDOW_OPENED:
+                return true;
+            default:
+                return false;
+        }
+    }
+
     public void handleWindow(Window window, int eventID) {
-        if (eventID != WindowEvent.WINDOW_OPENED) return;
         TwsListener.setConfigDialog((JDialog) window);
     }
 

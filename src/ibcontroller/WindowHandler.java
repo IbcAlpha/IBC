@@ -21,6 +21,7 @@ package ibcontroller;
 import java.awt.Window;
 
 interface WindowHandler {
-        void handleWindow(Window window, int eventID);
-        boolean recogniseWindow(Window window);
+    boolean filterEvent(Window window, int eventId);
+    void handleWindow(Window window, int eventID);
+    boolean recogniseWindow(Window window);
 }
