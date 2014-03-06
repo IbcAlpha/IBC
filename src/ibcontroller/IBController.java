@@ -187,6 +187,16 @@ import java.util.concurrent.Executor;
  *                                 54       Added a LogToConsole setting. If set to 'yes', all logging output from IBController is to the console
  *                                          and may be directed into a file using the normal > or >> command line redirection operators. If set to 'no', 
  *                                          output from IBController that is logged after it has loaded TWS appears in the TWS logfile. The default is 'no'.
+ *  20140228 Richard King          55       Added the ability to run the FIX CTCI gateway. There are these new settings:
+ *                                                  FIX                     if yes, use the FIX CTCI login, otherwise the IB API gateway login (default no)
+ *                                                  FIXLoginId              username for the FIX account
+ *                                                  FIXPassword             password for the FIX account
+ *                                                  FIXPasswordEncrypted    yes or no (default yes)
+ *                                          If market data connection via the gateway is also needed, the existing IbLoginId and IbPassword settings
+ *                                          are used as well as the FIX settings.
+ *                                          The FIX username and password may also be supplied as the second and third command line args. In
+ *                                          this case, the market data connection username and password my be supplied as the fourth and
+ *                                          fifth command line args.
  */
 
 public class IBController {
@@ -213,7 +223,8 @@ public class IBController {
         getSettings(args);
 
         getTWSUserNameAndPassword(args);
-
+        getFIXUserNameAndPassword(args);
+        
         startIBControllerServer();
 
         startShutdownTimerIfRequired();
@@ -235,17 +246,31 @@ public class IBController {
     private static final Timer _Timer = new Timer(true);
 
     /**
-     * username - can either be supplied from the .ini file or as args[1]
-     * NB: if username is supplied in args[1], then the password must
-     * be in args[2]. If username is supplied in .ini, then the password must
+     * IBAPI username - can either be supplied from the .ini file or as args[1]
+     * NB: if IBAPI username is supplied in args[1], then the password must
+     * be in args[2]. If IBAPI username is supplied in .ini, then the password must
      * also be in .ini.
      */
-    private static String _UserName;
+    private static String _IBAPIUserName;
+
+    /**
+     * unencrypted IBAPI password - can either be supplied from the .ini file or as args[2]
+     */
+    private static String _IBAPIPassword;
+
+    /**
+     * FIX username - can either be supplied from the .ini file or as args[1]
+     * NB: if username is supplied in args[1], then the password must
+     * be in args[2], and the IBAPI username and password may be in 
+     * args[3] and args[4]. If username is supplied in .ini, then the password must
+     * also be in .ini.
+     */
+    private static String _FIXUserName;
 
     /**
      * unencrypted password - can either be supplied from the .ini file or as args[2]
      */
-    private static String _Password;
+    private static String _FIXPassword;
 
     private static final List<WindowHandler> _WindowHandlers = new ArrayList<WindowHandler>();
 
@@ -267,11 +292,14 @@ public class IBController {
                 Utils.err.println("IBController: 2 arguments passed, but args[0] is not 'encrypt'. quitting...");
                 System.exit(1);
             }
+        } else if (args.length == 4 || args.length > 5) {
+                Utils.err.println("IBController: Incorrect number of arguments passed. quitting...");
+                System.exit(1);
         }
     }
 
     private static void createToolkitListener() {
-        TwsListener.initialise(_UserName, _Password, _WindowHandlers);
+        TwsListener.initialise(_IBAPIUserName, _IBAPIPassword, _FIXUserName, _FIXPassword, _WindowHandlers);
         Toolkit.getDefaultToolkit().addAWTEventListener(TwsListener.getInstance(), AWTEvent.WINDOW_EVENT_MASK);
     }
 
@@ -292,6 +320,39 @@ public class IBController {
         _WindowHandlers.add(new GlobalConfigurationDialogHandler());
         _WindowHandlers.add(new TradesFrameHandler());
         _WindowHandlers.add(new ExistingSessionDetectedDialogHandler());
+    }
+
+    private static String getFIXPasswordFromProperties() {
+        String password = Settings.getString("FIXPassword", "");
+        if (password.length() != 0) {
+            if (isFIXPasswordEncrypted()) password = Encryptor.decrypt(password);
+        }
+        return password;
+    }
+
+    private static void getFIXUserNameAndPassword(String[] args) {
+        if (! getFIXUserNameAndPasswordFromArguments(args)) {
+            getFIXUserNameAndPasswordFromProperties();
+        }
+    }
+
+    private static String getFIXUserNameFromProperties() {
+        return Settings.getString("FIXLoginId", "");
+    }
+
+    private static boolean getFIXUserNameAndPasswordFromArguments(String[] args) {
+        if (args.length == 3 || args.length == 5) {
+            _FIXUserName = args[1];
+            _FIXPassword = args[2];
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private static void getFIXUserNameAndPasswordFromProperties() {
+        _FIXUserName = getFIXUserNameFromProperties();
+        _FIXPassword = getFIXPasswordFromProperties();
     }
 
     private static void getSettings(String[] args) {
@@ -371,9 +432,17 @@ public class IBController {
     }
 
     private static boolean getTWSUserNameAndPasswordFromArguments(String[] args) {
-        if (args.length == 3) {
-            _UserName = args[1];
-            _Password = args[2];
+        if (Settings.getBoolean("FIX", false)) {
+            if (args.length == 5) {
+                _IBAPIUserName = args[3];
+                _IBAPIPassword = args[4];
+                return true;
+            } else {
+                return false;
+            }
+        } else if (args.length == 3) {
+            _IBAPIUserName = args[1];
+            _IBAPIPassword = args[2];
             return true;
         } else {
             return false;
@@ -381,8 +450,8 @@ public class IBController {
     }
 
     private static void getTWSUserNameAndPasswordFromProperties() {
-        _UserName = getTWSUserNameFromProperties();
-        _Password = getTWSPasswordFromProperties();
+        _IBAPIUserName = getTWSUserNameFromProperties();
+        _IBAPIPassword = getTWSPasswordFromProperties();
     }
 
     private static String getComputerUserName() {
@@ -404,6 +473,10 @@ public class IBController {
 
     private static String getWorkingDirectory() {
         return System.getProperty("user.dir") + File.separator;
+    }
+
+    private static boolean isFIXPasswordEncrypted() {
+        return Settings.getBoolean("FIXPasswordEncrypted", true);
     }
 
     private static boolean isPasswordEncrypted() {

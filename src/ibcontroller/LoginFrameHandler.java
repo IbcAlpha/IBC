@@ -53,17 +53,17 @@ class LoginFrameHandler implements WindowHandler {
     }
 
     private boolean setFieldsAndClick(final Window window) {
-        if (! Utils.setTextField(window, 0, TwsListener.getUserName())) return false;
-        if (! Utils.setTextField(window, 1, TwsListener.getPassword())) return false;
+        if (! Utils.setTextField(window, 0, TwsListener.getIBAPIUserName())) return false;
+        if (! Utils.setTextField(window, 1, TwsListener.getIBAPIPassword())) return false;
         if (! Utils.setCheckBoxSelected(window,
                                             "Use/store settings on server",
                                             Settings.getBoolean("StoreSettingsOnServer", false))) return false;
 
-        if (TwsListener.getUserName().length() == 0) {
+        if (TwsListener.getIBAPIUserName().length() == 0) {
             Utils.findTextField(window, 0).requestFocus();
             return true;
         }
-        if (TwsListener.getPassword().length() == 0) {
+        if (TwsListener.getIBAPIPassword().length() == 0) {
             Utils.findTextField(window, 1).requestFocus();
             return true;
         }

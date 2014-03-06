@@ -25,6 +25,7 @@ import java.util.TimerTask;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JFrame;
+import javax.swing.JRadioButton;
 
 class GatewayLoginFrameHandler  implements WindowHandler {
 
@@ -38,11 +39,37 @@ class GatewayLoginFrameHandler  implements WindowHandler {
     }
 
     public void handleWindow(final Window window, int eventID) {
-        if (! setFieldsAndClick(window)) {
-            Utils.err.println("IBController: could not login because we could not find one of the controls.");
+        try {
+            selectGatewayMode(window);
+            if (setFields(window)) doLogin(window);
+        } catch (ComponentNotFoundException e) {
+            Utils.err.println("IBController: could not login: could not find control: " + e.getMessage());
         }
     }
-
+    
+    private void selectGatewayMode(Window window) throws ComponentNotFoundException {
+        if (Settings.getBoolean("FIX", false)) {
+            switchToFIX(window);
+        } else {
+            switchToIBAPI(window);
+        }
+    }
+    
+    private void switchToFIX(Window window) throws ComponentNotFoundException {
+        JRadioButton button = Utils.findRadioButton(window, "FIX CTCI");
+        if (button == null) throw new ComponentNotFoundException("FIX CTCI radio button");
+        
+        if (! button.isSelected()) button.doClick();
+    }
+    
+    private void switchToIBAPI(Window window) throws ComponentNotFoundException {
+        JRadioButton button = Utils.findRadioButton(window, "IB API");
+        if (button == null) button = Utils.findRadioButton(window, "TWS/API") ;
+        if (button == null) throw new ComponentNotFoundException("IB API radio button");
+        
+        if (! button.isSelected()) button.doClick();
+    }
+        
     public boolean recogniseWindow(Window window) {
         if (! (window instanceof JFrame)) return false;
 
@@ -50,30 +77,50 @@ class GatewayLoginFrameHandler  implements WindowHandler {
                (Utils.findButton(window, "Login") != null));
     }
 
-    private boolean setFieldsAndClick(final Window window) {
-        if (Utils.findRadioButton(window, "IB API") != null) {
-            if (!Utils.isRadioButtonSelected(window, "IB API")) {
-                if (!Utils.setRadioButtonSelected(window, "IB API")) return false;
-            }
-        } else if (Utils.findRadioButton(window, "TWS/API") != null) {
-            if (!Utils.isRadioButtonSelected(window, "TWS/API")) {
-                if (!Utils.setRadioButtonSelected(window, "TWS/API")) return false;
-            }
-        } else return false;
-
-        if (! Utils.setTextField(window, 0, TwsListener.getUserName())) return false;
-        if (! Utils.setTextField(window, 1, TwsListener.getPassword())) return false;
-
-        if (TwsListener.getUserName().length() == 0) {
-            Utils.findTextField(window, 0).requestFocus();
-            return true;
+    private boolean setFields(final Window window) throws ComponentNotFoundException {
+        boolean isFIXMode = Settings.getBoolean("FIX", false);
+        
+        if (isFIXMode) {
+            if (! Utils.setTextField(window, 0, TwsListener.getFIXUserName())) throw new ComponentNotFoundException("FIX user name");
+            if (! Utils.setTextField(window, 1, TwsListener.getFIXPassword())) throw new ComponentNotFoundException("FIX password");
+            if (! Utils.setTextField(window, 3, TwsListener.getIBAPIUserName())) throw new ComponentNotFoundException("IBAPI user name");
+            if (! Utils.setTextField(window, 4, TwsListener.getIBAPIPassword())) throw new ComponentNotFoundException("IBAPI password");
+        } else {
+            if (! Utils.setTextField(window, 0, TwsListener.getIBAPIUserName())) throw new ComponentNotFoundException("IBAPI user name");
+            if (! Utils.setTextField(window, 1, TwsListener.getIBAPIPassword()))  throw new ComponentNotFoundException("IBAPI password");
         }
-        if (TwsListener.getPassword().length() == 0) {
-            Utils.findTextField(window, 1).requestFocus();
-            return true;
+            
+        if (isFIXMode) {
+            if (TwsListener.getFIXUserName().length() == 0) {
+                Utils.findTextField(window, 0).requestFocus();
+                return false;
+            }
+            if (TwsListener.getFIXPassword().length() == 0) {
+                Utils.findTextField(window, 1).requestFocus();
+                return false;
+            }
+            if (TwsListener.getIBAPIUserName().length() != 0) {
+                if (TwsListener.getIBAPIPassword().length() == 0) {
+                    Utils.findTextField(window, 4).requestFocus();
+                    return false;
+                }
+            }
+        } else {
+            if (TwsListener.getIBAPIUserName().length() == 0) {
+                Utils.findTextField(window, 0).requestFocus();
+                return false;
+            }
+            if (TwsListener.getIBAPIPassword().length() == 0) {
+                Utils.findTextField(window, 1).requestFocus();
+                return false;
+            }
         }
+        return true;
+    }
 
-        if (Utils.findButton(window, "Login") == null) return false;
+    private void doLogin(final Window window) throws ComponentNotFoundException {
+
+        if (Utils.findButton(window, "Login") == null) throw new ComponentNotFoundException("Login button");
 
         final Timer timer = new Timer(true);
         timer.schedule(new TimerTask() {
@@ -97,8 +144,6 @@ class GatewayLoginFrameHandler  implements WindowHandler {
                 while (!done.get());
             }
         }, 10);
-        
-        return true;
     }
 
 }

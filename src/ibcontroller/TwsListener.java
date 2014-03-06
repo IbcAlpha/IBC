@@ -31,8 +31,10 @@ class TwsListener
         implements AWTEventListener {
 
     private static final TwsListener _OnlyInstance = new TwsListener();
-    private static volatile String _UserName;
-    private static volatile String _Password;
+    private static volatile String _IBAPIUserName;
+    private static volatile String _IBAPIPassword;
+    private static volatile String _FIXUserName;
+    private static volatile String _FIXPassword;
 
     private static List<WindowHandler> _WindowHandlers;
 
@@ -44,9 +46,11 @@ class TwsListener
 
     static TwsListener getInstance() {return _OnlyInstance; }
 
-    static void initialise(String userName, String password, List<WindowHandler> windowHandlers) {
-        _UserName = userName;
-        _Password = password;
+    static void initialise(String IBAPIUserName, String IBAPIPassword, String FIXUserName, String FIXPassword, List<WindowHandler> windowHandlers) {
+        _IBAPIUserName = IBAPIUserName;
+        _IBAPIPassword = IBAPIPassword;
+        _FIXUserName = FIXUserName;
+        _FIXPassword = FIXPassword;
         _WindowHandlers = windowHandlers;
     }
 
@@ -75,6 +79,14 @@ class TwsListener
         return _ConfigDialog;
     }
 
+    static String getFIXPassword() {
+        return _FIXPassword;
+    }
+
+    static String getFIXUserName() {
+        return _FIXUserName;
+    }
+
     static JFrame getLoginFrame() {
         return _LoginFrame;
     }
@@ -83,12 +95,12 @@ class TwsListener
         return _MainWindow;
     }
 
-    static String getPassword() {
-        return _Password;
+    static String getIBAPIPassword() {
+        return _IBAPIPassword;
     }
 
-    static String getUserName() {
-        return _UserName;
+    static String getIBAPIUserName() {
+        return _IBAPIUserName;
     }
 
     private static void logWindow(Window window,int eventID) {

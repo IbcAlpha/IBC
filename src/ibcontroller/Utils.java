@@ -171,17 +171,21 @@ class Utils {
      * (0 based indexing)
      *
      */
-    static JTextField findTextField(Container container,
-                                            int ith) {
+    static JTextField findTextField(Container container, int ith) {
+        int[]  fieldNumberArray = {ith};
+        return findTextFieldRec(container, fieldNumberArray);
+    }
+
+    private static JTextField findTextFieldRec(Container container, int[] ith) {
         Component[] components = container.getComponents();
 
         for (Component component : components) {
-            if (component instanceof JTextField && ith > 0) {
-                ith--;
-            } else if (component instanceof JTextField && ith == 0) {
+            if (component instanceof JTextField && ith[0] > 0) {
+                ith[0]--;
+            } else if (component instanceof JTextField && ith[0] == 0) {
                 return (JTextField) component;
             } else if (component instanceof Container) {
-                JTextField tf = findTextField((Container) component, ith);
+                JTextField tf = findTextFieldRec((Container) component, ith);
                 if (tf != null) {
                     return tf;
                 }
@@ -395,6 +399,7 @@ class Utils {
         else if (component instanceof JLabel) s = s + "JLabel: " + ((JLabel) component).getText();
         else if (component instanceof JOptionPane) s = s + "JOptionPane: " + ((JOptionPane) component).getMessage().toString();
         else if (component instanceof JRadioButton) s = s + "JRadioButton: " + ((JRadioButton) component).getText();
+        else if (component instanceof JTextField) s = s + "JTextField: " + ((JTextField) component).getText();
         if (!s.isEmpty()) s = "{" + s + "}";
         return s;
     }
