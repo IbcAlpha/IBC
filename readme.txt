@@ -219,6 +219,11 @@ where TWS and IBController are actually installed.
 
 		sampleIBControllerGatewayStart.bat 	(which starts the IB Gateway)
 
+	There are also corresponding sample files for Linux users, called:
+
+		sampleIBControllerStart.sh 
+		sampleIBControllerGatewayStart.sh
+
 	You can use these samples as the basis for your own command file(s). 
 	However, they may not be entirely up to date so you should read through 
 	them carefully and make any necessary changes to ensure that they work 
@@ -227,9 +232,6 @@ where TWS and IBController are actually installed.
 
 	I suggest you copy the sample command files first rather than edit them
 	directly so you still have the originals if you make a mistake.
-
-	Linux users should have no difficulty adapting the sample command
-	files to the appropriate command syntax.
 
 	The following information is for reference. If you use the 
 	sample command files as the basis for your command files you may
@@ -394,17 +396,20 @@ where TWS and IBController are actually installed.
 
 4.2	Running TWS Headless - *nix
 
-	[Not really an IBController tip, but someone may find it useful.]
+	[Not really an IBController tip, but someone may find it useful. The 
+	information presented here has not been tested and may need
+	to be corrected.]
 
-	You need vncserver.  
+	Use VNC Server.  
 
 	Run your VNC server sending its display to :1
 
 	    $ vncserver :1
 	    $ export DISPLAY=:1
-	    $ java -server -cp jcommon-1.0.0.jar:jfreechart-1.0.0.jar:jhall.jar:\
-	    > jts.jar:other.jar:rss.jar:/opt/IBController.jar \
-	    > ibcontroller.IBController /opt/IBController/demo.ini
+
+	then use the normal command to start IBController.
+
+	You can then view the TWS UI from a remote machine using VNC Viewer.
 
 4.3	On Windows you can start IBController automatically using a Scheduled 
 	Task. 
@@ -425,6 +430,31 @@ where TWS and IBController are actually installed.
 
 5.	CHANGE HISTORY
 ======================
+
+-------------- Version 2.11.0 (Released 3 March 2014 by Richard King) ------------
+
+1. Added the ability to run the FIX CTCI gateway. There are these new settings:
+
+	FIX                     if yes, use the FIX CTCI login, otherwise the IB API 
+				gateway login (default no)
+
+	FIXLoginId              username for the FIX account
+
+	FIXPassword             password for the FIX account
+
+	FIXPasswordEncrypted    yes or no (default yes)
+
+If market data connection via the gateway is also needed, the existing IbLoginId and 
+IbPassword settings are used as well as the FIX settings.
+
+The FIX username and password may also be supplied as the second and third command 
+line args. In this case, the market data connection username and password my be 
+supplied as the fourth and fifth command line args.
+
+The gateway is run in exactly the same way as before: which login is used is 
+governed by these settings. If FIX=no or is not supplied, the IB API login is used,
+so existing IB API gateway setups will run exactly the same without change.
+
 
 -------------- Version 2.10.0 (Released 23 December 2013 by Richard King) ------------
 
