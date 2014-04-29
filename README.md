@@ -1,3 +1,7 @@
+**Download the
+[latest official release](https://github.com/ib-controller/ib-controller/releases/latest)
+here**
+
 IB Controller provides hands-free operation of
 [Interactive Brokers](https://www.interactivebrokers.com)
 [Trader Workstation](http://www.interactivebrokers.com/en/pagemap/pagemap_APISolutions.php).
@@ -14,15 +18,6 @@ It's especially useful for developers of automated trading systems who use
   connections etc)
 * Exposes a [telnet](http://en.wikipedia.org/wiki/Telnet) control protocol to
   ``STOP`` the GUI or ``ENABLEAPI`` for IB API client access
-
-We welcome your involvement and contributions! If you like the project, please
-click the GitHub "Star" or "[Fork](../../fork)" button. We also invite you to
-join the [contributor list](../../graphs/contributors) by submitting
-[pull requests](../../pulls). We also thank past contributors to the original
-SourceForge project: Richard King, Steven Kearns and Ken Geis.
-
-IB Controller is licensed under the
-[GNU General Public License](http://www.gnu.org/licenses/gpl.html) version 3.
 
 Downloads
 ---------
@@ -50,7 +45,18 @@ Support
   is encouraged for end user usage questions and support**
 * Bugs can be reported in the
   [GitHub Issue Tracker](https://github.com/ib-controller/ib-controller/issues)
-* Please submit new features, fixes and other contributions as
-  [pull requests](../../pulls) to facilitate expeditious merging into the
-  project (take a look at our [contributor guidelines](CONTRIBUTING.md) for
-  more information)
+
+Contributing
+------------
+We welcome your involvement and contributions! Just have a read of the
+[contributor guidelines](CONTRIBUTING.md) and send us a 
+[pull request](../../pulls).
+
+We also thank past contributors to the original SourceForge project: Richard
+King, Steven Kearns and Ken Geis. Plus of course all those on our GitHub
+[contributor list](../../graphs/contributors).
+
+License
+-------
+IB Controller is licensed under the
+[GNU General Public License](http://www.gnu.org/licenses/gpl.html) version 3.
