@@ -12,9 +12,8 @@ The original author was Steven Kearns (skearns23@yahoo.com), and it has since
 been significantly enhanced and restructured by Richard King
 (rlking@aultan.com).  It is based on original code by ken_geis@telocity.com.
 
-IBController is licensed under the GNU General Public License Version 3. You
-can see the terms of this license in the COPYING.txt file included in the
-download.
+IBController is licensed under the
+[GNU General Public License](http://www.gnu.org/licenses/gpl.html) version 3.
 
 Running the "main" of IBController provides the following services:
 
@@ -70,7 +69,7 @@ after modifying the source code. You will not need
 this file unless you intend to make any modifications
 to IBController.
 
-COPYING.txt - the GNU General Public License Version 3
+LICENSE.txt - the GNU General Public License Version 3
 
 IBController.ini - a specimen configuration file. You will 
 need to edit it to ensure it contains the settings 
