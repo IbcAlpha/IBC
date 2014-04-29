@@ -6,7 +6,7 @@ to maintain the project and in turn the pull requests we're likely to merge:
    proportion of the user base.
 3. **Non-developer users**: A lot of our users aren't developers. It must be
    easy them to use any improvements. A practical approach is to ensure the
-   [configuration file](IBController.ini) and/or (user guide)[userguide.md]
+   [configuration file](IBController.ini) and/or [user guide](userguide.md)
    reflects changes.
 4. **Backward compatibility**: New versions should not force users of previous
    versions to change their configuration or command files (ie no surprises).
