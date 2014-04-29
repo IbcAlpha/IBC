@@ -536,6 +536,12 @@ public class IBController {
     }
 
     private static void startTwsOrGateway() {
+        int forceSocket = Settings.getInt("ForceSocketPort", 0);
+        if (forceSocket != 0) {
+            Executor executor = new ThreadPerTaskExecutor();
+            executor.execute(new ConfigureSocketPort());
+        }
+
         if (_GatewayOnly) {
             startGateway();
         } else {
