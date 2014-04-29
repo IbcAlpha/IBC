@@ -36,8 +36,8 @@ Downloads
   systemd units, headless/virtual framebuffer support etc)
 * Developers may wish to embed IB Controller for integration testing convenience
   (eg see projects
-  [GoIB](https://github.com/gofinance/ib/testserver) and
-  [IB Connect](https://github.com/benalexau/ibconnect/testserver))
+  [GoIB](https://github.com/gofinance/ib/tree/master/testserver) and
+  [IB Connect](https://github.com/benalexau/ibconnect/tree/master/testserver))
 
 User Guide
 ----------
@@ -49,6 +49,6 @@ Support
 * **The [TWSAPI Yahoo Group](https://groups.yahoo.com/neo/groups/TWSAPI/info)
   is encouraged for end user usage questions and support**
 * Bugs can be reported in the
-  [GitHub Issue Tracker](https://groups.yahoo.com/neo/groups/TWSAPI/info)
+  [GitHub Issue Tracker](https://github.com/ib-controller/ib-controller/issues)
 * Please submit new features, fixes and other contributions as
   [pull requests](../../pulls) to facilitate rapid inclusion in the project
