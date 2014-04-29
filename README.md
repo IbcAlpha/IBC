@@ -51,4 +51,6 @@ Support
 * Bugs can be reported in the
   [GitHub Issue Tracker](https://github.com/ib-controller/ib-controller/issues)
 * Please submit new features, fixes and other contributions as
-  [pull requests](../../pulls) to facilitate rapid inclusion in the project
+  [pull requests](../../pulls) to facilitate expeditious merging into the
+  project (take a look at our [contributor guidelines](CONTRIBUTING.md) for
+  more information)
