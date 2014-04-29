@@ -21,7 +21,6 @@ package ibcontroller;
 import java.awt.Window;
 import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
-import javax.swing.JMenuItem;
 
 class MainWindowFrameHandler implements WindowHandler {
     public boolean filterEvent(Window window, int eventId) {
