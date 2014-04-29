@@ -63,9 +63,6 @@ page. You can also access
 [prior releases](https://github.com/ib-controller/ib-controller/releases) if
 desired.
 
-Select [GitHub Releases](https://github.com/ib-controller/ib-controller/releases)
-to view the released versions. Select the newest displayed release and then
-
 The download file is a zip file containing the following files:
 
 build.cmd - a Windows command file for building IBController
