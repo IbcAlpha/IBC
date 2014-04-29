@@ -485,7 +485,7 @@ public class IBController {
 
     private static void printProperties() {
         Properties p = System.getProperties();
-        Enumeration i = p.keys();
+        Enumeration<Object> i = p.keys();
         Utils.out.println("System Properties");
         Utils.out.println("------------------------------------------------------------");
         while (i.hasMoreElements()) {
