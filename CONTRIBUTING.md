@@ -16,3 +16,18 @@ to maintain the project and in turn the pull requests we're likely to merge:
 6. **Style**: Please maintain the same style as the existing code unless you've
    discussed a refactor with the current maintainers via email or a GitHub
    [ticket](https://github.com/ib-controller/ib-controller/issues).
+
+Development Tips
+================
+[Apache Ant](http://ant.apache.org/) is required to build IB Controller. After
+installation of Ant and TWS onto your machine, run Ant with the ``TWS``
+environment variable set to your local TWS directory. This is required so that
+the compiler can locate ``jts.jar``. For example:
+
+```
+TWS=/usr/share/java/ib-tws ant clean dist
+```
+
+This will freshly compile the project, create a JAR and a distribution ZIP. New
+versions require editing the ``ver`` property in the [build.xml](build.xml), as
+that version number is included in the resulting ZIP.

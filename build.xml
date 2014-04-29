@@ -1,0 +1,42 @@
+<project name="IBController" default="dist" basedir=".">
+    <property environment="env"/>
+    <fail unless="env.TWS" message="Environment variable 'TWS' not set (set it to the fully-qualified directory name containing jts.jar)."/>
+
+    <property name="ver" value="2.0.12"/>
+    <property name="src" location="src"/>
+    <property name="resources" location="resources"/>
+    <property name="target" location="target"/>
+    <property name="dist"  location="dist"/>
+
+    <path id="external.classpath">
+        <pathelement path="${env.TWS}/jts.jar" />
+    </path>
+
+    <target name="clean" description="clean up">
+        <delete dir="${target}"/>
+        <delete dir="${dist}"/>
+    </target>
+
+    <target name="compile" description="compile the source ">
+        <mkdir dir="${target}/classes"/>
+        <javac srcdir="${src}" destdir="${target}/classes" source="1.5" target="1.5" includeantruntime="false">
+            <classpath refid="external.classpath"/>
+            <compilerarg value="-Xlint:all"/>
+        </javac>
+    </target>
+
+    <target name="jar" depends="compile" description="generate the jar">
+        <mkdir dir="${target}/IBController"/>
+        <jar jarfile="${target}/IBController/IBController.jar" basedir="${target}/classes"/>
+    </target>
+
+    <target name="dist" depends="jar" description="generate the distribution zip">
+        <copy todir="${target}/IBController" preservelastmodified="true">
+            <fileset file="LICENSE.txt"/>
+            <fileset dir="${resources}">
+	        <exclude name="IBControllerService/**"/>
+	    </fileset>
+	</copy>
+        <zip destfile="${dist}/IBController-${ver}.zip" basedir="${target}" includes="IBController/**"/>
+    </target>
+</project>
