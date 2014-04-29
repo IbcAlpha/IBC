@@ -49,6 +49,7 @@ class MainWindowFrameHandler implements WindowHandler {
 
         return (Utils.titleContains(window, "Interactive Brokers Trader Workstation") ||
                 Utils.titleContains(window, "IB Trader Workstation") ||
+                Utils.titleContains(window, "IB Gateway") ||
                 (Utils.findMenuItem(window, new String [] {"Help", "About Trader Workstation..."}) != null));
     }
 }
