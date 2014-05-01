@@ -77,7 +77,7 @@ class ConfigureSocketPort implements Runnable{
     }
 
     private void completeConfigureItViaEditMenu() {
-        int portNumber = Settings.getInt("ForceSocketPort", 0);
+        int portNumber = Settings.getInt("ForceTwsApiPort", 0);
         if (portNumber == 0) {
             return;
         }
