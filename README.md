@@ -2,7 +2,7 @@
 [latest official release](https://github.com/ib-controller/ib-controller/releases/latest)
 here**
 
-IB Controller provides hands-free operation of
+IBController provides hands-free operation of
 [Interactive Brokers](https://www.interactivebrokers.com)
 [Trader Workstation](http://www.interactivebrokers.com/en/pagemap/pagemap_APISolutions.php).
 It's especially useful for developers of automated trading systems who use
@@ -28,15 +28,15 @@ Downloads
 * Arch Linux users can install the
   [ib-controller](https://aur.archlinux.org/packages/ib-controller/) package
   from AUR (includes lots of server-oriented features such as multiple daemons,
-  systemd units, headless/virtual framebuffer support etc)
-* Developers may wish to embed IB Controller for integration testing convenience
+  systemd units, headless/virtual framebuffer support, Monit monitoring etc)
+* Developers may wish to embed IBController for integration testing convenience
   (eg see projects
   [GoIB](https://github.com/gofinance/ib/tree/master/testserver) and
   [IB Connect](https://github.com/benalexau/ibconnect/tree/master/testserver))
 
 User Guide
 ----------
-Please see the [IB Controller User Guide](userguide.md) for installation and
+Please see the [IBController User Guide](userguide.md) for installation and
 usage instructions.
 
 Support
@@ -58,5 +58,5 @@ King, Steven Kearns and Ken Geis. Plus of course all those on our GitHub
 
 License
 -------
-IB Controller is licensed under the
+IBController is licensed under the
 [GNU General Public License](http://www.gnu.org/licenses/gpl.html) version 3.
