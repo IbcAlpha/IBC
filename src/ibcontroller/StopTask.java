@@ -18,6 +18,8 @@
 
 package ibcontroller;
 
+import java.awt.Toolkit;
+import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 
@@ -26,11 +28,9 @@ class StopTask
 
     private static SwitchLock _Running = new SwitchLock();
 
-    private final boolean mGateway;
     private final CommandChannel mChannel;
 
-    public StopTask(boolean gateway, final CommandChannel channel) {
-        this.mGateway = gateway;
+    public StopTask(final CommandChannel channel) {
         mChannel = channel;
     }
 
@@ -42,7 +42,7 @@ class StopTask
 
         try {
             writeInfo("Closing IBController");
-            stop((mGateway) ? "Close" : "Exit");
+            stop();
         } catch (Exception ex) {
             writeNack(ex.getMessage());
         } finally {
@@ -50,7 +50,7 @@ class StopTask
         }
     }
 
-    private void stop(String stopCommand) {
+    private void stop() {
         JFrame jf = TwsListener.getMainWindow();
         if (jf == null) {
             Utils.logToConsole("main window not yet found");
@@ -58,15 +58,10 @@ class StopTask
             return;
         }
 
-        JMenuItem jmi = Utils.findMenuItem(jf, new String [] {"File", stopCommand});
-        if (jmi == null) {
-            Utils.err.println("IBController: Could not find File > " + stopCommand + " menu.");
-            writeNack("File > " + stopCommand + " menu not found");
-            return;
-        }
+        WindowEvent wev = new WindowEvent(jf, WindowEvent.WINDOW_CLOSING);
+        Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(wev);
 
         writeAck("");
-        jmi.doClick();
     }
 
     private void writeAck(String message) {if (! (mChannel == null)) mChannel.writeAck(message);}
