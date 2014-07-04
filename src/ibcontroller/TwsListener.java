@@ -23,9 +23,18 @@ import java.awt.Window;
 import java.awt.event.AWTEventListener;
 import java.awt.event.WindowEvent;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.JMenuItem;
+import javax.swing.JTree;
+import javax.swing.SwingUtilities;
+import javax.swing.tree.TreePath;
 
 class TwsListener
         implements AWTEventListener {
@@ -54,6 +63,7 @@ class TwsListener
         _WindowHandlers = windowHandlers;
     }
 
+    @Override
     public void eventDispatched(AWTEvent event) {
         int eventID = event.getID();
 
@@ -67,7 +77,7 @@ class TwsListener
         }
 
         for (WindowHandler wh : _WindowHandlers) {
-            if (wh.recogniseWindow(window) && wh.filterEvent(window, eventID))  {
+            if (wh.filterEvent(window, eventID) && wh.recogniseWindow(window))  {
                 wh.handleWindow(window, eventID);
                 break;
             }
@@ -75,8 +85,95 @@ class TwsListener
 
     }
 
-    static JDialog getConfigDialog() {
-        return _ConfigDialog;
+    private static volatile GetConfigDialogTask _ConfigDialogTask;
+    private static volatile Future<JDialog> _ConfigDialogFuture;
+    
+    /**
+     * Records the fact that the config dialog has closed.
+     */
+    static void clearConfigDialog() {
+        _ConfigDialog = null;
+    }
+    
+    /**
+     * Returns the Global Configuration dialog, if necessary blocking the calling thread until
+     * either it is available or a specified timeout has elapsed.
+     * 
+     * If the Global Configuration dialog is currently open, it is returned immediately without blocking
+     * the calling thread.
+     * 
+     * Calling this method from the Swing event dispatch thread results in an IllegalStateException
+     * being thrown.
+     * 
+     * @param timeout
+     * the length of time to wait for the Global Configuration dialog to become available. If this is
+     * negative, the calling thread blocks until the dialog becomes available.
+     * @param unit
+     * the time units for the timeout parameter
+     * @return
+     * null if the timeout expires before the Global Configuration dialog becomes available; otherwise
+     * the Global Configuration dialog
+     * @throws IllegalStateException 
+     * the method has been called from the Swing event dispatch thread
+     */
+    static JDialog getConfigDialog(long timeout, TimeUnit unit) throws IllegalStateException {
+        /* Note that caching a config dialog doesn't work, since they seem to
+         * be one-time-only. So we have to go via the menu each time this 
+         * method is called (if it isn't currently open or being opened).
+        */
+        
+        if (SwingUtilities.isEventDispatchThread()) throw new IllegalStateException();
+        
+        Utils.logToConsole("Getting config dialog");
+        
+        if (_ConfigDialog != null) return _ConfigDialog;
+        
+        if (_ConfigDialogFuture == null) {
+            Utils.logToConsole("Creating config dialog future");
+            _ConfigDialogTask = new GetConfigDialogTask();
+            ExecutorService exec = Executors.newSingleThreadExecutor();
+            _ConfigDialogFuture = exec.submit((Callable<JDialog>)_ConfigDialogTask);
+            exec.shutdown();
+        }
+        
+        try {
+            if (timeout < 0) {
+                _ConfigDialog = _ConfigDialogFuture.get();
+            } else {
+                _ConfigDialog = _ConfigDialogFuture.get(timeout, unit);
+            }
+            return _ConfigDialog;
+        } catch (TimeoutException | InterruptedException e) {
+            return null;
+        } catch (ExecutionException e) {
+            Throwable t = e.getCause();
+            if (t instanceof IBControllerException) {
+                Utils.err.println("IBController: getConfigDialog could not find " + t.getMessage());
+                return null;
+            }
+            if (t instanceof RuntimeException) throw (RuntimeException)t;
+            if (t instanceof Error) throw (Error)t;
+            throw new IllegalStateException(t);
+        }
+    }
+
+    /**
+     * Returns the Global Configuration dialog, if necessary blocking the calling thread until
+     * it is available.
+     * 
+     * If the Global Configuration dialog is currently open, it is returned immediately without blocking
+     * the calling thread.
+     * 
+     * Calling this method from the Swing event dispatch thread results in an IllegalStateException
+     * being thrown.
+     * 
+     * @return
+     * the Global Configuration dialog, or null if the relevant menu entries cannot be found
+     * @throws IllegalStateException 
+     * the method has been called from the Swing event dispatch thread
+     */
+    static JDialog getConfigDialog() throws IllegalStateException {
+        return getConfigDialog(-1, TimeUnit.MILLISECONDS);
     }
 
     static String getFIXPassword() {
@@ -91,16 +188,94 @@ class TwsListener
         return _LoginFrame;
     }
 
-    static JFrame getMainWindow() {
+    private static volatile GetMainWindowTask _MainWindowTask;
+    private static volatile Future<JFrame> _MainWindowFuture;
+    
+    /**
+     * Returns the main window, if necessary blocking the calling thread until
+     * either it is available or a specified timeout has elapsed.
+     * 
+     * If the main window is currently open, it is returned immediately without blocking
+     * the calling thread.
+     * 
+     * Calling this method from the Swing event dispatch thread results in an IllegalStateException
+     * being thrown.
+     * 
+     * @param timeout
+     * the length of time to wait for the main window to become available. If this is
+     * negative, the calling thread blocks until the window becomes available.
+     * @param unit
+     * the time units for the timeout parameter
+     * @return
+     * null if the timeout expires before the main window becomes available; otherwise
+     * the main window
+     * @throws IllegalStateException
+     * the method has been called from the Swing event dispatch thread
+     */
+    static JFrame getMainWindow(long timeout, TimeUnit unit) {
+        if (SwingUtilities.isEventDispatchThread()) throw new IllegalStateException();
+        
+        if (_MainWindow != null) return _MainWindow;
+        
+        if (_MainWindowFuture == null) {
+            _MainWindowTask = new GetMainWindowTask();
+            ExecutorService exec = Executors.newSingleThreadExecutor();
+            _MainWindowFuture = exec.submit((Callable<JFrame>) _MainWindowTask);
+            exec.shutdown();
+        }
+        
+        try {
+            if (timeout < 0) {
+                _MainWindow = _MainWindowFuture.get();
+            } else {
+                _MainWindow = _MainWindowFuture.get(timeout, unit);
+            }
+            if (_MainWindow != null) _MainWindowFuture = null;
+        } catch (TimeoutException | InterruptedException e) {
+        } catch (ExecutionException e) {
+            Throwable t = e.getCause();
+            if (t instanceof RuntimeException) throw (RuntimeException)t;
+            if (t instanceof Error) throw (Error)t;
+            throw new IllegalStateException(t);
+        }
         return _MainWindow;
     }
 
+    /**
+     * Returns the main window, if necessary blocking the calling thread until
+     * it is available.
+     * 
+     * If the main window is currently open, it is returned immediately without blocking
+     * the calling thread.
+     * 
+     * Calling this method from the Swing event dispatch thread results in an IllegalStateException
+     * being thrown.
+     * 
+     * @return
+     * the main window
+     * @throws IllegalStateException 
+     * the method has been called from the Swing event dispatch thread
+     */
+    static JFrame getMainWindow() throws IllegalStateException{
+        return getMainWindow(-1, TimeUnit.MILLISECONDS);
+    }
+    
     static String getIBAPIPassword() {
         return _IBAPIPassword;
     }
 
     static String getIBAPIUserName() {
         return _IBAPIUserName;
+    }
+    
+    static boolean _ApiConfigChangeConfirmationExpected;
+    
+    static boolean getApiConfigChangeConfirmationExpected() {
+        return _ApiConfigChangeConfirmationExpected;
+    }
+
+    static void setApiConfigChangeConfirmationExpected(boolean yesOrNo) {
+        _ApiConfigChangeConfirmationExpected = yesOrNo;
     }
 
     private static void logWindow(Window window,int eventID) {
@@ -115,28 +290,65 @@ class TwsListener
         }
         if (eventID == WindowEvent.WINDOW_OPENED && Settings.getBoolean("LogComponents", false)) Utils.logWindowComponents(window);
     }
+    
+    /**
+     * Selects the specified section in the Global Configuration dialog.
+     * @param configDialog
+     * the Global Configuration dialog
+     * @param path
+     * the path to the required configuration section in the Global Configuration dialog
+     * @return
+     * true if the specified section can be found; otherwise false
+     * @throws IBControllerException
+     * a UI component could not be found
+     * @throws IllegalStateException
+     * the method has not been called on the SWing event dispatch thread
+     */
+    static boolean selectConfigSection(final JDialog configDialog, final String[] path) throws IBControllerException, IllegalStateException {
+        if (!SwingUtilities.isEventDispatchThread()) throw new IllegalStateException("selectConfigSection must be run on the event dispatch thread");
+        
+        JTree configTree = Utils.findTree(configDialog);
+        if (configTree == null) throw new IBControllerException("could not find the config tree in the Global Configuration dialog");
+
+        Object node = configTree.getModel().getRoot();
+        TreePath tp = new TreePath(node);
+
+        for (String pathElement: path) {
+            node = Utils.findChildNode(configTree.getModel(), node, pathElement);
+            if (node == null) return false;
+            tp = tp.pathByAddingChild(node);
+        }
+
+        configTree.setExpandsSelectedPaths(true);
+        configTree.setSelectionPath(tp);
+        return true;
+    }
 
     static void setConfigDialog(JDialog window) {
         _ConfigDialog = window;
+        if (_ConfigDialogTask != null) {
+            _ConfigDialogTask.setConfigDialog(window);
+            _ConfigDialogTask = null;
+            _ConfigDialogFuture = null;
+        }
     }
-    
+
     static void setLoginFrame(JFrame window) {
         _LoginFrame = window;
     }
 
     static void setMainWindow(JFrame window) {
-        Utils.logToConsole("Found TWS main window");
+        Utils.logToConsole("Found " + (IBController.isGateway() ? "Gateway" : "TWS") + " main window");
         _MainWindow = window;
+        if (_MainWindowTask != null) _MainWindowTask.setMainWindow(window);
+    }
+    
+    static void setSplashScreenClosed() {
+        if (_ConfigDialogTask != null) _ConfigDialogTask.setSplashScreenClosed();
     }
     
     static void showTradesLogWindow() {
-        final JMenuItem jmi = Utils.findMenuItem(_MainWindow, new String[] {"Account", "Trade Log"});
-        if (jmi != null) {
-                Utils.logToConsole("Showing trades log window");
-                jmi.doClick();
-        } else {
-            Utils.err.println("IBControllerServer: could not find Account > Trade Log menu");
-        }
+        Utils.invokeMenuItem(getMainWindow(), new String[] {"Account", "Trade Log"});
     }
 
     static String windowEventToString(int eventID) {
@@ -167,3 +379,6 @@ class TwsListener
     }
 
 }
+
+
+

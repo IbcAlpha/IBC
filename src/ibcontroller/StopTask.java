@@ -21,12 +21,11 @@ package ibcontroller;
 import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
-import javax.swing.JMenuItem;
 
 class StopTask
         implements Runnable {
 
-    private static SwitchLock _Running = new SwitchLock();
+    private static final SwitchLock _Running = new SwitchLock();
 
     private final CommandChannel mChannel;
 
@@ -34,6 +33,7 @@ class StopTask
         mChannel = channel;
     }
 
+    @Override
     public void run() {
         if (! _Running.set()) {
             writeNack("STOP already in progress");
@@ -52,11 +52,6 @@ class StopTask
 
     private void stop() {
         JFrame jf = TwsListener.getMainWindow();
-        if (jf == null) {
-            Utils.logToConsole("main window not yet found");
-            writeNack("main window not yet found");
-            return;
-        }
 
         WindowEvent wev = new WindowEvent(jf, WindowEvent.WINDOW_CLOSING);
         Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(wev);

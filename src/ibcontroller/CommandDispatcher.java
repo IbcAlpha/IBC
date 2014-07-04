@@ -20,19 +20,19 @@ package ibcontroller;
 
 import java.awt.event.KeyEvent;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import javax.swing.JFrame;
 
 class CommandDispatcher
         implements Runnable {
 
-    private CommandChannel mChannel;
-    private boolean mGateway;
+    private final CommandChannel mChannel;
 
-    CommandDispatcher(CommandChannel channel, boolean gateway) {
+    CommandDispatcher(CommandChannel channel) {
         this.mChannel = channel;
-        this.mGateway = gateway;
     }
 
     @Override public void run() {
@@ -64,24 +64,26 @@ class CommandDispatcher
     }
 
     private void handleEnableAPICommand() {
-        if (mGateway) {
+        if (IBController.isGateway()) {
             mChannel.writeNack("ENABLEAPI is not valid for the IB Gateway");
             return;
         }
 
-        Future<?> f = (Executors.newSingleThreadExecutor()).submit(new ConfigureApiTask(mChannel));
+        ExecutorService exec = Executors.newSingleThreadExecutor();
+        Future<?> f = exec.submit(new EnableApiTask(mChannel));
+        exec.shutdown();
 
         // wait for the task to complete
         try{
             f.get();
         } catch (InterruptedException ie) {
         } catch (ExecutionException ee) {
-            ee.printStackTrace();
+            ee.getCause().printStackTrace();
         }
    }
 
     private void handleReconnectDataCommand() {
-        JFrame jf = TwsListener.getMainWindow();
+        JFrame jf = TwsListener.getMainWindow(1, TimeUnit.MILLISECONDS);
         if (jf == null) {
             Utils.logToConsole("main window not yet found");
             mChannel.writeNack("main window not yet found");

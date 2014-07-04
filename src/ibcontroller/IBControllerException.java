@@ -18,10 +18,10 @@
 
 package ibcontroller;
 
-public class ComponentNotFoundException extends Exception {
+public class IBControllerException extends Exception {
     private static final long serialVersionUID = 20140324L;
 
-    ComponentNotFoundException(String message){
+    IBControllerException(String message){
         super(message);
     }
     

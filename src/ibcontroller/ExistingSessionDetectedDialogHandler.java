@@ -19,9 +19,7 @@
 package ibcontroller;
 
 import java.awt.Window;
-import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
-import javax.swing.JButton;
 import javax.swing.JDialog;
 
 public class ExistingSessionDetectedDialogHandler implements WindowHandler {

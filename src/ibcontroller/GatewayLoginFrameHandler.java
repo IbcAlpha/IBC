@@ -20,10 +20,6 @@ package ibcontroller;
 
 import java.awt.Window;
 import java.awt.event.WindowEvent;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.Executor;
-import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JFrame;
 import javax.swing.JRadioButton;
 
@@ -42,12 +38,12 @@ class GatewayLoginFrameHandler  implements WindowHandler {
         try {
             selectGatewayMode(window);
             if (setFields(window)) doLogin(window);
-        } catch (ComponentNotFoundException e) {
+        } catch (IBControllerException e) {
             Utils.err.println("IBController: could not login: could not find control: " + e.getMessage());
         }
     }
     
-    private void selectGatewayMode(Window window) throws ComponentNotFoundException {
+    private void selectGatewayMode(Window window) throws IBControllerException {
         if (Settings.getBoolean("FIX", false)) {
             switchToFIX(window);
         } else {
@@ -55,17 +51,17 @@ class GatewayLoginFrameHandler  implements WindowHandler {
         }
     }
     
-    private void switchToFIX(Window window) throws ComponentNotFoundException {
+    private void switchToFIX(Window window) throws IBControllerException {
         JRadioButton button = Utils.findRadioButton(window, "FIX CTCI");
-        if (button == null) throw new ComponentNotFoundException("FIX CTCI radio button");
+        if (button == null) throw new IBControllerException("FIX CTCI radio button");
         
         if (! button.isSelected()) button.doClick();
     }
     
-    private void switchToIBAPI(Window window) throws ComponentNotFoundException {
+    private void switchToIBAPI(Window window) throws IBControllerException {
         JRadioButton button = Utils.findRadioButton(window, "IB API");
         if (button == null) button = Utils.findRadioButton(window, "TWS/API") ;
-        if (button == null) throw new ComponentNotFoundException("IB API radio button");
+        if (button == null) throw new IBControllerException("IB API radio button");
         
         if (! button.isSelected()) button.doClick();
     }
@@ -77,17 +73,17 @@ class GatewayLoginFrameHandler  implements WindowHandler {
                (Utils.findButton(window, "Login") != null));
     }
 
-    private boolean setFields(final Window window) throws ComponentNotFoundException {
+    private boolean setFields(final Window window) throws IBControllerException {
         boolean isFIXMode = Settings.getBoolean("FIX", false);
         
         if (isFIXMode) {
-            if (! Utils.setTextField(window, 0, TwsListener.getFIXUserName())) throw new ComponentNotFoundException("FIX user name");
-            if (! Utils.setTextField(window, 1, TwsListener.getFIXPassword())) throw new ComponentNotFoundException("FIX password");
-            if (! Utils.setTextField(window, 3, TwsListener.getIBAPIUserName())) throw new ComponentNotFoundException("IBAPI user name");
-            if (! Utils.setTextField(window, 4, TwsListener.getIBAPIPassword())) throw new ComponentNotFoundException("IBAPI password");
+            if (! Utils.setTextField(window, 0, TwsListener.getFIXUserName())) throw new IBControllerException("FIX user name");
+            if (! Utils.setTextField(window, 1, TwsListener.getFIXPassword())) throw new IBControllerException("FIX password");
+            if (! Utils.setTextField(window, 3, TwsListener.getIBAPIUserName())) throw new IBControllerException("IBAPI user name");
+            if (! Utils.setTextField(window, 4, TwsListener.getIBAPIPassword())) throw new IBControllerException("IBAPI password");
         } else {
-            if (! Utils.setTextField(window, 0, TwsListener.getIBAPIUserName())) throw new ComponentNotFoundException("IBAPI user name");
-            if (! Utils.setTextField(window, 1, TwsListener.getIBAPIPassword()))  throw new ComponentNotFoundException("IBAPI password");
+            if (! Utils.setTextField(window, 0, TwsListener.getIBAPIUserName())) throw new IBControllerException("IBAPI user name");
+            if (! Utils.setTextField(window, 1, TwsListener.getIBAPIPassword()))  throw new IBControllerException("IBAPI password");
         }
             
         if (isFIXMode) {
@@ -118,32 +114,14 @@ class GatewayLoginFrameHandler  implements WindowHandler {
         return true;
     }
 
-    private void doLogin(final Window window) throws ComponentNotFoundException {
+    private void doLogin(final Window window) throws IBControllerException {
+        if (Utils.findButton(window, "Login") == null) throw new IBControllerException("Login button");
 
-        if (Utils.findButton(window, "Login") == null) throw new ComponentNotFoundException("Login button");
-
-        final Timer timer = new Timer(true);
-        timer.schedule(new TimerTask() {
+        GuiDeferredExecutor.instance().execute(new Runnable() {
             public void run() {
-                final AtomicBoolean done = new AtomicBoolean(false);
-
-                /* we keep clicking the login button periodically until 
-                 * the window becomes invisible, as this seems to be a 
-                 * good indicator that the login has actually taken effect
-                 */
-
-                do {
-                    GuiSynchronousExecutor.instance().execute(new Runnable() {
-                        public void run() {
-                            Utils.clickButton(window, "Login");
-                            done.set(! window.isVisible());
-                        }
-                    });
-                    Utils.pause(500);
-                }
-                while (!done.get());
+                Utils.clickButton(window, "Login");
             }
-        }, 10);
+        });
     }
 
 }

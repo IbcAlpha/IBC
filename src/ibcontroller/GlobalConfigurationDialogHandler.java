@@ -27,13 +27,21 @@ class GlobalConfigurationDialogHandler implements WindowHandler {
         switch (eventId) {
             case WindowEvent.WINDOW_OPENED:
                 return true;
+            case WindowEvent.WINDOW_CLOSED:
+                return true;
             default:
                 return false;
         }
     }
 
-    public void handleWindow(Window window, int eventID) {
-        TwsListener.setConfigDialog((JDialog) window);
+    public void handleWindow(final Window window, int eventId) {
+        switch (eventId) {
+            case WindowEvent.WINDOW_OPENED:
+                TwsListener.setConfigDialog((JDialog) window);
+                break;
+            case WindowEvent.WINDOW_CLOSED:
+                TwsListener.clearConfigDialog();
+        }
     }
 
     public boolean recogniseWindow(Window window) {

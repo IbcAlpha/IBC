@@ -27,16 +27,12 @@ import java.util.concurrent.Executor;
 class IBControllerServer
         implements Runnable {
 
-    private final boolean mGateway;
-
     private ServerSocket mSocket = null;
     private volatile boolean mQuitting = false;
 
     private final Executor mExecutor =new ThreadPerTaskExecutor();
 
-    IBControllerServer(boolean gateway) {
-        mGateway = gateway;
-    }
+    IBControllerServer() {}
 
     @Override public void run() {
         Thread.currentThread().setName("IBControllerServer");
@@ -49,7 +45,7 @@ class IBControllerServer
         for (; !mQuitting;) {
             Socket socket = getClient();
 
-            if (socket != null) mExecutor.execute(new CommandDispatcher(new CommandChannel(socket), mGateway));
+            if (socket != null) mExecutor.execute(new CommandDispatcher(new CommandChannel(socket)));
         }
 
         try {
