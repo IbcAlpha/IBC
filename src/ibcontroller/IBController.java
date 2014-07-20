@@ -195,8 +195,12 @@ import java.util.concurrent.Executor;
  *                                          If market data connection via the gateway is also needed, the existing IbLoginId and IbPassword settings
  *                                          are used as well as the FIX settings.
  *                                          The FIX username and password may also be supplied as the second and third command line args. In
- *                                          this case, the market data connection username and password my be supplied as the fourth and
+ *                                          this case, the market data connection username and password may be supplied as the fourth and
  *                                          fifth command line args.
+ * 
+ * With the move to Github, the value of recording details of amendments here is questionable, and this practice has therefore been 
+ * discontinued.
+ * 
  */
 
 public class IBController {
@@ -522,7 +526,7 @@ public class IBController {
                            (new SimpleDateFormat("yyyy/MM/dd HH:mm")).format(shutdownTime));
             _Timer.schedule(new TimerTask() {
                 public void run() {
-                    GuiExecutor.instance().execute(new StopTask(_GatewayOnly, null));
+                    GuiExecutor.instance().execute(new StopTask(null));
                     _Timer.cancel();
                 }
             }, shutdownTime);

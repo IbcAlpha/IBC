@@ -119,7 +119,7 @@ class CommandDispatcher
     }
 
     private void handleStopCommand() {
-        GuiExecutor.instance().execute(new StopTask(mGateway, mChannel));
+        GuiExecutor.instance().execute(new StopTask(mChannel));
     }
 
 }
