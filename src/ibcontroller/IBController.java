@@ -243,6 +243,10 @@ public class IBController {
     }
 
     private static boolean _GatewayOnly;
+    
+    static boolean isGateway() {
+        return _GatewayOnly;
+    }
 
     /**
      * timer to shutdown at configured day and time
@@ -324,6 +328,8 @@ public class IBController {
         _WindowHandlers.add(new GlobalConfigurationDialogHandler());
         _WindowHandlers.add(new TradesFrameHandler());
         _WindowHandlers.add(new ExistingSessionDetectedDialogHandler());
+        _WindowHandlers.add(new ApiChangeConfirmationDialogHandler());
+        _WindowHandlers.add(new SplashFrameHandler());
     }
 
     private static String getFIXPasswordFromProperties() {
@@ -515,16 +521,17 @@ public class IBController {
 
     private static void startIBControllerServer() {
         Executor executor = new ThreadPerTaskExecutor();
-        executor.execute(new IBControllerServer(_GatewayOnly));
+        executor.execute(new IBControllerServer());
     }
 
     private static void startShutdownTimerIfRequired() {
         Date shutdownTime = getShutdownTime();
         if (! (shutdownTime == null)) {
-            Utils.logToConsole(((_GatewayOnly) ? "Gateway" : "TWS") +
+            Utils.logToConsole((isGateway() ? "Gateway" : "TWS") +
                             " will be shut down at " +
                            (new SimpleDateFormat("yyyy/MM/dd HH:mm")).format(shutdownTime));
             _Timer.schedule(new TimerTask() {
+                @Override
                 public void run() {
                     GuiExecutor.instance().execute(new StopTask(null));
                     _Timer.cancel();
@@ -534,19 +541,21 @@ public class IBController {
     }
 
     private static void startTws() {
+        if (Settings.getBoolean("ShowAllTrades", false)) {
+            (new ThreadPerTaskExecutor()).execute(new Runnable () {
+                @Override public void run() {TwsListener.showTradesLogWindow();}
+            });
+        }
         String[] twsArgs = new String[1];
         twsArgs[0] = getTWSSettingsDirectory();
         jclient.LoginFrame.main(twsArgs);
     }
 
     private static void startTwsOrGateway() {
-        int forceSocket = Settings.getInt("ForceTwsApiPort", 0);
-        if (forceSocket != 0) {
-            Executor executor = new ThreadPerTaskExecutor();
-            executor.execute(new ConfigureSocketPort());
-        }
+        int portNumber = Settings.getInt("ForceTwsApiPort", 0);
+        if (portNumber != 0) (new ThreadPerTaskExecutor()).execute(new ConfigureTwsApiPortTask(portNumber));
 
-        if (_GatewayOnly) {
+        if (isGateway()) {
             startGateway();
         } else {
             startTws();

@@ -20,10 +20,6 @@ package ibcontroller;
 
 import java.awt.Window;
 import java.awt.event.WindowEvent;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.Executor;
-import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JFrame;
 
 class LoginFrameHandler implements WindowHandler {
@@ -69,39 +65,13 @@ class LoginFrameHandler implements WindowHandler {
         }
 
         if (Utils.findButton(window, "Login") == null) return false;
-
-        /* Starting with TWS 903, when the username and password fields are filled in
-         * programmatically, the Login button is not enabled (though it is if these
-         * fields are filled in manually).
-         * 
-         * Moreover, once we've enabled the login button by calling setEnabled,
-         * clicking it immediately does not always work: for some reason a short delay
-         * is needed (but calling Thread.sleep() on the current thread doesn't work).
-         * 
-         * So we create a timer task to enable the button and click it after a short delay.
-         */
-
-        final Timer timer = new Timer(true);
-        timer.schedule(new TimerTask() {
+        
+        GuiDeferredExecutor.instance().execute(new Runnable() {
+            @Override
             public void run() {
-                final AtomicBoolean done = new AtomicBoolean(false);
-
-                /* we keep clicking the login button periodically until it
-                 * becomes disabled, as this seems to be a good indicator
-                 * that the login has actually taken effect
-                 */
-                do {
-                    GuiSynchronousExecutor.instance().execute(new Runnable() {
-                        public void run() {
-                            Utils.clickButton(window, "Login");
-                            done.set(! Utils.isButtonEnabled(window, "Login"));
-                        }
-                    });
-                    Utils.pause(500);
-                }
-                while (! done.get());
+                Utils.clickButton(window, "Login");
             }
-        }, 10);
+        });
 
         return true;
     }

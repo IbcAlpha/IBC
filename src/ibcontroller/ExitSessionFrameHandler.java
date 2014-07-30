@@ -69,9 +69,7 @@ class ExitSessionFrameHandler implements WindowHandler {
 
         if (cal.get(Calendar.AM_PM) == Calendar.AM) {
             if (! Utils.setRadioButtonSelected(window, "AM" /*, true*/)) return false;
-            //if (! TwsListener.setRadioButtonSelected(window, "PM", false)) return false;
         } else {
-            //if (! TwsListener.setRadioButtonSelected(window, "AM", false)) return false;
             if (! Utils.setRadioButtonSelected(window, "PM" /*, true*/)) return false;
         }
 

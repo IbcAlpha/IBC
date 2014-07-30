@@ -28,6 +28,7 @@ class GuiSynchronousExecutor implements Executor{
 
     static GuiSynchronousExecutor instance() {return instance;}
 
+    @Override
     public void execute(Runnable task) {
         if (SwingUtilities.isEventDispatchThread()) {
             task.run();

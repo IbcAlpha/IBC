@@ -18,6 +18,7 @@
 
 package ibcontroller;
 
+import java.awt.Component;
 import java.awt.Window;
 import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
@@ -34,13 +35,17 @@ class MainWindowFrameHandler implements WindowHandler {
 
     public void handleWindow(Window window, int eventID) {
         if (eventID != WindowEvent.WINDOW_OPENED) return;
+        
+        ComponentIterator iter = new ComponentIterator(window);
+        while (iter.hasNext()) {
+            Component component = iter.next();
+            Utils.logToConsole(component.getName() + "(" + component.getClass().getName() + ")");
+        }
 
         TwsListener.setMainWindow((JFrame) window);
+        
         if (Settings.getBoolean("MinimizeMainWindow", false)) {
             TwsListener.getMainWindow().setExtendedState(java.awt.Frame.ICONIFIED);
-        }
-        if (Settings.getBoolean("ShowAllTrades", false)) {
-            TwsListener.showTradesLogWindow();
         }
     }
 
@@ -48,9 +53,8 @@ class MainWindowFrameHandler implements WindowHandler {
         if (! (window instanceof JFrame)) return false;
 
         return (Utils.titleContains(window, "Interactive Brokers Trader Workstation") ||
-                Utils.titleContains(window, "IB Trader Workstation") ||
-                Utils.titleContains(window, "IB Gateway") ||
-                (Utils.findMenuItem(window, new String [] {"Help", "About Trader Workstation..."}) != null));
+                    Utils.titleContains(window, "IB Trader Workstation")
+                ) && Utils.findMenuItemInAnyMenuBar(window, new String [] {"Help", "About Trader Workstation..."}) != null;
     }
 }
 

@@ -43,7 +43,8 @@ class GatewayMainWindowFrameHandler  implements WindowHandler {
         if (! (window instanceof JFrame)) return false;
 
         return (Utils.titleContains(window, "Interactive Brokers Gateway") ||
-                Utils.titleContains(window, "IB Gateway"));
+                    Utils.titleContains(window, "IB Gateway")
+                ) && Utils.findMenuItemInAnyMenuBar(window, new String [] {"Help", "About IB Gateway"}) != null;
     }
 
 }

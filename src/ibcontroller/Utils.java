@@ -24,6 +24,9 @@ import java.awt.Window;
 import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
@@ -32,10 +35,13 @@ import javax.swing.JLabel;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
 import javax.swing.JRadioButton;
+import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.MenuElement;
+import javax.swing.SwingUtilities;
 import javax.swing.tree.TreeModel;
 
 class Utils {
@@ -45,6 +51,15 @@ class Utils {
     static PrintStream out = System.out;
     static PrintStream err = System.err;
     
+    /**
+     * Performs a click on the button labelled with the specified text.
+     * @param window
+     *  The window containing the button.
+     * @param buttonText
+     *  The button's label.
+     * @return
+     *  true if the button was found;  false if the button was not found
+     */
     static boolean clickButton(final Window window, final String buttonText) {
         final JButton button = findButton(window, buttonText);
         if (button == null) return false;
@@ -61,247 +76,305 @@ class Utils {
     }
 
     /**
-     * Traverse a container hierarchy and returns the button with
-     * the given text
-     *
+     * Traverses a container hierarchy and returns the button with
+     * the given text.
+     * @param container
+     *  the Container to search in
+     * @param text
+     *  the label of the button to be found
+     * @return
+     *  the button, if was found;  otherwise null
      */
-    static JButton findButton(Container container,
-                                     String text) {
-        Component[] components = container.getComponents();
-
-        for (Component component : components) {
-            if (component instanceof JButton) {
-                JButton button = (JButton) component;
-                if (button.getText().equals(text)) {
-                    return button;
-                }
-            } else if (component instanceof Container) {
-                JButton button = findButton((Container) component, text);
-                if (button != null) {
-                    return button;
-                }
-            }
+    static JButton findButton(Container container, String text) {
+        ComponentIterator iter = new ComponentIterator(container);
+        while (iter.hasNext()) {
+            Component component = iter.next();
+            if (component instanceof JButton && text.equals(((JButton)component).getText())) return (JButton)component;
         }
-
         return null;
     }
 
     /**
-     * Traverse a container hierarchy and returns the button with
-     * the given text
-     *
+     * Traverses a container hierarchy and returns the checkbox with
+     * the given text.
+     * @param container
+     *  the Container to search in
+     * @param text
+     *  the label of the checkbox to be found
+     * @return
+     *  the checkbox, if it was found;  otherwise null
      */
-    static JCheckBox findCheckBox(Container container,
-                                               String text) {
-        Component[] components = container.getComponents();
-
-        for (Component component : components) {
-            if (component instanceof JCheckBox) {
-                JCheckBox button = (JCheckBox) component;
-                if (button.getText().equals(text)) {
-                    return button;
-                }
-            } else if (component instanceof Container) {
-                JCheckBox button = findCheckBox((Container) component,
-                        text);
-                if (button != null) {
-                    return button;
-                }
-            }
+    static JCheckBox findCheckBox(Container container, String text) {
+        ComponentIterator iter = new ComponentIterator(container);
+        while (iter.hasNext()) {
+            Component component = iter.next();
+            if (component instanceof JCheckBox && text.equals(((JCheckBox)component).getText())) return (JCheckBox)component;
         }
-
         return null;
     }
 
     /**
-     * Traverse a container hierarchy and returns the button with
-     * the given text
-     *
+     * Traverses a container hierarchy and returns the Component with
+     * the given text.
+     * @param container
+     *  the Container to search in
+     * @param text
+     *  the label of the Component to be found
+     * @return
+     *  the Component, if it was found;  otherwise null
      */
-    static JRadioButton findRadioButton(Container container,
-                                               String text) {
-        Component[] components = container.getComponents();
-
-        for (Component component : components) {
-            if (component instanceof JRadioButton) {
-                JRadioButton button = (JRadioButton) component;
-                if (button.getText().equals(text)) {
-                    return button;
-                }
-            } else if (component instanceof Container) {
-                JRadioButton button = findRadioButton((Container) component,
-                        text);
-                if (button != null) {
-                    return button;
-                }
-            }
+    static Component findComponent(Container container, String text) {
+        ComponentIterator iter = new ComponentIterator(container);
+        while (iter.hasNext()) {
+            Component component = iter.next();
+            if (text.equals(component.getName())) return component;
         }
-
         return null;
     }
 
     /**
-     * Traverse a container hierarchy and returns the JTextLabel
+     * Traverses a container hierarchy and returns the radio button with
+     * the given text.
+     * @param container
+     *  the Container to search in
+     * @param text
+     *  the label of the radio button to be found
+     * @return
+     *  the radio button, if it was found;  otherwise null
+     */
+    static JRadioButton findRadioButton(Container container, String text) {
+        ComponentIterator iter = new ComponentIterator(container);
+        while (iter.hasNext()) {
+            Component component = iter.next();
+            if (component instanceof JRadioButton && text.equals(((JRadioButton)component).getText())) return (JRadioButton)component;
+        }
+        return null;
+    }
+
+    /**
+     * Traverses a container hierarchy and returns the JTextLabel
      * that contains the given substring.
+     * @param container
+     *  the Container to search in
+     * @param text
+     *  the substring to find in a JLabel
+     * @return
+     *  the JLabel, if it was found;  otherwise null
      */
-    static JLabel findLabel(Container container,
-                                   String text) {
-        Component[] components = container.getComponents();
-
-        for (Component component: components) {
-            if (component instanceof JLabel) {
-                JLabel button = (JLabel) component;
-                if (button.getText() != null &&
-                        button.getText().contains(text)) {
-                    return button;
-                }
-            } else if (component instanceof Container) {
-                JLabel button = findLabel((Container) component, text);
-                if (button != null) {
-                    return button;
-                }
-            }
+    static JLabel findLabel(Container container, String text) {
+        ComponentIterator iter = new ComponentIterator(container);
+        while (iter.hasNext()) {
+            Component component = iter.next();
+            if (component instanceof JLabel && ((JLabel)component).getText() != null &&  ((JLabel)component).getText().contains(text)) return (JLabel)component;
         }
-
         return null;
     }
 
     /**
-     * Traverse a container hierarchy and returns the ith JTextField
-     * (0 based indexing)
+     * Traverses a container hierarchy and returns the ith JTextField
+     * (0 based indexing).
      *
+     * @param container
+     *  the Container to search in
+     * @param ith
+     *   specifies which JTextField to return (the first one is specified by 0,
+     * the next by 1, etc)
+     * @return
+     *  the required JTextField if it is found, otherwise null
      */
     static JTextField findTextField(Container container, int ith) {
-        int[]  fieldNumberArray = {ith};
-        return findTextFieldRec(container, fieldNumberArray);
-    }
-
-    private static JTextField findTextFieldRec(Container container, int[] ith) {
-        Component[] components = container.getComponents();
-
-        for (Component component : components) {
-            if (component instanceof JTextField && ith[0] > 0) {
-                ith[0]--;
-            } else if (component instanceof JTextField && ith[0] == 0) {
-                return (JTextField) component;
-            } else if (component instanceof Container) {
-                JTextField tf = findTextFieldRec((Container) component, ith);
-                if (tf != null) {
-                    return tf;
-                }
-            }
+        ComponentIterator iter = new ComponentIterator(container);
+        int i = 0;
+        while (iter.hasNext()) {
+            Component component = iter.next();
+            if (component instanceof JTextField && i++ == ith) return (JTextField)component;
         }
         return null;
     }
 
     /**
-     * Traverse a container hierarchy and returns the first JMenuBar
+     * Traverses a container hierarchy and returns the first JMenuBar
      * it finds.
-     *
+     * @param container
+     *  the Container to search in
+     * @return
+     * the first JMenuBar found, if any; otherwise null
      */
     static JMenuBar findMenuBar(Container container) {
-        Component[] components = container.getComponents();
-
-        for (Component component : components) {
-            if (component instanceof JMenuBar) {
-                return (JMenuBar) component;
-            } else if (component instanceof Container) {
-                JMenuBar jmb = findMenuBar((Container) component);
-                if (jmb != null) {
-                    return jmb;
-                }
-            }
+        ComponentIterator iter = new ComponentIterator(container);
+        while (iter.hasNext()) {
+            Component component = iter.next();
+            if (component instanceof JMenuBar) return (JMenuBar)component;
         }
         return null;
     }
 
     /**
-     * Traverse a container hierarchy and returns the JMenuItem with
-     * the given text
+     * Traverses a container hierarchy and returns the ith JMenuBar
+     * (0 based indexing).
      *
+     * @param container
+     *  the Container to search in
+     * @param ith
+     *   specifies which JMenuBar to return (the first one is specified by 0,
+     * the next by 1, etc)
+     * @return
+     *  the required JMenuBar if it is found, otherwise null
+     */
+    static JMenuBar findMenuBar(Container container, int ith) {
+        ComponentIterator iter = new ComponentIterator(container);
+        int i = 0;
+        while (iter.hasNext()) {
+            Component component = iter.next();
+            if (component instanceof JMenuBar && i++ == ith) return (JMenuBar)component;
+        }
+        return null;
+    }
+
+    /**
+     * Searches a MenuElement's subelements for the JMenuItem with
+     * the given text.
+     * @param container
+     *  the MenuElement to search in
+     * @param text
+     *  the label of the JMenuItem to be found
+     * @return
+     *  the JMenuItem, if it was found;  otherwise null
      */
     static JMenuItem findMenuItem(MenuElement container, String text) {
-        MenuElement[] components = container.getSubElements();
+        MenuElement[] elements = container.getSubElements();
 
-        for (MenuElement component : components) {
-            if (component instanceof JMenuItem) {
-                JMenuItem button = (JMenuItem) component;
+        for (MenuElement element : elements) {
+            if (element instanceof JMenuItem) {
+                JMenuItem button = (JMenuItem) element;
                 if (button.getText().equals(text)) {
                     return button;
                 }
             } else {
-                JMenuItem button = findMenuItem(component, text);
+                JMenuItem button = findMenuItem(element, text);
                 if (button != null) {
                     return button;
                 }
             }
         }
-
         return null;
     }
 
     /**
-     * Traverse a container hierarchy and returns the JMenuItem with
-     * the given path
+     * Traverses a container hierarchy and returns the JMenuItem with
+     * the given path from the first JMenuBar encountered, or null if the 
+     * first JMenuBar doesn't contain an item with that path
      *
+     * @param container
+     *  the Container to search in
+     * @param path
+     *  the required menu path
+     * @return
+     *  the JMenuItem at the specified path, if found; otherwise null
      */
     static JMenuItem findMenuItem(Container container, String[] path) {
         if (path.length == 0) return null;
 
-        MenuElement currentItem = findMenuBar(container);
-        if (currentItem == null) return null;
+        JMenuBar menuBar = findMenuBar(container);
+        if (menuBar == null) return null;
 
-        for (int i = 0; i < path.length; i++) {
-            currentItem = findMenuItem(currentItem, path[i]);
+        return findMenuItem(menuBar, path);
+    }
+
+    /**
+     * Traverses a container hierarchy and returns the JMenuItem with
+     * the given path from the first JMenuBar that contains it
+     *
+     * @param container
+     *  the Container to search in
+     * @param path
+     *  the required menu path
+     * @return
+     *  the JMenuItem at the specified path, if found; otherwise null
+     */
+    static JMenuItem findMenuItemInAnyMenuBar(Container container, String[] path) {
+        if (path.length == 0) return null;
+
+        int i = 0;
+        while (true) {
+            JMenuBar menuBar = findMenuBar(container, i);
+            if (menuBar == null) {
+                String s = path[0];
+                for (int j = 1; j < path.length; j++) s = s + " > " + path[j];
+                logToConsole("can't find menu item: " + s);
+                return null;
+            }
+            JMenuItem menuItem = findMenuItem(menuBar, path);
+            if (menuItem != null) return menuItem;
+            i++;
+        }
+    }
+
+    /**
+     * Traverses a JMenubar's menu structure for a JMenuItem with
+     * the specified path
+     * @param menuBar
+     * the JMenuBar to search
+     * @param path
+     * the required menu path
+     * @return
+     *  the JMenuItem at the specified path, if found; otherwise null
+     */
+    static JMenuItem findMenuItem(JMenuBar menuBar, String[] path) {
+        if (path.length == 0) return null;
+
+        MenuElement currentItem = menuBar;
+        for (String pathElement : path) {
+            currentItem = findMenuItem(currentItem, pathElement);
             if (currentItem == null) return null;
         }
         return (JMenuItem)currentItem;
     }
 
     /**
-     * Traverse a container hierarchy and returns the first JMenuBar
+     * Traverses a container hierarchy and returns the first JOptionPane
      * it finds.
-     *
+     * @param container
+     *  the Container to search in
+     * @return
+     *  the first JOptionPane, if one was found;  otherwise null
      */
     static JOptionPane findOptionPane(Container container) {
-        Component[] components = container.getComponents();
-
-        for (Component component : components) {
-            if (component instanceof JOptionPane) {
-                return (JOptionPane) component;
-            } else if (component instanceof Container) {
-                JOptionPane op = findOptionPane((Container) component);
-                if (op != null) {
-                    return op;
-                }
-            }
+        ComponentIterator iter = new ComponentIterator(container);
+        while (iter.hasNext()) {
+            Component component = iter.next();
+            if (component instanceof JOptionPane) return (JOptionPane)component;
         }
         return null;
     }
 
     /**
-     * Traverse a container hierarchy and returns the first JMenuBar
+     * Traverses a container hierarchy and returns the first JTree
      * it finds.
-     *
+     * @param container
+     *  the Container to search in
+     * @return
+     *  the first JTree, if one was found;  otherwise null
      */
     static JTree findTree(Container container) {
-        Component[] components = container.getComponents();
-
-        for (Component component : components) {
-            if (component instanceof JTree) {
-                return (JTree) component;
-            } else if (component instanceof Container) {
-                JTree tree = findTree((Container) component);
-                if (tree != null) {
-                    return tree;
-                }
-            }
+        ComponentIterator iter = new ComponentIterator(container);
+        while (iter.hasNext()) {
+            Component component = iter.next();
+            if (component instanceof JTree) return (JTree)component;
         }
         return null;
     }
 
-    /*
-     * Find the node with the given text below the given node in the specified TreeModel
+    /**
+     * Returns the node with the given text below the given node in the specified TreeModel
+     * @param model
+     *  the TreeModel to search
+     * @param node
+     *  the node to search below
+     * @param text
+     *  the text associated with the required node
+     * @return
+     * the required node, if found; otherwise null
      */
     static Object findChildNode(TreeModel model, Object node, String text) {
         for (int i = 0; i < model.getChildCount(node); i++) {
@@ -310,7 +383,75 @@ class Utils {
         }
         return null;
     }
+    
+    /**
+     * Performs a click on the menu item at the specified path, waiting if necessary for the
+     * menu item to become enabled.
+     * 
+     * If there is more than one menu bar within the specified container, they are searched
+     * (in hierarchical containment order) until one is found that contains the specified menu item.
+     * 
+     * Note that this method may block the calling thread if the required menu item is currently disabled.
+     * @param container
+     * the Container to search in
+     * @param path
+     * the path of the required menu item
+     * @return
+     * true if the menu item was successfully clicked; false if the menu item could not be found
+     * @throws  IllegalStateException 
+     * the method has been called on the Swing event dispatch thread
+     */
+    static boolean invokeMenuItem(final Container container, final String[] path) throws IllegalStateException {
+        if (SwingUtilities.isEventDispatchThread()) throw new IllegalStateException("Function must not be called on the event dispatch thread, as it may block the thread");
+        while (true) {
+            FutureTask<Boolean> task = new FutureTask<>(new Callable<Boolean>() {
+                @Override
+                public Boolean call() throws IBControllerException {
+                    String s = path[0];
+                    for (int i = 1; i < path.length; i++) s = s + " > " + path[i];
 
+                    JMenuItem menuItem = Utils.findMenuItemInAnyMenuBar(container, path);
+                    if (menuItem == null) throw new IBControllerException("menu item: " + s);
+                    if (!menuItem.isEnabled()) return false;
+                    
+                    logToConsole("Invoking menu item " + s);
+
+                    menuItem.doClick();
+                    return true;
+                }
+            });
+
+            GuiDeferredExecutor.instance().execute(task);
+            
+            try {
+                if (task.get()) return true;
+            } catch (InterruptedException e) {
+                err.println("IBController: invokeMenuItem task interrupted");
+                return false;
+            } catch (ExecutionException e) {
+                Throwable t = e.getCause();
+                if (t instanceof IBControllerException) {
+                    err.println("IBController: invokeMenuItem could not find " + t.getMessage());
+                    return false;
+                }
+                if (t instanceof RuntimeException) throw (RuntimeException)t;
+                if (t instanceof Error) throw (Error)t;
+            }
+            
+            pause(250);
+        }
+    }
+
+    /**
+     * Indicates whether the specified JButton is enabled.
+     * @param window
+     * the window in which to search for the required JButton
+     * @param buttonText
+     * the label of the required JButton
+     * @return
+     * true if the JButton is enabled; false if there is no such JButton, or it
+     * is disabled
+     */
     static boolean isButtonEnabled(final Window window, final String buttonText) {
         final JButton button = findButton(window, buttonText);
         if (button == null) return false;
@@ -318,6 +459,16 @@ class Utils {
         return button.isEnabled();
     }
 
+    /**
+     * Indicates whether the specified JCheckBox is selected.
+     * @param window
+     * the window in which to search for the required JCheckBox
+     * @param buttonText
+     * the label of the required JCheckBox
+     * @return
+     * true if the JCheckBox is enabled; false if there is no such JCheckBox, or it
+     * is not selected
+     */
     static boolean isCheckBoxSelected(Window window, String buttonText) {
         final JCheckBox cb = findCheckBox(window, buttonText);
         if (cb == null) return false;
@@ -325,6 +476,16 @@ class Utils {
         return cb.isSelected();
     }
 
+    /**
+     * Indicates whether the specified JRadioButton is selected.
+     * @param window
+     * the window in which to search for the required JRadioButton
+     * @param buttonText
+     * the label of the required JRadioButton
+     * @return
+     * true if the JRadioButton is enabled; false if there is no such JRadioButton, or it
+     * is not selected
+     */
     static boolean isRadioButtonSelected(Window window, String buttonText) {
         final JRadioButton rb = findRadioButton(window, buttonText);
         if (rb == null) return false;
@@ -334,19 +495,43 @@ class Utils {
     }
 
     /**
-     * writes a text message prefixed with the current time to the console
+     * Writes the structure of the specified Component to the console.
+     * @param component
+     * The Component to be logged
+     */
+    static void logComponent(Component component) {
+        Utils.logComponent(component, "");
+    }
+    
+    /**
+     * Writes a text message prefixed with the current time to the console.
+     * @param msg
+     * The message to be written
      */
     static void logToConsole(String msg) {
         out.println(_DateFormatter.format(
                 new Date()) + " IBController: " + msg);
     }
 
+    /**
+     * Writes the structure of the specified window to the console.
+     * 
+     * Details of each component in the window are written, indented to reflect
+     * the component's position in the hierarchy.
+     * @param window
+     * The Window whose structure is to be logged.
+     */
     static void logWindowComponents(Window window) {
         for (Component component : window.getComponents()) logComponent(component, "");
     }
     
     /**
      * sleeps for millis milliseconds, approximately.
+     * 
+     * Note that this method swallows the InterruptedException that may
+     * result from a call to sleep().
+     * @param millis
+     * the number of milliseconds to sleep for
      */
     static void pause(int millis) {
         try {
@@ -355,6 +540,17 @@ class Utils {
         }
     }
     
+    /**
+     * Sets or clears the specified JCheckBox.
+     * @param window
+     * the window in which to search for the required JCheckBox
+     * @param buttonText
+     * the label for the required JCheckBox
+     * @param value
+     * true to set the JCheckBox; false to clear it
+     * @return
+     * true if the JCheckBox was found; otherwise false
+     */
     static boolean setCheckBoxSelected(Window window, String buttonText, final boolean value) {
         final JCheckBox cb = findCheckBox(window, buttonText);
         if (cb == null) return false;
@@ -362,6 +558,17 @@ class Utils {
         return true;
     }
 
+    /**
+     * Sets or clears the specified JRadioButton .
+     * @param window
+     * the window in which to search for the required JRadioButton 
+     * @param buttonText
+     * the label for the required JRadioButton 
+     * @param value
+     * true to set the JRadioButton ; false to clear it
+     * @return
+     * true if the JRadioButton  was found; otherwise false
+     */
     static boolean setRadioButtonSelected(Window window, String buttonText) {
         final JRadioButton rb = findRadioButton(window, buttonText);
         if (rb == null) return false;
@@ -372,37 +579,72 @@ class Utils {
         return true;
     }
 
+    /**
+     * Sets the specified JTextField to the given value.
+     * @param window
+     * the window in which to search for the JTextField
+     * @param fieldNumber
+     * the number of the required JTextField in the window, counting
+     * from 0
+     * @param value
+     * the value to be set in the JTextField
+     * @return
+     * true if the required JTextField was found; otherwise false
+     */
     static boolean setTextField(Window window, int fieldNumber, final String value) {
         final JTextField tf = findTextField(window, fieldNumber);
         if (tf != null) {
-            tf.setText(value);  // NB: setText() is threadsafe, unlike most Swing methods
+            tf.setText(value);
             return true;
         } else {
             return false;
         }
     }
 
+    /**
+     * Indicates whether the specified window's title contains the given string.
+     * @param window
+     * the window to be checked
+     * @param text
+     * the text to be searched for
+     * @return
+     * true if the window's title contains text, otherwise false
+     */
     static boolean titleContains(Window window, String text) {
         String title = getWindowTitle(window);
         return (title != null && title.contains(text));
     }
 
+    /**
+     * Indicates whether the specified window's title is the same as the given string.
+     * @param window
+     * the window to be checked
+     * @param text
+     * the text to be searched for
+     * @return
+     * true if the window's title equals text, otherwise false
+     */
     static boolean titleEquals(Window window, String text) {
         String title = getWindowTitle(window);
         return (title != null && title.equals(text));
     }
 
     private static String getComponentDetails(Component component) {
-        String s = "";
+        String s = component.isEnabled() ? "" : "[Disabled]";
         if (component instanceof JButton) s = s + "JButton: " + ((JButton)component).getText();
         else if (component instanceof JCheckBox) s = s + "JCheckBox: " + ((JCheckBox) component).getText();
         else if (component instanceof JLabel) s = s + "JLabel: " + ((JLabel) component).getText();
         else if (component instanceof JOptionPane) s = s + "JOptionPane: " + ((JOptionPane) component).getMessage().toString();
         else if (component instanceof JRadioButton) s = s + "JRadioButton: " + ((JRadioButton) component).getText();
         else if (component instanceof JTextField) s = s + "JTextField: " + ((JTextField) component).getText();
+        else if (component instanceof JMenuBar) s = s + "JMenuBar: " + ((JMenuBar) component).getName();
+        else if (component instanceof JMenuItem) s = s + "JMenuItem: " + ((JMenuItem) component).getText();
+        else if (component instanceof JTree) s = s + "JTree: ";
+        
         if (!s.isEmpty()) s = "{" + s + "}";
         return s;
     }
+    
     private static String getWindowTitle(Window window) {
         String title = null;
         if (window instanceof JDialog) {
@@ -412,18 +654,55 @@ class Utils {
         }
         return title;
     }
+    
+    private static String logClassDerivation(Object object) {
+        String s = object.getClass().getSimpleName();
+        Class<?> c = object.getClass().getSuperclass();
+        while (c != null) {
+            s = c.getSimpleName() + "." + s;
+            c = c.getSuperclass();
+        }
+        return s;
+    }
 
     private static void logComponent(Component component, String indent) {
         logToConsole(indent + component.getName() + "(" + component.getClass().getName() + ")" + getComponentDetails(component));
         if (component instanceof JTree) logTreeNodes(((JTree) component).getModel(), ((JTree) component).getModel().getRoot(), "|   " + indent);
-        if (component instanceof Container) {
+        if (component instanceof JMenuBar) {
+            logMenuItem(component, "|   " + indent);
+        } else if (component instanceof Container) {
             for (Component subComponent : ((Container)component).getComponents()) logComponent(subComponent,"|   " + indent);
         }
     }
 
     private static void logTreeNodes(TreeModel model, Object node, String indent) {
-        logToConsole(indent + node.toString());
+        if (node instanceof Component) {
+            logToConsole(indent + node.toString());
+            logComponent((Component)node, "|   " + indent);
+        } else {
+            logToConsole(indent + node.toString() + "  (" + logClassDerivation(node) + ")");
+        }
         for (int i = 0; i < model.getChildCount(node); i++) logTreeNodes(model, model.getChild(node, i), "|   " + indent);
     }
 
+    private static void logMenuItem(Component menuItem, String indent) {
+        if (menuItem instanceof JMenuBar) {
+            logMenuSubElements((MenuElement)menuItem, indent);
+        } else if (menuItem instanceof JPopupMenu) {
+            logMenuSubElements((MenuElement)menuItem, indent);
+        } else if (menuItem instanceof JMenuItem) {
+            logToConsole(indent + ((JMenuItem)menuItem).getText() + (((JMenuItem)menuItem).isEnabled() ? "" : "[Disabled]"));
+            logMenuSubElements((JMenuItem)menuItem, "|   " + indent);
+        } else if (menuItem instanceof JSeparator) {
+            logToConsole(indent + "--------");
+        }
+    }
+    
+    private static void logMenuSubElements(MenuElement element, String indent) {
+        for (MenuElement subItem : element.getSubElements()) {
+            logMenuItem((Component)subItem, indent);
+        }
+    }
+
 }
+

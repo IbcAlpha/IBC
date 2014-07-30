@@ -20,11 +20,8 @@ package ibcontroller;
 
 import java.awt.Window;
 import java.awt.event.WindowEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
-import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -59,10 +56,8 @@ public class TradesFrameHandler implements WindowHandler {
             Utils.logToConsole("User closing trades log");
         } else if (eventID == WindowEvent.WINDOW_CLOSED) {
             Utils.logToConsole("Trades log closed by user - recreating");
-            GuiDeferredExecutor.instance().execute(new Runnable() {
-                public void run(){
-                    TwsListener.showTradesLogWindow();
-                }
+            (new ThreadPerTaskExecutor()).execute(new Runnable () {
+                @Override public void run() {TwsListener.showTradesLogWindow();}
             });
         }
 
