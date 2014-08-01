@@ -121,7 +121,7 @@ class CommandDispatcher
     }
 
     private void handleStopCommand() {
-        GuiExecutor.instance().execute(new StopTask(mChannel));
+        (new ThreadPerTaskExecutor()).execute(new StopTask(mChannel));
     }
 
 }
