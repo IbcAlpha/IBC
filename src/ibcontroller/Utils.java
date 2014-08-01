@@ -301,7 +301,6 @@ class Utils {
             if (menuBar == null) {
                 String s = path[0];
                 for (int j = 1; j < path.length; j++) s = s + " > " + path[j];
-                logToConsole("can't find menu item: " + s);
                 return null;
             }
             JMenuItem menuItem = findMenuItem(menuBar, path);
@@ -413,9 +412,6 @@ class Utils {
                     JMenuItem menuItem = Utils.findMenuItemInAnyMenuBar(container, path);
                     if (menuItem == null) throw new IBControllerException("menu item: " + s);
                     if (!menuItem.isEnabled()) return false;
-                    
-                    logToConsole("Invoking menu item " + s);
-
                     menuItem.doClick();
                     return true;
                 }
@@ -431,7 +427,6 @@ class Utils {
             } catch (ExecutionException e) {
                 Throwable t = e.getCause();
                 if (t instanceof IBControllerException) {
-                    err.println("IBController: invokeMenuItem could not find " + t.getMessage());
                     return false;
                 }
                 if (t instanceof RuntimeException) throw (RuntimeException)t;
