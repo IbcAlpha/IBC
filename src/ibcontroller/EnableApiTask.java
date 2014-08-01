@@ -18,6 +18,8 @@
 
 package ibcontroller;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 
@@ -40,10 +42,12 @@ class EnableApiTask implements Runnable{
         try {
             final JDialog configDialog = TwsListener.getConfigDialog();    // blocks the thread until the config dialog is available
             
-            GuiExecutor.instance().execute(new Runnable(){
+            FutureTask<Integer> t = new FutureTask<>(new Runnable(){
                 @Override public void run() {configureAPI(configDialog);}
-            });
-        } catch (Exception e) {
+            }, 0);
+            GuiExecutor.instance().execute(t);
+            t.get();
+        } catch (InterruptedException | ExecutionException e) {
             Utils.err.println("IBControllerServer: " + e.getMessage());
             mChannel.writeNack(e.getMessage());
         } finally {
