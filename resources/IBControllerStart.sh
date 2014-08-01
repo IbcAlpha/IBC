@@ -8,17 +8,20 @@ TWSPASSWORD=
 
 #   The folder containing the IBController files:
 
-IBCDIR=/home/<username>/IBController/
+IBCDIR=/opt/IBController/
 
 
-#   The location and filename of the IBController configuration file:
+#   The location and filename of the IBController configuration file. This file should
+#   be in a folder in your personal filestore, so that other users of yur computer can't
+#   access it. This folder and its contents should also be encrypted so that even users
+#   with administrator privileges can't see the contents:
 
-IBCINI=/home/<username>/IBController/IBController.ini
+IBCINI=~/IBController/IBController.ini
 
 
 #   The folder where TWS is installed:
 
-TWSDIR=/home/<username>/IBJts
+TWSDIR=/opt/<username>/IBJts
 
 
 #   The classpath for TWS. The value below is correct for version
