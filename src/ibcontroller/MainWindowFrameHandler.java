@@ -52,9 +52,7 @@ class MainWindowFrameHandler implements WindowHandler {
     public boolean recogniseWindow(Window window) {
         if (! (window instanceof JFrame)) return false;
 
-        return (Utils.titleContains(window, "Interactive Brokers Trader Workstation") ||
-                    Utils.titleContains(window, "IB Trader Workstation")
-                ) && Utils.findMenuItemInAnyMenuBar(window, new String [] {"Help", "About Trader Workstation..."}) != null;
+        return Utils.findMenuItemInAnyMenuBar(window, new String [] {"Help", "About Trader Workstation..."}) != null;
     }
 }
 
