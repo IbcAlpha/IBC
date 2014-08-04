@@ -52,11 +52,11 @@ class StopTask
 
     private void stop() {
         JFrame jf = TwsListener.getMainWindow();
-
+        
         WindowEvent wev = new WindowEvent(jf, WindowEvent.WINDOW_CLOSING);
         Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(wev);
 
-        writeAck("");
+        writeAck("Shutting down");
     }
 
     private void writeAck(String message) {if (! (mChannel == null)) mChannel.writeAck(message);}
