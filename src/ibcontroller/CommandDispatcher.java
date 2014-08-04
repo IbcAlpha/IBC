@@ -19,10 +19,6 @@
 package ibcontroller;
 
 import java.awt.event.KeyEvent;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import javax.swing.JFrame;
 
@@ -68,27 +64,12 @@ class CommandDispatcher
             mChannel.writeNack("ENABLEAPI is not valid for the IB Gateway");
             return;
         }
-
-        ExecutorService exec = Executors.newSingleThreadExecutor();
-        Future<?> f = exec.submit(new EnableApiTask(mChannel));
-        exec.shutdown();
-
-        // wait for the task to complete
-        try{
-            f.get();
-        } catch (InterruptedException ie) {
-        } catch (ExecutionException ee) {
-            ee.getCause().printStackTrace();
-        }
+        
+        (new EnableApiTask(mChannel)).run();    // run on the current thread
    }
 
     private void handleReconnectDataCommand() {
         JFrame jf = TwsListener.getMainWindow(1, TimeUnit.MILLISECONDS);
-        if (jf == null) {
-            Utils.logToConsole("main window not yet found");
-            mChannel.writeNack("main window not yet found");
-            return;
-        }
 
         int modifiers = KeyEvent.CTRL_DOWN_MASK | KeyEvent.ALT_DOWN_MASK;
         KeyEvent pressed=new KeyEvent(jf,  KeyEvent.KEY_PRESSED, System.currentTimeMillis(), modifiers, KeyEvent.VK_F, KeyEvent.CHAR_UNDEFINED);
@@ -103,11 +84,6 @@ class CommandDispatcher
 
     private void handleReconnectAccountCommand() {
         JFrame jf = TwsListener.getMainWindow();
-        if (jf == null) {
-            Utils.logToConsole("main window not yet found");
-            mChannel.writeNack("main window not yet found");
-            return;
-        }
 
         int modifiers = KeyEvent.CTRL_DOWN_MASK | KeyEvent.ALT_DOWN_MASK;
         KeyEvent pressed=new KeyEvent(jf,  KeyEvent.KEY_PRESSED, System.currentTimeMillis(), modifiers, KeyEvent.VK_R, KeyEvent.CHAR_UNDEFINED);
@@ -121,7 +97,7 @@ class CommandDispatcher
     }
 
     private void handleStopCommand() {
-        GuiExecutor.instance().execute(new StopTask(mChannel));
+        (new StopTask(mChannel)).run();     // run on the current thread
     }
-
+    
 }
