@@ -126,8 +126,14 @@ Before running IBController, you will need to download and install the standalon
 version of Trader Workstation from the [Interactive Brokers](http://www.interactivebrokers.com/) website. Note that this
 installation includes the code for both TWS and the Gateway.
 
-Note that you do not need an IB account to try out IBController, as you can
-use the IB demo account (username ``edemo``, password ``demouser``).
+IBController needs TWS to operate in English so that it can recognise the various
+dialogues that it interacts with. You can set TWS's language by starting it manually 
+(ie without using IBController) and selecting the language on the initial login dialog.
+TWS will remember this language setting when you subsequently start it using
+IBController.
+
+Note that you do not need an IB account to try out IBController, as you can use the 
+IB demo account (username ``edemo``, password ``demouser``).
 
 ### Where to get IBController
 ----------------------------
