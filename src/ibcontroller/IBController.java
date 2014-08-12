@@ -533,7 +533,7 @@ public class IBController {
             _Timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    GuiExecutor.instance().execute(new StopTask(null));
+                    (new ThreadPerTaskExecutor()).execute(new StopTask(null));
                     _Timer.cancel();
                 }
             }, shutdownTime);
