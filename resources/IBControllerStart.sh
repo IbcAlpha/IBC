@@ -43,7 +43,7 @@ TWSCP=jts.jar:total.2013.jar
 #   jclient.LoginFrame is NOT part of the Java options, nor is anything 
 #   that comes after it, so don't include that here):
 
-JAVAOPTS='-Xmx512M -XX:MaxPermSize=128M' 
+JAVAOPTS='-Xmx1024M -XX:MaxPermSize=256M' 
 
 pushd $TWSDIR
 java -cp  $TWSCP:$IBCDIR/IBController.jar $JAVAOPTS ibcontroller.IBController $IBCINI $TWSUSERID $TWSPASSWORD
