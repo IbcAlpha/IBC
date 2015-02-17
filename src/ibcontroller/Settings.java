@@ -59,7 +59,7 @@ class Settings {
     static String getString(String key,
                             String defaultValue) {
         String value = _Props.getProperty(key, defaultValue);
-        if (value == null) {
+        if (value == null || value.length() == 0) {
             value = defaultValue;
         }
         return value;
@@ -74,20 +74,21 @@ class Settings {
                       int defaultValue) {
         String value = _Props.getProperty(key);
 
-        if (value != null) {
-            try {
-                return Integer.parseInt(value);
-            } catch (NumberFormatException e) {
-                Utils.logToConsole(
-                        "Invalid number \""
-                        + value
-                        + "\" for property \""
-                        + key
-                        + "\"");
-            }
+        if (value == null || value.length() == 0) {        
+            return defaultValue;
         }
-
-        return defaultValue;
+        
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            Utils.logToConsole(
+                    "Invalid number \""
+                    + value
+                    + "\" for property \""
+                    + key
+                    + "\"");
+            return defaultValue;
+        }
     }
 
     static char getChar(String key,
