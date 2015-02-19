@@ -26,8 +26,7 @@
     </target>
 
     <target name="jar" depends="compile" description="generate the jar">
-        <mkdir dir="${target}/IBController"/>
-        <jar jarfile="${target}/IBController/IBController.jar" basedir="${target}/classes"/>
+        <jar jarfile="${resources}/IBController.jar" basedir="${target}/classes"/>
     </target>
 
     <target name="dist" depends="jar" description="generate the distribution zip">
