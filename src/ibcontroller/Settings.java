@@ -59,7 +59,9 @@ class Settings {
     static String getString(String key,
                             String defaultValue) {
         String value = _Props.getProperty(key, defaultValue);
-        if (value == null || value.length() == 0) {
+        
+        // handle key=[empty string] in .ini file 
+        if (value.isEmpty()) {
             value = defaultValue;
         }
         return value;
@@ -74,6 +76,7 @@ class Settings {
                       int defaultValue) {
         String value = _Props.getProperty(key);
 
+        // handle key missing or key=[empty string] in .ini file 
         if (value == null || value.length() == 0) {        
             return defaultValue;
         }
@@ -95,6 +98,7 @@ class Settings {
                         String defaultValue) {
         String value = _Props.getProperty(key, defaultValue);
 
+        // handle key missing or key=[empty string] in .ini file 
         if (value == null || value.length() == 0) {
             return defaultValue.charAt(0);
         }
@@ -120,20 +124,22 @@ class Settings {
                             double defaultValue) {
         String value = _Props.getProperty(key);
 
-        if (value != null) {
-            try {
-                return Double.parseDouble(value);
-            } catch (NumberFormatException e) {
-                Utils.logToConsole(
-                        "Invalid number \""
-                        + value
-                        + "\" for property \""
-                        + key
-                        + "\"");
-            }
+        // handle key missing or key=[empty string] in .ini file 
+        if (value == null || value.length() == 0) {        
+            return defaultValue;
         }
-
-        return defaultValue;
+        
+        try {
+            return Double.parseDouble(value);
+        } catch (NumberFormatException e) {
+            Utils.logToConsole(
+                    "Invalid number \""
+                    + value
+                    + "\" for property \""
+                    + key
+                    + "\"");
+            return defaultValue;
+        }
     }
 
     /**
@@ -145,24 +151,22 @@ class Settings {
                               boolean defaultValue) {
         String value = _Props.getProperty(key);
 
-        if (value != null) {
-            if (value.equalsIgnoreCase("true")) {
-                return true;
-            } else if (value.equalsIgnoreCase("yes")) {
-                return true;
-            } else if (value.equalsIgnoreCase("false")) {
-                return false;
-            } else if (value.equalsIgnoreCase("no")) {
-                return false;
-            } else {
-                return defaultValue;
-            }
+        // handle key missing or key=[empty string] in .ini file 
+        if (value == null || value.length() == 0) {        
+            return defaultValue;
         }
-
-        return defaultValue;
+        
+        if (value.equalsIgnoreCase("true")) {
+            return true;
+        } else if (value.equalsIgnoreCase("yes")) {
+            return true;
+        } else if (value.equalsIgnoreCase("false")) {
+            return false;
+        } else if (value.equalsIgnoreCase("no")) {
+            return false;
+        } else {
+            return defaultValue;
+        }
     }
 
 }
-
-
-
