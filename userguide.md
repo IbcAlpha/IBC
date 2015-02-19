@@ -59,7 +59,7 @@ Unix-derived operating systems, including Linux and OS/X.
 Here is a summary of the steps you need to perform to get IBController
 up and running properly.
 
-1. Ensure Java 7 is installed (see *Java 7 Runtime* in the *Prerequisites*
+1. Ensure Java is installed (see *Java 8 Runtime* in the *Prerequisites*
    section).
 
 2. Install Interactive Brokers Trader Workstation (see *Interactive Brokers*
