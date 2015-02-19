@@ -59,7 +59,7 @@ Unix-derived operating systems, including Linux and OS/X.
 Here is a summary of the steps you need to perform to get IBController
 up and running properly.
 
-1. Ensure Java 7 is installed (see *Java 7 Runtime* in the *Prerequisites*
+1. Ensure Java is installed (see *Java 8 Runtime* in the *Prerequisites*
    section).
 
 2. Install Interactive Brokers Trader Workstation (see *Interactive Brokers*
@@ -105,14 +105,21 @@ This section details the other software that is needed to run IBController.
 Note that some Unix distributions may provide packages that can automatically
 install and configure everything needed to run IBController, for example
 the Arch Linux [ib-controller](https://aur.archlinux.org/packages/ib-controller/) package. This subject is beyond the scope of this
-document.
+document, and you should refer to the relevant package documentation for 
+guidance.
 
-#### Java 7 Runtime
+#### Java 8 Runtime
 
 Both IBController and TWS/Gateway are Java programs, and therefore the Java
-Runtime version 7 or later needs to be installed. If you aren't sure whether 
-the Java Runtime is already installed, or what version is installed, issue
-the following command from a command prompt:
+Runtime needs to be installed. The current version of Java is Java 8, but 
+this version of IBController will also work perfectly with Java 7. 
+
+Note that Java 7 is no longer being maintained by Oracle, and in a future 
+release of IBController, support for Java 7 will be removed, so you are 
+advised to update to Java 8 as soon as practical.
+
+If you aren't sure whether the Java Runtime is already installed, or what 
+version is installed, issue the following command from a command prompt:
 
 ``java -version``
 
@@ -302,7 +309,7 @@ settings that you are most likely to need to change:
 | IbLoginID          | You must set this to your IB username                              |
 | PasswordEncrypted  | You must set this to ``yes`` if you have encrypted your password |
 | IbPassword         | You must set this to your IB password (possibly encrypted)         |
-| IbDir              | You will need to set this if you are using Unix              |
+| IbDir              | You only need to set this if you want TWS to store its settings in a different folder from the one it's installed in              |
 | AcceptIncomingConnectionAction | It is safest to set this to ``reject`` and to explicitly configure TWS to specify which IP addresses are allowed to connnect to the API                 |
 | IbAutoClosedown    | Set this to ``no`` to prevent TWS's daily auto closedown           |
 | ClosedownAt        | Set this if you want to keep TWS running all week                  |

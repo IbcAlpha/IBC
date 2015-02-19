@@ -423,12 +423,9 @@ public class IBController {
     }
 
     private static String getTWSSettingsDirectory() {
-        return Settings.getString("IbDir", System.getProperty("user.dir"));
-//        if (dir.length() == 0) {
-//            Utils.err.println("IBController:  missing IbDir= entry in IBController.ini.  quitting...");
-//            System.exit(1);
-//        }
-//        return dir;
+        String dir = Settings.getString("IbDir", System.getProperty("user.dir"));
+        Utils.logToConsole("TWS settings directory is " + dir);
+        return dir;
     }
 
     private static void getTWSUserNameAndPassword(String[] args) {

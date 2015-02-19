@@ -42,11 +42,7 @@ class MainWindowFrameHandler implements WindowHandler {
             Utils.logToConsole(component.getName() + "(" + component.getClass().getName() + ")");
         }
 
-        TwsListener.setMainWindow((JFrame) window);
-        
-        if (Settings.getBoolean("MinimizeMainWindow", false)) {
-            TwsListener.getMainWindow().setExtendedState(java.awt.Frame.ICONIFIED);
-        }
+        TwsListener.setMainWindow((JFrame) window, Settings.getBoolean("MinimizeMainWindow", false));
     }
 
     public boolean recogniseWindow(Window window) {

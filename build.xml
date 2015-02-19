@@ -2,7 +2,7 @@
     <property environment="env"/>
     <fail unless="env.TWS" message="Environment variable 'TWS' not set (set it to the fully-qualified directory name containing jts.jar)."/>
 
-    <property name="ver" value="2.12.1"/>
+    <property name="ver" value="2.12.2"/>
     <property name="src" location="src"/>
     <property name="resources" location="resources"/>
     <property name="target" location="target"/>
@@ -26,8 +26,7 @@
     </target>
 
     <target name="jar" depends="compile" description="generate the jar">
-        <mkdir dir="${target}/IBController"/>
-        <jar jarfile="${target}/IBController/IBController.jar" basedir="${target}/classes"/>
+        <jar jarfile="${resources}/IBController.jar" basedir="${target}/classes"/>
     </target>
 
     <target name="dist" depends="jar" description="generate the distribution zip">

@@ -337,10 +337,11 @@ class TwsListener
         _LoginFrame = window;
     }
 
-    static void setMainWindow(JFrame window) {
+    static void setMainWindow(JFrame window, boolean iconify) {
         Utils.logToConsole("Found " + (IBController.isGateway() ? "Gateway" : "TWS") + " main window");
         _MainWindow = window;
         if (_MainWindowTask != null) _MainWindowTask.setMainWindow(window);
+        if (iconify) _MainWindow.setExtendedState(java.awt.Frame.ICONIFIED);
     }
     
     static void setSplashScreenClosed() {
