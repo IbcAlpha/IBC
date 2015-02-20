@@ -27,6 +27,8 @@ import javax.swing.event.ChangeListener;
 
 public class TradesFrameHandler implements WindowHandler {
     
+    boolean firstTradesWindowOpened;
+    
     public boolean filterEvent(Window window, int eventId) {
         switch (eventId) {
             case WindowEvent.WINDOW_OPENED:
@@ -52,6 +54,13 @@ public class TradesFrameHandler implements WindowHandler {
             Utils.setCheckBoxSelected(window, "All", true);
             
             monitorAllTradesCheckbox(window, "All");
+            
+            if (! firstTradesWindowOpened) {
+                firstTradesWindowOpened = true;
+                if (Settings.getBoolean("MinimizeMainWindow", false)) {
+                    ((JFrame) window).setExtendedState(java.awt.Frame.ICONIFIED);
+                }
+            }
         } else if (eventID == WindowEvent.WINDOW_CLOSING) {
             Utils.logToConsole("User closing trades log");
         } else if (eventID == WindowEvent.WINDOW_CLOSED) {
