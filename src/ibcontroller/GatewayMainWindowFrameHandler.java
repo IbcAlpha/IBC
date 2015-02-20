@@ -33,7 +33,7 @@ class GatewayMainWindowFrameHandler  implements WindowHandler {
     }
 
     public void handleWindow(Window window, int eventID) {
-        TwsListener.setMainWindow((JFrame) window, Settings.getBoolean("MinimizeMainWindow", false));
+        TwsListener.setMainWindow((JFrame) window);
     }
 
     public boolean recogniseWindow(Window window) {
