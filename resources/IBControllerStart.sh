@@ -12,7 +12,7 @@ IBCDIR=/opt/IBController/
 
 
 #   The location and filename of the IBController configuration file. This file should
-#   be in a folder in your personal filestore, so that other users of yur computer can't
+#   be in a folder in your personal filestore, so that other users of your computer can't
 #   access it. This folder and its contents should also be encrypted so that even users
 #   with administrator privileges can't see the contents:
 
