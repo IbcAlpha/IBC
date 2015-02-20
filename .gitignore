@@ -1,3 +1,5 @@
 target
 dist
 nbproject
+bin
+.*
