@@ -17,7 +17,7 @@ set IBCDIR=C:\IBController
 ::   environment variable to address the root of your personal filestore (HOMEPATH is set
 ::   automatically by Windows):
 
-set IBCINI=%HOMEPATH%\Documents\IBController\IBController.ini
+set IBCINI="%HOMEPATH%\Documents\IBController\IBController.ini"
 
 
 ::   The folder where TWS is installed:
@@ -55,6 +55,11 @@ set JAVAOPTS=-Dsun.java2d.noddraw=true -Dswing.boldMetal=false -Dsun.locale.form
 
 
 pushd %TWSDIR%
+:: prevent other Java tools interfering with IBController
+
+setlocal
+set JAVA_TOOL_OPTIONS
+=
 java.exe -cp  %TWSCP%;%IBCDIR%\IBController.jar %JAVAOPTS% ibcontroller.IBController %IBCINI% %TWSUSERID% %TWSPASSWORD%
 popd
 

@@ -16,7 +16,7 @@ IBCDIR=/opt/IBController/
 #   access it. This folder and its contents should also be encrypted so that even users
 #   with administrator privileges can't see the contents:
 
-IBCINI=~/IBController/IBController.ini
+IBCINI='~/IBController/IBController.ini'
 
 
 #   The folder where TWS is installed:
@@ -46,6 +46,8 @@ TWSCP=jts.jar:total.2013.jar
 JAVAOPTS='-Xmx1024M -XX:MaxPermSize=256M' 
 
 pushd $TWSDIR
+# prevent other Java tools interfering with IBController
+unset JAVA_TOOL_OPTIONS
 java -cp  $TWSCP:$IBCDIR/IBController.jar $JAVAOPTS ibcontroller.IBController $IBCINI $TWSUSERID $TWSPASSWORD
 popd
 
