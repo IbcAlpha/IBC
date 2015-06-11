@@ -48,7 +48,7 @@ class EnableApiTask implements Runnable{
             GuiExecutor.instance().execute(t);
             t.get();
         } catch (InterruptedException | ExecutionException e) {
-            Utils.err.println("IBControllerServer: " + e.getMessage());
+            Utils.logError("IBControllerServer: " + e.getMessage());
             mChannel.writeNack(e.getMessage());
         } finally {
             _Running.clear();
@@ -78,7 +78,7 @@ class EnableApiTask implements Runnable{
 
             configDialog.setVisible(false);
         } catch (IBControllerException e) {
-            Utils.err.println("IBControllerServer: " + e.getMessage());
+            Utils.logError("IBControllerServer: " + e.getMessage());
             mChannel.writeNack(e.getMessage());
         }
     }

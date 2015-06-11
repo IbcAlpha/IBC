@@ -41,7 +41,7 @@ class ConfigureTwsApiPortTask implements Runnable{
             });
 
         } catch (Exception e){
-            Utils.err.println("IBController: " + e.getMessage());
+            Utils.logError("IBController: " + e.getMessage());
         }
     }
 
@@ -77,7 +77,7 @@ class ConfigureTwsApiPortTask implements Runnable{
 
             configDialog.setVisible(false);
         } catch (IBControllerException e) {
-            Utils.err.println("IBController: " + e.getMessage());
+            Utils.logError("IBController: " + e.getMessage());
         }
     }
 }

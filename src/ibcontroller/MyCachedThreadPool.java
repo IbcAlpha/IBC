@@ -18,30 +18,14 @@
 
 package ibcontroller;
 
-import java.awt.Window;
-import java.awt.event.WindowEvent;
-import javax.swing.JDialog;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-class TipOfTheDayDialogHandler implements WindowHandler {
-    public boolean filterEvent(Window window, int eventId) {
-        switch (eventId) {
-            case WindowEvent.WINDOW_OPENED:
-            case WindowEvent.WINDOW_ACTIVATED:
-                return true;
-            default:
-                return false;
-        }
-    }
+public class MyCachedThreadPool {
+    private static final ExecutorService instance = Executors.newCachedThreadPool();
 
-    public void handleWindow(Window window, int eventID) {
-        if (! Utils.clickButton(window, "Close")) {
-            Utils.logError("IBController: could not dismiss Tip of the Day because we could not find one of the controls.");
-        }
-    }
+    private MyCachedThreadPool() {}
 
-    public boolean recogniseWindow(Window window) {
-        if (! (window instanceof JDialog)) return false;
+    static ExecutorService getInstance() {return instance;}
 
-        return (Utils.titleContains(window, "Tip of the Day"));
-    }
 }

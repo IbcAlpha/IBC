@@ -18,10 +18,14 @@
 
 package ibcontroller;
 
-import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
-class ThreadPerTaskExecutor implements Executor{
-    public void execute(Runnable task) {
-        new Thread(task).start();
-    }
+public class MyScheduledExecutorService {
+    private static final ScheduledExecutorService instance = Executors.newScheduledThreadPool(1);
+
+    private MyScheduledExecutorService() {}
+
+    static ScheduledExecutorService getInstance() {return instance;}
+
 }

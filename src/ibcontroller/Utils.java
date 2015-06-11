@@ -422,7 +422,7 @@ class Utils {
             try {
                 if (task.get()) return true;
             } catch (InterruptedException e) {
-                err.println("IBController: invokeMenuItem task interrupted");
+                logError("IBController: invokeMenuItem task interrupted");
                 return false;
             } catch (ExecutionException e) {
                 Throwable t = e.getCause();
@@ -498,14 +498,23 @@ class Utils {
         Utils.logComponent(component, "");
     }
     
+    static void logError(String message) {
+        err.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        err.println(formatMessage(message));
+        err.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    }
+    
     /**
      * Writes a text message prefixed with the current time to the console.
      * @param msg
      * The message to be written
      */
     static void logToConsole(String msg) {
-        out.println(_DateFormatter.format(
-                new Date()) + " IBController: " + msg);
+        out.println(formatMessage(msg));
+    }
+    
+    private static String formatMessage(String message) {
+        return _DateFormatter.format(new Date()) + " IBController: " + message;
     }
 
     /**

@@ -37,7 +37,7 @@ class LoginFrameHandler implements WindowHandler {
         TwsListener.setLoginFrame((JFrame) window);
 
         if (! setFieldsAndClick(window)) {
-            Utils.err.println("IBController: could not login because we could not find one of the controls.");
+            Utils.logError("IBController: could not login because we could not find one of the controls.");
         }
     }
 

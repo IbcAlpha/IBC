@@ -65,7 +65,7 @@ public class TradesFrameHandler implements WindowHandler {
             Utils.logToConsole("User closing trades log");
         } else if (eventID == WindowEvent.WINDOW_CLOSED) {
             Utils.logToConsole("Trades log closed by user - recreating");
-            (new ThreadPerTaskExecutor()).execute(new Runnable () {
+            MyCachedThreadPool.getInstance().execute(new Runnable () {
                 @Override public void run() {TwsListener.showTradesLogWindow();}
             });
         }
