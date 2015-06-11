@@ -56,7 +56,7 @@ class CommandDispatcher
 
     private void handleInvalidCommand(String cmd) {
         mChannel.writeNack("Command invalid");
-        Utils.err.println("IBControllerServer: invalid command received: " + cmd);
+        Utils.logError("IBControllerServer: invalid command received: " + cmd);
     }
 
     private void handleEnableAPICommand() {

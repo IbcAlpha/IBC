@@ -38,7 +38,7 @@ class NewerVersionDialogHandler implements WindowHandler {
         if (Utils.clickButton(window, "OK")) {
         } else if (Utils.clickButton(window, "No")) { // ie no we don't want the opportunity to upgrade now - Linux version only
         } else {
-            Utils.err.println("IBController: could not dismiss Newer Version because we could not find one of the controls.");
+            Utils.logError("IBController: could not dismiss Newer Version because we could not find one of the controls.");
         }
     }
 

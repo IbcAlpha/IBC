@@ -40,7 +40,7 @@ class ApiChangeConfirmationDialogHandler implements WindowHandler {
         TwsListener.setApiConfigChangeConfirmationExpected(false);
         if (Utils.clickButton(window, "Yes")) {
         } else {
-            Utils.err.println("IBController: can't apply new API socket port: 'Yes' button not found");
+            Utils.logError("IBController: can't apply new API socket port: 'Yes' button not found");
         }
     }
 

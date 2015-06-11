@@ -58,10 +58,7 @@ class TwsSettingsSaver {
             }
             
         } catch (IBControllerException e) {
-            Utils.err.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            Utils.err.println("Invalid setting SaveTwsSettingsAt=" + timesSetting + ": " + e.getMessage());
-            Utils.err.println("TWS Settings will not be saved automatically");
-            Utils.err.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            Utils.logError("Invalid setting SaveTwsSettingsAt=" + timesSetting + ": " + e.getMessage() + "\nTWS Settings will not be saved automatically");
         }
         
     }

@@ -39,7 +39,7 @@ class GatewayLoginFrameHandler  implements WindowHandler {
             selectGatewayMode(window);
             if (setFields(window)) doLogin(window);
         } catch (IBControllerException e) {
-            Utils.err.println("IBController: could not login: could not find control: " + e.getMessage());
+            Utils.logError("IBController: could not login: could not find control: " + e.getMessage());
         }
     }
     

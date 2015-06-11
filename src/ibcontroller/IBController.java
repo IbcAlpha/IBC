@@ -299,11 +299,11 @@ public class IBController {
                 Utils.out.println("========================================================================");
                 System.exit(0);
             } else {
-                Utils.err.println("IBController: 2 arguments passed, but args[0] is not 'encrypt'. quitting...");
+                Utils.logError("IBController: 2 arguments passed, but args[0] is not 'encrypt'. quitting...");
                 System.exit(1);
             }
         } else if (args.length == 4 || args.length > 5) {
-                Utils.err.println("IBController: Incorrect number of arguments passed. quitting...");
+                Utils.logError("IBController: Incorrect number of arguments passed. quitting...");
                 System.exit(1);
         }
     }
@@ -376,7 +376,7 @@ public class IBController {
         }
         File finiPath = new File(iniPath);
         if (!finiPath.isFile() || !finiPath.exists()) {
-            Utils.err.println("IBController: ini file \"" + iniPath +
+            Utils.logError("IBController: ini file \"" + iniPath +
                                "\" either does not exist, or is a directory.  quitting...");
             System.exit(1);
         }
@@ -409,7 +409,7 @@ public class IBController {
                     cal.add(Calendar.DAY_OF_MONTH, 7);
                 }
             } catch (ParseException e) {
-                Utils.err.println("Invalid ClosedownAt setting: should be: <day hh:mm>   eg Friday 22:00");
+                Utils.logError("Invalid ClosedownAt setting: should be: <day hh:mm>   eg Friday 22:00");
                 System.exit(1);
             }
             return cal.getTime();
