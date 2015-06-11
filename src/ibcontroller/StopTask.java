@@ -41,6 +41,9 @@ class StopTask
         }
 
         try {
+            MyCachedThreadPool.getInstance().shutdownNow();
+            MyScheduledExecutorService.getInstance().shutdownNow();
+            
             writeInfo("Closing IBController");
             stop();
         } catch (Exception ex) {

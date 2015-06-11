@@ -234,6 +234,8 @@ public class IBController {
         startShutdownTimerIfRequired();
 
         createToolkitListener();
+        
+        startSavingTwsSettingsAutomatically();
 
         startTwsOrGateway();
     }
@@ -558,6 +560,10 @@ public class IBController {
             startTws();
         }
         redirectOutandErrStreams();
+    }
+    
+    private static void startSavingTwsSettingsAutomatically() {
+        TwsSettingsSaver.getInstance().initialise();
     }
 
 }
