@@ -519,8 +519,7 @@ public class IBController {
     }
 
     private static void startIBControllerServer() {
-        Executor executor = new ThreadPerTaskExecutor();
-        executor.execute(new IBControllerServer());
+        MyCachedThreadPool.getInstance().execute(new IBControllerServer());
     }
 
     private static void startShutdownTimerIfRequired() {
@@ -532,7 +531,7 @@ public class IBController {
             _Timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    (new ThreadPerTaskExecutor()).execute(new StopTask(null));
+                    MyCachedThreadPool.getInstance().execute(new StopTask(null));
                     _Timer.cancel();
                 }
             }, shutdownTime);
@@ -541,7 +540,7 @@ public class IBController {
 
     private static void startTws() {
         if (Settings.getBoolean("ShowAllTrades", false)) {
-            (new ThreadPerTaskExecutor()).execute(new Runnable () {
+            MyCachedThreadPool.getInstance().execute(new Runnable () {
                 @Override public void run() {TwsListener.showTradesLogWindow();}
             });
         }
@@ -552,7 +551,7 @@ public class IBController {
 
     private static void startTwsOrGateway() {
         int portNumber = Settings.getInt("ForceTwsApiPort", 0);
-        if (portNumber != 0) (new ThreadPerTaskExecutor()).execute(new ConfigureTwsApiPortTask(portNumber));
+        if (portNumber != 0) MyCachedThreadPool.getInstance().execute(new ConfigureTwsApiPortTask(portNumber));
 
         if (isGateway()) {
             startGateway();

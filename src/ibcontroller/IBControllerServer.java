@@ -30,8 +30,6 @@ class IBControllerServer
     private ServerSocket mSocket = null;
     private volatile boolean mQuitting = false;
 
-    private final Executor mExecutor =new ThreadPerTaskExecutor();
-
     IBControllerServer() {}
 
     @Override public void run() {
@@ -45,7 +43,7 @@ class IBControllerServer
         for (; !mQuitting;) {
             Socket socket = getClient();
 
-            if (socket != null) mExecutor.execute(new CommandDispatcher(new CommandChannel(socket)));
+            if (socket != null) MyCachedThreadPool.getInstance().execute(new CommandDispatcher(new CommandChannel(socket)));
         }
 
         try {
