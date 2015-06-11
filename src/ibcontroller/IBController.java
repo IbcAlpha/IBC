@@ -29,9 +29,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -249,11 +247,6 @@ public class IBController {
     static boolean isGateway() {
         return _GatewayOnly;
     }
-
-    /**
-     * timer to shutdown at configured day and time
-     */
-    private static final Timer _Timer = new Timer(true);
 
     /**
      * IBAPI username - can either be supplied from the .ini file or as args[1]
@@ -525,16 +518,16 @@ public class IBController {
     private static void startShutdownTimerIfRequired() {
         Date shutdownTime = getShutdownTime();
         if (! (shutdownTime == null)) {
+            long delay = shutdownTime.getTime() - System.currentTimeMillis();
             Utils.logToConsole((isGateway() ? "Gateway" : "TWS") +
                             " will be shut down at " +
                            (new SimpleDateFormat("yyyy/MM/dd HH:mm")).format(shutdownTime));
-            _Timer.schedule(new TimerTask() {
+            MyScheduledExecutorService.getInstance().schedule(new Runnable() {
                 @Override
                 public void run() {
                     MyCachedThreadPool.getInstance().execute(new StopTask(null));
-                    _Timer.cancel();
                 }
-            }, shutdownTime);
+            }, delay, TimeUnit.MILLISECONDS);
         }
     }
 
