@@ -63,10 +63,18 @@ class TwsSettingsSaver {
         
     }
     
+    private static Calendar adjustCalendar(Calendar calendar) {
+        Calendar cal = (Calendar)calendar.clone();
+        if (!cal.getTime().after(new Date())) {
+            cal.add(Calendar.DAY_OF_MONTH, 1);
+        }
+        return cal;
+    }
+    
     private static List<Date> convertSuppliedTimes(String[] times) throws IBControllerException {
         List<Date> saveTimes = new ArrayList<Date>();
         for (String time : times) {
-            saveTimes.add(getCalendarForTime(time).getTime());
+            saveTimes.add(adjustCalendar(getCalendarForTime(time)).getTime());
         }
         return saveTimes;
     }
@@ -103,19 +111,19 @@ class TwsSettingsSaver {
         }
         
         Calendar startCal = getCalendarForTime(startTime);
+        Utils.logToConsole("startCal.getTime() = " + (new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")).format(startCal.getTime()));
         Calendar endCal = getCalendarForTime(endTime);
-        if (!startCal.getTime().before(endCal.getTime())) {
+        if (!startCal.before(endCal)) {
             endCal.add(Calendar.DAY_OF_MONTH, 1);
         }
+        Utils.logToConsole("endCal.getTime() = " + (new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")).format(endCal.getTime()));
       
         List<Date> saveTimes = new ArrayList<Date>();
-        while (!startCal.getTime().after(endCal.getTime())) {
-            saveTimes.add(startCal.getTime());
+        while (startCal.before(endCal)) {
+            saveTimes.add(adjustCalendar(startCal).getTime());
             startCal.add(Calendar.MINUTE, interval);
-            if (startCal.getTime().after(endCal.getTime())) {
-                saveTimes.add(endCal.getTime());
-            }
         }
+        saveTimes.add(adjustCalendar(endCal).getTime());
         
         return saveTimes;
     }
@@ -133,9 +141,6 @@ class TwsSettingsSaver {
         cal.set(Calendar.HOUR_OF_DAY, saveHour);
         cal.set(Calendar.MINUTE, saveMinute);
         cal.set(Calendar.SECOND, 0);
-        if (!cal.getTime().after(new Date())) {
-            cal.add(Calendar.DAY_OF_MONTH, 1);
-        }
         return cal;
     }
     
