@@ -422,7 +422,7 @@ class Utils {
             try {
                 if (task.get()) return true;
             } catch (InterruptedException e) {
-                logError("IBController: invokeMenuItem task interrupted");
+                logError("invokeMenuItem task interrupted");
                 return false;
             } catch (ExecutionException e) {
                 Throwable t = e.getCause();

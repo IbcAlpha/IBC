@@ -39,18 +39,18 @@ public class ExistingSessionDetectedDialogHandler implements WindowHandler {
             if (!Utils.clickButton(window, "OK") && 
                     !Utils.clickButton(window, "Continue Login") &&
                     !Utils.clickButton(window, "Reconnect This Session"))  {
-                Utils.logError("IBController: could not handle 'Existing session detected' dialog because the 'OK' or 'Continue Login' or 'Reconnect This Session' button wasn't found.");
+                Utils.logError("could not handle 'Existing session detected' dialog because the 'OK' or 'Continue Login' or 'Reconnect This Session' button wasn't found.");
             }
         } else if (setting.equalsIgnoreCase("secondary")) {
             Utils.logToConsole("End this session and let the other session proceed");
             if (!Utils.clickButton(window, "Cancel") && !Utils.clickButton(window, "Exit Application")) {
-                Utils.logError("IBController: could not handle 'Existing session detected' dialog because the 'Cancel' or 'Exit Application' button wasn't found.");
+                Utils.logError("could not handle 'Existing session detected' dialog because the 'Cancel' or 'Exit Application' button wasn't found.");
             }
         } else if (setting.equalsIgnoreCase("manual")) {
             Utils.logToConsole("User must choose");
             // nothing to do
         } else {
-            Utils.logError("IBController: could not handle 'Existing session detected' dialog because the ExistingSessionDetectedAction setting is invalid.");
+            Utils.logError("could not handle 'Existing session detected' dialog because the ExistingSessionDetectedAction setting is invalid.");
         }
     }
 

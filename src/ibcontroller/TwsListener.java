@@ -148,7 +148,7 @@ class TwsListener
         } catch (ExecutionException e) {
             Throwable t = e.getCause();
             if (t instanceof IBControllerException) {
-                Utils.logError("IBController: getConfigDialog could not find " + t.getMessage());
+                Utils.logError("getConfigDialog could not find " + t.getMessage());
                 return null;
             }
             if (t instanceof RuntimeException) throw (RuntimeException)t;

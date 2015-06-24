@@ -47,7 +47,7 @@ class ExitSessionFrameHandler implements WindowHandler {
         if (Settings.getBoolean("IbAutoClosedown", false)) return;
 
         if (! adjustExitSessionTime(window)) {
-            Utils.logError("IBController: could not change AutoLogoff time because we could not find one of the controls.");
+            Utils.logError("could not change AutoLogoff time because we could not find one of the controls.");
         }
     }
 

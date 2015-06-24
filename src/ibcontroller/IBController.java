@@ -292,11 +292,11 @@ public class IBController {
                 Utils.out.println("========================================================================");
                 System.exit(0);
             } else {
-                Utils.logError("IBController: 2 arguments passed, but args[0] is not 'encrypt'. quitting...");
+                Utils.logError("2 arguments passed, but args[0] is not 'encrypt'. quitting...");
                 System.exit(1);
             }
         } else if (args.length == 4 || args.length > 5) {
-                Utils.logError("IBController: Incorrect number of arguments passed. quitting...");
+                Utils.logError("Incorrect number of arguments passed. quitting...");
                 System.exit(1);
         }
     }
@@ -369,7 +369,7 @@ public class IBController {
         }
         File finiPath = new File(iniPath);
         if (!finiPath.isFile() || !finiPath.exists()) {
-            Utils.logError("IBController: ini file \"" + iniPath +
+            Utils.logError("ini file \"" + iniPath +
                                "\" either does not exist, or is a directory.  quitting...");
             System.exit(1);
         }

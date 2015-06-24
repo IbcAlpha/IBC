@@ -36,7 +36,7 @@ class BlindTradingWarningDialogHandler implements WindowHandler {
         if (! Settings.getBoolean("AllowBlindTrading", false)) return;
 
         if (! Utils.clickButton(window, "Yes")) {
-            Utils.logError("IBController: could not dismiss blind trading warning dialog.");
+            Utils.logError("could not dismiss blind trading warning dialog.");
         }
     }
 

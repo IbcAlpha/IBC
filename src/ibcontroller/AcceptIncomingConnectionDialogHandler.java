@@ -45,15 +45,15 @@ class AcceptIncomingConnectionDialogHandler implements WindowHandler {
             if (Utils.clickButton(window, "OK")) {
             } else if (Utils.clickButton(window, "Yes")) {
             } else {
-                Utils.logError("IBController: could not accept incoming connection because we could not find one of the controls.");
+                Utils.logError("could not accept incoming connection because we could not find one of the controls.");
             }
         } else if (acceptIncomingConnectionAction.equalsIgnoreCase(Reject)) {
             if (Utils.clickButton(window, "No")) {
             } else {
-                Utils.logError("IBController: could not accept incoming connection because we could not find one of the controls.");
+                Utils.logError("could not accept incoming connection because we could not find one of the controls.");
             }
         } else {
-                Utils.logError("IBController: could not accept incoming connection because the AcceptIncomingConnectionAction setting is invalid.");
+                Utils.logError("could not accept incoming connection because the AcceptIncomingConnectionAction setting is invalid.");
         }
     }
 

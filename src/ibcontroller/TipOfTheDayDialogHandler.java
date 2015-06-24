@@ -35,7 +35,7 @@ class TipOfTheDayDialogHandler implements WindowHandler {
 
     public void handleWindow(Window window, int eventID) {
         if (! Utils.clickButton(window, "Close")) {
-            Utils.logError("IBController: could not dismiss Tip of the Day because we could not find one of the controls.");
+            Utils.logError("could not dismiss Tip of the Day because we could not find one of the controls.");
         }
     }
 

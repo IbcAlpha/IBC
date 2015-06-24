@@ -77,7 +77,7 @@ class IBControllerServer
                                bindaddr + " port: " +
                                java.lang.String.valueOf(port));
         } catch (IOException e) {
-            Utils.logError("IBController: exception:\n" + e.toString());
+            Utils.logError("exception:\n" + e.toString());
             Utils.logToConsole("IBControllerServer failed to create socket");
             mSocket = null;
             mQuitting = true;

@@ -37,7 +37,7 @@ class NotCurrentlyAvailableDialogHandler implements WindowHandler {
 
     public void handleWindow(Window window, int eventID) {
         if (! Utils.clickButton(window, "OK")) {
-            Utils.logError("IBController: The system is not currently available.");
+            Utils.logError("The system is not currently available.");
             return;
         }
 
