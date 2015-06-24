@@ -16,7 +16,7 @@ IBCDIR=/opt/IBController/
 #   access it. This folder and its contents should also be encrypted so that even users
 #   with administrator privileges can't see the contents:
 
-IBCINI='~/IBController/IBController.ini'
+IBCINI="$HOME/IBController/IBController.ini"
 
 
 #   The folder where TWS is installed:
