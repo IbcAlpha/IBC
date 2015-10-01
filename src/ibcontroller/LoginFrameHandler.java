@@ -44,8 +44,12 @@ class LoginFrameHandler implements WindowHandler {
     public boolean recogniseWindow(Window window) {
         if (! (window instanceof JFrame)) return false;
 
-        return (Utils.titleEquals(window, "New Login") ||
-                Utils.titleEquals(window, "Login"));
+        // we check for the presence of the Login button because 
+        // TWS displays a different (information-only) dialog, also 
+        // entitled Login, when it's trying to reconnect
+        return ((Utils.titleEquals(window, "New Login") ||
+                Utils.titleEquals(window, "Login")) &&
+                Utils.findButton(window, "Login") != null);
     }
 
     private boolean setFieldsAndClick(final Window window) {
