@@ -47,7 +47,7 @@ public class ExistingSessionDetectedDialogHandler implements WindowHandler {
                 Utils.logError("could not handle 'Existing session detected' dialog because the 'Cancel' or 'Exit Application' button wasn't found.");
             }
         } else if (setting.equalsIgnoreCase("manual")) {
-            Utils.logToConsole("User must choose");
+            Utils.logToConsole("User must choose whether to continue with this session");
             // nothing to do
         } else {
             Utils.logError("could not handle 'Existing session detected' dialog because the ExistingSessionDetectedAction setting is invalid.");
