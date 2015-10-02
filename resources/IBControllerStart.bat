@@ -26,40 +26,62 @@ set TWSDIR=C:\Jts\
 
 
 ::   The classpath for TWS. The value below is correct for version
-::   942 (you can verify which version of TWS you are using by going
+::   952 (you can verify which version of TWS you are using by going
 ::   to the Help | About Trader Workstation menu in TWS).
 ::
-::   For other versions of TWS, the information needed may change.
-::   You can find the required information in the shortcut created when you 
-::   installed TWS. 
+::   For other versions of TWS, the information needed may be different.
+::   First, look in the folder where TWS is installed (typically C:\Jts).
+::   If this folder contains a file called StartTWS.bat, open the file with
+::   a text editor and look at the line beginning with START. Select 
+::   everything after "-cp " up to the first subsequent space character,
+::   then press Ctrl-C to copy it to the clipboard, then paste it into the
+::   "set TWSCP=" command below, replacing everything after the "=" character.
 ::
-::   To locate this in Windows 7, right click on the start menu entry for 
-::   TWS and click Properties. In Windows 8, locate the tile for TWS in 
-::   the start screen, right click it, and select 'Open file location' on the menu 
-::   bar at the bottom of the screen. 
+::   If the StartTWS.bat file doesn't exist, you'll need to look in  the 
+::   shortcut created when you installed TWS. How to find this depends on 
+::   which version of Windows you're using:
+::
+::   - Windows 7: right click on the start menu entry for TWS and click 
+::     'Properties'. 
+::
+::   - Windows 8: locate the tile for TWS in the start screen (or the 
+::     'all apps' screen), right click it, and select 'Open file location'
+::     on the menu bar at the bottom of the screen. Then right click on the
+::     highlighted entry in the File Explorer window, and click 'Properties'.
+::
+::   - Windows 8.1: locate the tile for TWS in the start screen (or the 
+::     'all apps' screen), right click it, and select 'Open file location'
+::     in the context menu. Then right click on the highlighted entry in the
+::     File Explorer window, and click 'Properties'.
+::
+::   - Windows 10: locate the tile for TWS in the start menu (or the 
+::     'all apps' list), right click it, and select 'Open file location'
+::     in the context menu. Then right click on the highlighted entry in
+::     the File Explorer window, and click 'Properties'.
 ::
 ::   In the field labelled 'Target', select everything after "-cp " up to the 
 ::   first subsequent space character, then press Ctrl-C to copy it to the 
-::   clipboard, then paste it into the following command, replacing everything 
-::   after the "=" character:
+::   clipboard, then paste it into the "set TWSCP=" command below, replacing
+::   everything after the "=" character:
 
-set TWSCP=jts.jar;total.2012.jar
+set TWSCP=jts.jar;total.2015b.jar
 
 
 ::   Other Java VM options for TWS. You can find this information in the 
-::   shortcut created when you installed TWS. (Note that in the shortcut, 
-::   jclient/LoginFrame is NOT part of the Java options, nor is anything 
-::   that comes after it, so don't include that here):
+::   START line in StartTWS.bat (or the shortcut created when you installed 
+::   TWS if StartTWS.bat doesn't exist). Note that jclient/LoginFrame is
+::   NOT part of the Java options, nor is anything that comes after it, 
+::   so don't include that here):
 
 set JAVAOPTS=-Dsun.java2d.noddraw=true -Dswing.boldMetal=false -Dsun.locale.formatasdefault=true -Xmx1024M -XX:MaxPermSize=256M
 
 
 pushd %TWSDIR%
-:: prevent other Java tools interfering with IBController
 
+:: prevent other Java tools interfering with IBController
 setlocal
-set JAVA_TOOL_OPTIONS
-=
-java.exe -cp  %TWSCP%;%IBCDIR%\IBController.jar %JAVAOPTS% ibcontroller.IBController %IBCINI% %TWSUSERID% %TWSPASSWORD%
+set JAVA_TOOL_OPTIONS=
+
+%SystemDrive%\ProgramData\Oracle\Java\javapath\java.exe -cp  %TWSCP%;%IBCDIR%\IBController.jar %JAVAOPTS% ibcontroller.IBController %IBCINI% %TWSUSERID% %TWSPASSWORD%
 popd
 
