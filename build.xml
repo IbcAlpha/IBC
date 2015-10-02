@@ -2,7 +2,7 @@
     <property environment="env"/>
     <fail unless="env.TWS" message="Environment variable 'TWS' not set (set it to the fully-qualified directory name containing jts.jar)."/>
 
-    <property name="ver" value="2.13.1"/>
+    <property name="ver" value="2.14.0"/>
     <property name="src" location="src"/>
     <property name="resources" location="resources"/>
     <property name="target" location="target"/>
@@ -36,6 +36,6 @@
 	        <exclude name="IBControllerService/**"/>
 	    </fileset>
 	</copy>
-        <zip destfile="${dist}/IBController-${ver}.zip" basedir="${target}" includes="IBController/**"/>
+        <zip destfile="${dist}/IBController-${ver}.zip" basedir="${target}/IBController" includes="**"/>
     </target>
 </project>
