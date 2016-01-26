@@ -48,7 +48,7 @@ class Settings {
         } catch (IOException e) {
             Utils.logToConsole(
                     "Exception accessing Properties file " + path);
-            Utils.out.println(e);
+            Utils.logToConsole(e.toString());
         }
     }
 

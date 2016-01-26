@@ -50,8 +50,20 @@ class TwsListener
     private static volatile JFrame _LoginFrame = null;
     private static volatile JFrame _MainWindow = null;
     private static volatile JDialog _ConfigDialog = null;
+    
+    private static String logComponents;
 
-    private TwsListener() {}
+    private TwsListener() {
+        logComponents =  Settings.getString("LogComponents", "never").toLowerCase();
+        if (logComponents.equals("activate") || logComponents.equals("open") || logComponents.equals("never")) {
+        } else if (logComponents.equals("yes") || logComponents.equals("true")) {
+            logComponents="open";
+        } else if (logComponents.equals("no") || logComponents.equals("false")) {
+            logComponents="never";
+        } else {
+            Utils.logError("the LogComponents setting is invalid.");
+        }
+    }
 
     static TwsListener getInstance() {return _OnlyInstance; }
 
@@ -288,7 +300,13 @@ class TwsListener
         } else {
             Utils.logToConsole("detected window: type=" + window.getClass().getName() + "; event=" + event);
         }
-        if (eventID == WindowEvent.WINDOW_OPENED && Settings.getBoolean("LogComponents", false)) Utils.logWindowComponents(window);
+        
+        if ((eventID == WindowEvent.WINDOW_OPENED && logComponents.equals("open"))
+            ||
+            (eventID == WindowEvent.WINDOW_ACTIVATED && logComponents.equals("activate")))
+        {
+            Utils.logWindowComponents(window);
+        }
     }
     
     /**

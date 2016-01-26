@@ -48,8 +48,12 @@ class Utils {
 
     static final SimpleDateFormat _DateFormatter = new SimpleDateFormat("HH:mm:ss:SSS");
     
-    static PrintStream out = System.out;
-    static PrintStream err = System.err;
+    // set these to the defaults, so that we can continue to use them 
+    // even when TWS redirects System.out and System.err to its own logfile
+    private static final PrintStream out = System.out;
+    private static final PrintStream err = System.err;
+    
+    private static boolean sendConsoleOutputToTwsLog = false;
     
     /**
      * Performs a click on the button labelled with the specified text.
@@ -499,9 +503,18 @@ class Utils {
     }
     
     static void logError(String message) {
-        err.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        err.println(formatMessage(message));
-        err.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        getErrStream().println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        getErrStream().println(formatMessage(message));
+        getErrStream().println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    }
+    
+    /**
+     * Writes a plain text message to the console.
+     * @param msg
+     * The message to be written
+     */
+    static void logRawToConsole(String msg) {
+        getOutStream().println(msg);
     }
     
     /**
@@ -510,7 +523,23 @@ class Utils {
      * The message to be written
      */
     static void logToConsole(String msg) {
-        out.println(formatMessage(msg));
+        getOutStream().println(formatMessage(msg));
+    }
+    
+    private static PrintStream getErrStream() {
+        if (sendConsoleOutputToTwsLog) {
+            return System.err;
+        } else {
+            return err;
+        }
+    }
+    
+    private static PrintStream getOutStream() {
+        if (sendConsoleOutputToTwsLog) {
+            return System.out;
+        } else {
+            return out;
+        }
     }
     
     private static String formatMessage(String message) {
@@ -560,6 +589,10 @@ class Utils {
         if (cb == null) return false;
         cb.setSelected(value);
         return true;
+    }
+    
+    static void sendConsoleOutputToTwsLog(boolean value) {
+        sendConsoleOutputToTwsLog = value;
     }
 
     /**

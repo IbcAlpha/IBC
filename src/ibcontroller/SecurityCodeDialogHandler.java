@@ -48,7 +48,7 @@ public class SecurityCodeDialogHandler implements WindowHandler {
     @Override
     public boolean recogniseWindow(Window window) {
         if (! (window instanceof JDialog)) return false;
-        return (Utils.findLabel(window, "Enter security code") != null);
+        return (Utils.findButton(window, "Enter Read Only") != null);
     }
     
 }

@@ -284,12 +284,12 @@ public class IBController {
     private static void checkArguments(String[] args) {
         if (args.length == 2) {
             if (args[0].equalsIgnoreCase("encrypt")) {
-                Utils.out.println("========================================================================");
-                Utils.out.println("");
+                Utils.logRawToConsole("========================================================================");
+                Utils.logRawToConsole("");
                 Utils.logToConsole("encryption of \"" + args[1] + "\" is \"" +
                                Encryptor.encrypt(args[1]) + "\"");
-                Utils.out.println("");
-                Utils.out.println("========================================================================");
+                Utils.logRawToConsole("");
+                Utils.logRawToConsole("========================================================================");
                 System.exit(0);
             } else {
                 Utils.logError("2 arguments passed, but args[0] is not 'encrypt'. quitting...");
@@ -490,23 +490,15 @@ public class IBController {
     private static void printProperties() {
         Properties p = System.getProperties();
         Enumeration<Object> i = p.keys();
-        Utils.out.println("System Properties");
-        Utils.out.println("------------------------------------------------------------");
+        Utils.logRawToConsole("System Properties");
+        Utils.logRawToConsole("------------------------------------------------------------");
         while (i.hasMoreElements()) {
             String props = (String) i.nextElement();
-            Utils.out.println(props + " = " + (String) p.get(props));
+            Utils.logRawToConsole(props + " = " + (String) p.get(props));
         }
-        Utils.out.println("------------------------------------------------------------");
+        Utils.logRawToConsole("------------------------------------------------------------");
     }
 
-    private static void redirectOutandErrStreams() {
-        if (!Settings.getBoolean("LogToConsole", false)) {
-            // pick up the standard out and err streams as redirected by TWS to its log file
-            Utils.out = System.out;
-            Utils.err = System.err;
-        }
-    }
-    
     private static void startGateway() {
         String[] twsArgs = new String[1];
         twsArgs[0] = getTWSSettingsDirectory();
@@ -553,7 +545,7 @@ public class IBController {
         } else {
             startTws();
         }
-        redirectOutandErrStreams();
+        Utils.sendConsoleOutputToTwsLog(!Settings.getBoolean("LogToConsole", false));
     }
     
     private static void startSavingTwsSettingsAutomatically() {
