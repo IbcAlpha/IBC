@@ -41,15 +41,26 @@ for example to tell TWS/Gateway to shut itself down cleanly.
 ---------------------------
 
 This User Guide is intended to help you get started with IBController. It applies
-to IBController releases 2.12.0 and later.
+to IBController releases 3.0.0 and later. Note that these releases only apply to
+versions of TWS from TWS 952 onwards: for earlier versions of TWS you should
+use IBController release 2.14.0.
 
-The equivalent information for earlier releases can be found in the ``readme.txt``
-file included in the relevant release's ZIP file. You can also view these readme
-files online. For example, the [version 2.11.0 readme.txt](https://github.com/ib-controller/ib-controller/blob/2.11.0/readme.txt) provides detailed
-instructions on configuring that version.
+Just to be really clear about this, the script files provided in IBController release
+3.0.0 and later will **not** work with TWS version 950 and earlier. Note however
+that the IBController program itself (ie IBController.jar) **does** work with earlier
+versions of TWS. So you can update your IBController release 2.14.0 or earlier
+installation with the IBController.jar file from release 3.0.0 or later to take 
+advantage of any new features in IBController provided you continue to use the
+script files from IBController release 2.14.0 or earlier.
 
 Note that in the remainder of this document, 'Unix' is used to refer to all
 Unix-derived operating systems, including Linux and OS/X.
+
+### Acknowledgement
+--------------------
+
+This User Guide has been produced using the Markdown editor and PDF export
+tool at https://stackedit.io/editor.
 
 ## Getting Started
 
@@ -59,23 +70,33 @@ Unix-derived operating systems, including Linux and OS/X.
 Here is a summary of the steps you need to perform to get IBController
 up and running properly.
 
-1. Ensure Java is installed (see *Java 8 Runtime* in the *Prerequisites*
-   section).
-
-2. Install Interactive Brokers Trader Workstation (see *Interactive Brokers*
+1. Install Interactive Brokers Trader Workstation (see *Interactive Brokers*
    *Trader Workstation* in the *Prerequisites* section)
 
-3. Download the IBController distribution ZIP file (see the *Where to get* 
+2. Download the IBController distribution ZIP file (see the *Where to get* 
    *IBController* section).
 
-4. Install IBController (see the *Installation* section).
+3. Install IBController (see the *Installation* section).
 
-5. Create an encrypted folder called ``IBController`` in your personal
+4. Create an encrypted folder called ``IBController`` in your personal
    filestore (see *Protecting the Password* in the *Password Security* section).
 
-6. Copy the configuration file (called ``IBController.ini``) from the    
+5. Copy the configuration file (called ``IBController.ini``) from the    
    IBController installation folder to the encrypted folder created in
    step 5.
+
+6. Check that the correct major version number for TWS is set in the shell 
+   script files (IBControllerStart.bat on Windows, IBControllerStart.sh on 
+   Unix) in the IBController installation folder. To find the TWS major 
+   version number, first run TWS (manually using the IB-provided icon), then 
+   click `Help > About Trader Workstation`. In the displayed information 
+   you'll see a  line like this:
+
+    Build 954.2a, Oct 30, 2015 4:07:54 PM
+
+   Here the major version number is 954. Ignore the rest of the version 
+   number. Now open the script files with a text editor and ensure that
+   the TWS_MAJOR_VRSN variable is set correctly.
 
 7. At this stage, everything is set up to run IBController with its default
    settings, which will start TWS and log it into the IB demo user. It is
@@ -108,30 +129,34 @@ the Arch Linux [ib-controller](https://aur.archlinux.org/packages/ib-controller/
 document, and you should refer to the relevant package documentation for 
 guidance.
 
-#### Java 8 Runtime
+#### Java Runtime
 
 Both IBController and TWS/Gateway are Java programs, and therefore the Java
-Runtime needs to be installed. The current version of Java is Java 8, but 
-this version of IBController will also work perfectly with Java 7. 
+Runtime needs to be accessible, but you don't have to do anything to ensure
+this.
 
-Note that Java 7 is no longer being maintained by Oracle, and in a future 
-release of IBController, support for Java 7 will be removed, so you are 
-advised to update to Java 8 as soon as practical.
+Versions of TWS earlier than 950 required Java to be explicitly installed on the 
+computer. However starting with TWS 952, the TWS installer includes a hidden
+version of Java which Interactive Brokers have used for developing and testing
+TWS. This version also runs IBController perfectly, and the IBController scripts
+ensure that it is used.
 
-If you aren't sure whether the Java Runtime is already installed, or what 
-version is installed, issue the following command from a command prompt:
-
-``java -version``
-
-For Windows, you can download and install the Java Runtime from its [official download site](http://java.com/en/download/index.jsp).
-
-For Unix you can install Java using your package manager.
+This means that it is not necessary to ensure that Java is installed on your 
+computer. It doesn't matter if it is already installed, but the IBController
+scripts won't use it. 
 
 #### Interactive Brokers Trader Workstation
 
 Before running IBController, you will need to download and install the standalone 
 version of Trader Workstation from the [Interactive Brokers](http://www.interactivebrokers.com/) website. Note that this
 installation includes the code for both TWS and the Gateway.
+
+Please note that the self-updating version of TWS accessible via IB's website does
+not work with IBController: you **must** download and install the standalone
+version (which may also be referred to as the offline version on IB's website).
+
+It is safest to use the 'stable' standalone version pf TWS rather than the 'latest'
+version, which is more likely to have bugs.
 
 IBController needs TWS to operate in English so that it can recognise the various
 dialogues that it interacts with. You can set TWS's language by starting it manually 
@@ -192,7 +217,7 @@ On Unix:
 
 ```
 cd /opt
-sudo unzip ~/Downloads/IBControllerV2.12.0.zip -d /opt/IBController
+sudo unzip ~/Downloads/IBControllerV3.0.0.zip -d /opt/IBController
 ```
 
 #### Default Paths
@@ -244,7 +269,7 @@ simplest way to achieve this is to store it within your personal filestore:
 - on Windows this is your ``Documents`` folder (which is normally actually located
   at ``C:\Users\<username>\Documents``)
 
-- on Unix it is the ``/Home/<username>`` directory. 
+- on Unix it is the ``/home/<username>`` directory. 
 
 You are advised to place the file in its own ``IBController`` folder within this location.
 
@@ -271,10 +296,16 @@ documentation for your distribution.
 
 When the password is included in the configuration file, IBController allows it
 to be in an encrypted form so that casual observers cannot see the actual
-password, for example while you are editing the configuration file. Note 
-however that the encryption is very simple and easily reversed by anyone who
-knows the encryption technique, so it does not remove the need to store the
-configuration file securely.
+password, for example while you are editing the configuration file. 
+
+Note however that the encryption is very simple and easily reversed by 
+anyone who knows the encryption technique, so it does not remove the need
+to store the configuration file securely. It can also cause problems if your 
+password has certain characters in certain positions (due to a deficiency in
+the encryption algorithm): therefore it is advisable not to use the paswword 
+encryption facility, provided you make sure your IBController configuration 
+file is stored in a safe place and you don't leave it open in an editor while the
+computer is unattended or overlooked.
 
 To encrypt your password, run the following command from the IBController directory:
  
@@ -285,7 +316,7 @@ included in your IBController configuration ``.ini`` file.
 
 You should also clear your shell history if you entered the above command. In most
 cases this is achieved by pressing ALT+F7 (Windows users) or typing ``history -c``
-(Linux user), although you should check it worked by pressing the up arrow afterwards.
+(Linux users), although you should check it worked by pressing the up arrow afterwards.
 
 ### Configuring IBController
 ---------------------------
@@ -451,21 +482,12 @@ run both your live and paper trading accounts. So:
 
 To use more than one version of TWS (for example for testing a new version 
 with your paper-trading account while also using a previous version for
-your live account), you need to be a bit careful about installing TWS.
+your live account), you just need to install the required versions in the normal 
+way. Version 952 and later of TWS have installers that automatically place the 
+relevant files in separate folders named according to the version number.
 
-The suggested approach is to install each TWS version into its own folder
-(for example install TWS 946 into ``C:\Jts946``). Then have separate settings
-folders for the different modes you want to operate, for example
-``C:\JtsSettingsLive`` and ``C:\JtsSettingsTest``. Next adjust the start scripts
-and configuration files to reflect these locations. You can now run the stable
-and test versions of TWS simultaneously. When you are happy that the test version
-works correctly, you can easily start using it for your live account by adjusting
-the ``set TWSDIR=...`` line in the start script for the live account.
-
-Note that when you install more than one version of TWS in this way, only 
-the last one installed can be uninstalled via the Control Panel's Program and
-Features applet. Other versions can be uninstalled by running the ``UNWISE.EXE``
-program in the relevant TWS installation folder.
+Then follow the advice in the previous section and ensure that each script
+file has the correct value for the TWS_MAJOR_VRSN variable.
 
 ### Any Questions?
 -----------------
