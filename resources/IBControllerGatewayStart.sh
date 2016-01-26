@@ -1,56 +1,47 @@
-#!/bin/bash
-#   This command file starts the IB Gateway, which provides a low-resource capability
-#   for running TWS API programs without the complex TWS user interface.
+#   It's likely that the only thing you need to change in this file is the version
+#   number setting. 
+
+#   You can find the TWS major version number by running TWS, then clicking 
+#   Help > About Trader Workstation. In the displayed information you'll see a
+#   line like this:
+#
+#    Build 954.2a, Oct 30, 2015 4:07:54 PM
+#
+#   Here the major version number is 954. Do not include the rest of the version number in
+#   this setting:
+
+TWS_MAJOR_VRSN=952
+
 
 #   If your TWS user id and password are not included in the IBController 
-#   configuration file, set them here (do not encrypt the password):
+#   configuration file, them here (do not encrypt the password). However
+#   You are strongly advised not to set them here since this file is 
+#   not normally in a protected location:
 
 TWSUSERID=
 TWSPASSWORD=
 
 
+#   The folder where TWS is installed:
+
+TWS_PATH=~/Jts
+
+
 #   The folder containing the IBController files:
 
-IBCDIR=/opt/IBController/
+IBC_PATH=/opt/IBController
 
 
 #   The location and filename of the IBController configuration file. This file should
 #   be in a folder in your personal filestore, so that other users of your computer can't
 #   access it. This folder and its contents should also be encrypted so that even users
-#   with administrator privileges can't see the contents:
+#   with administrator privileges can't see the contents. Note that you can use the HOMEPATH
+#   environment variable to address the root of your personal filestore (HOMEPATH is set
+#   automatically by Windows):
 
-IBCINI="$HOME/IBController/IBController.ini"
+IBC_INI=~/IBController/IBController.ini
 
+#   now launch IBController
 
-#   The folder where TWS is installed:
-
-TWSDIR=/opt/IBJts
-
-
-#   The classpath for the IB Gateway. The value below is correct for version
-#   942 (you can verify which version of TWS you are using by going
-#   to the Help | About Trader Workstation menu in TWS).
-#
-#   For other versions of the IB Gateway, the information needed may change.
-#   You can find the required information in the UNIX/MacOsX download instructions
-#   for TWS on the IB website, which includes a sample command to start TWS.
-#
-#   You must include everything after "-cp " up to the 
-#   first subsequent space character:
-
-TWSCP=jts.jar:total.2013.jar
-
-
-#   Other Java VM options for the IB Gateway. You can find this information in the 
-#   UNIX/MacosX download instructions for TWS on the IB website. (Note that
-#   ibgateway.GWClient is NOT part of the Java options, nor is anything 
-#   that comes after it, so don't include that here):
-
-JAVAOPTS='-Xmx768M -XX:MaxPermSize=256M'
-
-pushd $TWSDIR
-# prevent other Java tools interfering with IBController
-unset JAVA_TOOL_OPTIONS
-java -cp  $TWSCP:$IBCDIR/IBController.jar $JAVAOPTS ibcontroller.IBGatewayController $IBCINI $TWSUSERID $TWSPASSWORD
-popd
+Scripts/IBController.sh $TWS_MAJOR_VRSN -g "--tws-path=$TWS_PATH" "--ibc-path=$IBC_PATH" "--ibc-ini=$IBC_INI" --user=$TWSUSERID --pw=$TWSPASSWORD
 
