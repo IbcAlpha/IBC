@@ -126,8 +126,8 @@ if [[ ! -e "$TWS_PATH/$TWS_VERSION/tws.vmoptions" ]]; then
 fi
 
 if [[ -n $JAVA_PATH ]]; then
-	if [[ ! -e "$JAVA_PATH/java.exe" ]]; then 
-		echo $JAVA_PATH/java.exe does not exist
+	if [[ ! -e "$JAVA_PATH/java" ]]; then 
+		echo $JAVA_PATH/java does not exist
 		exit $E_NO_JAVA
 	fi
 fi
