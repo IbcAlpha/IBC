@@ -141,9 +141,14 @@ version of Java which Interactive Brokers have used for developing and testing
 TWS. This version also runs IBController perfectly, and the IBController scripts
 ensure that it is used.
 
-This means that it is not necessary to ensure that Java is installed on your 
-computer. It doesn't matter if it is already installed, but the IBController
-scripts won't use it. 
+This means that it is not necessary to ensure that Java is installed
+on your computer. If for some reason the version of Java included with
+TWS is not found, IBController will search for another version of Java
+on the system and use it, but only if it is Oracle Java, because other
+version have shown to cause problems running TWS.
+
+You can also completely override which Java should be used by
+supplying the ``javaPath`` parameter to the startup script.
 
 #### Interactive Brokers Trader Workstation
 

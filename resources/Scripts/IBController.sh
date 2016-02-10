@@ -165,34 +165,52 @@ JAVA_VM_OPTIONS=${VM_OPTIONS[*]}
 echo Java VM Options=$JAVA_VM_OPTIONS
 echo
 
-#======================== Determine the location of java.exe ===============
+#======================== Determine the location of java executable ========
 
-echo Determining the location of java.exe 
+echo Determining the location of java executable
 
+# preferably use java supplied with TWS installation
 if [[ ! -n $JAVA_PATH ]]; then
-	if [[ -e "$TWS_PATH/$TWS_VERSION/.install4j/pref_jre.cfg" ]]; then
-		read JAVA_PATH < $TWS_PATH/$TWS_VERSION/.install4j/pref_jre.cfg
-		JAVA_PATH=$JAVA_PATH/bin
-		echo $JAVA_PATH
-		if [[ ! -e "$JAVA_PATH/java" ]]; then JAVA_PATH= ;fi
+	tws_java="$TWS_PATH/$TWS_VERSION/.install4j"
+	if [[ -e "$tws_java/pref_jre.cfg" ]]; then
+		read JAVA_PATH < "$tws_java/pref_jre.cfg"
+	elif [[ -e "$tws_java/inst_jre.cfg" ]]; then
+		read JAVA_PATH < "$tws_java/inst_jre.cfg"
+	fi
+	JAVA_PATH="$JAVA_PATH/bin"
+	echo $JAVA_PATH
+	if [[ ! -e "$JAVA_PATH/java" ]]; then
+		echo could not find $JAVA_PATH/java
+		JAVA_PATH=
 	fi
 fi
 
-if [[ ! -n $JAVA_PATH ]]; then
-	if [[ -e "$TWS_PATH/$TWS_VERSION/.install4j/inst_jre.cfg" ]]; then
-		read JAVA_PATH < $TWS_PATH/$TWS_VERSION/.install4j/inst_jre.cfg
-		JAVA_PATH=$JAVA_PATH/bin
-		echo $JAVA_PATH
-		if [[ ! -e "$JAVA_PATH/java" ]]; then JAVA_PATH= ;fi
+# alternatively use installed java, if its from oracle (openJDK causes problems with TWS)
+if type -p java; then
+	echo found java executable in PATH
+	system_java=java
+elif [[ -n "$JAVA_HOME" ]] && [[ -x "$JAVA_HOME/bin/java" ]];  then
+	echo found java executable in JAVA_HOME
+	system_java="$JAVA_HOME/bin/java"
+fi
+
+if [[ "$system_java" ]]; then
+	if [[ $($system_java -XshowSettings:properties -version 2>&1) == *"Oracle"* ]]; then
+		JAVA_PATH=$(dirname $(which $system_java))
+	else
+		echo "system java $system_java is not from Oracle, won't use it"
 	fi
 fi
 
 if [[ ! -n $JAVA_PATH ]]; then
 	echo Can\'t find suitable Java installation
 	exit $E_NO_JAVA
+elif [[ ! -e "$JAVA_PATH/java" ]]; then
+	echo No java executable found in supplied path $JAVA_PATH
+	exit $E_NO_JAVA
 fi
 
-echo Location of java.exe=$JAVA_PATH
+echo Location of java executable=$JAVA_PATH
 echo
 
 #======================== Start IBController ===============================
