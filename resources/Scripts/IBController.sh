@@ -170,43 +170,56 @@ echo
 echo Determining the location of java executable
 
 # preferably use java supplied with TWS installation
+
+# Read a path from config file. If it contains a java executable,
+# return the path to the executable. Return an empty string otherwise.
+function read_from_config {
+	path=$1
+	if [[ -e "$path" ]]; then
+		read java_path_from_config < "$path"
+		if [[ -e "$java_path_from_config/bin/java" ]]; then
+			echo "$java_path_from_config/bin"
+		else
+			>&2 echo could not find $java_path_from_config/bin/java
+			echo ""
+		fi
+	else
+		echo ""
+	fi
+}
+
+tws_installer="$TWS_PATH/$TWS_VERSION/.install4j"
 if [[ ! -n $JAVA_PATH ]]; then
-	tws_java="$TWS_PATH/$TWS_VERSION/.install4j"
-	if [[ -e "$tws_java/pref_jre.cfg" ]]; then
-		read JAVA_PATH < "$tws_java/pref_jre.cfg"
-	elif [[ -e "$tws_java/inst_jre.cfg" ]]; then
-		read JAVA_PATH < "$tws_java/inst_jre.cfg"
-	fi
-	JAVA_PATH="$JAVA_PATH/bin"
-	echo $JAVA_PATH
-	if [[ ! -e "$JAVA_PATH/java" ]]; then
-		echo could not find $JAVA_PATH/java
-		JAVA_PATH=
-	fi
+	JAVA_PATH=$(read_from_config "$tws_installer/pref_jre.cfg")
+fi
+if [[ ! -n $JAVA_PATH ]]; then
+	JAVA_PATH=$(read_from_config "$tws_installer/inst_jre.cfg")
 fi
 
 # alternatively use installed java, if its from oracle (openJDK causes problems with TWS)
-if type -p java; then
-	echo found java executable in PATH
-	system_java=java
-elif [[ -n "$JAVA_HOME" ]] && [[ -x "$JAVA_HOME/bin/java" ]];  then
-	echo found java executable in JAVA_HOME
-	system_java="$JAVA_HOME/bin/java"
-fi
+if [[ ! -n $JAVA_PATH ]]; then
+	if type -p java; then
+		echo found java executable in PATH
+		system_java=java
+	elif [[ -n "$JAVA_HOME" ]] && [[ -x "$JAVA_HOME/bin/java" ]];  then
+		echo found java executable in JAVA_HOME
+		system_java="$JAVA_HOME/bin/java"
+	fi
 
-if [[ "$system_java" ]]; then
-	if [[ $($system_java -XshowSettings:properties -version 2>&1) == *"Oracle"* ]]; then
-		JAVA_PATH=$(dirname $(which $system_java))
-	else
-		echo "system java $system_java is not from Oracle, won't use it"
+	if [[ "$system_java" ]]; then
+		if [[ $($system_java -XshowSettings:properties -version 2>&1) == *"Oracle"* ]]; then
+			JAVA_PATH=$(dirname $(which $system_java))
+		else
+			>&2 echo "system java $system_java is not from Oracle, won't use it"
+		fi
 	fi
 fi
 
 if [[ ! -n $JAVA_PATH ]]; then
-	echo Can\'t find suitable Java installation
+	>&2 echo Can\'t find suitable Java installation
 	exit $E_NO_JAVA
 elif [[ ! -e "$JAVA_PATH/java" ]]; then
-	echo No java executable found in supplied path $JAVA_PATH
+	>&2 echo No java executable found in supplied path $JAVA_PATH
 	exit $E_NO_JAVA
 fi
 
