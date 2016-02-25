@@ -126,8 +126,8 @@ if [[ ! -e "$TWS_PATH/$TWS_VERSION/tws.vmoptions" ]]; then
 fi
 
 if [[ -n $JAVA_PATH ]]; then
-	if [[ ! -e "$JAVA_PATH/java.exe" ]]; then 
-		echo $JAVA_PATH/java.exe does not exist
+	if [[ ! -e "$JAVA_PATH/java" ]]; then 
+		echo $JAVA_PATH/java does not exist
 		exit $E_NO_JAVA
 	fi
 fi
@@ -180,7 +180,7 @@ function read_from_config {
 		if [[ -e "$java_path_from_config/bin/java" ]]; then
 			echo "$java_path_from_config/bin"
 		else
-			>&2 echo could not find $java_path_from_config/bin/java
+			>&2 echo Could not find $java_path_from_config/bin/java
 			echo ""
 		fi
 	else
@@ -199,18 +199,18 @@ fi
 # alternatively use installed java, if its from oracle (openJDK causes problems with TWS)
 if [[ ! -n $JAVA_PATH ]]; then
 	if type -p java; then
-		echo found java executable in PATH
+		echo Found java executable in PATH
 		system_java=java
 	elif [[ -n "$JAVA_HOME" ]] && [[ -x "$JAVA_HOME/bin/java" ]];  then
-		echo found java executable in JAVA_HOME
+		echo Found java executable in JAVA_HOME
 		system_java="$JAVA_HOME/bin/java"
 	fi
 
 	if [[ "$system_java" ]]; then
-		if [[ $($system_java -XshowSettings:properties -version 2>&1) == *"Oracle"* ]]; then
+		if [[ $($system_java -XshowSettings:properties -version 2>&1) == *"Java(TM) SE Runtime Environment"* ]]; then
 			JAVA_PATH=$(dirname $(which $system_java))
 		else
-			>&2 echo "system java $system_java is not from Oracle, won't use it"
+			>&2 echo "System java $system_java is not from Oracle, won't use it"
 		fi
 	fi
 fi
