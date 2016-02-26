@@ -126,7 +126,7 @@ if [[ ! -e "$TWS_PATH/$TWS_VERSION/tws.vmoptions" ]]; then
 fi
 
 if [[ -n $JAVA_PATH ]]; then
-	if [[ ! -e "$JAVA_PATH/java" ]]; then 
+	if [[ ! -e "$JAVA_PATH/java" ]]; then
 		echo $JAVA_PATH/java does not exist
 		exit $E_NO_JAVA
 	fi
@@ -139,7 +139,7 @@ echo Generating the classpath
 
 for JAR in $TWS_JARS/*.jar; do
 	if [[ -n $IBC_CLASSPATH ]]; then
-		IBC_CLASSPATH=$IBC_CLASSPATH: 
+		IBC_CLASSPATH=$IBC_CLASSPATH:
 	fi
 	IBC_CLASSPATH=$IBC_CLASSPATH$JAR
 done
@@ -198,7 +198,7 @@ fi
 
 # alternatively use installed java, if its from oracle (openJDK causes problems with TWS)
 if [[ ! -n $JAVA_PATH ]]; then
-	if type -p java; then
+	if type -p java > /dev/null; then
 		echo Found java executable in PATH
 		system_java=java
 	elif [[ -n "$JAVA_HOME" ]] && [[ -x "$JAVA_HOME/bin/java" ]];  then
@@ -231,7 +231,7 @@ echo
 # prevent other Java tools interfering with IBController
 JAVA_TOOL_OPTIONS=
 
-pushd $TWS_PATH
+pushd "$TWS_PATH" > /dev/null
 
 if [[ "$ENTRY_POINT" = "$ENTRY_POINT_TWS" ]]; then
 	echo Starting IBController with this command:
@@ -242,7 +242,7 @@ echo $JAVA_PATH/java -cp  $IBC_CLASSPATH $JAVA_VM_OPTIONS $ENTRY_POINT "$IBC_INI
 echo
 $JAVA_PATH/java -cp  $IBC_CLASSPATH $JAVA_VM_OPTIONS $ENTRY_POINT "$IBC_INI" $IB_USER_ID $IB_PASSWORD
 
-popd
+popd > /dev/null
 
 exit 0
 
