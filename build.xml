@@ -2,7 +2,7 @@
     <property environment="env"/>
     <fail unless="env.TWS" message="Environment variable 'TWS' not set (set it to the fully-qualified directory name containing jts.jar)."/>
 
-    <property name="ver" value="3.0.0"/>
+    <property name="ver" value="3.0.1"/>
     <property name="src" location="src"/>
     <property name="resources" location="resources"/>
     <property name="target" location="target"/>
