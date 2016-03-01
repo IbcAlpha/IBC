@@ -126,7 +126,7 @@ if [[ ! -e "$TWS_PATH/$TWS_VERSION/tws.vmoptions" ]]; then
 fi
 
 if [[ -n $JAVA_PATH ]]; then
-	if [[ ! -e "$JAVA_PATH/java" ]]; then 
+	if [[ ! -e "$JAVA_PATH/java" ]]; then
 		echo $JAVA_PATH/java does not exist
 		exit $E_NO_JAVA
 	fi
@@ -139,7 +139,7 @@ echo Generating the classpath
 
 for JAR in $TWS_JARS/*.jar; do
 	if [[ -n $IBC_CLASSPATH ]]; then
-		IBC_CLASSPATH=$IBC_CLASSPATH: 
+		IBC_CLASSPATH=$IBC_CLASSPATH:
 	fi
 	IBC_CLASSPATH=$IBC_CLASSPATH$JAR
 done
@@ -165,34 +165,65 @@ JAVA_VM_OPTIONS=${VM_OPTIONS[*]}
 echo Java VM Options=$JAVA_VM_OPTIONS
 echo
 
-#======================== Determine the location of java.exe ===============
+#======================== Determine the location of java executable ========
 
-echo Determining the location of java.exe 
+echo Determining the location of java executable
 
+# preferably use java supplied with TWS installation
+
+# Read a path from config file. If it contains a java executable,
+# return the path to the executable. Return an empty string otherwise.
+function read_from_config {
+	path=$1
+	if [[ -e "$path" ]]; then
+		read java_path_from_config < "$path"
+		if [[ -e "$java_path_from_config/bin/java" ]]; then
+			echo "$java_path_from_config/bin"
+		else
+			>&2 echo Could not find $java_path_from_config/bin/java
+			echo ""
+		fi
+	else
+		echo ""
+	fi
+}
+
+tws_installer="$TWS_PATH/$TWS_VERSION/.install4j"
 if [[ ! -n $JAVA_PATH ]]; then
-	if [[ -e "$TWS_PATH/$TWS_VERSION/.install4j/pref_jre.cfg" ]]; then
-		read JAVA_PATH < $TWS_PATH/$TWS_VERSION/.install4j/pref_jre.cfg
-		JAVA_PATH=$JAVA_PATH/bin
-		echo $JAVA_PATH
-		if [[ ! -e "$JAVA_PATH/java" ]]; then JAVA_PATH= ;fi
+	JAVA_PATH=$(read_from_config "$tws_installer/pref_jre.cfg")
+fi
+if [[ ! -n $JAVA_PATH ]]; then
+	JAVA_PATH=$(read_from_config "$tws_installer/inst_jre.cfg")
+fi
+
+# alternatively use installed java, if its from oracle (openJDK causes problems with TWS)
+if [[ ! -n $JAVA_PATH ]]; then
+	if type -p java > /dev/null; then
+		echo Found java executable in PATH
+		system_java=java
+	elif [[ -n "$JAVA_HOME" ]] && [[ -x "$JAVA_HOME/bin/java" ]];  then
+		echo Found java executable in JAVA_HOME
+		system_java="$JAVA_HOME/bin/java"
+	fi
+
+	if [[ "$system_java" ]]; then
+		if [[ $($system_java -XshowSettings:properties -version 2>&1) == *"Java(TM) SE Runtime Environment"* ]]; then
+			JAVA_PATH=$(dirname $(which $system_java))
+		else
+			>&2 echo "System java $system_java is not from Oracle, won't use it"
+		fi
 	fi
 fi
 
 if [[ ! -n $JAVA_PATH ]]; then
-	if [[ -e "$TWS_PATH/$TWS_VERSION/.install4j/inst_jre.cfg" ]]; then
-		read JAVA_PATH < $TWS_PATH/$TWS_VERSION/.install4j/inst_jre.cfg
-		JAVA_PATH=$JAVA_PATH/bin
-		echo $JAVA_PATH
-		if [[ ! -e "$JAVA_PATH/java" ]]; then JAVA_PATH= ;fi
-	fi
-fi
-
-if [[ ! -n $JAVA_PATH ]]; then
-	echo Can\'t find suitable Java installation
+	>&2 echo Can\'t find suitable Java installation
+	exit $E_NO_JAVA
+elif [[ ! -e "$JAVA_PATH/java" ]]; then
+	>&2 echo No java executable found in supplied path $JAVA_PATH
 	exit $E_NO_JAVA
 fi
 
-echo Location of java.exe=$JAVA_PATH
+echo Location of java executable=$JAVA_PATH
 echo
 
 #======================== Start IBController ===============================
@@ -200,7 +231,7 @@ echo
 # prevent other Java tools interfering with IBController
 JAVA_TOOL_OPTIONS=
 
-pushd $TWS_PATH
+pushd "$TWS_PATH" > /dev/null
 
 if [[ "$ENTRY_POINT" = "$ENTRY_POINT_TWS" ]]; then
 	echo Starting IBController with this command:
@@ -211,7 +242,7 @@ echo $JAVA_PATH/java -cp  $IBC_CLASSPATH $JAVA_VM_OPTIONS $ENTRY_POINT "$IBC_INI
 echo
 $JAVA_PATH/java -cp  $IBC_CLASSPATH $JAVA_VM_OPTIONS $ENTRY_POINT "$IBC_INI" $IB_USER_ID $IB_PASSWORD
 
-popd
+popd > /dev/null
 
 exit 0
 
