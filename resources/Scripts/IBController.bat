@@ -81,6 +81,7 @@ set JAVA_PATH=
 set IB_USER_ID=
 set IB_PASSWORD=
 set IBC_CLASSPATH=
+set ERROR_MESSAGE=
 
 ::======================== Parse command line arguments =====================
 :parse
@@ -100,17 +101,20 @@ if /I "%ARG%" == "/G" (
 	set IBC_INI=%ARG:~8%
 ) else if /I "%ARG:~0,10%" == "/JAVAPATH:" (
 	set JAVA_PATH=%ARG:~10%
+	if "%JAVA_PATH%" == """" set JAVA_PATH=
 ) else if /I "%ARG:~0,6%" == "/USER:" (
 	set IB_USER_ID=%ARG:~6%
+	if "%IB_USER_ID%" == """" set IB_USER_ID=
 ) else if /I "%ARG:~0,4%" == "/PW:" (
 	set IB_PASSWORD=%ARG:~4%
+	if "%IB_PASSWORD%" == """" set IB_PASSWORD=
 ) else if /I "%ARG:~0,1%" == "/" (
-	echo Invalid parameter '%ARG%'
+	set ERROR_MESSAGE=Invalid parameter '%ARG%'
 	set ERROR=%E_INVALID_ARG%
 ) else if not defined TWS_VERSION (
 	set TWS_VERSION=%ARG%
 ) else (
-	echo Invalid parameter '%ARG%'
+	set ERROR_MESSAGE=Invalid parameter '%ARG%'
 	set ERROR=%E_INVALID_ARG%
 )
 		
@@ -120,10 +124,37 @@ goto :parse
 :parsingComplete
 if defined ERROR goto :err
 
+echo =================================
+echo.
+echo IBController version = %IBC_VRSN%
+echo.
+
+:: log the arguments
+
+echo Arguments:
+echo.
+echo TWS version = %TWS_VERSION%
+echo Entry point = %ENTRY_POINT%
+echo /TwsPath = %TWS_PATH%
+echo /IbcPath = %IBC_PATH%
+echo /IbcIni = %IBC_INI%
+echo /JavaPath = %JAVA_PATH%
+if "%IB_USER_ID%" == "" (
+	echo /User = 
+) else (
+	echo /User = ***
+)
+if "%IB_PASSWORD%" == "" (
+	echo /PW = 
+) else (
+	echo /PW = ***
+)
+echo.
+
 ::======================== Check everything ready to proceed ================
 
 if not defined TWS_VERSION (
-	echo TWS major version number has not been supplied - it must be the first argument
+	set ERROR_MESSAGE=TWS major version number has not been supplied - it must be the first argument
 	set ERROR=%E_NO_TWS_VERSION%
 	goto :err
 )
@@ -132,32 +163,71 @@ if not defined TWS_PATH set TWS_PATH=C:\Jts
 if not defined IBC_PATH set IBC_PATH=C:\IBController
 if not defined IBC_INI set IBC_INI=%HOMEPATH%\Documents\IBController\IBController.ini
 
+:: In the following we try to use the correct .vmoptions file for the chosen entrypoint
+:: Note that uninstalling TWS or Gateway leaves the relevant .vmoption file in place, so
+:: we can still use the correct one.
+if /I "%ENTRY_POINT%" == "%ENTRY_POINT_TWS%" (
+	if exist "%TWS_PATH%\%TWS_VERSION%\tws.vmoptions" (
+		set TWS_VMOPTS=%TWS_PATH%\%TWS_VERSION%\tws.vmoptions 
+	) else if exist "%TWS_PATH%\ibgateway\%TWS_VERSION%\ibgateway.vmoptions" (
+		set TWS_VMOPTS=%TWS_PATH%\ibgateway\%TWS_VERSION%\ibgateway.vmoptions 
+	) 
 
-set TWS_JARS=%TWS_PATH%\%TWS_VERSION%\jars
+	if exist "%TWS_PATH%\%TWS_VERSION%\jars" (
+		set TWS_JARS=%TWS_PATH%\%TWS_VERSION%\jars
+		set INSTALL4J=%TWS_PATH%\%TWS_VERSION%\.install4j
+	) else (
+		set TWS_JARS=%TWS_PATH%\ibgateway\%TWS_VERSION%\jars
+		set INSTALL4J=%TWS_PATH%\ibgateway\%TWS_VERSION%\.install4j
+	)
+)
+if /I "%ENTRY_POINT%" == "%ENTRY_POINT_GATEWAY%" (
+	if exist "%TWS_PATH%\ibgateway\%TWS_VERSION%\ibgateway.vmoptions" (
+		set TWS_VMOPTS=%TWS_PATH%\ibgateway\%TWS_VERSION%\ibgateway.vmoptions 
+	) else if exist "%TWS_PATH%\%TWS_VERSION%\tws.vmoptions" (
+		set TWS_VMOPTS=%TWS_PATH%\%TWS_VERSION%\tws.vmoptions 
+	) 
+
+	if exist "%TWS_PATH%\ibgateway\%TWS_VERSION%\jars" (
+		set TWS_JARS=%TWS_PATH%\ibgateway\%TWS_VERSION%\jars
+		set INSTALL4J=%TWS_PATH%\ibgateway\%TWS_VERSION%\.install4j
+	) else (
+		set TWS_JARS=%TWS_PATH%\%TWS_VERSION%\jars
+		set INSTALL4J=%TWS_PATH%\%TWS_VERSION%\.install4j
+	)
+)
 
 if not exist "%TWS_JARS%" (
-	echo TWS version %TWS_VERSION% is not installed
+	set ERROR_MESSAGE=TWS version %TWS_VERSION% is not installed
 	set ERROR=%E_TWS_VERSION_NOT_INSTALLED%
 	goto :err
 )
 if not exist "%IBC_PATH%" (
-	echo IBController path: %IBC-PATH% does not exist
+	set ERROR_MESSAGE=IBController path: %IBC-PATH% does not exist
 	set ERROR=%E_IBC_PATH_NOT_EXIST%
 	goto :err
 )
 if not exist "%IBC_INI%" (
-	echo IBController configuration file: %IBC-INI%  does not exist
+	set ERROR_MESSAGE=IBController configuration file: %IBC-INI%  does not exist
 	set ERROR=%E_IBC_INI_NOT_EXIST%
 	goto :err
 )
-if not exist "%TWS_PATH%\%TWS_VERSION%\tws.vmoptions" (
-	echo %TWS_PATH%\%TWS_VERSION%\tws.vmoptions does not exist
+if not exist "%TWS_VMOPTS%" (  
+	set ERROR_MESSAGE=%TWS_VMOPTS% does not exist  
 	set ERROR=%E_TWS_VMOPTIONS_NOT_FOUND%
 	goto :err
+)
+if defined JAVA_PATH (
+	if not exist "%JAVA_PATH%\java.exe" (  
+		set ERROR_MESSAGE=%JAVA_PATH% does not contain the Java runtime executable  
+		set ERROR=%E_NO_JAVA%
+		goto :err
+	)
 )
 
 
 echo =================================
+echo.
 
 ::======================== Generate the classpath ===========================
 
@@ -175,7 +245,7 @@ echo.
 
 echo Generating the JAVA VM options
 
-for /f "tokens=1 delims= " %%i in (%TWS_PATH%\%TWS_VERSION%\tws.vmoptions) do (
+for /f "tokens=1 delims= " %%i in (%TWS_VMOPTS%) do (
 	set TOKEN=%%i
 	if not "!TOKEN:~0,1!"=="#" set JAVA_VM_OPTIONS=!JAVA_VM_OPTIONS! %%i
 )
@@ -186,31 +256,31 @@ echo.
 
 echo Determining the location of java.exe 
 
-set JAVA_HOME=
-
-if exist "%TWS_PATH%\%TWS_VERSION%\.install4j\pref_jre.cfg" (
-	for /f "tokens=1 delims=" %%i in (%TWS_PATH%\%TWS_VERSION%\.install4j\pref_jre.cfg) do set JAVA_HOME=%%i\bin
-	if not exist "!JAVA_HOME!\java.exe" set JAVA_HOME=
-)
-
-if not defined JAVA_HOME (
-	if exist "%TWS_PATH%\%TWS_VERSION%\.install4j\inst_jre.cfg" (
-		for /f "tokens=1 delims=" %%i in (%TWS_PATH%\%TWS_VERSION%\.install4j\inst_jre.cfg) do set JAVA_HOME=%%i\bin
-		if not exist "!JAVA_HOME!\java.exe" set JAVA_HOME=
+if not defined JAVA_PATH (
+	if exist "%INSTALL4J%\pref_jre.cfg" (
+		for /f "tokens=1 delims=" %%i in (%INSTALL4J%\pref_jre.cfg) do set JAVA_PATH=%%i\bin
+		if not exist "!JAVA_PATH!\java.exe" set JAVA_PATH=
 	)
 )
 
-if not defined JAVA_HOME (
-	if exist "%PROGRAMDATA%\Oracle\Java\javapath\java.exe" set JAVA_HOME="%PROGRAMDATA%\Oracle\Java\javapath"
+if not defined JAVA_PATH (
+	if exist "%INSTALL4J%\inst_jre.cfg" (
+		for /f "tokens=1 delims=" %%i in (%INSTALL4J%\inst_jre.cfg) do set JAVA_PATH=%%i\bin
+		if not exist "!JAVA_PATH!\java.exe" set JAVA_PATH=
+	)
 )
 
-if not defined JAVA_HOME (
-	echo Can't find suitable Java installation
+if not defined JAVA_PATH (
+	if exist "%PROGRAMDATA%\Oracle\Java\javapath\java.exe" set JAVA_PATH="%PROGRAMDATA%\Oracle\Java\javapath"
+)
+
+if not defined JAVA_PATH (
+	set ERROR_MESSAGE=Can't find suitable Java installation
 	set ERROR=%E_NO_JAVA%
 	goto :err
 )
 
-echo Location of java.exe=%JAVA_HOME%
+echo Location of java.exe=%JAVA_PATH%
 echo.
 
 ::======================== Start IBController ===============================
@@ -225,14 +295,21 @@ if "%ENTRY_POINT%"=="%ENTRY_POINT_TWS%" (
 ) else (
 	echo Starting IBGateway with this command:
 )
-echo %JAVA_HOME%\java.exe -cp  %IBC_CLASSPATH% %JAVA_VM_OPTIONS% %ENTRY_POINT% "%IBC_INI%" "%IB_USER_ID%" "%IB_PASSWORD%"
+echo "%JAVA_PATH%\java.exe" -cp  "%IBC_CLASSPATH%" %JAVA_VM_OPTIONS% %ENTRY_POINT% "%IBC_INI%" *** ***
 echo.
-"%JAVA_HOME%\java.exe" -cp  %IBC_CLASSPATH% %JAVA_VM_OPTIONS% %ENTRY_POINT% "%IBC_INI%" %IB_USER_ID% %IB_PASSWORD%
+
+"%JAVA_PATH%\java.exe" -cp  "%IBC_CLASSPATH%" %JAVA_VM_OPTIONS% %ENTRY_POINT% "%IBC_INI%" %IB_USER_ID% %IB_PASSWORD%
 
 popd
 
 exit /B 0
 
 :err
+echo.
+echo =========================== An error has occurred =============================
+echo.
+echo.
+echo.
+echo Error: %ERROR_MESSAGE% 
 exit /B %ERROR%
 
