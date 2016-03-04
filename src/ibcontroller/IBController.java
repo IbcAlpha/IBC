@@ -327,6 +327,7 @@ public class IBController {
         _WindowHandlers.add(new SplashFrameHandler());
         _WindowHandlers.add(new SecurityCodeDialogHandler());
         _WindowHandlers.add(new ReloginDialogHandler());
+        _WindowHandlers.add(new NonBrokerageAccountDialogHandler());
     }
 
     private static String getFIXPasswordFromProperties() {
