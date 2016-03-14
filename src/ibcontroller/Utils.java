@@ -29,6 +29,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -113,6 +114,28 @@ class Utils {
         while (iter.hasNext()) {
             Component component = iter.next();
             if (component instanceof JCheckBox && text.equals(((JCheckBox)component).getText())) return (JCheckBox)component;
+        }
+        return null;
+    }
+
+    /**
+     * Traverses a container hierarchy and returns the ith JComboBox
+     * (0 based indexing).
+     *
+     * @param container
+     *  the Container to search in
+     * @param ith
+     *   specifies which JComboBox to return (the first one is specified by 0,
+     * the next by 1, etc)
+     * @return
+     *  the required JComboBox if it is found, otherwise null
+     */
+    static JComboBox<?> findComboBox(Container container, int ith) {
+        ComponentIterator iter = new ComponentIterator(container);
+        int i = 0;
+        while (iter.hasNext()) {
+            Component component = iter.next();
+            if (component instanceof JComboBox<?> && i++ == ith) return (JComboBox<?>)component;
         }
         return null;
     }

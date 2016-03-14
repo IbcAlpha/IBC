@@ -39,11 +39,16 @@ import javax.swing.tree.TreePath;
 class TwsListener
         implements AWTEventListener {
 
+    static final String TRADING_MODE_LIVE = "live";
+    static final String TRADING_MODE_PAPER = "paper";
+    
     private static final TwsListener _OnlyInstance = new TwsListener();
     private static volatile String _IBAPIUserName;
     private static volatile String _IBAPIPassword;
     private static volatile String _FIXUserName;
     private static volatile String _FIXPassword;
+    
+    private static volatile String _TradingMode;
 
     private static List<WindowHandler> _WindowHandlers;
 
@@ -67,7 +72,8 @@ class TwsListener
 
     static TwsListener getInstance() {return _OnlyInstance; }
 
-    static void initialise(String IBAPIUserName, String IBAPIPassword, String FIXUserName, String FIXPassword, List<WindowHandler> windowHandlers) {
+    static void initialise(String tradingMode, String IBAPIUserName, String IBAPIPassword, String FIXUserName, String FIXPassword, List<WindowHandler> windowHandlers) {
+        _TradingMode = tradingMode;
         _IBAPIUserName = IBAPIUserName;
         _IBAPIPassword = IBAPIPassword;
         _FIXUserName = FIXUserName;
@@ -196,6 +202,10 @@ class TwsListener
         return _FIXUserName;
     }
 
+    static String getTradingMode() {
+        return _TradingMode;
+    }
+    
     static JFrame getLoginFrame() {
         return _LoginFrame;
     }

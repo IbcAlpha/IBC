@@ -224,6 +224,8 @@ public class IBController {
 
         getSettings(args);
 
+        getTradingMode(args);
+        
         getTWSUserNameAndPassword(args);
         getFIXUserNameAndPassword(args);
         
@@ -247,7 +249,14 @@ public class IBController {
     static boolean isGateway() {
         return _GatewayOnly;
     }
-
+    
+    /**
+     * Indicates whether the live or paper trading account is to be used.
+     * Must be in either args[1] (if there are two args), or args[3] (if there are 
+     * four args), or args[5] (if there are six args)
+     */
+    private static String _TradingMode;
+    
     /**
      * IBAPI username - can either be supplied from the .ini file or as args[1]
      * NB: if IBAPI username is supplied in args[1], then the password must
@@ -282,6 +291,34 @@ public class IBController {
     }
 
     private static void checkArguments(String[] args) {
+        /**
+         * Allowable parameter combinations:
+         * 
+         * 1. No parameters
+         * 
+         * 2. ENCRYPT <password>
+         * 
+         * 3. <iniFile> [<tradingMode>]
+         * 
+         * 4. <iniFile> <apiUserName> <apiPassword> [<tradingMode>]
+         * 
+         * 5. <iniFile> <fixUserName> <fixPassword> <apiUserName> <apiPassword> [<tradingMode>]
+         * 
+         * where:
+         * 
+         *      <iniFile>       ::= NULL | path-and-filename-of-.ini-file 
+         * 
+         *      <tradingMode>   ::= blank | LIVETRADING | PAPERTRADING
+         * 
+         *      <apiUserName>   ::= blank | username-for-TWS
+         * 
+         *      <apiPassword>   ::= blank | password-for-TWS
+         * 
+         *      <fixUserName>   ::= blank | username-for-FIX-CTCI-Gateway
+         * 
+         *      <fixPassword>   ::= blank | password-for-FIX-CTCI-Gateway
+         * 
+         */
         if (args.length == 2) {
             if (args[0].equalsIgnoreCase("encrypt")) {
                 Utils.logRawToConsole("========================================================================");
@@ -291,18 +328,15 @@ public class IBController {
                 Utils.logRawToConsole("");
                 Utils.logRawToConsole("========================================================================");
                 System.exit(0);
-            } else {
-                Utils.logError("2 arguments passed, but args[0] is not 'encrypt'. quitting...");
-                System.exit(1);
             }
-        } else if (args.length == 4 || args.length > 5) {
+        } else if (args.length == 4 || args.length > 6) {
                 Utils.logError("Incorrect number of arguments passed. quitting...");
                 System.exit(1);
         }
     }
 
     private static void createToolkitListener() {
-        TwsListener.initialise(_IBAPIUserName, _IBAPIPassword, _FIXUserName, _FIXPassword, _WindowHandlers);
+        TwsListener.initialise(_TradingMode, _IBAPIUserName, _IBAPIPassword, _FIXUserName, _FIXPassword, _WindowHandlers);
         Toolkit.getDefaultToolkit().addAWTEventListener(TwsListener.getInstance(), AWTEvent.WINDOW_EVENT_MASK);
     }
 
@@ -362,10 +396,10 @@ public class IBController {
         _FIXUserName = getFIXUserNameFromProperties();
         _FIXPassword = getFIXPasswordFromProperties();
     }
-
+    
     private static void getSettings(String[] args) {
         String iniPath;
-        if (args.length == 0 || args[0].equals("NULL")) {
+        if (args.length == 0 || args[0].equalsIgnoreCase("NULL")) {
             iniPath = getWorkingDirectory() + "IBController." + getComputerUserName() + ".ini";
         } else {// args.length >= 1
             iniPath = args[0];
@@ -410,6 +444,28 @@ public class IBController {
             }
             return cal.getTime();
         }
+    }
+
+    private static void getTradingMode(String[] args) {
+        if (args.length == 0) {
+            _TradingMode = TwsListener.TRADING_MODE_LIVE;
+        } else if (args.length == 2) {
+            _TradingMode = args[1];
+        } else if (args.length == 4) {
+            _TradingMode = args[3];
+        } else if (args.length == 6) {
+            _TradingMode = args[5];
+        }
+        
+        if (_TradingMode == null) {
+            _TradingMode = Settings.getString("TradingMode", TwsListener.TRADING_MODE_LIVE);
+        }
+
+        if (!(_TradingMode.equals(TwsListener.TRADING_MODE_LIVE) || _TradingMode.equals(TwsListener.TRADING_MODE_PAPER))) {
+                Utils.logError("Invalid Trading Mode argument or .ini file setting: " + _TradingMode);
+                System.exit(1);
+        }
+        
     }
 
     private static String getTWSPasswordFromProperties() {
