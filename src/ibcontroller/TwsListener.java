@@ -23,13 +23,6 @@ import java.awt.Window;
 import java.awt.event.AWTEventListener;
 import java.awt.event.WindowEvent;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JTree;
@@ -39,13 +32,8 @@ import javax.swing.tree.TreePath;
 class TwsListener
         implements AWTEventListener {
 
-    static final String TRADING_MODE_LIVE = "live";
-    static final String TRADING_MODE_PAPER = "paper";
-    
     private static final TwsListener _OnlyInstance = new TwsListener();
     
-    private static volatile String _TradingMode;
-
     private static List<WindowHandler> _WindowHandlers;
 
     private static String logComponents;
@@ -64,8 +52,7 @@ class TwsListener
 
     static TwsListener getInstance() {return _OnlyInstance; }
 
-    static void initialise(String tradingMode, List<WindowHandler> windowHandlers) {
-        _TradingMode = tradingMode;
+    static void initialise(List<WindowHandler> windowHandlers) {
         _WindowHandlers = windowHandlers;
     }
 
@@ -91,10 +78,6 @@ class TwsListener
 
     }
 
-    static String getTradingMode() {
-        return _TradingMode;
-    }
-    
     static boolean _ApiConfigChangeConfirmationExpected;
     
     static boolean getApiConfigChangeConfirmationExpected() {

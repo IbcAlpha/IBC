@@ -224,7 +224,7 @@ public class IBController {
 
         Settings.initialise(args);
 
-        getTradingMode(args);
+        TradingModeManager.initialise(args);
         
         LoginManager.initialise(args);
         
@@ -248,13 +248,6 @@ public class IBController {
     static boolean isGateway() {
         return _GatewayOnly;
     }
-    
-    /**
-     * Indicates whether the live or paper trading account is to be used.
-     * Must be in either args[1] (if there are two args), or args[3] (if there are 
-     * four args), or args[5] (if there are six args)
-     */
-    private static String _TradingMode;
     
     private static final List<WindowHandler> _WindowHandlers = new ArrayList<WindowHandler>();
 
@@ -308,7 +301,7 @@ public class IBController {
     }
 
     private static void createToolkitListener() {
-        TwsListener.initialise(_TradingMode, _WindowHandlers);
+        TwsListener.initialise(_WindowHandlers);
         Toolkit.getDefaultToolkit().addAWTEventListener(TwsListener.getInstance(), AWTEvent.WINDOW_EVENT_MASK);
     }
 
@@ -366,28 +359,6 @@ public class IBController {
             }
             return cal.getTime();
         }
-    }
-
-    private static void getTradingMode(String[] args) {
-        if (args.length == 0) {
-            _TradingMode = TwsListener.TRADING_MODE_LIVE;
-        } else if (args.length == 2) {
-            _TradingMode = args[1];
-        } else if (args.length == 4) {
-            _TradingMode = args[3];
-        } else if (args.length == 6) {
-            _TradingMode = args[5];
-        }
-        
-        if (_TradingMode == null) {
-            _TradingMode = Settings.getString("TradingMode", TwsListener.TRADING_MODE_LIVE);
-        }
-
-        if (!(_TradingMode.equals(TwsListener.TRADING_MODE_LIVE) || _TradingMode.equals(TwsListener.TRADING_MODE_PAPER))) {
-                Utils.logError("Invalid Trading Mode argument or .ini file setting: " + _TradingMode);
-                System.exit(1);
-        }
-        
     }
 
     private static String getTWSSettingsDirectory() {

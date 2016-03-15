@@ -85,9 +85,9 @@ public abstract class AbstractLoginHandler implements WindowHandler {
             JComboBox<?> tradingModeCombo = Utils.findComboBox(window, 0);
             
             if (tradingModeCombo != null ) {
-                String tradingMode = TwsListener.getTradingMode();
+                String tradingMode = TradingModeManager.getTradingMode();
                 Utils.logToConsole("Setting Trading mode = " + tradingMode);
-                if (tradingMode.equalsIgnoreCase(TwsListener.TRADING_MODE_LIVE)) {
+                if (tradingMode.equalsIgnoreCase(TradingModeManager.TRADING_MODE_LIVE)) {
                     tradingModeCombo.setSelectedItem("Live Trading");
                 } else {
                     tradingModeCombo.setSelectedItem("Paper Trading");
