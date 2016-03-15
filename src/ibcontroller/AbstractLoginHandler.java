@@ -21,6 +21,7 @@ package ibcontroller;
 import java.awt.Window;
 import java.awt.event.WindowEvent;
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
 
 public abstract class AbstractLoginHandler implements WindowHandler {
     
@@ -36,6 +37,8 @@ public abstract class AbstractLoginHandler implements WindowHandler {
 
     @Override
     public final void handleWindow(Window window, int eventID) {
+        TwsListener.setLoginFrame((JFrame) window);
+
         try {
             if (!initialise(window, eventID)) return;
             if (!setFields(window, eventID)) return;
