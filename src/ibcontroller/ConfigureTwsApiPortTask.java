@@ -33,7 +33,7 @@ class ConfigureTwsApiPortTask implements Runnable{
     @Override
     public void run() {
         try {
-            final JDialog configDialog = TwsListener.getConfigDialog();    // blocks the thread until the config dialog is available
+            final JDialog configDialog = ConfigDialogManager.getConfigDialog();    // blocks the thread until the config dialog is available
             
             GuiExecutor.instance().execute(new Runnable(){
                 @Override

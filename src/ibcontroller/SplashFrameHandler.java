@@ -45,7 +45,7 @@ public class SplashFrameHandler implements WindowHandler {
 
     @Override
     public void handleWindow(Window window, int eventID) {
-        TwsListener.setSplashScreenClosed();
+        ConfigDialogManager.setSplashScreenClosed();
     }
 
     @Override

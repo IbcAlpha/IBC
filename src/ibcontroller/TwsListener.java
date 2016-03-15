@@ -50,7 +50,6 @@ class TwsListener
 
     private static volatile JFrame _LoginFrame = null;
     private static volatile JFrame _MainWindow = null;
-    private static volatile JDialog _ConfigDialog = null;
     
     private static String logComponents;
 
@@ -93,97 +92,6 @@ class TwsListener
             }
         }
 
-    }
-
-    private static volatile GetConfigDialogTask _ConfigDialogTask;
-    private static volatile Future<JDialog> _ConfigDialogFuture;
-    
-    /**
-     * Records the fact that the config dialog has closed.
-     */
-    static void clearConfigDialog() {
-        _ConfigDialog = null;
-    }
-    
-    /**
-     * Returns the Global Configuration dialog, if necessary blocking the calling thread until
-     * either it is available or a specified timeout has elapsed.
-     * 
-     * If the Global Configuration dialog is currently open, it is returned immediately without blocking
-     * the calling thread.
-     * 
-     * Calling this method from the Swing event dispatch thread results in an IllegalStateException
-     * being thrown.
-     * 
-     * @param timeout
-     * the length of time to wait for the Global Configuration dialog to become available. If this is
-     * negative, the calling thread blocks until the dialog becomes available.
-     * @param unit
-     * the time units for the timeout parameter
-     * @return
-     * null if the timeout expires before the Global Configuration dialog becomes available; otherwise
-     * the Global Configuration dialog
-     * @throws IllegalStateException 
-     * the method has been called from the Swing event dispatch thread
-     */
-    static JDialog getConfigDialog(long timeout, TimeUnit unit) throws IllegalStateException {
-        /* Note that caching a config dialog doesn't work, since they seem to
-         * be one-time-only. So we have to go via the menu each time this 
-         * method is called (if it isn't currently open or being opened).
-        */
-        
-        if (SwingUtilities.isEventDispatchThread()) throw new IllegalStateException();
-        
-        Utils.logToConsole("Getting config dialog");
-        
-        if (_ConfigDialog != null) return _ConfigDialog;
-        
-        if (_ConfigDialogFuture == null) {
-            Utils.logToConsole("Creating config dialog future");
-            _ConfigDialogTask = new GetConfigDialogTask();
-            ExecutorService exec = Executors.newSingleThreadExecutor();
-            _ConfigDialogFuture = exec.submit((Callable<JDialog>)_ConfigDialogTask);
-            exec.shutdown();
-        }
-        
-        try {
-            if (timeout < 0) {
-                _ConfigDialog = _ConfigDialogFuture.get();
-            } else {
-                _ConfigDialog = _ConfigDialogFuture.get(timeout, unit);
-            }
-            return _ConfigDialog;
-        } catch (TimeoutException | InterruptedException e) {
-            return null;
-        } catch (ExecutionException e) {
-            Throwable t = e.getCause();
-            if (t instanceof IBControllerException) {
-                Utils.logError("getConfigDialog could not find " + t.getMessage());
-                return null;
-            }
-            if (t instanceof RuntimeException) throw (RuntimeException)t;
-            if (t instanceof Error) throw (Error)t;
-            throw new IllegalStateException(t);
-        }
-    }
-
-    /**
-     * Returns the Global Configuration dialog, if necessary blocking the calling thread until
-     * it is available.
-     * 
-     * If the Global Configuration dialog is currently open, it is returned immediately without blocking
-     * the calling thread.
-     * 
-     * Calling this method from the Swing event dispatch thread results in an IllegalStateException
-     * being thrown.
-     * 
-     * @return
-     * the Global Configuration dialog, or null if the relevant menu entries cannot be found
-     * @throws IllegalStateException 
-     * the method has been called from the Swing event dispatch thread
-     */
-    static JDialog getConfigDialog() throws IllegalStateException {
-        return getConfigDialog(-1, TimeUnit.MILLISECONDS);
     }
 
     static String getTradingMode() {
@@ -328,15 +236,6 @@ class TwsListener
         return true;
     }
 
-    static void setConfigDialog(JDialog window) {
-        _ConfigDialog = window;
-        if (_ConfigDialogTask != null) {
-            _ConfigDialogTask.setConfigDialog(window);
-            _ConfigDialogTask = null;
-            _ConfigDialogFuture = null;
-        }
-    }
-
     static void setLoginFrame(JFrame window) {
         _LoginFrame = window;
     }
@@ -346,10 +245,6 @@ class TwsListener
         _MainWindow = window;
         if (_MainWindowTask != null) _MainWindowTask.setMainWindow(window);
         if (Settings.getBoolean("MinimizeMainWindow", false)) _MainWindow.setExtendedState(java.awt.Frame.ICONIFIED);
-    }
-    
-    static void setSplashScreenClosed() {
-        if (_ConfigDialogTask != null) _ConfigDialogTask.setSplashScreenClosed();
     }
     
     static void showTradesLogWindow() {

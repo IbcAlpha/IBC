@@ -40,7 +40,7 @@ class EnableApiTask implements Runnable{
         }
 
         try {
-            final JDialog configDialog = TwsListener.getConfigDialog();    // blocks the thread until the config dialog is available
+            final JDialog configDialog = ConfigDialogManager.getConfigDialog();    // blocks the thread until the config dialog is available
             
             FutureTask<Integer> t = new FutureTask<>(new Runnable(){
                 @Override public void run() {configureAPI(configDialog);}

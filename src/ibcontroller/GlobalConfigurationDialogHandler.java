@@ -23,6 +23,7 @@ import java.awt.event.WindowEvent;
 import javax.swing.JDialog;
 
 class GlobalConfigurationDialogHandler implements WindowHandler {
+    @Override
     public boolean filterEvent(Window window, int eventId) {
         switch (eventId) {
             case WindowEvent.WINDOW_OPENED:
@@ -34,16 +35,18 @@ class GlobalConfigurationDialogHandler implements WindowHandler {
         }
     }
 
+    @Override
     public void handleWindow(final Window window, int eventId) {
         switch (eventId) {
             case WindowEvent.WINDOW_OPENED:
-                TwsListener.setConfigDialog((JDialog) window);
+                ConfigDialogManager.setConfigDialog((JDialog) window);
                 break;
             case WindowEvent.WINDOW_CLOSED:
-                TwsListener.clearConfigDialog();
+                ConfigDialogManager.clearConfigDialog();
         }
     }
 
+    @Override
     public boolean recogniseWindow(Window window) {
         if (! (window instanceof JDialog)) return false;
 
