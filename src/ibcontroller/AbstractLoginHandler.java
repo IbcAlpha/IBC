@@ -37,7 +37,7 @@ public abstract class AbstractLoginHandler implements WindowHandler {
 
     @Override
     public final void handleWindow(Window window, int eventID) {
-        TwsListener.setLoginFrame((JFrame) window);
+        LoginManager.setLoginFrame((JFrame) window);
 
         try {
             if (!initialise(window, eventID)) return;

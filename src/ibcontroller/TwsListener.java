@@ -48,7 +48,6 @@ class TwsListener
 
     private static List<WindowHandler> _WindowHandlers;
 
-    private static volatile JFrame _LoginFrame = null;
     private static volatile JFrame _MainWindow = null;
     
     private static String logComponents;
@@ -98,10 +97,6 @@ class TwsListener
         return _TradingMode;
     }
     
-    static JFrame getLoginFrame() {
-        return _LoginFrame;
-    }
-
     private static volatile GetMainWindowTask _MainWindowTask;
     private static volatile Future<JFrame> _MainWindowFuture;
     
@@ -234,10 +229,6 @@ class TwsListener
         configTree.setExpandsSelectedPaths(true);
         configTree.setSelectionPath(tp);
         return true;
-    }
-
-    static void setLoginFrame(JFrame window) {
-        _LoginFrame = window;
     }
 
     static void setMainWindow(JFrame window) {

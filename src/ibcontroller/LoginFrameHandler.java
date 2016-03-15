@@ -52,9 +52,9 @@ final class LoginFrameHandler extends AbstractLoginHandler {
     
     @Override
     protected final boolean preLogin(final Window window, int eventID) throws IBControllerException {
-        if (LoginCredentials.getIBAPIUserName().length() == 0) {
+        if (LoginManager.getIBAPIUserName().length() == 0) {
             setMissingCredential(window, 0);
-        } else if (LoginCredentials.getIBAPIPassword().length() == 0) {
+        } else if (LoginManager.getIBAPIPassword().length() == 0) {
             setMissingCredential(window, 1);
         } else {
             return true;
@@ -64,8 +64,8 @@ final class LoginFrameHandler extends AbstractLoginHandler {
     
     @Override
     protected final boolean setFields(Window window, int eventID) throws IBControllerException {
-        setCredential(window, "IBAPI user name", 0, LoginCredentials.getIBAPIUserName());
-        setCredential(window, "IBAPI password", 1, LoginCredentials.getIBAPIPassword());
+        setCredential(window, "IBAPI user name", 0, LoginManager.getIBAPIUserName());
+        setCredential(window, "IBAPI password", 1, LoginManager.getIBAPIPassword());
         return true;
     }
     

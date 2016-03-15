@@ -226,7 +226,7 @@ public class IBController {
 
         getTradingMode(args);
         
-        LoginCredentials.initialise(args);
+        LoginManager.initialise(args);
         
         startIBControllerServer();
 

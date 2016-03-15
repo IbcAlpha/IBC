@@ -18,10 +18,14 @@
 
 package ibcontroller;
 
-public class LoginCredentials {
+import javax.swing.JFrame;
+
+public class LoginManager {
     
-    private LoginCredentials() {}
+    private LoginManager() {}
     
+    private static volatile JFrame _LoginFrame = null;
+
     /**
      * IBAPI username - can either be supplied from the .ini file or as args[1]
      * NB: if IBAPI username is supplied in args[1], then the password must
@@ -71,6 +75,14 @@ public class LoginCredentials {
         return _IBAPIUserName;
     }
     
+    static JFrame getLoginFrame() {
+        return _LoginFrame;
+    }
+
+    static void setLoginFrame(JFrame window) {
+        _LoginFrame = window;
+    }
+
     private static String getFIXPasswordFromProperties() {
         String password = Settings.getString("FIXPassword", "");
         if (password.length() != 0) {
