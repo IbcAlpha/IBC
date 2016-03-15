@@ -1,6 +1,6 @@
 <project name="IBController" default="dist" basedir=".">
     <property environment="env"/>
-    <fail unless="env.TWS" message="Environment variable 'TWS' not set (set it to the fully-qualified directory name containing jts.jar)."/>
+    <fail unless="env.TWS" message="Environment variable 'TWS' not set (set it to the fully-qualified directory name containing the TWS jar files)."/>
 
     <property name="ver" value="3.0.2"/>
     <property name="src" location="src"/>
@@ -9,7 +9,7 @@
     <property name="dist"  location="dist"/>
 
     <path id="external.classpath">
-        <pathelement path="${env.TWS}/jts.jar" />
+        <pathelement path="${env.TWS}/jts4launch.jar" />
     </path>
 
     <target name="clean" description="clean up">
@@ -31,6 +31,7 @@
 
     <target name="dist" depends="jar" description="generate the distribution zip">
         <echo file="${resources}/version" append="false" message="${ver}"/>
+        <echo file="${resources}/version" append="true" message=""/>
         <copy todir="${target}/IBController" preservelastmodified="true">
             <fileset file="LICENSE.txt"/>
             <fileset dir="${resources}">
