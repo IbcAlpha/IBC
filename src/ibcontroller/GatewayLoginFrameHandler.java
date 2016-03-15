@@ -19,29 +19,80 @@
 package ibcontroller;
 
 import java.awt.Window;
-import java.awt.event.WindowEvent;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JRadioButton;
 
-class GatewayLoginFrameHandler  implements WindowHandler {
+final class GatewayLoginFrameHandler extends AbstractLoginHandler {
+    
+    @Override
+    public boolean recogniseWindow(Window window) {
+        if (! (window instanceof JFrame)) return false;
 
-    public boolean filterEvent(Window window, int eventId) {
-        switch (eventId) {
-            case WindowEvent.WINDOW_OPENED:
-                return true;
-            default:
-                return false;
-        }
+        return (Utils.titleContains(window, "IB Gateway") &&
+               (Utils.findButton(window, "Login") != null));
     }
 
-    public void handleWindow(final Window window, int eventID) {
-        try {
-            selectGatewayMode(window);
-            if (setFields(window)) doLogin(window);
-        } catch (IBControllerException e) {
-            Utils.logError("could not login: could not find control: " + e.getMessage());
+    @Override
+    protected final boolean initialise(final Window window, int eventID) throws IBControllerException {
+        selectGatewayMode(window);
+        setTradingModeCombo(window);
+        return true;
+    }
+    
+    @Override
+    protected final boolean preLogin(final Window window, int eventID) throws IBControllerException {
+        boolean result;
+        if (Settings.getBoolean("FIX", false)) {
+            result = setMissingFIXCredentials(window);
+        } else {
+            result =setMissingIBAPICredentials(window);
         }
+        return result;
+    }
+    
+    private boolean setMissingFIXCredentials(Window window) {
+        boolean result = false;
+        if (TwsListener.getFIXUserName().length() == 0) {
+            setMissingCredential(window, 0);
+        } else if (TwsListener.getFIXPassword().length() == 0) {
+            setMissingCredential(window, 1);
+        } else if (TwsListener.getIBAPIUserName().length() != 0 || TwsListener.getIBAPIPassword().length() != 0) {
+            if (TwsListener.getIBAPIUserName().length() == 0) {
+                setMissingCredential(window, 3);
+            } else {
+                setMissingCredential(window, 4);
+            }
+        } else {
+            result = true;
+        }
+        return result;
+    }
+
+    private boolean setMissingIBAPICredentials(Window window) {
+        boolean result = false;
+        if (TwsListener.getIBAPIUserName().length() == 0) {
+            setMissingCredential(window, 0);
+        } else if (TwsListener.getIBAPIPassword().length() == 0) {
+            setMissingCredential(window, 1);
+        } else {
+            result = true;
+        }
+        return result;
+    }
+
+    @Override
+    protected final boolean setFields(Window window, int eventID) throws IBControllerException {
+        if (Settings.getBoolean("FIX", false)) {
+            setCredential(window, "FIX user name", 0, TwsListener.getFIXUserName());
+            setCredential(window, "FIX password", 1, TwsListener.getFIXPassword());
+            setCredential(window, "IBAPI user name", 3, TwsListener.getIBAPIUserName());
+            setCredential(window, "IBAPI password", 4, TwsListener.getIBAPIPassword());
+        } else {
+            setCredential(window, "IBAPI user name", 0, TwsListener.getIBAPIUserName());
+            setCredential(window, "IBAPI password", 1, TwsListener.getIBAPIPassword());
+        }
+        return true;
     }
     
     private void selectGatewayMode(Window window) throws IBControllerException {
@@ -66,93 +117,5 @@ class GatewayLoginFrameHandler  implements WindowHandler {
         
         if (! button.isSelected()) button.doClick();
     }
-        
-    public boolean recogniseWindow(Window window) {
-        if (! (window instanceof JFrame)) return false;
-
-        return (Utils.titleContains(window, "IB Gateway") &&
-               (Utils.findButton(window, "Login") != null));
-    }
-
-    private boolean setFields(final Window window) throws IBControllerException {
-        setTradingModeCombo(window);
-        
-        if (Settings.getBoolean("FIX", false)) {
-            setFixCredentials(window);
-            return checkNoMissingFixCredentials(window);
-        } else {
-            setAPICredentials(window);
-            return checkNoMissingApiCredentials(window);
-        }
-    }
-
-    private void doLogin(final Window window) throws IBControllerException {
-        if (Utils.findButton(window, "Login") == null) throw new IBControllerException("Login button");
-
-        GuiDeferredExecutor.instance().execute(new Runnable() {
-            @Override
-            public void run() {
-                Utils.clickButton(window, "Login");
-            }
-        });
-    }
-    
-    private boolean checkNoMissingApiCredentials(final Window window) {
-            if (TwsListener.getIBAPIUserName().length() == 0) {
-                Utils.findTextField(window, 0).requestFocus();
-                return false;
-            }
-            if (TwsListener.getIBAPIPassword().length() == 0) {
-                Utils.findTextField(window, 1).requestFocus();
-                return false;
-            }
-            return true;
-    }
-
-    private boolean checkNoMissingFixCredentials(final Window window) {
-            if (TwsListener.getFIXUserName().length() == 0) {
-                Utils.findTextField(window, 0).requestFocus();
-                return false;
-            }
-            if (TwsListener.getFIXPassword().length() == 0) {
-                Utils.findTextField(window, 1).requestFocus();
-                return false;
-            }
-            if (TwsListener.getIBAPIUserName().length() != 0) {
-                if (TwsListener.getIBAPIPassword().length() == 0) {
-                    Utils.findTextField(window, 4).requestFocus();
-                    return false;
-                }
-            }
-            return true;
-    }
-    private void setAPICredentials(final Window window) throws IBControllerException {
-            if (! Utils.setTextField(window, 0, TwsListener.getIBAPIUserName())) throw new IBControllerException("IBAPI user name");
-            if (! Utils.setTextField(window, 1, TwsListener.getIBAPIPassword())) throw new IBControllerException("IBAPI password");
-    }
-    
-    private void setFixCredentials(final Window window) throws IBControllerException {
-            if (! Utils.setTextField(window, 0, TwsListener.getFIXUserName())) throw new IBControllerException("FIX user name");
-            if (! Utils.setTextField(window, 1, TwsListener.getFIXPassword())) throw new IBControllerException("FIX password");
-            if (! Utils.setTextField(window, 3, TwsListener.getIBAPIUserName())) throw new IBControllerException("IBAPI user name");
-            if (! Utils.setTextField(window, 4, TwsListener.getIBAPIPassword())) throw new IBControllerException("IBAPI password");
-    }
-    
-    private void setTradingModeCombo(final Window window) {
-        if (Utils.findLabel(window, "Trading Mode") != null)  {
-            JComboBox<?> tradingModeCombo = Utils.findComboBox(window, 0);
-            
-            if (tradingModeCombo != null ) {
-                String tradingMode = TwsListener.getTradingMode();
-                Utils.logToConsole("Setting Trading mode = " + tradingMode);
-                if (tradingMode.equalsIgnoreCase(TwsListener.TRADING_MODE_LIVE)) {
-                    tradingModeCombo.setSelectedItem("Live Trading");
-                } else {
-                    tradingModeCombo.setSelectedItem("Paper Trading");
-                }
-            }
-        }
-    }
-    
 
 }

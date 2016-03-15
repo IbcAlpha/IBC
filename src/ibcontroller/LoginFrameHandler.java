@@ -23,26 +23,9 @@ import java.awt.event.WindowEvent;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 
-class LoginFrameHandler implements WindowHandler {
-    public boolean filterEvent(Window window, int eventId) {
-        switch (eventId) {
-            case WindowEvent.WINDOW_OPENED:
-                return true;
-            default:
-                return false;
-        }
-    }
+final class LoginFrameHandler extends AbstractLoginHandler {
 
-    public void handleWindow(Window window, int eventID) {
-        TwsListener.setLoginFrame((JFrame) window);
-
-        try {
-            if (setFields(window)) doLogin(window);
-        } catch (IBControllerException e) {
-            Utils.logError("could not login: could not find control: " + e.getMessage());
-        }
-    }
-
+    @Override
     public boolean recogniseWindow(Window window) {
         if (! (window instanceof JFrame)) return false;
 
@@ -54,59 +37,36 @@ class LoginFrameHandler implements WindowHandler {
                 Utils.findButton(window, "Login") != null);
     }
 
-    private boolean setFields(final Window window) throws IBControllerException {
+    @Override
+    protected final boolean initialise(final Window window, int eventID) throws IBControllerException {
         setTradingModeCombo(window);
-        
-        if (! Utils.setCheckBoxSelected(window,
-                                            "Use/store settings on server",
-                                            Settings.getBoolean("StoreSettingsOnServer", false))) return false;
 
-        setAPICredentials(window);
-        return checkNoMissingApiCredentials(window);
+        final String STORE_SETTINGS_ON_SERVER_CHECKBOX = "Use/store settings on server";
+        if (! Utils.setCheckBoxSelected(
+                window,
+                STORE_SETTINGS_ON_SERVER_CHECKBOX,
+                Settings.getBoolean("StoreSettingsOnServer", false))) throw new IBControllerException(STORE_SETTINGS_ON_SERVER_CHECKBOX);
+
+        return true;
     }
-
-    private boolean checkNoMissingApiCredentials(final Window window) {
-            if (TwsListener.getIBAPIUserName().length() == 0) {
-                Utils.findTextField(window, 0).requestFocus();
-                return false;
-            }
-            if (TwsListener.getIBAPIPassword().length() == 0) {
-                Utils.findTextField(window, 1).requestFocus();
-                return false;
-            }
+    
+    @Override
+    protected final boolean preLogin(final Window window, int eventID) throws IBControllerException {
+        if (TwsListener.getIBAPIUserName().length() == 0) {
+            setMissingCredential(window, 0);
+        } else if (TwsListener.getIBAPIPassword().length() == 0) {
+            setMissingCredential(window, 1);
+        } else {
             return true;
-    }
-
-    private void doLogin(final Window window) throws IBControllerException {
-        if (Utils.findButton(window, "Login") == null) throw new IBControllerException("Login button");
-
-        GuiDeferredExecutor.instance().execute(new Runnable() {
-            @Override
-            public void run() {
-                Utils.clickButton(window, "Login");
-            }
-        });
-    }
-    
-    private void setAPICredentials(final Window window) throws IBControllerException {
-            if (! Utils.setTextField(window, 0, TwsListener.getIBAPIUserName())) throw new IBControllerException("IBAPI user name");
-            if (! Utils.setTextField(window, 1, TwsListener.getIBAPIPassword())) throw new IBControllerException("IBAPI password");
-    }
-    
-    private void setTradingModeCombo(final Window window) {
-        if (Utils.findLabel(window, "Trading Mode") != null)  {
-            JComboBox<?> tradingModeCombo = Utils.findComboBox(window, 0);
-            
-            if (tradingModeCombo != null ) {
-                String tradingMode = TwsListener.getTradingMode();
-                Utils.logToConsole("Setting Trading mode = " + tradingMode);
-                if (tradingMode.equalsIgnoreCase(TwsListener.TRADING_MODE_LIVE)) {
-                    tradingModeCombo.setSelectedItem("Live Trading");
-                } else {
-                    tradingModeCombo.setSelectedItem("Paper Trading");
-                }
-            }
         }
+        return false;
+    }
+    
+    @Override
+    protected final boolean setFields(Window window, int eventID) throws IBControllerException {
+        setCredential(window, "IBAPI user name", 0, TwsListener.getIBAPIUserName());
+        setCredential(window, "IBAPI password", 1, TwsListener.getIBAPIPassword());
+        return true;
     }
     
 }
