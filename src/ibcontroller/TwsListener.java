@@ -43,10 +43,6 @@ class TwsListener
     static final String TRADING_MODE_PAPER = "paper";
     
     private static final TwsListener _OnlyInstance = new TwsListener();
-    private static volatile String _IBAPIUserName;
-    private static volatile String _IBAPIPassword;
-    private static volatile String _FIXUserName;
-    private static volatile String _FIXPassword;
     
     private static volatile String _TradingMode;
 
@@ -72,12 +68,8 @@ class TwsListener
 
     static TwsListener getInstance() {return _OnlyInstance; }
 
-    static void initialise(String tradingMode, String IBAPIUserName, String IBAPIPassword, String FIXUserName, String FIXPassword, List<WindowHandler> windowHandlers) {
+    static void initialise(String tradingMode, List<WindowHandler> windowHandlers) {
         _TradingMode = tradingMode;
-        _IBAPIUserName = IBAPIUserName;
-        _IBAPIPassword = IBAPIPassword;
-        _FIXUserName = FIXUserName;
-        _FIXPassword = FIXPassword;
         _WindowHandlers = windowHandlers;
     }
 
@@ -194,14 +186,6 @@ class TwsListener
         return getConfigDialog(-1, TimeUnit.MILLISECONDS);
     }
 
-    static String getFIXPassword() {
-        return _FIXPassword;
-    }
-
-    static String getFIXUserName() {
-        return _FIXUserName;
-    }
-
     static String getTradingMode() {
         return _TradingMode;
     }
@@ -280,14 +264,6 @@ class TwsListener
      */
     static JFrame getMainWindow() throws IllegalStateException{
         return getMainWindow(-1, TimeUnit.MILLISECONDS);
-    }
-    
-    static String getIBAPIPassword() {
-        return _IBAPIPassword;
-    }
-
-    static String getIBAPIUserName() {
-        return _IBAPIUserName;
     }
     
     static boolean _ApiConfigChangeConfirmationExpected;

@@ -35,8 +35,46 @@ class Settings {
     private static final Properties _Props = new Properties();
 
     private Settings() { }
+    
+    static void initialise(String [] args) {
+        String iniPath;
+        if (args.length == 0 || args[0].equalsIgnoreCase("NULL")) {
+            iniPath = getWorkingDirectory() + "IBController." + getComputerUserName() + ".ini";
+        } else {// args.length >= 1
+            iniPath = args[0];
+        }
+        File finiPath = new File(iniPath);
+        if (!finiPath.isFile() || !finiPath.exists()) {
+            Utils.logError("ini file \"" + iniPath +
+                               "\" either does not exist, or is a directory.  quitting...");
+            System.exit(1);
+        }
+        Utils.logToConsole("ini file is " + iniPath);
+        Settings.load(iniPath);
+    }
 
-    static void load(String path) {
+    private static String getComputerUserName() {
+        StringBuilder sb = new StringBuilder(System.getProperty("user.name"));
+        int i;
+        for (i = 0; i < sb.length(); i++) {
+            char c = sb.charAt(i);
+            if ((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9')) {
+                continue;
+            }
+            if (c >= 'A' && c <= 'Z') {
+                sb.setCharAt(i, Character.toLowerCase(c));
+            } else {
+                sb.setCharAt(i, '_');
+            }
+        }
+        return sb.toString();
+    }
+
+    private static String getWorkingDirectory() {
+        return System.getProperty("user.dir") + File.separator;
+    }
+
+    private static void load(String path) {
         _Props.clear();
         try {
             File f = new File(path);

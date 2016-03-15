@@ -53,12 +53,12 @@ final class GatewayLoginFrameHandler extends AbstractLoginHandler {
     
     private boolean setMissingFIXCredentials(Window window) {
         boolean result = false;
-        if (TwsListener.getFIXUserName().length() == 0) {
+        if (LoginCredentials.getFIXUserName().length() == 0) {
             setMissingCredential(window, 0);
-        } else if (TwsListener.getFIXPassword().length() == 0) {
+        } else if (LoginCredentials.getFIXPassword().length() == 0) {
             setMissingCredential(window, 1);
-        } else if (TwsListener.getIBAPIUserName().length() != 0 || TwsListener.getIBAPIPassword().length() != 0) {
-            if (TwsListener.getIBAPIUserName().length() == 0) {
+        } else if (LoginCredentials.getIBAPIUserName().length() != 0 || LoginCredentials.getIBAPIPassword().length() != 0) {
+            if (LoginCredentials.getIBAPIUserName().length() == 0) {
                 setMissingCredential(window, 3);
             } else {
                 setMissingCredential(window, 4);
@@ -71,9 +71,9 @@ final class GatewayLoginFrameHandler extends AbstractLoginHandler {
 
     private boolean setMissingIBAPICredentials(Window window) {
         boolean result = false;
-        if (TwsListener.getIBAPIUserName().length() == 0) {
+        if (LoginCredentials.getIBAPIUserName().length() == 0) {
             setMissingCredential(window, 0);
-        } else if (TwsListener.getIBAPIPassword().length() == 0) {
+        } else if (LoginCredentials.getIBAPIPassword().length() == 0) {
             setMissingCredential(window, 1);
         } else {
             result = true;
@@ -84,13 +84,13 @@ final class GatewayLoginFrameHandler extends AbstractLoginHandler {
     @Override
     protected final boolean setFields(Window window, int eventID) throws IBControllerException {
         if (Settings.getBoolean("FIX", false)) {
-            setCredential(window, "FIX user name", 0, TwsListener.getFIXUserName());
-            setCredential(window, "FIX password", 1, TwsListener.getFIXPassword());
-            setCredential(window, "IBAPI user name", 3, TwsListener.getIBAPIUserName());
-            setCredential(window, "IBAPI password", 4, TwsListener.getIBAPIPassword());
+            setCredential(window, "FIX user name", 0, LoginCredentials.getFIXUserName());
+            setCredential(window, "FIX password", 1, LoginCredentials.getFIXPassword());
+            setCredential(window, "IBAPI user name", 3, LoginCredentials.getIBAPIUserName());
+            setCredential(window, "IBAPI password", 4, LoginCredentials.getIBAPIPassword());
         } else {
-            setCredential(window, "IBAPI user name", 0, TwsListener.getIBAPIUserName());
-            setCredential(window, "IBAPI password", 1, TwsListener.getIBAPIPassword());
+            setCredential(window, "IBAPI user name", 0, LoginCredentials.getIBAPIUserName());
+            setCredential(window, "IBAPI password", 1, LoginCredentials.getIBAPIPassword());
         }
         return true;
     }

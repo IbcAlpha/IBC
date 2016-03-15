@@ -222,12 +222,11 @@ public class IBController {
 
         checkArguments(args);
 
-        getSettings(args);
+        Settings.initialise(args);
 
         getTradingMode(args);
         
-        getTWSUserNameAndPassword(args);
-        getFIXUserNameAndPassword(args);
+        LoginCredentials.initialise(args);
         
         startIBControllerServer();
 
@@ -257,33 +256,6 @@ public class IBController {
      */
     private static String _TradingMode;
     
-    /**
-     * IBAPI username - can either be supplied from the .ini file or as args[1]
-     * NB: if IBAPI username is supplied in args[1], then the password must
-     * be in args[2]. If IBAPI username is supplied in .ini, then the password must
-     * also be in .ini.
-     */
-    private static String _IBAPIUserName;
-
-    /**
-     * unencrypted IBAPI password - can either be supplied from the .ini file or as args[2]
-     */
-    private static String _IBAPIPassword;
-
-    /**
-     * FIX username - can either be supplied from the .ini file or as args[1]
-     * NB: if username is supplied in args[1], then the password must
-     * be in args[2], and the IBAPI username and password may be in 
-     * args[3] and args[4]. If username is supplied in .ini, then the password must
-     * also be in .ini.
-     */
-    private static String _FIXUserName;
-
-    /**
-     * unencrypted password - can either be supplied from the .ini file or as args[2]
-     */
-    private static String _FIXPassword;
-
     private static final List<WindowHandler> _WindowHandlers = new ArrayList<WindowHandler>();
 
     static {
@@ -336,7 +308,7 @@ public class IBController {
     }
 
     private static void createToolkitListener() {
-        TwsListener.initialise(_TradingMode, _IBAPIUserName, _IBAPIPassword, _FIXUserName, _FIXPassword, _WindowHandlers);
+        TwsListener.initialise(_TradingMode, _WindowHandlers);
         Toolkit.getDefaultToolkit().addAWTEventListener(TwsListener.getInstance(), AWTEvent.WINDOW_EVENT_MASK);
     }
 
@@ -363,57 +335,7 @@ public class IBController {
         _WindowHandlers.add(new ReloginDialogHandler());
         _WindowHandlers.add(new NonBrokerageAccountDialogHandler());
     }
-
-    private static String getFIXPasswordFromProperties() {
-        String password = Settings.getString("FIXPassword", "");
-        if (password.length() != 0) {
-            if (isFIXPasswordEncrypted()) password = Encryptor.decrypt(password);
-        }
-        return password;
-    }
-
-    private static void getFIXUserNameAndPassword(String[] args) {
-        if (! getFIXUserNameAndPasswordFromArguments(args)) {
-            getFIXUserNameAndPasswordFromProperties();
-        }
-    }
-
-    private static String getFIXUserNameFromProperties() {
-        return Settings.getString("FIXLoginId", "");
-    }
-
-    private static boolean getFIXUserNameAndPasswordFromArguments(String[] args) {
-        if (args.length == 3 || args.length == 5) {
-            _FIXUserName = args[1];
-            _FIXPassword = args[2];
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    private static void getFIXUserNameAndPasswordFromProperties() {
-        _FIXUserName = getFIXUserNameFromProperties();
-        _FIXPassword = getFIXPasswordFromProperties();
-    }
     
-    private static void getSettings(String[] args) {
-        String iniPath;
-        if (args.length == 0 || args[0].equalsIgnoreCase("NULL")) {
-            iniPath = getWorkingDirectory() + "IBController." + getComputerUserName() + ".ini";
-        } else {// args.length >= 1
-            iniPath = args[0];
-        }
-        File finiPath = new File(iniPath);
-        if (!finiPath.isFile() || !finiPath.exists()) {
-            Utils.logError("ini file \"" + iniPath +
-                               "\" either does not exist, or is a directory.  quitting...");
-            System.exit(1);
-        }
-        Utils.logToConsole("ini file is " + iniPath);
-        Settings.load(iniPath);
-    }
-
     private static Date getShutdownTime() {
         String shutdownTimeSetting = Settings.getString("ClosedownAt", "");
         if (shutdownTimeSetting.length() == 0) {
@@ -468,80 +390,10 @@ public class IBController {
         
     }
 
-    private static String getTWSPasswordFromProperties() {
-        String password = Settings.getString("IbPassword", "");
-        if (password.length() != 0) {
-            if (isPasswordEncrypted()) password = Encryptor.decrypt(password);
-        }
-        return password;
-    }
-
     private static String getTWSSettingsDirectory() {
         String dir = Settings.getString("IbDir", System.getProperty("user.dir"));
         Utils.logToConsole("TWS settings directory is " + dir);
         return dir;
-    }
-
-    private static void getTWSUserNameAndPassword(String[] args) {
-        if (! getTWSUserNameAndPasswordFromArguments(args)) {
-            getTWSUserNameAndPasswordFromProperties();
-        }
-    }
-
-    private static String getTWSUserNameFromProperties() {
-        return Settings.getString("IbLoginId", "");
-    }
-
-    private static boolean getTWSUserNameAndPasswordFromArguments(String[] args) {
-        if (Settings.getBoolean("FIX", false)) {
-            if (args.length == 5) {
-                _IBAPIUserName = args[3];
-                _IBAPIPassword = args[4];
-                return true;
-            } else {
-                return false;
-            }
-        } else if (args.length == 3) {
-            _IBAPIUserName = args[1];
-            _IBAPIPassword = args[2];
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    private static void getTWSUserNameAndPasswordFromProperties() {
-        _IBAPIUserName = getTWSUserNameFromProperties();
-        _IBAPIPassword = getTWSPasswordFromProperties();
-    }
-
-    private static String getComputerUserName() {
-        StringBuilder sb = new StringBuilder(System.getProperty("user.name"));
-        int i;
-        for (i = 0; i < sb.length(); i++) {
-            char c = sb.charAt(i);
-            if ((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9')) {
-                continue;
-            }
-            if (c >= 'A' && c <= 'Z') {
-                sb.setCharAt(i, Character.toLowerCase(c));
-            } else {
-                sb.setCharAt(i, '_');
-            }
-        }
-        return sb.toString();
-    }
-
-    private static String getWorkingDirectory() {
-        return System.getProperty("user.dir") + File.separator;
-    }
-
-    private static boolean isFIXPasswordEncrypted() {
-        return Settings.getBoolean("FIXPasswordEncrypted", true);
-    }
-
-    private static boolean isPasswordEncrypted() {
-        return Settings.getBoolean("PasswordEncrypted", true);
     }
 
     private static void printProperties() {
