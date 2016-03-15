@@ -48,8 +48,6 @@ class TwsListener
 
     private static List<WindowHandler> _WindowHandlers;
 
-    private static volatile JFrame _MainWindow = null;
-    
     private static String logComponents;
 
     private TwsListener() {
@@ -95,78 +93,6 @@ class TwsListener
 
     static String getTradingMode() {
         return _TradingMode;
-    }
-    
-    private static volatile GetMainWindowTask _MainWindowTask;
-    private static volatile Future<JFrame> _MainWindowFuture;
-    
-    /**
-     * Returns the main window, if necessary blocking the calling thread until
-     * either it is available or a specified timeout has elapsed.
-     * 
-     * If the main window is currently open, it is returned immediately without blocking
-     * the calling thread.
-     * 
-     * Calling this method from the Swing event dispatch thread results in an IllegalStateException
-     * being thrown.
-     * 
-     * @param timeout
-     * the length of time to wait for the main window to become available. If this is
-     * negative, the calling thread blocks until the window becomes available.
-     * @param unit
-     * the time units for the timeout parameter
-     * @return
-     * null if the timeout expires before the main window becomes available; otherwise
-     * the main window
-     * @throws IllegalStateException
-     * the method has been called from the Swing event dispatch thread
-     */
-    static JFrame getMainWindow(long timeout, TimeUnit unit) {
-        if (SwingUtilities.isEventDispatchThread()) throw new IllegalStateException();
-        
-        if (_MainWindow != null) return _MainWindow;
-        
-        if (_MainWindowFuture == null) {
-            _MainWindowTask = new GetMainWindowTask();
-            ExecutorService exec = Executors.newSingleThreadExecutor();
-            _MainWindowFuture = exec.submit((Callable<JFrame>) _MainWindowTask);
-            exec.shutdown();
-        }
-        
-        try {
-            if (timeout < 0) {
-                _MainWindow = _MainWindowFuture.get();
-            } else {
-                _MainWindow = _MainWindowFuture.get(timeout, unit);
-            }
-            if (_MainWindow != null) _MainWindowFuture = null;
-        } catch (TimeoutException | InterruptedException e) {
-        } catch (ExecutionException e) {
-            Throwable t = e.getCause();
-            if (t instanceof RuntimeException) throw (RuntimeException)t;
-            if (t instanceof Error) throw (Error)t;
-            throw new IllegalStateException(t);
-        }
-        return _MainWindow;
-    }
-
-    /**
-     * Returns the main window, if necessary blocking the calling thread until
-     * it is available.
-     * 
-     * If the main window is currently open, it is returned immediately without blocking
-     * the calling thread.
-     * 
-     * Calling this method from the Swing event dispatch thread results in an IllegalStateException
-     * being thrown.
-     * 
-     * @return
-     * the main window
-     * @throws IllegalStateException 
-     * the method has been called from the Swing event dispatch thread
-     */
-    static JFrame getMainWindow() throws IllegalStateException{
-        return getMainWindow(-1, TimeUnit.MILLISECONDS);
     }
     
     static boolean _ApiConfigChangeConfirmationExpected;
@@ -231,15 +157,8 @@ class TwsListener
         return true;
     }
 
-    static void setMainWindow(JFrame window) {
-        Utils.logToConsole("Found " + (IBController.isGateway() ? "Gateway" : "TWS") + " main window");
-        _MainWindow = window;
-        if (_MainWindowTask != null) _MainWindowTask.setMainWindow(window);
-        if (Settings.getBoolean("MinimizeMainWindow", false)) _MainWindow.setExtendedState(java.awt.Frame.ICONIFIED);
-    }
-    
     static void showTradesLogWindow() {
-        Utils.invokeMenuItem(getMainWindow(), new String[] {"Account", "Trade Log"});
+        Utils.invokeMenuItem(MainWindowManager.getMainWindow(), new String[] {"Account", "Trade Log"});
     }
 
     static String windowEventToString(int eventID) {

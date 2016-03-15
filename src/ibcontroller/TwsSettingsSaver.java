@@ -152,7 +152,7 @@ class TwsSettingsSaver {
                     @Override
                     public void run() {
                         Utils.logToConsole("Saving Tws settings");
-                        Utils.invokeMenuItem(TwsListener.getMainWindow(), new String[] {"File", "Save Settings"});
+                        Utils.invokeMenuItem(MainWindowManager.getMainWindow(), new String[] {"File", "Save Settings"});
                     }
                 }, saveTime.getTime() - System.currentTimeMillis(), 86400000, TimeUnit.MILLISECONDS);
     }

@@ -24,6 +24,7 @@ import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
 
 class MainWindowFrameHandler implements WindowHandler {
+    @Override
     public boolean filterEvent(Window window, int eventId) {
         switch (eventId) {
             case WindowEvent.WINDOW_OPENED:
@@ -33,6 +34,7 @@ class MainWindowFrameHandler implements WindowHandler {
         }
     }
 
+    @Override
     public void handleWindow(Window window, int eventID) {
         if (eventID != WindowEvent.WINDOW_OPENED) return;
         
@@ -42,9 +44,10 @@ class MainWindowFrameHandler implements WindowHandler {
             Utils.logToConsole(component.getName() + "(" + component.getClass().getName() + ")");
         }
 
-        TwsListener.setMainWindow((JFrame) window);
+        MainWindowManager.setMainWindow((JFrame) window);
     }
 
+    @Override
     public boolean recogniseWindow(Window window) {
         if (! (window instanceof JFrame)) return false;
 
