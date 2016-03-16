@@ -407,9 +407,7 @@ public class IBController {
 
     private static void startTws() {
         if (Settings.getBoolean("ShowAllTrades", false)) {
-            MyCachedThreadPool.getInstance().execute(new Runnable () {
-                @Override public void run() {TwsListener.showTradesLogWindow();}
-            });
+            Utils.showTradesLogWindow();
         }
         String[] twsArgs = new String[1];
         twsArgs[0] = getTWSSettingsDirectory();

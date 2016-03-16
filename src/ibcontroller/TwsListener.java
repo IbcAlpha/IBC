@@ -59,10 +59,6 @@ class TwsListener
 
     }
 
-    static void showTradesLogWindow() {
-        Utils.invokeMenuItem(MainWindowManager.getMainWindow(), new String[] {"Account", "Trade Log"});
-    }
-
 }
 
 

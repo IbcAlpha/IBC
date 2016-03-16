@@ -659,6 +659,12 @@ class Utils {
         return true;
     }
     
+    static void showTradesLogWindow() {
+            MyCachedThreadPool.getInstance().execute(new Runnable () {
+                @Override public void run() {invokeMenuItem(MainWindowManager.getMainWindow(), new String[] {"Account", "Trade Log"});}
+            });
+    }
+    
     static void sendConsoleOutputToTwsLog(boolean value) {
         sendConsoleOutputToTwsLog = value;
     }
