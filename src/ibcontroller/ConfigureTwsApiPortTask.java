@@ -41,7 +41,7 @@ class ConfigureTwsApiPortTask implements Runnable{
             });
 
         } catch (Exception e){
-            Utils.logError("" + e.getMessage());
+            Utils.logError(e.getMessage());
         }
     }
 
@@ -49,9 +49,9 @@ class ConfigureTwsApiPortTask implements Runnable{
         try {
             Utils.logToConsole("Performing port configuration");
             
-            if (!TwsListener.selectConfigSection(configDialog, new String[] {"API","Settings"}))
+            if (!ConfigDialogManager.selectConfigSection(configDialog, new String[] {"API","Settings"}))
                 // older versions of TWS don't have the Settings node below the API node
-                TwsListener.selectConfigSection(configDialog, new String[] {"API"});
+                ConfigDialogManager.selectConfigSection(configDialog, new String[] {"API"});
 
             Component comp = Utils.findComponent(configDialog, "Socket port");
             if (comp == null) throw new IBControllerException("could not find socket port component");
@@ -66,10 +66,10 @@ class ConfigureTwsApiPortTask implements Runnable{
                 if (!IBController.isGateway()) {
                     JCheckBox cb = Utils.findCheckBox(configDialog, "Enable ActiveX and Socket Clients");
                     if (cb == null) throw new IBControllerException("could not find Enable ActiveX checkbox");
-                    if (cb.isSelected()) TwsListener.setApiConfigChangeConfirmationExpected(true);
+                    if (cb.isSelected()) ConfigDialogManager.setApiConfigChangeConfirmationExpected(true);
                 }
                 Utils.logToConsole("TWS API socket port was set to " + tf.getText());
-                tf.setText(new Integer(portNumber).toString());
+                tf.setText(Integer.toString(portNumber));
                 Utils.logToConsole("TWS API socket port now set to " + tf.getText());
             }
 
@@ -77,7 +77,7 @@ class ConfigureTwsApiPortTask implements Runnable{
 
             configDialog.setVisible(false);
         } catch (IBControllerException e) {
-            Utils.logError("" + e.getMessage());
+            Utils.logError(e.getMessage());
         }
     }
 }
