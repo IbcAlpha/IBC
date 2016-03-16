@@ -21,6 +21,7 @@ package ibcontroller;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Window;
+import java.awt.event.WindowEvent;
 import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -33,6 +34,7 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -56,6 +58,30 @@ class Utils {
     
     private static boolean sendConsoleOutputToTwsLog = false;
     
+    private static String logComponents;
+
+    static {
+        String logComponentsSetting =  Settings.getString("LogComponents", "never").toLowerCase();
+        switch (logComponentsSetting) {
+            case "activate":
+            case "open":
+            case "never":
+                logComponents = logComponentsSetting;
+                break;
+            case "yes":
+            case "true":
+                logComponents="open";
+                break;
+            case "no":
+            case "false":
+                logComponents="never";
+                break;
+            default:
+                Utils.logError("the LogComponents setting is invalid.");
+                break;
+        }
+    }
+
     /**
      * Performs a click on the button labelled with the specified text.
      * @param window
@@ -569,7 +595,26 @@ class Utils {
         return _DateFormatter.format(new Date()) + " IBController: " + message;
     }
 
-    /**
+    static void logWindow(Window window, int eventID) {
+        String event = windowEventToString(eventID);
+
+        if (window instanceof JFrame) {
+            Utils.logToConsole("detected frame entitled: " + ((JFrame) window).getTitle() + "; event=" + event);
+        } else if (window instanceof JDialog) {
+            Utils.logToConsole("detected dialog entitled: " + ((JDialog) window).getTitle() + "; event=" + event);
+        } else {
+            Utils.logToConsole("detected window: type=" + window.getClass().getName() + "; event=" + event);
+        }
+        
+        if ((eventID == WindowEvent.WINDOW_OPENED && logComponents.equals("open"))
+            ||
+            (eventID == WindowEvent.WINDOW_ACTIVATED && logComponents.equals("activate")))
+        {
+            Utils.logWindowComponents(window);
+        }
+    }
+    
+/**
      * Writes the structure of the specified window to the console.
      * 
      * Details of each component in the window are written, indented to reflect
@@ -689,6 +734,33 @@ class Utils {
         return (title != null && title.equals(text));
     }
 
+    static String windowEventToString(int eventID) {
+        switch (eventID) { 
+            case WindowEvent.WINDOW_ACTIVATED:
+                return "Activated";
+            case WindowEvent.WINDOW_CLOSED:
+                return "Closed";
+            case WindowEvent.WINDOW_CLOSING:
+                return "Closing";
+            case WindowEvent.WINDOW_DEACTIVATED:
+                return "Deactivated";
+            case WindowEvent.WINDOW_DEICONIFIED:
+                return "Deiconfied";
+            case WindowEvent.WINDOW_GAINED_FOCUS:
+                return "Focused";
+            case WindowEvent.WINDOW_ICONIFIED:
+                return "Iconified";
+            case WindowEvent.WINDOW_LOST_FOCUS:
+                return "Lost focus";
+            case WindowEvent.WINDOW_OPENED:
+                return "Opened";
+            case WindowEvent.WINDOW_STATE_CHANGED:
+                return "State changed";
+            default:
+                return "???";
+        }
+    }
+
     private static String getComponentDetails(Component component) {
         String s = component.isEnabled() ? "" : "[Disabled]";
         if (component instanceof JButton) s = s + "JButton: " + ((JButton)component).getText();
@@ -700,6 +772,8 @@ class Utils {
         else if (component instanceof JMenuBar) s = s + "JMenuBar: " + ((JMenuBar) component).getName();
         else if (component instanceof JMenuItem) s = s + "JMenuItem: " + ((JMenuItem) component).getText();
         else if (component instanceof JTree) s = s + "JTree: ";
+        else if (component instanceof JComboBox) s = s + "JComboBox: ";
+        else if (component instanceof JList) s = s + "JList: ";
         
         if (!s.isEmpty()) s = "{" + s + "}";
         return s;

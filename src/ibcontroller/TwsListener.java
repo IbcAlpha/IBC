@@ -23,8 +23,6 @@ import java.awt.Window;
 import java.awt.event.AWTEventListener;
 import java.awt.event.WindowEvent;
 import java.util.List;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
 
 class TwsListener
         implements AWTEventListener {
@@ -32,20 +30,6 @@ class TwsListener
     private static final TwsListener _OnlyInstance = new TwsListener();
     
     private static List<WindowHandler> _WindowHandlers;
-
-    private static String logComponents;
-
-    private TwsListener() {
-        logComponents =  Settings.getString("LogComponents", "never").toLowerCase();
-        if (logComponents.equals("activate") || logComponents.equals("open") || logComponents.equals("never")) {
-        } else if (logComponents.equals("yes") || logComponents.equals("true")) {
-            logComponents="open";
-        } else if (logComponents.equals("no") || logComponents.equals("false")) {
-            logComponents="never";
-        } else {
-            Utils.logError("the LogComponents setting is invalid.");
-        }
-    }
 
     static TwsListener getInstance() {return _OnlyInstance; }
 
@@ -63,7 +47,7 @@ class TwsListener
                 eventID == WindowEvent.WINDOW_ACTIVATED ||
                 eventID == WindowEvent.WINDOW_CLOSING ||
                 eventID == WindowEvent.WINDOW_CLOSED) {
-            logWindow(window, eventID);
+            Utils.logWindow(window, eventID);
         }
 
         for (WindowHandler wh : _WindowHandlers) {
@@ -75,54 +59,8 @@ class TwsListener
 
     }
 
-    private static void logWindow(Window window,int eventID) {
-        String event = windowEventToString(eventID);
-
-        if (window instanceof JFrame) {
-            Utils.logToConsole("detected frame entitled: " + ((JFrame) window).getTitle() + "; event=" + event);
-        } else if (window instanceof JDialog) {
-            Utils.logToConsole("detected dialog entitled: " + ((JDialog) window).getTitle() + "; event=" + event);
-        } else {
-            Utils.logToConsole("detected window: type=" + window.getClass().getName() + "; event=" + event);
-        }
-        
-        if ((eventID == WindowEvent.WINDOW_OPENED && logComponents.equals("open"))
-            ||
-            (eventID == WindowEvent.WINDOW_ACTIVATED && logComponents.equals("activate")))
-        {
-            Utils.logWindowComponents(window);
-        }
-    }
-    
     static void showTradesLogWindow() {
         Utils.invokeMenuItem(MainWindowManager.getMainWindow(), new String[] {"Account", "Trade Log"});
-    }
-
-    static String windowEventToString(int eventID) {
-        switch (eventID) { 
-            case WindowEvent.WINDOW_ACTIVATED:
-                return "Activated";
-            case WindowEvent.WINDOW_CLOSED:
-                return "Closed";
-            case WindowEvent.WINDOW_CLOSING:
-                return "Closing";
-            case WindowEvent.WINDOW_DEACTIVATED:
-                return "Deactivated";
-            case WindowEvent.WINDOW_DEICONIFIED:
-                return "Deiconfied";
-            case WindowEvent.WINDOW_GAINED_FOCUS:
-                return "Focused";
-            case WindowEvent.WINDOW_ICONIFIED:
-                return "Iconified";
-            case WindowEvent.WINDOW_LOST_FOCUS:
-                return "Lost focus";
-            case WindowEvent.WINDOW_OPENED:
-                return "Opened";
-            case WindowEvent.WINDOW_STATE_CHANGED:
-                return "State changed";
-            default:
-                return "???";
-        }
     }
 
 }
