@@ -18,6 +18,7 @@
 
 package ibcontroller;
 
+import static ibcontroller.Utils.findCheckBox;
 import java.awt.Window;
 import java.awt.event.WindowEvent;
 import javax.swing.JCheckBox;
@@ -29,6 +30,9 @@ public class TradesFrameHandler implements WindowHandler {
     
     boolean firstTradesWindowOpened;
     
+    boolean showAllTrades;
+    
+    @Override
     public boolean filterEvent(Window window, int eventId) {
         switch (eventId) {
             case WindowEvent.WINDOW_OPENED:
@@ -40,36 +44,69 @@ public class TradesFrameHandler implements WindowHandler {
         }
     }
 
+    @Override
     public void handleWindow(final Window window, int eventID) {
-        if (!Settings.getBoolean("ShowAllTrades", false)) return;
+        if (!firstTradesWindowOpened) {
+            showAllTrades = Settings.getBoolean("ShowAllTrades", false);
+        }
+        if (!showAllTrades) {
+            firstTradesWindowOpened = true;
+            return;
+        }
         if (eventID == WindowEvent.WINDOW_OPENED) {
-            Utils.logToConsole("Setting trades log to show all trades");
-            Utils.setCheckBoxSelected(window, "Sun", true);
-            Utils.setCheckBoxSelected(window, "Mon", true);
-            Utils.setCheckBoxSelected(window, "Tue", true);
-            Utils.setCheckBoxSelected(window, "Wed", true);
-            Utils.setCheckBoxSelected(window, "Thu", true);
-            Utils.setCheckBoxSelected(window, "Fri", true);
-            Utils.setCheckBoxSelected(window, "Sat", true);
-            Utils.setCheckBoxSelected(window, "All", true);
-            
-            monitorAllTradesCheckbox(window, "All");
-            
-            if (! firstTradesWindowOpened) {
-                firstTradesWindowOpened = true;
-                if (Settings.getBoolean("MinimizeMainWindow", false)) {
-                    ((JFrame) window).setExtendedState(java.awt.Frame.ICONIFIED);
+            if (findCheckBox(window, "Sun") != null) {
+                Utils.logToConsole("Setting trades log to show all trades");
+                // TWS versions before 955
+                Utils.setCheckBoxSelected(window, "Sun", true);
+                Utils.setCheckBoxSelected(window, "Mon", true);
+                Utils.setCheckBoxSelected(window, "Tue", true);
+                Utils.setCheckBoxSelected(window, "Wed", true);
+                Utils.setCheckBoxSelected(window, "Thu", true);
+                Utils.setCheckBoxSelected(window, "Fri", true);
+                Utils.setCheckBoxSelected(window, "Sat", true);
+                Utils.setCheckBoxSelected(window, "All", true);
+
+                monitorAllTradesCheckbox(window, "All");
+
+                if (! firstTradesWindowOpened) {
+                    if (Settings.getBoolean("MinimizeMainWindow", false)) {
+                        ((JFrame) window).setExtendedState(java.awt.Frame.ICONIFIED);
+                    }
                 }
+            } else {
+                Utils.logToConsole("Can't set  trades log to show all trades with this TWS version: user must do this");
+                /*
+                 * For TWS 955 onwards, IB have replaced the row of daily 
+                 * checkboxes with what appears visually to be a combo box:
+                 * it is indeed derived from a JComboBox, but setting the
+                 * selected item to 'Last 7 Days' doesn't have the desired
+                 * effect.
+                 * 
+                 * At present I don't see a way of getting round this, but 
+                 * the setting chosen by the user can now be persisted
+                 * between sessions, so there is really no longer a need for
+                 * 'ShowAllTrades'.
+                 * 
+                 */
+                
+                showAllTrades = false;
+                ((JFrame) window).dispose();
             }
+
+            firstTradesWindowOpened = true;
+
         } else if (eventID == WindowEvent.WINDOW_CLOSING) {
             Utils.logToConsole("User closing trades log");
         } else if (eventID == WindowEvent.WINDOW_CLOSED) {
-            Utils.logToConsole("Trades log closed by user - recreating");
-            Utils.showTradesLogWindow();
+            if (showAllTrades) {
+                Utils.logToConsole("Trades log closed by user - recreating");
+                Utils.showTradesLogWindow();
+            }
         }
 
     }
 
+    @Override
     public boolean recogniseWindow(Window window) {
         if (! (window instanceof JFrame))  return false;
 
@@ -79,10 +116,12 @@ public class TradesFrameHandler implements WindowHandler {
     private void monitorAllTradesCheckbox(Window window, String text) {
         final JCheckBox check = Utils.findCheckBox(window, text);
         if (check != null) check.addChangeListener(new ChangeListener() {
+            @Override
             public void stateChanged(ChangeEvent ce) {
                 Utils.logToConsole("Checkbox: " + check.getText() + "; selected=" + check.isSelected());
                 if (!check.isSelected()) {
                     GuiDeferredExecutor.instance().execute(new Runnable() {
+                        @Override
                         public void run(){
                             Utils.logToConsole("Checkbox: " + check.getText() + "; setting selected");
                             if (!check.isSelected()) check.doClick();
