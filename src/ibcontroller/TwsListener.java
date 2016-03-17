@@ -92,11 +92,11 @@ class TwsListener
             Utils.logToConsole("detected window: type=" + window.getClass().getName() + "; event=" + event);
         }
         
-        if ((eventID == WindowEvent.WINDOW_OPENED && logComponents.equals("open"))
+        if ((eventID == WindowEvent.WINDOW_OPENED && (logComponents.equals("open") || logComponents.equals("activate")))
             ||
             (eventID == WindowEvent.WINDOW_ACTIVATED && logComponents.equals("activate")))
         {
-            Utils.logWindowComponents(window);
+            Utils.logRawToConsole(Utils.getWindowStructure(window));
         }
     }
     

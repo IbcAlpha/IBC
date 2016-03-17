@@ -48,6 +48,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.tree.TreeModel;
 
 class Utils {
+    
+    static final String NEWLINE = System.lineSeparator();
 
     static final SimpleDateFormat _DateFormatter = new SimpleDateFormat("HH:mm:ss:SSS");
     
@@ -518,15 +520,6 @@ class Utils {
 
     }
 
-    /**
-     * Writes the structure of the specified Component to the console.
-     * @param component
-     * The Component to be logged
-     */
-    static void logComponent(Component component) {
-        Utils.logComponent(component, "");
-    }
-    
     static void logError(String message) {
         getErrStream().println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         getErrStream().println(formatMessage(message));
@@ -534,7 +527,7 @@ class Utils {
     }
     
     /**
-     * Writes a plain text message to the console.
+     * Writes a plain one-line text message to the console.
      * @param msg
      * The message to be written
      */
@@ -572,15 +565,19 @@ class Utils {
     }
 
 /**
-     * Writes the structure of the specified window to the console.
+     * Returns a string representing the structure of the specified window.
      * 
-     * Details of each component in the window are written, indented to reflect
+     * Details of each component in the window are included, indented to reflect
      * the component's position in the hierarchy.
      * @param window
-     * The Window whose structure is to be logged.
+     * The Window whose structure is to be returned.
      */
-    static void logWindowComponents(Window window) {
-        for (Component component : window.getComponents()) logComponent(component, "");
+    static String getWindowStructure(Window window) {
+        StringBuilder builder = new StringBuilder();
+        for (Component component : window.getComponents()) appendComponentStructure(component, builder);
+        builder.append(NEWLINE);
+        builder.append(NEWLINE);
+        return builder.toString();
     }
     
     /**
@@ -724,24 +721,6 @@ class Utils {
         }
     }
 
-    private static String getComponentDetails(Component component) {
-        String s = component.isEnabled() ? "" : "[Disabled]";
-        if (component instanceof JButton) s = s + "JButton: " + ((JButton)component).getText();
-        else if (component instanceof JCheckBox) s = s + "JCheckBox: " + ((JCheckBox) component).getText();
-        else if (component instanceof JLabel) s = s + "JLabel: " + ((JLabel) component).getText();
-        else if (component instanceof JOptionPane) s = s + "JOptionPane: " + ((JOptionPane) component).getMessage().toString();
-        else if (component instanceof JRadioButton) s = s + "JRadioButton: " + ((JRadioButton) component).getText();
-        else if (component instanceof JTextField) s = s + "JTextField: " + ((JTextField) component).getText();
-        else if (component instanceof JMenuBar) s = s + "JMenuBar: " + ((JMenuBar) component).getName();
-        else if (component instanceof JMenuItem) s = s + "JMenuItem: " + ((JMenuItem) component).getText();
-        else if (component instanceof JTree) s = s + "JTree: ";
-        else if (component instanceof JComboBox) s = s + "JComboBox: ";
-        else if (component instanceof JList) s = s + "JList: ";
-        
-        if (!s.isEmpty()) s = "{" + s + "}";
-        return s;
-    }
-    
     private static String getWindowTitle(Window window) {
         String title = null;
         if (window instanceof JDialog) {
@@ -752,52 +731,130 @@ class Utils {
         return title;
     }
     
-    private static String logClassDerivation(Object object) {
-        String s = object.getClass().getSimpleName();
+    private static void appendComponentDetails(Component component, StringBuilder builder) {
+        builder.append(component.isEnabled() ? "" : "[Disabled]");
+        if (component instanceof JButton) {
+            builder.append("{");
+            builder.append("JButton: "); 
+            builder.append(((JButton)component).getText());
+            builder.append("}");
+        } else if (component instanceof JCheckBox) {
+            builder.append("{");
+            builder.append("JCheckBox: ");
+            builder.append(((JCheckBox) component).getText());
+            builder.append("}");
+        } else if (component instanceof JLabel) {
+            builder.append("{");
+            builder.append("JLabel: "); 
+            builder.append(((JLabel) component).getText());
+            builder.append("}");
+        } else if (component instanceof JOptionPane) {
+            builder.append("{");
+            builder.append("JOptionPane: ");
+            builder.append(((JOptionPane) component).getMessage().toString());
+            builder.append("}");
+        }else if (component instanceof JRadioButton) {
+            builder.append("{");
+            builder.append("JRadioButton: "); 
+            builder.append(((JRadioButton) component).getText());
+            builder.append("}");
+        } else if (component instanceof JTextField) {
+            builder.append("{");
+            builder.append("JTextField: ");
+            builder.append(((JTextField) component).getText());
+            builder.append("}");
+        } else if (component instanceof JMenuBar) {
+            builder.append("{");
+            builder.append("JMenuBar: "); 
+            builder.append(((JMenuBar) component).getName());
+            builder.append("}");
+        } else if (component instanceof JMenuItem) {
+            builder.append("{");
+            builder.append("JMenuItem: ");
+            builder.append(((JMenuItem) component).getText());
+            builder.append("}");
+        } else if (component instanceof JTree) {
+            builder.append("{");
+            builder.append("JTree: ");
+            builder.append("}");
+        }else if (component instanceof JComboBox) {
+            builder.append("{");
+            builder.append("JComboBox: ");
+            builder.append("}");
+        } else if (component instanceof JList) {
+            builder.append("{");
+            builder.append("JList: ");
+            builder.append("}");
+        }
+    }
+    
+    private static void appendClassDerivation(Object object, StringBuilder builder) {
+        builder.append(object.getClass().getSimpleName());
         Class<?> c = object.getClass().getSuperclass();
+        String s = null;
         while (c != null) {
             s = c.getSimpleName() + "." + s;
             c = c.getSuperclass();
         }
-        return s;
+        builder.append(s);
     }
 
-    private static void logComponent(Component component, String indent) {
-        logToConsole(indent + component.getName() + "(" + component.getClass().getName() + ")" + getComponentDetails(component));
-        if (component instanceof JTree) logTreeNodes(((JTree) component).getModel(), ((JTree) component).getModel().getRoot(), "|   " + indent);
+    private static void appendComponentStructure(Component component, StringBuilder builder) {
+        appendComponentStructure(component, builder, "");
+    }
+    
+    private static void appendComponentStructure(Component component, StringBuilder builder, String indent) {
+        builder.append(NEWLINE);
+        builder.append(indent);
+        builder.append(component.getName());
+        builder.append("(");
+        builder.append(component.getClass().getName());
+        builder.append(")");
+        appendComponentDetails(component, builder);
+        if (component instanceof JTree) appendTreeNodes(((JTree) component).getModel(), ((JTree) component).getModel().getRoot(), builder, "|   " + indent);
         if (component instanceof JMenuBar) {
-            logMenuItem(component, "|   " + indent);
+            appendMenuItem(component, builder, "|   " + indent);
         } else if (component instanceof Container) {
-            for (Component subComponent : ((Container)component).getComponents()) logComponent(subComponent,"|   " + indent);
+            for (Component subComponent : ((Container)component).getComponents()) appendComponentStructure(subComponent, builder, "|   " + indent);
         }
     }
 
-    private static void logTreeNodes(TreeModel model, Object node, String indent) {
+    private static void appendTreeNodes(TreeModel model, Object node, StringBuilder builder, String indent) {
+        builder.append(NEWLINE);
+        builder.append(indent);
         if (node instanceof Component) {
-            logToConsole(indent + node.toString());
-            logComponent((Component)node, "|   " + indent);
+            builder.append(node.toString());
+            appendComponentStructure((Component)node, builder, "|   " + indent);
         } else {
-            logToConsole(indent + node.toString() + "  (" + logClassDerivation(node) + ")");
+            builder.append(node.toString());
+            builder.append("  (");
+            appendClassDerivation(node, builder);
+            builder.append(")");
         }
-        for (int i = 0; i < model.getChildCount(node); i++) logTreeNodes(model, model.getChild(node, i), "|   " + indent);
+        for (int i = 0; i < model.getChildCount(node); i++) appendTreeNodes(model, model.getChild(node, i), builder, "|   " + indent);
     }
 
-    private static void logMenuItem(Component menuItem, String indent) {
+    private static void appendMenuItem(Component menuItem, StringBuilder builder, String indent) {
         if (menuItem instanceof JMenuBar) {
-            logMenuSubElements((MenuElement)menuItem, indent);
+            appendMenuSubElements((MenuElement)menuItem, builder, indent);
         } else if (menuItem instanceof JPopupMenu) {
-            logMenuSubElements((MenuElement)menuItem, indent);
+            appendMenuSubElements((MenuElement)menuItem, builder, indent);
         } else if (menuItem instanceof JMenuItem) {
-            logToConsole(indent + ((JMenuItem)menuItem).getText() + (((JMenuItem)menuItem).isEnabled() ? "" : "[Disabled]"));
-            logMenuSubElements((JMenuItem)menuItem, "|   " + indent);
+            builder.append(NEWLINE);
+            builder.append(indent);
+            builder.append(((JMenuItem)menuItem).getText());
+            builder.append(((JMenuItem)menuItem).isEnabled() ? "" : "[Disabled]");
+            appendMenuSubElements((JMenuItem)menuItem, builder, "|   " + indent);
         } else if (menuItem instanceof JSeparator) {
-            logToConsole(indent + "--------");
+            builder.append(NEWLINE);
+            builder.append(indent);
+            builder.append("--------");
         }
     }
     
-    private static void logMenuSubElements(MenuElement element, String indent) {
+    private static void appendMenuSubElements(MenuElement element, StringBuilder builder, String indent) {
         for (MenuElement subItem : element.getSubElements()) {
-            logMenuItem((Component)subItem, indent);
+            appendMenuItem((Component)subItem, builder, indent);
         }
     }
 
