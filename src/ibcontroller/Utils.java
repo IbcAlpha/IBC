@@ -58,30 +58,6 @@ class Utils {
     
     private static boolean sendConsoleOutputToTwsLog = false;
     
-    private static String logComponents;
-
-    static {
-        String logComponentsSetting =  Settings.getString("LogComponents", "never").toLowerCase();
-        switch (logComponentsSetting) {
-            case "activate":
-            case "open":
-            case "never":
-                logComponents = logComponentsSetting;
-                break;
-            case "yes":
-            case "true":
-                logComponents="open";
-                break;
-            case "no":
-            case "false":
-                logComponents="never";
-                break;
-            default:
-                Utils.logError("the LogComponents setting is invalid.");
-                break;
-        }
-    }
-
     /**
      * Performs a click on the button labelled with the specified text.
      * @param window
@@ -595,25 +571,6 @@ class Utils {
         return _DateFormatter.format(new Date()) + " IBController: " + message;
     }
 
-    static void logWindow(Window window, int eventID) {
-        String event = windowEventToString(eventID);
-
-        if (window instanceof JFrame) {
-            Utils.logToConsole("detected frame entitled: " + ((JFrame) window).getTitle() + "; event=" + event);
-        } else if (window instanceof JDialog) {
-            Utils.logToConsole("detected dialog entitled: " + ((JDialog) window).getTitle() + "; event=" + event);
-        } else {
-            Utils.logToConsole("detected window: type=" + window.getClass().getName() + "; event=" + event);
-        }
-        
-        if ((eventID == WindowEvent.WINDOW_OPENED && logComponents.equals("open"))
-            ||
-            (eventID == WindowEvent.WINDOW_ACTIVATED && logComponents.equals("activate")))
-        {
-            Utils.logWindowComponents(window);
-        }
-    }
-    
 /**
      * Writes the structure of the specified window to the console.
      * 

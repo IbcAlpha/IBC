@@ -18,19 +18,45 @@
 
 package ibcontroller;
 
+import static ibcontroller.Utils.windowEventToString;
 import java.awt.AWTEvent;
 import java.awt.Window;
 import java.awt.event.AWTEventListener;
 import java.awt.event.WindowEvent;
 import java.util.List;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
 
 class TwsListener
         implements AWTEventListener {
 
     private final List<WindowHandler> _WindowHandlers;
 
+    private final String logComponents;
+
     TwsListener (List<WindowHandler> windowHandlers) {
         _WindowHandlers = windowHandlers;
+
+        String logComponentsSetting =  Settings.getString("LogComponents", "never").toLowerCase();
+        switch (logComponentsSetting) {
+            case "activate":
+            case "open":
+            case "never":
+                logComponents = logComponentsSetting;
+                break;
+            case "yes":
+            case "true":
+                logComponents="open";
+                break;
+            case "no":
+            case "false":
+                logComponents="never";
+                break;
+            default:
+                logComponents="never";
+                Utils.logError("the LogComponents setting is invalid.");
+                break;
+        }
     }
 
     @Override
@@ -43,7 +69,7 @@ class TwsListener
                 eventID == WindowEvent.WINDOW_ACTIVATED ||
                 eventID == WindowEvent.WINDOW_CLOSING ||
                 eventID == WindowEvent.WINDOW_CLOSED) {
-            Utils.logWindow(window, eventID);
+            logWindow(window, eventID);
         }
 
         for (WindowHandler wh : _WindowHandlers) {
@@ -55,6 +81,25 @@ class TwsListener
 
     }
 
+    private void logWindow(Window window, int eventID) {
+        String event = windowEventToString(eventID);
+
+        if (window instanceof JFrame) {
+            Utils.logToConsole("detected frame entitled: " + ((JFrame) window).getTitle() + "; event=" + event);
+        } else if (window instanceof JDialog) {
+            Utils.logToConsole("detected dialog entitled: " + ((JDialog) window).getTitle() + "; event=" + event);
+        } else {
+            Utils.logToConsole("detected window: type=" + window.getClass().getName() + "; event=" + event);
+        }
+        
+        if ((eventID == WindowEvent.WINDOW_OPENED && logComponents.equals("open"))
+            ||
+            (eventID == WindowEvent.WINDOW_ACTIVATED && logComponents.equals("activate")))
+        {
+            Utils.logWindowComponents(window);
+        }
+    }
+    
 }
 
 
