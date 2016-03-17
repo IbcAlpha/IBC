@@ -19,7 +19,6 @@
 package ibcontroller;
 
 import java.awt.Window;
-import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JRadioButton;
 

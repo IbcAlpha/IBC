@@ -31,12 +31,17 @@ class GetConfigDialogTask implements Callable<JDialog>{
     private final Lock lock = new ReentrantLock();
     private final Condition gotConfigDialog = lock.newCondition();
     private final Condition gatewayInitialised = lock.newCondition();
+    private final boolean isGateway;
+    
+    GetConfigDialogTask(boolean isGateway) {
+        this.isGateway = isGateway;
+    }
     
     @Override
     public JDialog call() throws IBControllerException, InterruptedException {
         final JFrame mainForm = MainWindowManager.getMainWindow();
         
-        if (IBController.isGateway()) {
+        if (isGateway) {
             /*
              * For the gateway, the main form is loaded right at the start, and long before
              * the menu items become responsive: any attempt to access the Configure > Settings
@@ -61,7 +66,7 @@ class GetConfigDialogTask implements Callable<JDialog>{
             }
         }
         
-        if (IBController.isGateway()) {
+        if (isGateway) {
             if (!Utils.invokeMenuItem(mainForm, new String[] {"Configure", "Settings"})) throw new IBControllerException("Can't find 'Configure > Settings' menu item");
         } else if (Utils.invokeMenuItem(mainForm, new String[] {"Edit", "Global Configuration..."})) /* TWS's Classic layout */ {
         } else if (Utils.invokeMenuItem(mainForm, new String[] {"File", "Global Configuration..."})) /* TWS's Mosaic layout */ {
@@ -91,7 +96,7 @@ class GetConfigDialogTask implements Callable<JDialog>{
     }
     
     void setSplashScreenClosed() {
-        if (!IBController.isGateway()) return;
+        if (!isGateway) return;
         lock.lock();
         try {
             mGatewayInitialised = true;

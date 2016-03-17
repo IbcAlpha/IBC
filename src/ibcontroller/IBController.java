@@ -20,7 +20,6 @@ package ibcontroller;
 
 import java.awt.AWTEvent;
 import java.awt.Toolkit;
-import java.io.File;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -215,8 +214,8 @@ public class IBController {
         load(args, false);
     }
 
-    static void load(String[] args, boolean gatewayOnly) {
-        _GatewayOnly = gatewayOnly;
+    static void load(String[] args, boolean isGateway) {
+        _isGateway = isGateway;
 
         printProperties();
 
@@ -224,6 +223,9 @@ public class IBController {
 
         Settings.initialise(args);
 
+        MainWindowManager.initialise(_isGateway);
+        ConfigDialogManager.initialise(_isGateway);
+        
         TradingModeManager.initialise(args);
         
         LoginManager.initialise(args);
@@ -243,18 +245,8 @@ public class IBController {
         super();
     }
 
-    private static boolean _GatewayOnly;
+    private static boolean _isGateway;
     
-    static boolean isGateway() {
-        return _GatewayOnly;
-    }
-    
-    private static final List<WindowHandler> _WindowHandlers = new ArrayList<WindowHandler>();
-
-    static {
-        createWindowHandlers();
-    }
-
     private static void checkArguments(String[] args) {
         /**
          * Allowable parameter combinations:
@@ -301,32 +293,35 @@ public class IBController {
     }
 
     private static void createToolkitListener() {
-        TwsListener.initialise(_WindowHandlers);
-        Toolkit.getDefaultToolkit().addAWTEventListener(TwsListener.getInstance(), AWTEvent.WINDOW_EVENT_MASK);
+        Toolkit.getDefaultToolkit().addAWTEventListener(new TwsListener(createWindowHandlers()), AWTEvent.WINDOW_EVENT_MASK);
     }
 
-    private static void createWindowHandlers() {
-        _WindowHandlers.add(new AcceptIncomingConnectionDialogHandler());
-        _WindowHandlers.add(new BlindTradingWarningDialogHandler());
-        _WindowHandlers.add(new ExitSessionFrameHandler());
-        _WindowHandlers.add(new LoginFrameHandler());
-        _WindowHandlers.add(new GatewayLoginFrameHandler());
-        _WindowHandlers.add(new MainWindowFrameHandler());
-        _WindowHandlers.add(new GatewayMainWindowFrameHandler());
-        _WindowHandlers.add(new NewerVersionDialogHandler());
-        _WindowHandlers.add(new NewerVersionFrameHandler());
-        _WindowHandlers.add(new NotCurrentlyAvailableDialogHandler());
-        _WindowHandlers.add(new TipOfTheDayDialogHandler());
-        _WindowHandlers.add(new NSEComplianceFrameHandler());
-        _WindowHandlers.add(new PasswordExpiryWarningFrameHandler());
-        _WindowHandlers.add(new GlobalConfigurationDialogHandler());
-        _WindowHandlers.add(new TradesFrameHandler());
-        _WindowHandlers.add(new ExistingSessionDetectedDialogHandler());
-        _WindowHandlers.add(new ApiChangeConfirmationDialogHandler());
-        _WindowHandlers.add(new SplashFrameHandler());
-        _WindowHandlers.add(new SecurityCodeDialogHandler());
-        _WindowHandlers.add(new ReloginDialogHandler());
-        _WindowHandlers.add(new NonBrokerageAccountDialogHandler());
+    private static List<WindowHandler> createWindowHandlers() {
+        List<WindowHandler> windowHandlers = new ArrayList<WindowHandler>();
+
+        windowHandlers.add(new AcceptIncomingConnectionDialogHandler());
+        windowHandlers.add(new BlindTradingWarningDialogHandler());
+        windowHandlers.add(new ExitSessionFrameHandler());
+        windowHandlers.add(new LoginFrameHandler());
+        windowHandlers.add(new GatewayLoginFrameHandler());
+        windowHandlers.add(new MainWindowFrameHandler());
+        windowHandlers.add(new GatewayMainWindowFrameHandler());
+        windowHandlers.add(new NewerVersionDialogHandler());
+        windowHandlers.add(new NewerVersionFrameHandler());
+        windowHandlers.add(new NotCurrentlyAvailableDialogHandler());
+        windowHandlers.add(new TipOfTheDayDialogHandler());
+        windowHandlers.add(new NSEComplianceFrameHandler());
+        windowHandlers.add(new PasswordExpiryWarningFrameHandler());
+        windowHandlers.add(new GlobalConfigurationDialogHandler());
+        windowHandlers.add(new TradesFrameHandler());
+        windowHandlers.add(new ExistingSessionDetectedDialogHandler());
+        windowHandlers.add(new ApiChangeConfirmationDialogHandler());
+        windowHandlers.add(new SplashFrameHandler());
+        windowHandlers.add(new SecurityCodeDialogHandler());
+        windowHandlers.add(new ReloginDialogHandler());
+        windowHandlers.add(new NonBrokerageAccountDialogHandler());
+        
+        return windowHandlers;
     }
     
     private static Date getShutdownTime() {
@@ -386,14 +381,14 @@ public class IBController {
     }
 
     private static void startIBControllerServer() {
-        MyCachedThreadPool.getInstance().execute(new IBControllerServer());
+        MyCachedThreadPool.getInstance().execute(new IBControllerServer(_isGateway));
     }
 
     private static void startShutdownTimerIfRequired() {
         Date shutdownTime = getShutdownTime();
         if (! (shutdownTime == null)) {
             long delay = shutdownTime.getTime() - System.currentTimeMillis();
-            Utils.logToConsole((isGateway() ? "Gateway" : "TWS") +
+            Utils.logToConsole((_isGateway ? "Gateway" : "TWS") +
                             " will be shut down at " +
                            (new SimpleDateFormat("yyyy/MM/dd HH:mm")).format(shutdownTime));
             MyScheduledExecutorService.getInstance().schedule(new Runnable() {
@@ -416,9 +411,9 @@ public class IBController {
 
     private static void startTwsOrGateway() {
         int portNumber = Settings.getInt("ForceTwsApiPort", 0);
-        if (portNumber != 0) MyCachedThreadPool.getInstance().execute(new ConfigureTwsApiPortTask(portNumber));
+        if (portNumber != 0) MyCachedThreadPool.getInstance().execute(new ConfigureTwsApiPortTask(portNumber, _isGateway));
 
-        if (isGateway()) {
+        if (_isGateway) {
             startGateway();
         } else {
             startTws();

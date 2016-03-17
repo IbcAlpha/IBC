@@ -27,13 +27,9 @@ import java.util.List;
 class TwsListener
         implements AWTEventListener {
 
-    private static final TwsListener _OnlyInstance = new TwsListener();
-    
-    private static List<WindowHandler> _WindowHandlers;
+    private final List<WindowHandler> _WindowHandlers;
 
-    static TwsListener getInstance() {return _OnlyInstance; }
-
-    static void initialise(List<WindowHandler> windowHandlers) {
+    TwsListener (List<WindowHandler> windowHandlers) {
         _WindowHandlers = windowHandlers;
     }
 

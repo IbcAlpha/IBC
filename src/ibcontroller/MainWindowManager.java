@@ -30,10 +30,18 @@ import javax.swing.SwingUtilities;
 
 public class MainWindowManager {
     
+    private MainWindowManager() {}
+    
     private static volatile JFrame _MainWindow = null;
     
     private static volatile GetMainWindowTask _MainWindowTask;
     private static volatile Future<JFrame> _MainWindowFuture;
+    
+    private static boolean _isGateway;
+    
+    static void initialise(boolean isGateway) {
+        _isGateway = isGateway;
+    }
     
     /**
      * Returns the main window, if necessary blocking the calling thread until
@@ -105,7 +113,7 @@ public class MainWindowManager {
     }
     
     static void setMainWindow(JFrame window) {
-        Utils.logToConsole("Found " + (IBController.isGateway() ? "Gateway" : "TWS") + " main window");
+        Utils.logToConsole("Found " + (_isGateway ? "Gateway" : "TWS") + " main window");
         _MainWindow = window;
         if (_MainWindowTask != null) _MainWindowTask.setMainWindow(window);
         if (Settings.getBoolean("MinimizeMainWindow", false)) _MainWindow.setExtendedState(java.awt.Frame.ICONIFIED);

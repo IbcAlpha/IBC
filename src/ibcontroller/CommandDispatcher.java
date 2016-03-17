@@ -26,9 +26,11 @@ class CommandDispatcher
         implements Runnable {
 
     private final CommandChannel mChannel;
+    private final boolean isGateway;
 
-    CommandDispatcher(CommandChannel channel) {
+    CommandDispatcher(CommandChannel channel, boolean isGateway) {
         this.mChannel = channel;
+        this.isGateway = isGateway;
     }
 
     @Override public void run() {
@@ -60,7 +62,7 @@ class CommandDispatcher
     }
 
     private void handleEnableAPICommand() {
-        if (IBController.isGateway()) {
+        if (isGateway) {
             mChannel.writeNack("ENABLEAPI is not valid for the IB Gateway");
             return;
         }

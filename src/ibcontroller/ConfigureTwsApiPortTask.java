@@ -24,10 +24,12 @@ import javax.swing.*;
 
 class ConfigureTwsApiPortTask implements Runnable{
     
-    final int mPortNumber;
+    private final int mPortNumber;
+    private final boolean isGateway;
     
-    ConfigureTwsApiPortTask(int portNumber) {
+    ConfigureTwsApiPortTask(int portNumber, boolean isGateway) {
         mPortNumber = portNumber;
+        this.isGateway = isGateway;
     }
 
     @Override
@@ -63,7 +65,7 @@ class ConfigureTwsApiPortTask implements Runnable{
             if (currentPort == portNumber) {
                 Utils.logToConsole("TWS API socket port is already set to " + tf.getText());
             } else {
-                if (!IBController.isGateway()) {
+                if (!isGateway) {
                     JCheckBox cb = Utils.findCheckBox(configDialog, "Enable ActiveX and Socket Clients");
                     if (cb == null) throw new IBControllerException("could not find Enable ActiveX checkbox");
                     if (cb.isSelected()) ConfigDialogManager.setApiConfigChangeConfirmationExpected(true);

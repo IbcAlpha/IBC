@@ -32,9 +32,17 @@ import javax.swing.tree.TreePath;
 
 public class ConfigDialogManager {
     
+    private ConfigDialogManager() {}
+    
     private static volatile JDialog _ConfigDialog = null;
     private static volatile GetConfigDialogTask _ConfigDialogTask;
     private static volatile Future<JDialog> _ConfigDialogFuture;
+    
+    private static boolean _isGateway;
+    
+    static void initialise(boolean isGateway) {
+        _isGateway = isGateway;
+    }
     
     /**
      * Records the fact that the config dialog has closed.
@@ -78,7 +86,7 @@ public class ConfigDialogManager {
         
         if (_ConfigDialogFuture == null) {
             Utils.logToConsole("Creating config dialog future");
-            _ConfigDialogTask = new GetConfigDialogTask();
+            _ConfigDialogTask = new GetConfigDialogTask(_isGateway);
             ExecutorService exec = Executors.newSingleThreadExecutor();
             _ConfigDialogFuture = exec.submit((Callable<JDialog>)_ConfigDialogTask);
             exec.shutdown();
