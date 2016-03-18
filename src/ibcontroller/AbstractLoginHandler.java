@@ -53,12 +53,12 @@ public abstract class AbstractLoginHandler implements WindowHandler {
     public abstract boolean recogniseWindow(Window window);
     
     private void doLogin(final Window window) throws IBControllerException {
-        if (Utils.findButton(window, "Login") == null) throw new IBControllerException("Login button");
+        if (SwingUtils.findButton(window, "Login") == null) throw new IBControllerException("Login button");
 
         GuiDeferredExecutor.instance().execute(new Runnable() {
             @Override
             public void run() {
-                Utils.clickButton(window, "Login");
+                SwingUtils.clickButton(window, "Login");
             }
         });
     }
@@ -70,19 +70,19 @@ public abstract class AbstractLoginHandler implements WindowHandler {
     protected abstract boolean setFields(Window window, int eventID) throws IBControllerException;
 
     protected final void setMissingCredential(final Window window, final int credentialIndex) {
-        Utils.findTextField(window, credentialIndex).requestFocus();
+        SwingUtils.findTextField(window, credentialIndex).requestFocus();
     }
 
     protected final void setCredential(final Window window, 
                                             final String credentialName,
                                             final int credentialIndex, 
                                             final String value) throws IBControllerException {
-        if (! Utils.setTextField(window, credentialIndex, value)) throw new IBControllerException(credentialName);
+        if (! SwingUtils.setTextField(window, credentialIndex, value)) throw new IBControllerException(credentialName);
     }
     
     protected final void setTradingModeCombo(final Window window) {
-        if (Utils.findLabel(window, "Trading Mode") != null)  {
-            JComboBox<?> tradingModeCombo = Utils.findComboBox(window, 0);
+        if (SwingUtils.findLabel(window, "Trading Mode") != null)  {
+            JComboBox<?> tradingModeCombo = SwingUtils.findComboBox(window, 0);
             
             if (tradingModeCombo != null ) {
                 String tradingMode = Environment.tradingModeManager().getTradingMode();

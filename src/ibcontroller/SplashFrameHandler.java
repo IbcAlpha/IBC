@@ -52,7 +52,7 @@ public class SplashFrameHandler implements WindowHandler {
     public boolean recogniseWindow(Window window) {
         if (! (window instanceof JFrame))  return false;
 
-        return (Utils.titleContains(window, "Starting application..."));
+        return (SwingUtils.titleContains(window, "Starting application..."));
     }
     
 }

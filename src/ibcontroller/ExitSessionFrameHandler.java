@@ -54,8 +54,8 @@ class ExitSessionFrameHandler implements WindowHandler {
     public boolean recogniseWindow(Window window) {
         if (! (window instanceof JFrame))  return false;
 
-        return (Utils.titleContains(window, "Exit Session Setting")  ||
-                    Utils.titleContains(window, "Session-Exit-Einstellung") || 
+        return (SwingUtils.titleContains(window, "Exit Session Setting")  ||
+                    SwingUtils.titleContains(window, "Session-Exit-Einstellung") || 
                     exitSessionFrame == (JFrame)window);
     }
 
@@ -65,22 +65,22 @@ class ExitSessionFrameHandler implements WindowHandler {
         cal.setTime(newLogoffTime);
         String newLogoffTimeText = new SimpleDateFormat("hh:mm").format(newLogoffTime);
 
-        Utils.setTextField(window, 0, newLogoffTimeText);
+        SwingUtils.setTextField(window, 0, newLogoffTimeText);
 
         if (cal.get(Calendar.AM_PM) == Calendar.AM) {
-            if (! Utils.setRadioButtonSelected(window, "AM" /*, true*/)) return false;
+            if (! SwingUtils.setRadioButtonSelected(window, "AM" /*, true*/)) return false;
         } else {
-            if (! Utils.setRadioButtonSelected(window, "PM" /*, true*/)) return false;
+            if (! SwingUtils.setRadioButtonSelected(window, "PM" /*, true*/)) return false;
         }
 
-        if (Utils.clickButton(window, "Update")) {
-        } else if (Utils.clickButton(window, "Aktualisieren")) {
+        if (SwingUtils.clickButton(window, "Update")) {
+        } else if (SwingUtils.clickButton(window, "Aktualisieren")) {
         } else {
             return false;
         }
 
-        if (Utils.clickButton(window, "Close")) {
-        } else if (Utils.clickButton(window, "Schliessen")) {
+        if (SwingUtils.clickButton(window, "Close")) {
+        } else if (SwingUtils.clickButton(window, "Schliessen")) {
         } else {
             return false;
         }

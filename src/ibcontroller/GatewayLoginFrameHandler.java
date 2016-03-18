@@ -28,8 +28,8 @@ final class GatewayLoginFrameHandler extends AbstractLoginHandler {
     public boolean recogniseWindow(Window window) {
         if (! (window instanceof JFrame)) return false;
 
-        return (Utils.titleContains(window, "IB Gateway") &&
-               (Utils.findButton(window, "Login") != null));
+        return (SwingUtils.titleContains(window, "IB Gateway") &&
+               (SwingUtils.findButton(window, "Login") != null));
     }
 
     @Override
@@ -103,15 +103,15 @@ final class GatewayLoginFrameHandler extends AbstractLoginHandler {
     }
     
     private void switchToFIX(Window window) throws IBControllerException {
-        JRadioButton button = Utils.findRadioButton(window, "FIX CTCI");
+        JRadioButton button = SwingUtils.findRadioButton(window, "FIX CTCI");
         if (button == null) throw new IBControllerException("FIX CTCI radio button");
         
         if (! button.isSelected()) button.doClick();
     }
     
     private void switchToIBAPI(Window window) throws IBControllerException {
-        JRadioButton button = Utils.findRadioButton(window, "IB API");
-        if (button == null) button = Utils.findRadioButton(window, "TWS/API") ;
+        JRadioButton button = SwingUtils.findRadioButton(window, "IB API");
+        if (button == null) button = SwingUtils.findRadioButton(window, "TWS/API") ;
         if (button == null) throw new IBControllerException("IB API radio button");
         
         if (! button.isSelected()) button.doClick();

@@ -21,7 +21,7 @@ package ibcontroller;
 import java.util.concurrent.Callable;
 
 /**
- * This class provides a simple dependency injection mechanism
+ * This class provides a simple dependency injection mechanism.
  * 
  */
 public class Environment {

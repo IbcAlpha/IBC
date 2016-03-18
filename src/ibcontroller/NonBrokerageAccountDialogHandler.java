@@ -37,7 +37,7 @@ public class NonBrokerageAccountDialogHandler  implements WindowHandler {
     public void handleWindow(Window window, int eventID) {
         if (! Environment.settings().getBoolean("AcceptNonBrokerageAccountWarning", true)) return;
 
-        if (! Utils.clickButton(window, "I understand and accept")) {
+        if (! SwingUtils.clickButton(window, "I understand and accept")) {
             Utils.logError("could not dismiss non-brokerage account warning dialog.");
         }
     }
@@ -45,7 +45,7 @@ public class NonBrokerageAccountDialogHandler  implements WindowHandler {
     @Override
     public boolean recogniseWindow(Window window) {
         if (! (window instanceof JDialog)) return false;
-        return (Utils.findLabel(window, "This is not a brokerage account") != null );
+        return (SwingUtils.findLabel(window, "This is not a brokerage account") != null );
     }
 
 }

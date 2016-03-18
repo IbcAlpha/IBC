@@ -18,7 +18,6 @@
 
 package ibcontroller;
 
-import static ibcontroller.Utils.windowEventToString;
 import java.awt.AWTEvent;
 import java.awt.Window;
 import java.awt.event.AWTEventListener;
@@ -82,7 +81,7 @@ class TwsListener
     }
 
     private void logWindow(Window window, int eventID) {
-        String event = windowEventToString(eventID);
+        String event = SwingUtils.windowEventToString(eventID);
 
         if (window instanceof JFrame) {
             Utils.logToConsole("detected frame entitled: " + ((JFrame) window).getTitle() + "; event=" + event);
@@ -96,7 +95,7 @@ class TwsListener
             ||
             (eventID == WindowEvent.WINDOW_ACTIVATED && logComponents.equals("activate")))
         {
-            Utils.logRawToConsole(Utils.getWindowStructure(window));
+            Utils.logRawToConsole(SwingUtils.getWindowStructure(window));
         }
     }
     

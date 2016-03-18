@@ -39,12 +39,12 @@ public class ReloginDialogHandler implements WindowHandler {
         String setting = Environment.settings().getString("ExistingSessionDetectedAction", "manual");
         if (setting.equalsIgnoreCase("primary")) {
             Utils.logToConsole("Re-login because this is the primary session");
-            if (!Utils.clickButton(window, "Re-login"))  {
+            if (!SwingUtils.clickButton(window, "Re-login"))  {
                 Utils.logError("could not handle 'Re-login is required' dialog because the 'Re-login' button wasn't found.");
             }
         } else if (setting.equalsIgnoreCase("secondary")) {
             Utils.logToConsole("Don't re-login because this is a secondary session");
-            if (!Utils.clickButton(window, "Exit Application"))  {
+            if (!SwingUtils.clickButton(window, "Exit Application"))  {
                 Utils.logError("could not handle 'Re-login is required' dialog because the 'Exit Application' button wasn't found.");
             }
         } else if (setting.equalsIgnoreCase("manual")) {
@@ -61,7 +61,7 @@ public class ReloginDialogHandler implements WindowHandler {
     @Override
     public boolean recogniseWindow(Window window) {
         if (! (window instanceof JDialog)) return false;
-        return (Utils.titleContains(window, "Re-login is required"));
+        return (SwingUtils.titleContains(window, "Re-login is required"));
     }
     
 }

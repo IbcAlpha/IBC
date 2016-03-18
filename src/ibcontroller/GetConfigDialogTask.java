@@ -67,11 +67,11 @@ class GetConfigDialogTask implements Callable<JDialog>{
         }
         
         if (isGateway) {
-            if (!Utils.invokeMenuItem(mainForm, new String[] {"Configure", "Settings"})) throw new IBControllerException("Can't find 'Configure > Settings' menu item");
+            if (!Utils.invokeMenuItem(mainForm, new String[] {"Configure", "Settings"})) throw new IBControllerException("'Configure > Settings' menu item");
         } else if (Utils.invokeMenuItem(mainForm, new String[] {"Edit", "Global Configuration..."})) /* TWS's Classic layout */ {
         } else if (Utils.invokeMenuItem(mainForm, new String[] {"File", "Global Configuration..."})) /* TWS's Mosaic layout */ {
         } else {
-            throw new IBControllerException("Can't find 'Edit > Global Configuration' or 'File > Global Configuration' menu items");
+            throw new IBControllerException("'Edit > Global Configuration' or 'File > Global Configuration' menu items");
         }
         
         lock.lock();

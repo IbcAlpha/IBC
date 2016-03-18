@@ -43,6 +43,6 @@ public class NSEComplianceFrameHandler  implements WindowHandler {
     public boolean recogniseWindow(Window window) {
         if (! (window instanceof JFrame)) return false;
 
-        return (Utils.titleContains(window, "NSE Compliance"));
+        return (SwingUtils.titleContains(window, "NSE Compliance"));
     }
 }

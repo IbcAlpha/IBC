@@ -36,14 +36,14 @@ public class ExistingSessionDetectedDialogHandler implements WindowHandler {
         String setting = Environment.settings().getString("ExistingSessionDetectedAction", "manual");
         if (setting.equalsIgnoreCase("primary")) {
             Utils.logToConsole("End the other session and continue this one");
-            if (!Utils.clickButton(window, "OK") && 
-                    !Utils.clickButton(window, "Continue Login") &&
-                    !Utils.clickButton(window, "Reconnect This Session"))  {
+            if (!SwingUtils.clickButton(window, "OK") && 
+                    !SwingUtils.clickButton(window, "Continue Login") &&
+                    !SwingUtils.clickButton(window, "Reconnect This Session"))  {
                 Utils.logError("could not handle 'Existing session detected' dialog because the 'OK' or 'Continue Login' or 'Reconnect This Session' button wasn't found.");
             }
         } else if (setting.equalsIgnoreCase("secondary")) {
             Utils.logToConsole("End this session and let the other session proceed");
-            if (!Utils.clickButton(window, "Cancel") && !Utils.clickButton(window, "Exit Application")) {
+            if (!SwingUtils.clickButton(window, "Cancel") && !SwingUtils.clickButton(window, "Exit Application")) {
                 Utils.logError("could not handle 'Existing session detected' dialog because the 'Cancel' or 'Exit Application' button wasn't found.");
             }
         } else if (setting.equalsIgnoreCase("manual")) {
@@ -57,6 +57,6 @@ public class ExistingSessionDetectedDialogHandler implements WindowHandler {
     public boolean recogniseWindow(Window window) {
         if (! (window instanceof JDialog)) return false;
 
-        return (Utils.titleContains(window, "Existing session detected"));
+        return (SwingUtils.titleContains(window, "Existing session detected"));
     }
 }

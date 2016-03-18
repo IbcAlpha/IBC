@@ -35,7 +35,7 @@ public class PasswordExpiryWarningFrameHandler  implements WindowHandler {
 
     public void handleWindow(Window window, int eventID) {
         if (! Environment.settings().getBoolean("DismissPasswordExpiryWarning", false)) return;
-        if (! Utils.clickButton(window, "OK")) {
+        if (! SwingUtils.clickButton(window, "OK")) {
             Utils.logError("could not dismiss Password Expiry Warning because we could not find one of the controls.");
         }
     }
@@ -43,6 +43,6 @@ public class PasswordExpiryWarningFrameHandler  implements WindowHandler {
     public boolean recogniseWindow(Window window) {
         if (! (window instanceof JFrame)) return false;
 
-        return (Utils.titleContains(window, "Password Notice"));
+        return (SwingUtils.titleContains(window, "Password Notice"));
     }
 }

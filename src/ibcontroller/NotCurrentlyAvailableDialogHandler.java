@@ -36,14 +36,14 @@ class NotCurrentlyAvailableDialogHandler implements WindowHandler {
     }
 
     public void handleWindow(Window window, int eventID) {
-        if (! Utils.clickButton(window, "OK")) {
+        if (! SwingUtils.clickButton(window, "OK")) {
             Utils.logError("The system is not currently available.");
             return;
         }
 
         if (Environment.loginManager().getLoginFrame() != null) {
             JButton button2 =
-                    Utils.findButton(Environment.loginManager().getLoginFrame(), "Login");
+                    SwingUtils.findButton(Environment.loginManager().getLoginFrame(), "Login");
             button2.requestFocus();
             KeyEvent ke =
                      new KeyEvent(button2, KeyEvent.KEY_PRESSED,
@@ -58,8 +58,8 @@ class NotCurrentlyAvailableDialogHandler implements WindowHandler {
     public boolean recogniseWindow(Window window) {
         if (! (window instanceof JDialog)) return false;
 
-        return (Utils.titleContains(window, "Login") &&
-                Utils.findLabel(window, "not currently available") != null);
+        return (SwingUtils.titleContains(window, "Login") &&
+                SwingUtils.findLabel(window, "not currently available") != null);
     }
 }
 

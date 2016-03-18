@@ -32,9 +32,9 @@ final class LoginFrameHandler extends AbstractLoginHandler {
         // we check for the presence of the Login button because 
         // TWS displays a different (information-only) dialog, also 
         // entitled Login, when it's trying to reconnect
-        return ((Utils.titleEquals(window, "New Login") ||
-                Utils.titleEquals(window, "Login")) &&
-                Utils.findButton(window, "Login") != null);
+        return ((SwingUtils.titleEquals(window, "New Login") ||
+                SwingUtils.titleEquals(window, "Login")) &&
+                SwingUtils.findButton(window, "Login") != null);
     }
 
     @Override
@@ -42,7 +42,7 @@ final class LoginFrameHandler extends AbstractLoginHandler {
         setTradingModeCombo(window);
 
         final String STORE_SETTINGS_ON_SERVER_CHECKBOX = "Use/store settings on server";
-        if (! Utils.setCheckBoxSelected(
+        if (! SwingUtils.setCheckBoxSelected(
                 window,
                 STORE_SETTINGS_ON_SERVER_CHECKBOX,
                 Environment.settings().getBoolean("StoreSettingsOnServer", false))) throw new IBControllerException(STORE_SETTINGS_ON_SERVER_CHECKBOX);

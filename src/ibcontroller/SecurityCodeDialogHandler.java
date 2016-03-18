@@ -38,7 +38,7 @@ public class SecurityCodeDialogHandler implements WindowHandler {
     public void handleWindow(Window window, int eventID) {
         if (! Environment.settings().getBoolean("ReadOnlyLogin", false)) return;
 
-        if (Utils.clickButton(window, "Enter Read Only")) {
+        if (SwingUtils.clickButton(window, "Enter Read Only")) {
             Utils.logToConsole("initiating read-only login.");
         } else {
             Utils.logError("could not initiate read-only login.");
@@ -48,7 +48,7 @@ public class SecurityCodeDialogHandler implements WindowHandler {
     @Override
     public boolean recogniseWindow(Window window) {
         if (! (window instanceof JDialog)) return false;
-        return (Utils.findButton(window, "Enter Read Only") != null);
+        return (SwingUtils.findButton(window, "Enter Read Only") != null);
     }
     
 }

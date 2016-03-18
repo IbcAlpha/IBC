@@ -55,10 +55,10 @@ class ConfigureTwsApiPortTask implements Runnable{
                 // older versions of TWS don't have the Settings node below the API node
                 Utils.selectConfigSection(configDialog, new String[] {"API"});
 
-            Component comp = Utils.findComponent(configDialog, "Socket port");
+            Component comp = SwingUtils.findComponent(configDialog, "Socket port");
             if (comp == null) throw new IBControllerException("could not find socket port component");
 
-            JTextField tf = Utils.findTextField((Container)comp, 0);
+            JTextField tf = SwingUtils.findTextField((Container)comp, 0);
             if (tf == null) throw new IBControllerException("could not find socket port field");
             
             int currentPort = Integer.parseInt(tf.getText());
@@ -66,7 +66,7 @@ class ConfigureTwsApiPortTask implements Runnable{
                 Utils.logToConsole("TWS API socket port is already set to " + tf.getText());
             } else {
                 if (!isGateway) {
-                    JCheckBox cb = Utils.findCheckBox(configDialog, "Enable ActiveX and Socket Clients");
+                    JCheckBox cb = SwingUtils.findCheckBox(configDialog, "Enable ActiveX and Socket Clients");
                     if (cb == null) throw new IBControllerException("could not find Enable ActiveX checkbox");
                     if (cb.isSelected()) Environment.configDialogManager().setApiConfigChangeConfirmationExpected(true);
                 }
@@ -75,7 +75,7 @@ class ConfigureTwsApiPortTask implements Runnable{
                 Utils.logToConsole("TWS API socket port now set to " + tf.getText());
             }
 
-            Utils.clickButton(configDialog, "OK");
+            SwingUtils.clickButton(configDialog, "OK");
 
             configDialog.setVisible(false);
         } catch (IBControllerException e) {

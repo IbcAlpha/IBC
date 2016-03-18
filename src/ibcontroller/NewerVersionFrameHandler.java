@@ -34,8 +34,8 @@ class NewerVersionFrameHandler implements WindowHandler {
     }
 
     public void handleWindow(Window window, int eventID) {
-        if (Utils.clickButton(window, "OK")) {
-        } else if (Utils.clickButton(window, "No")) { // ie no we don't want the opportunity to upgrade now - Linux version only
+        if (SwingUtils.clickButton(window, "OK")) {
+        } else if (SwingUtils.clickButton(window, "No")) { // ie no we don't want the opportunity to upgrade now - Linux version only
         } else {
             Utils.logError("could not dismiss Newer Version because we could not find one of the controls.");
         }
@@ -44,7 +44,7 @@ class NewerVersionFrameHandler implements WindowHandler {
     public boolean recogniseWindow(Window window) {
         if (!(window instanceof JFrame)) return false;
 
-        return (Utils.findLabel(window, "Newer Version") != null);
+        return (SwingUtils.findLabel(window, "Newer Version") != null);
     }
 }
 

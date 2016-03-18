@@ -42,13 +42,13 @@ class AcceptIncomingConnectionDialogHandler implements WindowHandler {
         if (acceptIncomingConnectionAction.equalsIgnoreCase(Manual)) return;
 
         if (acceptIncomingConnectionAction.equalsIgnoreCase(Accept)) {
-            if (Utils.clickButton(window, "OK")) {
-            } else if (Utils.clickButton(window, "Yes")) {
+            if (SwingUtils.clickButton(window, "OK")) {
+            } else if (SwingUtils.clickButton(window, "Yes")) {
             } else {
                 Utils.logError("could not accept incoming connection because we could not find one of the controls.");
             }
         } else if (acceptIncomingConnectionAction.equalsIgnoreCase(Reject)) {
-            if (Utils.clickButton(window, "No")) {
+            if (SwingUtils.clickButton(window, "No")) {
             } else {
                 Utils.logError("could not accept incoming connection because we could not find one of the controls.");
             }
@@ -60,7 +60,7 @@ class AcceptIncomingConnectionDialogHandler implements WindowHandler {
     public boolean recogniseWindow(Window window) {
         if (! (window instanceof JDialog)) return false;
 
-        return (Utils.findLabel(window, "Accept incoming connection") != null);
+        return (SwingUtils.findLabel(window, "Accept incoming connection") != null);
     }
 }
 

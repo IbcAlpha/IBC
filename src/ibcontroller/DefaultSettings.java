@@ -49,6 +49,7 @@ public class DefaultSettings implements Settings {
     }
     
     private static void load(String path) {
+        Utils.logToConsole("ini file is " + path);
         _Props.clear();
         try {
             File f = new File(path);

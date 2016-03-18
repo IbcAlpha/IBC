@@ -63,12 +63,12 @@ class EnableApiTask implements Runnable{
                 // older versions of TWS don't have the Settings node below the API node
                 Utils.selectConfigSection(configDialog, new String[] {"API"});
 
-            JCheckBox cb = Utils.findCheckBox(configDialog, "Enable ActiveX and Socket Clients");
+            JCheckBox cb = SwingUtils.findCheckBox(configDialog, "Enable ActiveX and Socket Clients");
             if (cb == null) throw new IBControllerException("could not find Enable ActiveX checkbox");
 
             if (!cb.isSelected()) {
                 cb.doClick();
-                Utils.clickButton(configDialog, "OK");
+                SwingUtils.clickButton(configDialog, "OK");
                 Utils.logToConsole("TWS has been configured to accept API connections");
                 mChannel.writeAck("configured");
             } else {

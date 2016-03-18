@@ -18,7 +18,7 @@
 
 package ibcontroller;
 
-import static ibcontroller.Utils.findCheckBox;
+import static ibcontroller.SwingUtils.findCheckBox;
 import java.awt.Window;
 import java.awt.event.WindowEvent;
 import javax.swing.JCheckBox;
@@ -57,14 +57,14 @@ public class TradesFrameHandler implements WindowHandler {
             if (findCheckBox(window, "Sun") != null) {
                 Utils.logToConsole("Setting trades log to show all trades");
                 // TWS versions before 955
-                Utils.setCheckBoxSelected(window, "Sun", true);
-                Utils.setCheckBoxSelected(window, "Mon", true);
-                Utils.setCheckBoxSelected(window, "Tue", true);
-                Utils.setCheckBoxSelected(window, "Wed", true);
-                Utils.setCheckBoxSelected(window, "Thu", true);
-                Utils.setCheckBoxSelected(window, "Fri", true);
-                Utils.setCheckBoxSelected(window, "Sat", true);
-                Utils.setCheckBoxSelected(window, "All", true);
+                SwingUtils.setCheckBoxSelected(window, "Sun", true);
+                SwingUtils.setCheckBoxSelected(window, "Mon", true);
+                SwingUtils.setCheckBoxSelected(window, "Tue", true);
+                SwingUtils.setCheckBoxSelected(window, "Wed", true);
+                SwingUtils.setCheckBoxSelected(window, "Thu", true);
+                SwingUtils.setCheckBoxSelected(window, "Fri", true);
+                SwingUtils.setCheckBoxSelected(window, "Sat", true);
+                SwingUtils.setCheckBoxSelected(window, "All", true);
 
                 monitorAllTradesCheckbox(window, "All");
 
@@ -110,11 +110,11 @@ public class TradesFrameHandler implements WindowHandler {
     public boolean recogniseWindow(Window window) {
         if (! (window instanceof JFrame))  return false;
 
-        return (Utils.titleContains(window, "Trades"));
+        return (SwingUtils.titleContains(window, "Trades"));
     }
 
     private void monitorAllTradesCheckbox(Window window, String text) {
-        final JCheckBox check = Utils.findCheckBox(window, text);
+        final JCheckBox check = SwingUtils.findCheckBox(window, text);
         if (check != null) check.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent ce) {
