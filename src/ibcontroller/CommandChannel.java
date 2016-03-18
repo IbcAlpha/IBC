@@ -28,8 +28,8 @@ import java.net.SocketException;
 
 final class CommandChannel {
 
-    private static final String _Prompt = Settings.getString("CommandPrompt", "");
-    private static final boolean _SuppressInfo = Settings.getBoolean("SuppressInfoMessages", true);
+    private static final String _Prompt = Environment.settings().getString("CommandPrompt", "");
+    private static final boolean _SuppressInfo = Environment.settings().getBoolean("SuppressInfoMessages", true);
 
     private Socket mSocket;
     private BufferedReader mInstream = null;

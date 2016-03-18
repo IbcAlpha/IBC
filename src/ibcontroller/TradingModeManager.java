@@ -18,44 +18,11 @@
 
 package ibcontroller;
 
-public class TradingModeManager {
-    
-    private TradingModeManager() {}
-    
+public interface TradingModeManager {
+
     static final String TRADING_MODE_LIVE = "live";
     static final String TRADING_MODE_PAPER = "paper";
     
-    /**
-     * Indicates whether the live or paper trading account is to be used.
-     * Must be in either args[1] (if there are two args), or args[3] (if there are 
-     * four args), or args[5] (if there are six args)
-     */
-    private static String _TradingMode;
-    
-    static void initialise(String[] args) {
-        if (args.length == 0) {
-            _TradingMode = TRADING_MODE_LIVE;
-        } else if (args.length == 2) {
-            _TradingMode = args[1];
-        } else if (args.length == 4) {
-            _TradingMode = args[3];
-        } else if (args.length == 6) {
-            _TradingMode = args[5];
-        }
-        
-        if (_TradingMode == null) {
-            _TradingMode = Settings.getString("TradingMode", TRADING_MODE_LIVE);
-        }
-
-        if (!(_TradingMode.equals(TRADING_MODE_LIVE) || _TradingMode.equals(TRADING_MODE_PAPER))) {
-                Utils.logError("Invalid Trading Mode argument or .ini file setting: " + _TradingMode);
-                System.exit(1);
-        }
-        
-    }
-
-    static String getTradingMode() {
-        return _TradingMode;
-    }
+String getTradingMode();
     
 }

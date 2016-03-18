@@ -37,7 +37,7 @@ public abstract class AbstractLoginHandler implements WindowHandler {
 
     @Override
     public final void handleWindow(Window window, int eventID) {
-        LoginManager.setLoginFrame((JFrame) window);
+        Environment.loginManager().setLoginFrame((JFrame) window);
 
         try {
             if (!initialise(window, eventID)) return;
@@ -85,7 +85,7 @@ public abstract class AbstractLoginHandler implements WindowHandler {
             JComboBox<?> tradingModeCombo = Utils.findComboBox(window, 0);
             
             if (tradingModeCombo != null ) {
-                String tradingMode = TradingModeManager.getTradingMode();
+                String tradingMode = Environment.tradingModeManager().getTradingMode();
                 Utils.logToConsole("Setting Trading mode = " + tradingMode);
                 if (tradingMode.equalsIgnoreCase(TradingModeManager.TRADING_MODE_LIVE)) {
                     tradingModeCombo.setSelectedItem("Live Trading");

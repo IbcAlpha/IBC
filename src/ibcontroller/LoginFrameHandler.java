@@ -45,16 +45,16 @@ final class LoginFrameHandler extends AbstractLoginHandler {
         if (! Utils.setCheckBoxSelected(
                 window,
                 STORE_SETTINGS_ON_SERVER_CHECKBOX,
-                Settings.getBoolean("StoreSettingsOnServer", false))) throw new IBControllerException(STORE_SETTINGS_ON_SERVER_CHECKBOX);
+                Environment.settings().getBoolean("StoreSettingsOnServer", false))) throw new IBControllerException(STORE_SETTINGS_ON_SERVER_CHECKBOX);
 
         return true;
     }
     
     @Override
     protected final boolean preLogin(final Window window, int eventID) throws IBControllerException {
-        if (LoginManager.getIBAPIUserName().length() == 0) {
+        if (Environment.loginManager().IBAPIUserName().length() == 0) {
             setMissingCredential(window, 0);
-        } else if (LoginManager.getIBAPIPassword().length() == 0) {
+        } else if (Environment.loginManager().IBAPIPassword().length() == 0) {
             setMissingCredential(window, 1);
         } else {
             return true;
@@ -64,8 +64,8 @@ final class LoginFrameHandler extends AbstractLoginHandler {
     
     @Override
     protected final boolean setFields(Window window, int eventID) throws IBControllerException {
-        setCredential(window, "IBAPI user name", 0, LoginManager.getIBAPIUserName());
-        setCredential(window, "IBAPI password", 1, LoginManager.getIBAPIPassword());
+        setCredential(window, "IBAPI user name", 0, Environment.loginManager().IBAPIUserName());
+        setCredential(window, "IBAPI password", 1, Environment.loginManager().IBAPIPassword());
         return true;
     }
     

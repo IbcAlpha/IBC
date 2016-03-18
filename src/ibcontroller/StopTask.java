@@ -54,7 +54,7 @@ class StopTask
     }
 
     private void stop() {
-        JFrame jf = MainWindowManager.getMainWindow();
+        JFrame jf = Environment.mainWindowManager().getMainWindow();
         
         WindowEvent wev = new WindowEvent(jf, WindowEvent.WINDOW_CLOSING);
         Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(wev);

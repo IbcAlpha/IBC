@@ -46,6 +46,7 @@ import javax.swing.JTree;
 import javax.swing.MenuElement;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreePath;
 
 class Utils {
     
@@ -613,9 +614,42 @@ class Utils {
         return true;
     }
     
+    /**
+     * Selects the specified section in the Global Configuration dialog.
+     * @param configDialog
+     * the Global Configuration dialog
+     * @param path
+     * the path to the required configuration section in the Global Configuration dialog
+     * @return
+     * true if the specified section can be found; otherwise false
+     * @throws IBControllerException
+     * a UI component could not be found
+     * @throws IllegalStateException
+     * the method has not been called on the SWing event dispatch thread
+     */
+    static boolean selectConfigSection(final JDialog configDialog, final String[] path) throws IBControllerException, IllegalStateException {
+        if (!SwingUtilities.isEventDispatchThread()) throw new IllegalStateException("selectConfigSection must be run on the event dispatch thread");
+        
+        JTree configTree = Utils.findTree(configDialog);
+        if (configTree == null) throw new IBControllerException("could not find the config tree in the Global Configuration dialog");
+
+        Object node = configTree.getModel().getRoot();
+        TreePath tp = new TreePath(node);
+
+        for (String pathElement: path) {
+            node = Utils.findChildNode(configTree.getModel(), node, pathElement);
+            if (node == null) return false;
+            tp = tp.pathByAddingChild(node);
+        }
+
+        configTree.setExpandsSelectedPaths(true);
+        configTree.setSelectionPath(tp);
+        return true;
+    }
+
     static void showTradesLogWindow() {
             MyCachedThreadPool.getInstance().execute(new Runnable () {
-                @Override public void run() {invokeMenuItem(MainWindowManager.getMainWindow(), new String[] {"Account", "Trade Log"});}
+                @Override public void run() {invokeMenuItem(Environment.mainWindowManager().getMainWindow(), new String[] {"Account", "Trade Log"});}
             });
     }
     

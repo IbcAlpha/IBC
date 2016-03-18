@@ -39,7 +39,7 @@ class TwsSettingsSaver {
     public void initialise() {
         // setting format: SaveTwsSettingsAt=hh:mm [hh:mm]...
         //             or: SaveTwsSettingsAt=Every n [{mins | hours}] [hh:mm [hh:mm]]
-        String timesSetting = Settings.getString("SaveTwsSettingsAt", "");
+        String timesSetting = Environment.settings().getString("SaveTwsSettingsAt", "");
         if (timesSetting.length() == 0) return;
         
         String[] times = timesSetting.split("[ ]+");
@@ -152,7 +152,7 @@ class TwsSettingsSaver {
                     @Override
                     public void run() {
                         Utils.logToConsole("Saving Tws settings");
-                        Utils.invokeMenuItem(MainWindowManager.getMainWindow(), new String[] {"File", "Save Settings"});
+                        Utils.invokeMenuItem(Environment.mainWindowManager().getMainWindow(), new String[] {"File", "Save Settings"});
                     }
                 }, saveTime.getTime() - System.currentTimeMillis(), 86400000, TimeUnit.MILLISECONDS);
     }

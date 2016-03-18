@@ -37,7 +37,7 @@ class TwsListener
     TwsListener (List<WindowHandler> windowHandlers) {
         _WindowHandlers = windowHandlers;
 
-        String logComponentsSetting =  Settings.getString("LogComponents", "never").toLowerCase();
+        String logComponentsSetting =  Environment.settings().getString("LogComponents", "never").toLowerCase();
         switch (logComponentsSetting) {
             case "activate":
             case "open":

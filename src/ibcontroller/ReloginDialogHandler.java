@@ -36,7 +36,7 @@ public class ReloginDialogHandler implements WindowHandler {
 
     @Override
     public void handleWindow(Window window, int eventID) {
-        String setting = Settings.getString("ExistingSessionDetectedAction", "manual");
+        String setting = Environment.settings().getString("ExistingSessionDetectedAction", "manual");
         if (setting.equalsIgnoreCase("primary")) {
             Utils.logToConsole("Re-login because this is the primary session");
             if (!Utils.clickButton(window, "Re-login"))  {

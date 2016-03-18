@@ -40,7 +40,7 @@ class EnableApiTask implements Runnable{
         }
 
         try {
-            final JDialog configDialog = ConfigDialogManager.getConfigDialog();    // blocks the thread until the config dialog is available
+            final JDialog configDialog = Environment.configDialogManager().getConfigDialog();    // blocks the thread until the config dialog is available
             
             FutureTask<Integer> t = new FutureTask<>(new Runnable(){
                 @Override public void run() {configureAPI(configDialog);}
@@ -59,9 +59,9 @@ class EnableApiTask implements Runnable{
         try {
             Utils.logToConsole("Doing ENABLEAPI configuration");
             
-            if (!ConfigDialogManager.selectConfigSection(configDialog, new String[] {"API","Settings"}))
+            if (!Utils.selectConfigSection(configDialog, new String[] {"API","Settings"}))
                 // older versions of TWS don't have the Settings node below the API node
-                ConfigDialogManager.selectConfigSection(configDialog, new String[] {"API"});
+                Utils.selectConfigSection(configDialog, new String[] {"API"});
 
             JCheckBox cb = Utils.findCheckBox(configDialog, "Enable ActiveX and Socket Clients");
             if (cb == null) throw new IBControllerException("could not find Enable ActiveX checkbox");

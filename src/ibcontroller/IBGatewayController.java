@@ -18,8 +18,13 @@
 
 package ibcontroller;
 
+import static ibcontroller.IBController.checkArguments;
+import static ibcontroller.IBController.setupDefaultEnvironment;
+
 public class IBGatewayController {
-    public static void main(String[] args) {
-        IBController.load(args, true);
+    public static void main(String[] args) throws Exception {
+        checkArguments(args);
+        setupDefaultEnvironment(args, true);
+        IBController.load(true);
     }
 }

@@ -35,7 +35,7 @@ public class NonBrokerageAccountDialogHandler  implements WindowHandler {
 
     @Override
     public void handleWindow(Window window, int eventID) {
-        if (! Settings.getBoolean("AcceptNonBrokerageAccountWarning", true)) return;
+        if (! Environment.settings().getBoolean("AcceptNonBrokerageAccountWarning", true)) return;
 
         if (! Utils.clickButton(window, "I understand and accept")) {
             Utils.logError("could not dismiss non-brokerage account warning dialog.");

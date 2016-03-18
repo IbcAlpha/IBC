@@ -20,6 +20,7 @@ package ibcontroller;
 
 import java.awt.AWTEvent;
 import java.awt.Toolkit;
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 
@@ -209,45 +211,44 @@ public class IBController {
 	 *    If length == 0, we assume that the ini file is located in the current user
      *                    directory in a file called "IBController.ini".
 	 *    If length == 2 and args[0] is "encrypt", we print out the encryption of args[1].
+     * @throws java.lang.Exception
      */
-    public static void main(String[] args) {
-        load(args, false);
-    }
-
-    static void load(String[] args, boolean isGateway) {
-        _isGateway = isGateway;
-
-        printProperties();
-
+    public static void main(final String[] args) throws Exception {
         checkArguments(args);
-
-        Settings.initialise(args);
-
-        MainWindowManager.initialise(_isGateway);
-        ConfigDialogManager.initialise(_isGateway);
-        
-        TradingModeManager.initialise(args);
-        
-        LoginManager.initialise(args);
-        
-        startIBControllerServer();
-
-        startShutdownTimerIfRequired();
-
-        createToolkitListener();
-        
-        startSavingTwsSettingsAutomatically();
-
-        startTwsOrGateway();
+        setupDefaultEnvironment(args, false);
+        load(false);
     }
-
-    public IBController() {
-        super();
-    }
-
-    private static boolean _isGateway;
     
-    private static void checkArguments(String[] args) {
+    static void setupDefaultEnvironment(final String[] args, final boolean isGateway) throws Exception {
+        Environment.load(
+                new Callable<Settings>() {
+                    @Override public Settings call() {
+                        return new DefaultSettings(getSettingsPath(args));
+                    }
+                }, 
+                new Callable<LoginManager>() {
+                    @Override public LoginManager call() {
+                        return new DefaultLoginManager(args);
+                    }
+                },
+                new Callable<MainWindowManager>() {
+                    @Override public MainWindowManager call() {
+                        return new DefaultMainWindowManager(isGateway);
+                    }
+                },
+                new Callable<ConfigDialogManager>() {
+                    @Override public ConfigDialogManager call() {
+                        return new DefaultConfigDialogManager(isGateway);
+                    }
+                },
+                new Callable<TradingModeManager>() {
+                    @Override public TradingModeManager call() {
+                        return new DefaultTradingModeManager(args);
+                    }
+                });
+    }
+
+    static void checkArguments(String[] args) {
         /**
          * Allowable parameter combinations:
          * 
@@ -292,6 +293,43 @@ public class IBController {
         }
     }
 
+    public static void load(boolean isGateway) {
+        printProperties();
+        
+        Environment.verify();
+
+        startIBControllerServer(isGateway);
+
+        startShutdownTimerIfRequired(isGateway);
+
+        createToolkitListener();
+        
+        startSavingTwsSettingsAutomatically();
+
+        startTwsOrGateway(isGateway);
+    }
+
+    public IBController() {
+        super();
+    }
+
+    static String getSettingsPath(String [] args) {
+        String iniPath;
+        if (args.length == 0 || args[0].equalsIgnoreCase("NULL")) {
+            iniPath = getWorkingDirectory() + "IBController." + getComputerUserName() + ".ini";
+        } else {// args.length >= 1
+            iniPath = args[0];
+        }
+        File finiPath = new File(iniPath);
+        if (!finiPath.isFile() || !finiPath.exists()) {
+            Utils.logError("ini file \"" + iniPath +
+                               "\" either does not exist, or is a directory.  quitting...");
+            System.exit(1);
+        }
+        Utils.logToConsole("ini file is " + iniPath);
+        return iniPath;
+    }
+
     private static void createToolkitListener() {
         Toolkit.getDefaultToolkit().addAWTEventListener(new TwsListener(createWindowHandlers()), AWTEvent.WINDOW_EVENT_MASK);
     }
@@ -325,7 +363,7 @@ public class IBController {
     }
     
     private static Date getShutdownTime() {
-        String shutdownTimeSetting = Settings.getString("ClosedownAt", "");
+        String shutdownTimeSetting = Environment.settings().getString("ClosedownAt", "");
         if (shutdownTimeSetting.length() == 0) {
             return null;
         } else {
@@ -356,10 +394,31 @@ public class IBController {
         }
     }
 
+    private static String getComputerUserName() {
+        StringBuilder sb = new StringBuilder(System.getProperty("user.name"));
+        int i;
+        for (i = 0; i < sb.length(); i++) {
+            char c = sb.charAt(i);
+            if ((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9')) {
+                continue;
+            }
+            if (c >= 'A' && c <= 'Z') {
+                sb.setCharAt(i, Character.toLowerCase(c));
+            } else {
+                sb.setCharAt(i, '_');
+            }
+        }
+        return sb.toString();
+    }
+
     private static String getTWSSettingsDirectory() {
-        String dir = Settings.getString("IbDir", System.getProperty("user.dir"));
+        String dir = Environment.settings().getString("IbDir", System.getProperty("user.dir"));
         Utils.logToConsole("TWS settings directory is " + dir);
         return dir;
+    }
+
+    private static String getWorkingDirectory() {
+        return System.getProperty("user.dir") + File.separator;
     }
 
     private static void printProperties() {
@@ -380,15 +439,15 @@ public class IBController {
         ibgateway.GWClient.main(twsArgs);
     }
 
-    private static void startIBControllerServer() {
-        MyCachedThreadPool.getInstance().execute(new IBControllerServer(_isGateway));
+    private static void startIBControllerServer(boolean isGateway) {
+        MyCachedThreadPool.getInstance().execute(new IBControllerServer(isGateway));
     }
 
-    private static void startShutdownTimerIfRequired() {
+    private static void startShutdownTimerIfRequired(boolean isGateway) {
         Date shutdownTime = getShutdownTime();
         if (! (shutdownTime == null)) {
             long delay = shutdownTime.getTime() - System.currentTimeMillis();
-            Utils.logToConsole((_isGateway ? "Gateway" : "TWS") +
+            Utils.logToConsole((isGateway ? "Gateway" : "TWS") +
                             " will be shut down at " +
                            (new SimpleDateFormat("yyyy/MM/dd HH:mm")).format(shutdownTime));
             MyScheduledExecutorService.getInstance().schedule(new Runnable() {
@@ -401,7 +460,7 @@ public class IBController {
     }
 
     private static void startTws() {
-        if (Settings.getBoolean("ShowAllTrades", false)) {
+        if (Environment.settings().getBoolean("ShowAllTrades", false)) {
             Utils.showTradesLogWindow();
         }
         String[] twsArgs = new String[1];
@@ -409,16 +468,16 @@ public class IBController {
         jclient.LoginFrame.main(twsArgs);
     }
 
-    private static void startTwsOrGateway() {
-        int portNumber = Settings.getInt("ForceTwsApiPort", 0);
-        if (portNumber != 0) MyCachedThreadPool.getInstance().execute(new ConfigureTwsApiPortTask(portNumber, _isGateway));
+    private static void startTwsOrGateway(boolean isGateway) {
+        int portNumber = Environment.settings().getInt("ForceTwsApiPort", 0);
+        if (portNumber != 0) MyCachedThreadPool.getInstance().execute(new ConfigureTwsApiPortTask(portNumber, isGateway));
 
-        if (_isGateway) {
+        if (isGateway) {
             startGateway();
         } else {
             startTws();
         }
-        Utils.sendConsoleOutputToTwsLog(!Settings.getBoolean("LogToConsole", false));
+        Utils.sendConsoleOutputToTwsLog(!Environment.settings().getBoolean("LogToConsole", false));
     }
     
     private static void startSavingTwsSettingsAutomatically() {

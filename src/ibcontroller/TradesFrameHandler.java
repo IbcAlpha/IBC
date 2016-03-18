@@ -47,7 +47,7 @@ public class TradesFrameHandler implements WindowHandler {
     @Override
     public void handleWindow(final Window window, int eventID) {
         if (!firstTradesWindowOpened) {
-            showAllTrades = Settings.getBoolean("ShowAllTrades", false);
+            showAllTrades = Environment.settings().getBoolean("ShowAllTrades", false);
         }
         if (!showAllTrades) {
             firstTradesWindowOpened = true;
@@ -69,7 +69,7 @@ public class TradesFrameHandler implements WindowHandler {
                 monitorAllTradesCheckbox(window, "All");
 
                 if (! firstTradesWindowOpened) {
-                    if (Settings.getBoolean("MinimizeMainWindow", false)) {
+                    if (Environment.settings().getBoolean("MinimizeMainWindow", false)) {
                         ((JFrame) window).setExtendedState(java.awt.Frame.ICONIFIED);
                     }
                 }
