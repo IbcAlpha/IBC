@@ -62,6 +62,8 @@ public interface MainWindowManager {
      * the method has been called from the Swing event dispatch thread
      */
     JFrame getMainWindow() throws IllegalStateException;
+    
+    boolean isGateway();
 
     void setMainWindow(JFrame window);
     

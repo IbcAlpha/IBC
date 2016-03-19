@@ -117,6 +117,11 @@ public class DefaultMainWindowManager implements MainWindowManager {
     }
     
     @Override
+    public boolean isGateway() {
+        return this.isGateway;
+    };
+    
+    @Override
     public void setMainWindow(JFrame window) {
         Utils.logToConsole("Found " + (isGateway ? "Gateway" : "TWS") + " main window");
         mainWindow = window;

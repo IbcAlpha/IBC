@@ -25,6 +25,6 @@ public class IBGatewayController {
     public static void main(String[] args) throws Exception {
         checkArguments(args);
         setupDefaultEnvironment(args, true);
-        IBController.load(true);
+        IBController.load();
     }
 }

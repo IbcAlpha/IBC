@@ -34,16 +34,6 @@ public class DefaultConfigDialogManager implements ConfigDialogManager {
     private volatile GetConfigDialogTask configDialogTask;
     private volatile Future<JDialog> configDialogFuture;
     
-    private final boolean isGateway;
-    
-    public DefaultConfigDialogManager() {
-        this.isGateway = false;
-    }
-    
-    public DefaultConfigDialogManager(boolean isGateway) {
-        this.isGateway = isGateway;
-    }
-    
     /**
      * Records the fact that the config dialog has closed.
      */
@@ -88,7 +78,7 @@ public class DefaultConfigDialogManager implements ConfigDialogManager {
         
         if (configDialogFuture == null) {
             Utils.logToConsole("Creating config dialog future");
-            configDialogTask = new GetConfigDialogTask(isGateway);
+            configDialogTask = new GetConfigDialogTask(Environment.mainWindowManager().isGateway());
             ExecutorService exec = Executors.newSingleThreadExecutor();
             configDialogFuture = exec.submit((Callable<JDialog>)configDialogTask);
             exec.shutdown();

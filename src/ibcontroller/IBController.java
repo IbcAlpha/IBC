@@ -213,10 +213,13 @@ public class IBController {
 	 *    If length == 2 and args[0] is "encrypt", we print out the encryption of args[1].
      * @throws java.lang.Exception
      */
+
+    private IBController() { }
+
     public static void main(final String[] args) throws Exception {
         checkArguments(args);
         setupDefaultEnvironment(args, false);
-        load(false);
+        load();
     }
     
     static void setupDefaultEnvironment(final String[] args, final boolean isGateway) throws Exception {
@@ -238,7 +241,7 @@ public class IBController {
                 },
                 new Callable<ConfigDialogManager>() {
                     @Override public ConfigDialogManager call() {
-                        return new DefaultConfigDialogManager(isGateway);
+                        return new DefaultConfigDialogManager();
                     }
                 },
                 new Callable<TradingModeManager>() {
@@ -293,11 +296,13 @@ public class IBController {
         }
     }
 
-    public static void load(boolean isGateway) {
+    public static void load() {
         printProperties();
         
         Environment.verify();
 
+        boolean isGateway = Environment.mainWindowManager().isGateway();
+        
         startIBControllerServer(isGateway);
 
         startShutdownTimerIfRequired(isGateway);
@@ -307,10 +312,6 @@ public class IBController {
         startSavingTwsSettingsAutomatically();
 
         startTwsOrGateway(isGateway);
-    }
-
-    public IBController() {
-        super();
     }
 
     static String getSettingsPath(String [] args) {
