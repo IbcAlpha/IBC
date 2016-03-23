@@ -82,7 +82,12 @@ public abstract class AbstractLoginHandler implements WindowHandler {
     
     protected final void setTradingModeCombo(final Window window) {
         if (SwingUtils.findLabel(window, "Trading Mode") != null)  {
-            JComboBox<?> tradingModeCombo = SwingUtils.findComboBox(window, 0);
+            JComboBox<?> tradingModeCombo;
+            if (Settings.settings().getBoolean("FIX", false)) {
+                tradingModeCombo = SwingUtils.findComboBox(window, 1);
+            } else {
+                tradingModeCombo = SwingUtils.findComboBox(window, 0);
+            }
             
             if (tradingModeCombo != null ) {
                 String tradingMode = TradingModeManager.tradingModeManager().getTradingMode();
