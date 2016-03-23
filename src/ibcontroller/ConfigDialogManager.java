@@ -21,15 +21,35 @@ package ibcontroller;
 import java.util.concurrent.TimeUnit;
 import javax.swing.JDialog;
 
-public interface ConfigDialogManager
+public abstract class ConfigDialogManager
 {
+    private static ConfigDialogManager _ConfigDialogManager;
 
+    static {
+        _ConfigDialogManager = new DefaultConfigDialogManager();
+    }
+    
+    public static void initialise(ConfigDialogManager configDialogManager){
+        if (configDialogManager == null) throw new IllegalArgumentException("configDialogManager");
+        _ConfigDialogManager = configDialogManager;
+    }
+    
+    public static void setDefault() {
+        _ConfigDialogManager = new DefaultConfigDialogManager();
+    }
+    
+    public static ConfigDialogManager configDialogManager() {
+        return _ConfigDialogManager;
+    }
+    
+    public abstract void logDiagnosticMessage();
+    
     /**
      * Records the fact that the config dialog has closed.
      */
-    void clearConfigDialog();
+    public abstract void clearConfigDialog();
 
-    boolean getApiConfigChangeConfirmationExpected();
+    public abstract boolean getApiConfigChangeConfirmationExpected();
 
     /**
      * Returns the Global Configuration dialog, if necessary blocking the calling thread until
@@ -52,7 +72,7 @@ public interface ConfigDialogManager
      * @throws IllegalStateException
      * the method has been called from the Swing event dispatch thread
      */
-    JDialog getConfigDialog(long timeout, TimeUnit unit) throws IllegalStateException;
+    public abstract JDialog getConfigDialog(long timeout, TimeUnit unit) throws IllegalStateException;
 
     /**
      * Returns the Global Configuration dialog, if necessary blocking the calling thread until
@@ -69,12 +89,12 @@ public interface ConfigDialogManager
      * @throws IllegalStateException
      * the method has been called from the Swing event dispatch thread
      */
-    JDialog getConfigDialog() throws IllegalStateException;
+    public abstract JDialog getConfigDialog() throws IllegalStateException;
 
-    void setApiConfigChangeConfirmationExpected(boolean yesOrNo);
+    public abstract void setApiConfigChangeConfirmationExpected(boolean yesOrNo);
 
-    void setConfigDialog(JDialog window);
+    public abstract void setConfigDialog(JDialog window);
 
-    void setSplashScreenClosed();
+    public abstract void setSplashScreenClosed();
     
 }

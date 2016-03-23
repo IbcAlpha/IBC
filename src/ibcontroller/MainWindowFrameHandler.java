@@ -44,7 +44,7 @@ class MainWindowFrameHandler implements WindowHandler {
             Utils.logToConsole(component.getName() + "(" + component.getClass().getName() + ")");
         }
 
-        Environment.mainWindowManager().setMainWindow((JFrame) window);
+        MainWindowManager.mainWindowManager().setMainWindow((JFrame) window);
     }
 
     @Override

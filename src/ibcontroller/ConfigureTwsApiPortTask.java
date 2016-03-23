@@ -35,7 +35,7 @@ class ConfigureTwsApiPortTask implements Runnable{
     @Override
     public void run() {
         try {
-            final JDialog configDialog = Environment.configDialogManager().getConfigDialog();    // blocks the thread until the config dialog is available
+            final JDialog configDialog = ConfigDialogManager.configDialogManager().getConfigDialog();    // blocks the thread until the config dialog is available
             
             GuiExecutor.instance().execute(new Runnable(){
                 @Override
@@ -68,7 +68,7 @@ class ConfigureTwsApiPortTask implements Runnable{
                 if (!isGateway) {
                     JCheckBox cb = SwingUtils.findCheckBox(configDialog, "Enable ActiveX and Socket Clients");
                     if (cb == null) throw new IBControllerException("could not find Enable ActiveX checkbox");
-                    if (cb.isSelected()) Environment.configDialogManager().setApiConfigChangeConfirmationExpected(true);
+                    if (cb.isSelected()) ConfigDialogManager.configDialogManager().setApiConfigChangeConfirmationExpected(true);
                 }
                 Utils.logToConsole("TWS API socket port was set to " + tf.getText());
                 tf.setText(Integer.toString(portNumber));

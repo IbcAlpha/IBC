@@ -33,7 +33,7 @@ public class ExistingSessionDetectedDialogHandler implements WindowHandler {
     }
 
     public void handleWindow(Window window, int eventID) {
-        String setting = Environment.settings().getString("ExistingSessionDetectedAction", "manual");
+        String setting = Settings.settings().getString("ExistingSessionDetectedAction", "manual");
         if (setting.equalsIgnoreCase("primary")) {
             Utils.logToConsole("End the other session and continue this one");
             if (!SwingUtils.clickButton(window, "OK") && 

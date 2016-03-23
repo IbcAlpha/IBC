@@ -71,7 +71,7 @@ class CommandDispatcher
    }
 
     private void handleReconnectDataCommand() {
-        JFrame jf = Environment.mainWindowManager().getMainWindow(1, TimeUnit.MILLISECONDS);
+        JFrame jf = MainWindowManager.mainWindowManager().getMainWindow(1, TimeUnit.MILLISECONDS);
 
         int modifiers = KeyEvent.CTRL_DOWN_MASK | KeyEvent.ALT_DOWN_MASK;
         KeyEvent pressed=new KeyEvent(jf,  KeyEvent.KEY_PRESSED, System.currentTimeMillis(), modifiers, KeyEvent.VK_F, KeyEvent.CHAR_UNDEFINED);
@@ -85,7 +85,7 @@ class CommandDispatcher
    }
 
     private void handleReconnectAccountCommand() {
-        JFrame jf = Environment.mainWindowManager().getMainWindow();
+        JFrame jf = MainWindowManager.mainWindowManager().getMainWindow();
 
         int modifiers = KeyEvent.CTRL_DOWN_MASK | KeyEvent.ALT_DOWN_MASK;
         KeyEvent pressed=new KeyEvent(jf,  KeyEvent.KEY_PRESSED, System.currentTimeMillis(), modifiers, KeyEvent.VK_R, KeyEvent.CHAR_UNDEFINED);

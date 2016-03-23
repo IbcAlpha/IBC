@@ -35,7 +35,7 @@ class GatewayMainWindowFrameHandler  implements WindowHandler {
 
     @Override
     public void handleWindow(Window window, int eventID) {
-        Environment.mainWindowManager().setMainWindow((JFrame) window);
+        MainWindowManager.mainWindowManager().setMainWindow((JFrame) window);
     }
 
     @Override

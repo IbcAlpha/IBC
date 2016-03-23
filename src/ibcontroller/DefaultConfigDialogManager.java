@@ -28,12 +28,17 @@ import java.util.concurrent.TimeoutException;
 import javax.swing.JDialog;
 import javax.swing.SwingUtilities;
 
-public class DefaultConfigDialogManager implements ConfigDialogManager {
+public class DefaultConfigDialogManager extends ConfigDialogManager {
     
     private volatile JDialog configDialog = null;
     private volatile GetConfigDialogTask configDialogTask;
     private volatile Future<JDialog> configDialogFuture;
     
+    @Override
+    public void logDiagnosticMessage(){
+        Utils.logToConsole("using default config dialog manager");
+    }
+
     /**
      * Records the fact that the config dialog has closed.
      */
@@ -78,7 +83,7 @@ public class DefaultConfigDialogManager implements ConfigDialogManager {
         
         if (configDialogFuture == null) {
             Utils.logToConsole("Creating config dialog future");
-            configDialogTask = new GetConfigDialogTask(Environment.mainWindowManager().isGateway());
+            configDialogTask = new GetConfigDialogTask(MainWindowManager.mainWindowManager().isGateway());
             ExecutorService exec = Executors.newSingleThreadExecutor();
             configDialogFuture = exec.submit((Callable<JDialog>)configDialogTask);
             exec.shutdown();

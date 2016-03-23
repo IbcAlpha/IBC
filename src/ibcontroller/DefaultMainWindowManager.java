@@ -28,14 +28,16 @@ import java.util.concurrent.TimeoutException;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
-public class DefaultMainWindowManager implements MainWindowManager {
+public class DefaultMainWindowManager extends MainWindowManager {
     
     public DefaultMainWindowManager() {
         this.isGateway = false;
+        message = "parameterless constructor (isGateway = false assumed)";
     }
     
     public DefaultMainWindowManager(boolean isGateway) {
         this.isGateway = isGateway;
+        message = "constructor parameter isGateway=" + isGateway;
     }
     
     private volatile JFrame mainWindow = null;
@@ -44,7 +46,13 @@ public class DefaultMainWindowManager implements MainWindowManager {
     private volatile Future<JFrame> mainWindowFuture;
     
     private final boolean isGateway;
+    private final String message;
     
+    @Override
+    public void logDiagnosticMessage(){
+        Utils.logToConsole("using default config dialog manager: " + message);
+    }
+
     /**
      * Returns the main window, if necessary blocking the calling thread until
      * either it is available or a specified timeout has elapsed.
@@ -126,7 +134,7 @@ public class DefaultMainWindowManager implements MainWindowManager {
         Utils.logToConsole("Found " + (isGateway ? "Gateway" : "TWS") + " main window");
         mainWindow = window;
         if (mainWindowTask != null) mainWindowTask.setMainWindow(window);
-        if (Environment.settings().getBoolean("MinimizeMainWindow", false)) mainWindow.setExtendedState(java.awt.Frame.ICONIFIED);
+        if (Settings.settings().getBoolean("MinimizeMainWindow", false)) mainWindow.setExtendedState(java.awt.Frame.ICONIFIED);
     }
     
 }

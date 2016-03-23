@@ -41,9 +41,9 @@ class NotCurrentlyAvailableDialogHandler implements WindowHandler {
             return;
         }
 
-        if (Environment.loginManager().getLoginFrame() != null) {
+        if (LoginManager.loginManager().getLoginFrame() != null) {
             JButton button2 =
-                    SwingUtils.findButton(Environment.loginManager().getLoginFrame(), "Login");
+                    SwingUtils.findButton(LoginManager.loginManager().getLoginFrame(), "Login");
             button2.requestFocus();
             KeyEvent ke =
                      new KeyEvent(button2, KeyEvent.KEY_PRESSED,

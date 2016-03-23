@@ -18,7 +18,29 @@
 
 package ibcontroller;
 
-public interface Settings {
+public abstract class Settings {
+    
+    private static Settings _settings;
+
+    static {
+        _settings = new DefaultSettings();
+    }
+    
+    public static void initialise(Settings settings){
+        if (settings == null) throw new IllegalArgumentException("settings");
+        _settings = settings;
+    }
+    
+    public static void setDefault() {
+        _settings = new DefaultSettings();
+    }
+    
+    public static Settings settings() {
+        return _settings;
+    }
+    
+    public abstract void logDiagnosticMessage();
+    
 
     /**
     returns the boolean value associated with property named key.
@@ -28,7 +50,7 @@ public interface Settings {
      * @param defaultValue
      * @return
      */
-    boolean getBoolean(String key, boolean defaultValue);
+    public abstract boolean getBoolean(String key, boolean defaultValue);
 
     /**
      *
@@ -36,7 +58,7 @@ public interface Settings {
      * @param defaultValue
      * @return
      */
-    char getChar(String key, String defaultValue);
+    public abstract char getChar(String key, String defaultValue);
 
     /**
     returns the double value associated with property named key.
@@ -46,7 +68,7 @@ public interface Settings {
      * @param defaultValue
      * @return
      */
-    double getDouble(String key, double defaultValue);
+    public abstract double getDouble(String key, double defaultValue);
 
     /**
     returns the int value associated with property named key.
@@ -56,7 +78,7 @@ public interface Settings {
      * @param defaultValue
      * @return
      */
-    int getInt(String key, int defaultValue);
+    public abstract int getInt(String key, int defaultValue);
 
     /**
     returns the value associated with property named key.
@@ -65,6 +87,6 @@ public interface Settings {
      * @param defaultValue
      * @return
      */
-    String getString(String key, String defaultValue);
+    public abstract String getString(String key, String defaultValue);
     
 }

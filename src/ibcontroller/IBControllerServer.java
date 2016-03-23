@@ -64,11 +64,11 @@ class IBControllerServer
     }
 
     private boolean createSocket() {
-        int port = Environment.settings().getInt("IbControllerPort", 7462);
+        int port = Settings.settings().getInt("IbControllerPort", 7462);
         int backlog = 5;
         String bindaddr = null;
         try {
-            bindaddr = Environment.settings().getString("IbBindAddress", "");
+            bindaddr = Settings.settings().getString("IbBindAddress", "");
             if (bindaddr != null && bindaddr.length() > 0) {
                 mSocket = new ServerSocket(port,
                                             backlog,
@@ -97,7 +97,7 @@ class IBControllerServer
             socket = mSocket.accept();
 
             String allowedAddresses =
-                    Environment.settings().getString("IbControlFrom", "");
+                    Settings.settings().getString("IbControlFrom", "");
 
             if (!socket.getInetAddress().equals(mSocket.getInetAddress()) &&
                     !socket.getInetAddress().equals(InetAddress.getLocalHost()) &&

@@ -20,18 +20,39 @@ package ibcontroller;
 
 import javax.swing.JFrame;
 
-public interface LoginManager {
+public abstract class LoginManager {
 
-    String FIXPassword();
+    private static LoginManager _LoginManager;
 
-    String FIXUserName();
+    static {
+        _LoginManager = new DefaultLoginManager();
+    }
+    
+    public static void initialise(LoginManager loginManager){
+        if (loginManager == null) throw new IllegalArgumentException("loginManager");
+        _LoginManager = loginManager;
+    }
+    
+    public static void setDefault() {
+        _LoginManager = new DefaultLoginManager();
+    }
+    
+    public static LoginManager loginManager() {
+        return _LoginManager;
+    }
+    
+    public abstract void logDiagnosticMessage();
+    
+    public abstract String FIXPassword();
 
-    String IBAPIPassword();
+    public abstract String FIXUserName();
 
-    String IBAPIUserName();
+    public abstract String IBAPIPassword();
 
-    JFrame getLoginFrame();
+    public abstract String IBAPIUserName();
 
-    void setLoginFrame(JFrame window);
+    public abstract JFrame getLoginFrame();
+
+    public abstract void setLoginFrame(JFrame window);
     
 }

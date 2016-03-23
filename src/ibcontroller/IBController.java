@@ -223,32 +223,10 @@ public class IBController {
     }
     
     static void setupDefaultEnvironment(final String[] args, final boolean isGateway) throws Exception {
-        Environment.load(
-                new Callable<Settings>() {
-                    @Override public Settings call() {
-                        return new DefaultSettings(getSettingsPath(args));
-                    }
-                }, 
-                new Callable<LoginManager>() {
-                    @Override public LoginManager call() {
-                        return new DefaultLoginManager(args);
-                    }
-                },
-                new Callable<MainWindowManager>() {
-                    @Override public MainWindowManager call() {
-                        return new DefaultMainWindowManager(isGateway);
-                    }
-                },
-                new Callable<ConfigDialogManager>() {
-                    @Override public ConfigDialogManager call() {
-                        return new DefaultConfigDialogManager();
-                    }
-                },
-                new Callable<TradingModeManager>() {
-                    @Override public TradingModeManager call() {
-                        return new DefaultTradingModeManager(args);
-                    }
-                });
+        Settings.initialise(new DefaultSettings(getSettingsPath(args)));
+        LoginManager.initialise(new DefaultLoginManager(args));
+        MainWindowManager.initialise(new DefaultMainWindowManager(isGateway));
+        TradingModeManager.initialise(new DefaultTradingModeManager(args));
     }
 
     static void checkArguments(String[] args) {
@@ -299,9 +277,13 @@ public class IBController {
     public static void load() {
         printProperties();
         
-        Environment.verify();
-
-        boolean isGateway = Environment.mainWindowManager().isGateway();
+        Settings.settings().logDiagnosticMessage();
+        LoginManager.loginManager().logDiagnosticMessage();
+        MainWindowManager.mainWindowManager().logDiagnosticMessage();
+        TradingModeManager.tradingModeManager().logDiagnosticMessage();
+        ConfigDialogManager.configDialogManager().logDiagnosticMessage();
+        
+        boolean isGateway = MainWindowManager.mainWindowManager().isGateway();
         
         startIBControllerServer(isGateway);
 
@@ -327,7 +309,6 @@ public class IBController {
                                "\" either does not exist, or is a directory.  quitting...");
             System.exit(1);
         }
-        Utils.logToConsole("ini file is " + iniPath);
         return iniPath;
     }
 
@@ -364,7 +345,7 @@ public class IBController {
     }
     
     private static Date getShutdownTime() {
-        String shutdownTimeSetting = Environment.settings().getString("ClosedownAt", "");
+        String shutdownTimeSetting = Settings.settings().getString("ClosedownAt", "");
         if (shutdownTimeSetting.length() == 0) {
             return null;
         } else {
@@ -413,7 +394,7 @@ public class IBController {
     }
 
     private static String getTWSSettingsDirectory() {
-        String dir = Environment.settings().getString("IbDir", System.getProperty("user.dir"));
+        String dir = Settings.settings().getString("IbDir", System.getProperty("user.dir"));
         Utils.logToConsole("TWS settings directory is " + dir);
         return dir;
     }
@@ -461,7 +442,7 @@ public class IBController {
     }
 
     private static void startTws() {
-        if (Environment.settings().getBoolean("ShowAllTrades", false)) {
+        if (Settings.settings().getBoolean("ShowAllTrades", false)) {
             Utils.showTradesLogWindow();
         }
         String[] twsArgs = new String[1];
@@ -470,7 +451,7 @@ public class IBController {
     }
 
     private static void startTwsOrGateway(boolean isGateway) {
-        int portNumber = Environment.settings().getInt("ForceTwsApiPort", 0);
+        int portNumber = Settings.settings().getInt("ForceTwsApiPort", 0);
         if (portNumber != 0) MyCachedThreadPool.getInstance().execute(new ConfigureTwsApiPortTask(portNumber, isGateway));
 
         if (isGateway) {
@@ -478,7 +459,7 @@ public class IBController {
         } else {
             startTws();
         }
-        Utils.sendConsoleOutputToTwsLog(!Environment.settings().getBoolean("LogToConsole", false));
+        Utils.sendConsoleOutputToTwsLog(!Settings.settings().getBoolean("LogToConsole", false));
     }
     
     private static void startSavingTwsSettingsAutomatically() {

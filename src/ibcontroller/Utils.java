@@ -190,7 +190,7 @@ class Utils {
 
     static void showTradesLogWindow() {
             MyCachedThreadPool.getInstance().execute(new Runnable () {
-                @Override public void run() {invokeMenuItem(Environment.mainWindowManager().getMainWindow(), new String[] {"Account", "Trade Log"});}
+                @Override public void run() {invokeMenuItem(MainWindowManager.mainWindowManager().getMainWindow(), new String[] {"Account", "Trade Log"});}
             });
     }
     

@@ -20,21 +20,35 @@ package ibcontroller;
 
 import javax.swing.JFrame;
 
-public class DefaultLoginManager implements LoginManager {
+public class DefaultLoginManager extends LoginManager {
     
     public DefaultLoginManager() {
-        getFIXUserNameAndPasswordFromSettings();
-        getTWSUserNameAndPasswordFromSettings();
+        /* don't actually get the credentials yet because the settings 
+         * provider might be changed
+         */
+        fromSettings = true;
+        message = "getting username and password from settings";
     }
     
     public DefaultLoginManager(String[] args) {
-        getFIXUserNameAndPassword(args);
-        getTWSUserNameAndPassword(args);
+        if (isFIX()) {
+            getTWSUserNameAndPasswordFromArguments(args);
+            fromSettings = !getFIXUserNameAndPasswordFromArguments(args);
+        } else {
+            fromSettings = !getTWSUserNameAndPasswordFromArguments(args);
+        }
+        if (fromSettings) {
+            message = "getting username and password from args but not found. Will get from settings";
+        } else {
+            message = "getting username and password from args";
+        }
     }
     
     public DefaultLoginManager(String username, String password) {
         IBAPIUserName = username;
         IBAPIPassword = password;
+        fromSettings = false;
+        message = "getting username and password from constructor";
     }
     
     public DefaultLoginManager(String FIXUsername, String FIXPassword, String IBAPIUsername, String IBAPIPassword) {
@@ -42,9 +56,15 @@ public class DefaultLoginManager implements LoginManager {
         this.FIXPassword = FIXPassword;
         this.IBAPIUserName = IBAPIUsername;
         this.IBAPIPassword = IBAPIPassword;
+        fromSettings = false;
+        message = "getting username and password from constructor (including FIX)";
     }
     
+    private final String message;
+    
     private volatile JFrame loginFrame = null;
+    
+    private boolean fromSettings;
 
     /**
      * IBAPI username - can either be supplied from the .ini file or as args[1]
@@ -75,22 +95,31 @@ public class DefaultLoginManager implements LoginManager {
 
     
     @Override
+    public void logDiagnosticMessage(){
+        Utils.logToConsole("using default login manager: " + message);
+    }
+
+    @Override
     public String FIXPassword() {
+        if (fromSettings) return getFIXPasswordFromSettings();
         return FIXPassword;
     }
 
     @Override
     public String FIXUserName() {
+        if (fromSettings) return getFIXUserNameFromSettings();
         return FIXUserName;
     }
 
     @Override
     public String IBAPIPassword() {
+        if (fromSettings) return getTWSPasswordFromSettings();
         return IBAPIPassword;
     }
 
     @Override
     public String IBAPIUserName() {
+        if (fromSettings) return getTWSUserNameFromSettings();
         return IBAPIUserName;
     }
     
@@ -105,21 +134,15 @@ public class DefaultLoginManager implements LoginManager {
     }
 
     private static String getFIXPasswordFromSettings() {
-        String password = Environment.settings().getString("FIXPassword", "");
+        String password = Settings.settings().getString("FIXPassword", "");
         if (password.length() != 0) {
             if (isFIXPasswordEncrypted()) password = Encryptor.decrypt(password);
         }
         return password;
     }
 
-    private void getFIXUserNameAndPassword(String[] args) {
-        if (! getFIXUserNameAndPasswordFromArguments(args)) {
-            getFIXUserNameAndPasswordFromSettings();
-        }
-    }
-
     private static String getFIXUserNameFromSettings() {
-        return Environment.settings().getString("FIXLoginId", "");
+        return Settings.settings().getString("FIXLoginId", "");
     }
 
     private boolean getFIXUserNameAndPasswordFromArguments(String[] args) {
@@ -132,31 +155,20 @@ public class DefaultLoginManager implements LoginManager {
         }
     }
 
-    private void getFIXUserNameAndPasswordFromSettings() {
-        FIXUserName = getFIXUserNameFromSettings();
-        FIXPassword = getFIXPasswordFromSettings();
-    }
-    
     private static String getTWSPasswordFromSettings() {
-        String password = Environment.settings().getString("IbPassword", "");
+        String password = Settings.settings().getString("IbPassword", "");
         if (password.length() != 0) {
             if (isTwsPasswordEncrypted()) password = Encryptor.decrypt(password);
         }
         return password;
     }
 
-    private void getTWSUserNameAndPassword(String[] args) {
-        if (! getTWSUserNameAndPasswordFromArguments(args)) {
-            getTWSUserNameAndPasswordFromSettings();
-        }
-    }
-
     private static String getTWSUserNameFromSettings() {
-        return Environment.settings().getString("IbLoginId", "");
+        return Settings.settings().getString("IbLoginId", "");
     }
 
     private boolean getTWSUserNameAndPasswordFromArguments(String[] args) {
-        if (Environment.settings().getBoolean("FIX", false)) {
+        if (isFIX()) {
             if (args.length == 5) {
                 IBAPIUserName = args[3];
                 IBAPIPassword = args[4];
@@ -172,18 +184,17 @@ public class DefaultLoginManager implements LoginManager {
             return false;
         }
     }
-
-    private void getTWSUserNameAndPasswordFromSettings() {
-        IBAPIUserName = getTWSUserNameFromSettings();
-        IBAPIPassword = getTWSPasswordFromSettings();
+    
+    private static boolean isFIX() {
+        return Settings.settings().getBoolean("FIX", false);
     }
 
     private static boolean isFIXPasswordEncrypted() {
-        return Environment.settings().getBoolean("FIXPasswordEncrypted", true);
+        return Settings.settings().getBoolean("FIXPasswordEncrypted", true);
     }
 
     private static boolean isTwsPasswordEncrypted() {
-        return Environment.settings().getBoolean("PasswordEncrypted", true);
+        return Settings.settings().getBoolean("PasswordEncrypted", true);
     }
 
 }

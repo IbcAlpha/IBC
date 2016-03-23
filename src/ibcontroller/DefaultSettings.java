@@ -26,9 +26,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-public class DefaultSettings implements Settings {
+public class DefaultSettings extends Settings {
 
-    private static final Properties _Props = new Properties();
+    private final Properties props = new Properties();
+    private String path;
 
     public DefaultSettings() {
         if (System.getProperty("os.name").startsWith("Windows")) {
@@ -48,13 +49,13 @@ public class DefaultSettings implements Settings {
         load(path);
     }
     
-    private static void load(String path) {
-        Utils.logToConsole("ini file is " + path);
-        _Props.clear();
+    private void load(String path) {
+        this.path = path;
+        props.clear();
         try {
             File f = new File(path);
             InputStream is = new BufferedInputStream(new FileInputStream(f));
-            _Props.load(is);
+            props.load(is);
             is.close();
         } catch (FileNotFoundException e) {
             Utils.logToConsole("Properties file " + path + " not found");
@@ -63,6 +64,11 @@ public class DefaultSettings implements Settings {
                     "Exception accessing Properties file " + path);
             Utils.logToConsole(e.toString());
         }
+    }
+
+    @Override
+    public void logDiagnosticMessage(){
+        Utils.logToConsole("using default settings provider: ini file is " + path);
     }
 
     /**
@@ -75,7 +81,7 @@ public class DefaultSettings implements Settings {
     @Override
     public String getString(String key,
                             String defaultValue) {
-        String value = _Props.getProperty(key, defaultValue);
+        String value = props.getProperty(key, defaultValue);
         
         // handle key=[empty string] in .ini file 
         if (value.isEmpty()) {
@@ -95,7 +101,7 @@ public class DefaultSettings implements Settings {
     @Override
     public int getInt(String key,
                       int defaultValue) {
-        String value = _Props.getProperty(key);
+        String value = props.getProperty(key);
 
         // handle key missing or key=[empty string] in .ini file 
         if (value == null || value.length() == 0) {        
@@ -124,7 +130,7 @@ public class DefaultSettings implements Settings {
     @Override
     public char getChar(String key,
                         String defaultValue) {
-        String value = _Props.getProperty(key, defaultValue);
+        String value = props.getProperty(key, defaultValue);
 
         // handle key missing or key=[empty string] in .ini file 
         if (value == null || value.length() == 0) {
@@ -154,7 +160,7 @@ public class DefaultSettings implements Settings {
     @Override
     public double getDouble(String key,
                             double defaultValue) {
-        String value = _Props.getProperty(key);
+        String value = props.getProperty(key);
 
         // handle key missing or key=[empty string] in .ini file 
         if (value == null || value.length() == 0) {        
@@ -185,7 +191,7 @@ public class DefaultSettings implements Settings {
     @Override
     public boolean getBoolean(String key,
                               boolean defaultValue) {
-        String value = _Props.getProperty(key);
+        String value = props.getProperty(key);
 
         // handle key missing or key=[empty string] in .ini file 
         if (value == null || value.length() == 0) {        
@@ -204,5 +210,5 @@ public class DefaultSettings implements Settings {
             return defaultValue;
         }
     }
-
+    
 }

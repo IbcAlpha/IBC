@@ -21,7 +21,29 @@ package ibcontroller;
 import java.util.concurrent.TimeUnit;
 import javax.swing.JFrame;
 
-public interface MainWindowManager {
+public abstract class MainWindowManager {
+
+    private static MainWindowManager _mainWindowManager;
+
+    static {
+        _mainWindowManager = new DefaultMainWindowManager();
+    }
+    
+    public static void initialise(MainWindowManager mainWindowManager){
+        if (mainWindowManager == null) throw new IllegalArgumentException("mainWindowManager");
+        _mainWindowManager = mainWindowManager;
+    }
+    
+    public static void setDefault() {
+        _mainWindowManager = new DefaultMainWindowManager();
+    }
+    
+    public static MainWindowManager mainWindowManager() {
+        return _mainWindowManager;
+    }
+    
+    public abstract void logDiagnosticMessage();
+    
 
     /**
      * Returns the main window, if necessary blocking the calling thread until
@@ -44,7 +66,7 @@ public interface MainWindowManager {
      * @throws IllegalStateException
      * the method has been called from the Swing event dispatch thread
      */
-    JFrame getMainWindow(long timeout, TimeUnit unit);
+    public abstract JFrame getMainWindow(long timeout, TimeUnit unit);
 
     /**
      * Returns the main window, if necessary blocking the calling thread until
@@ -61,10 +83,10 @@ public interface MainWindowManager {
      * @throws IllegalStateException
      * the method has been called from the Swing event dispatch thread
      */
-    JFrame getMainWindow() throws IllegalStateException;
+    public abstract JFrame getMainWindow() throws IllegalStateException;
     
-    boolean isGateway();
+    public abstract boolean isGateway();
 
-    void setMainWindow(JFrame window);
+    public abstract void setMainWindow(JFrame window);
     
 }

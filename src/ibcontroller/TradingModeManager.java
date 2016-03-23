@@ -18,11 +18,32 @@
 
 package ibcontroller;
 
-public interface TradingModeManager {
+public abstract class TradingModeManager {
+    private static TradingModeManager _TradingModeManager;
 
-    static final String TRADING_MODE_LIVE = "live";
-    static final String TRADING_MODE_PAPER = "paper";
+    static {
+        _TradingModeManager = new DefaultTradingModeManager();
+    }
     
-String getTradingMode();
+    public static void initialise(TradingModeManager tradingModeManager){
+        if (tradingModeManager == null) throw new IllegalArgumentException("tradingModeManager");
+        _TradingModeManager = tradingModeManager;
+    }
+    
+    public static void setDefault() {
+        _TradingModeManager = new DefaultTradingModeManager();
+    }
+    
+    public static TradingModeManager tradingModeManager() {
+        return _TradingModeManager;
+    }
+    
+    public abstract void logDiagnosticMessage();
+    
+
+    public static final String TRADING_MODE_LIVE = "live";
+    public static final String TRADING_MODE_PAPER = "paper";
+    
+    public abstract String getTradingMode();
     
 }

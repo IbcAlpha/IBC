@@ -42,7 +42,7 @@ final class GatewayLoginFrameHandler extends AbstractLoginHandler {
     @Override
     protected final boolean preLogin(final Window window, int eventID) throws IBControllerException {
         boolean result;
-        if (Environment.settings().getBoolean("FIX", false)) {
+        if (Settings.settings().getBoolean("FIX", false)) {
             result = setMissingFIXCredentials(window);
         } else {
             result =setMissingIBAPICredentials(window);
@@ -52,12 +52,12 @@ final class GatewayLoginFrameHandler extends AbstractLoginHandler {
     
     private boolean setMissingFIXCredentials(Window window) {
         boolean result = false;
-        if (Environment.loginManager().FIXUserName().length() == 0) {
+        if (LoginManager.loginManager().FIXUserName().length() == 0) {
             setMissingCredential(window, 0);
-        } else if (Environment.loginManager().FIXPassword().length() == 0) {
+        } else if (LoginManager.loginManager().FIXPassword().length() == 0) {
             setMissingCredential(window, 1);
-        } else if (Environment.loginManager().IBAPIUserName().length() != 0 || Environment.loginManager().IBAPIPassword().length() != 0) {
-            if (Environment.loginManager().IBAPIUserName().length() == 0) {
+        } else if (LoginManager.loginManager().IBAPIUserName().length() != 0 || LoginManager.loginManager().IBAPIPassword().length() != 0) {
+            if (LoginManager.loginManager().IBAPIUserName().length() == 0) {
                 setMissingCredential(window, 3);
             } else {
                 setMissingCredential(window, 4);
@@ -70,9 +70,9 @@ final class GatewayLoginFrameHandler extends AbstractLoginHandler {
 
     private boolean setMissingIBAPICredentials(Window window) {
         boolean result = false;
-        if (Environment.loginManager().IBAPIUserName().length() == 0) {
+        if (LoginManager.loginManager().IBAPIUserName().length() == 0) {
             setMissingCredential(window, 0);
-        } else if (Environment.loginManager().IBAPIPassword().length() == 0) {
+        } else if (LoginManager.loginManager().IBAPIPassword().length() == 0) {
             setMissingCredential(window, 1);
         } else {
             result = true;
@@ -82,20 +82,20 @@ final class GatewayLoginFrameHandler extends AbstractLoginHandler {
 
     @Override
     protected final boolean setFields(Window window, int eventID) throws IBControllerException {
-        if (Environment.settings().getBoolean("FIX", false)) {
-            setCredential(window, "FIX user name", 0, Environment.loginManager().FIXUserName());
-            setCredential(window, "FIX password", 1, Environment.loginManager().FIXPassword());
-            setCredential(window, "IBAPI user name", 3, Environment.loginManager().IBAPIUserName());
-            setCredential(window, "IBAPI password", 4, Environment.loginManager().IBAPIPassword());
+        if (Settings.settings().getBoolean("FIX", false)) {
+            setCredential(window, "FIX user name", 0, LoginManager.loginManager().FIXUserName());
+            setCredential(window, "FIX password", 1, LoginManager.loginManager().FIXPassword());
+            setCredential(window, "IBAPI user name", 3, LoginManager.loginManager().IBAPIUserName());
+            setCredential(window, "IBAPI password", 4, LoginManager.loginManager().IBAPIPassword());
         } else {
-            setCredential(window, "IBAPI user name", 0, Environment.loginManager().IBAPIUserName());
-            setCredential(window, "IBAPI password", 1, Environment.loginManager().IBAPIPassword());
+            setCredential(window, "IBAPI user name", 0, LoginManager.loginManager().IBAPIUserName());
+            setCredential(window, "IBAPI password", 1, LoginManager.loginManager().IBAPIPassword());
         }
         return true;
     }
     
     private void selectGatewayMode(Window window) throws IBControllerException {
-        if (Environment.settings().getBoolean("FIX", false)) {
+        if (Settings.settings().getBoolean("FIX", false)) {
             switchToFIX(window);
         } else {
             switchToIBAPI(window);

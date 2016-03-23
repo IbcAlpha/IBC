@@ -37,7 +37,7 @@ class AcceptIncomingConnectionDialogHandler implements WindowHandler {
         final String Reject = "reject";
         final String Manual = "manual";
         
-        String acceptIncomingConnectionAction = Environment.settings().getString("AcceptIncomingConnectionAction", Accept);
+        String acceptIncomingConnectionAction = Settings.settings().getString("AcceptIncomingConnectionAction", Accept);
         
         if (acceptIncomingConnectionAction.equalsIgnoreCase(Manual)) return;
 

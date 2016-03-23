@@ -39,7 +39,7 @@ class GetConfigDialogTask implements Callable<JDialog>{
     
     @Override
     public JDialog call() throws IBControllerException, InterruptedException {
-        final JFrame mainForm = Environment.mainWindowManager().getMainWindow();
+        final JFrame mainForm = MainWindowManager.mainWindowManager().getMainWindow();
         
         if (isGateway) {
             /*

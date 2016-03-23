@@ -18,16 +18,20 @@
 
 package ibcontroller;
 
-public class DefaultTradingModeManager implements TradingModeManager {
+public class DefaultTradingModeManager extends TradingModeManager {
     
     private String tradingMode;
     
     public DefaultTradingModeManager() {
+        fromSettings = false;
         setTradingMode(TRADING_MODE_LIVE);
+        message = "parameterless constructor (trading mode live assumed)";
     }
     
     public DefaultTradingModeManager(String tradingMode) {
+        fromSettings = false;
         setTradingMode(tradingMode);
+        message = "constructor parameter tradingMode=" + tradingMode;
     }
     
     /*
@@ -45,15 +49,13 @@ public class DefaultTradingModeManager implements TradingModeManager {
             setTradingMode(args[5]);
         }
         
-        if (tradingMode == null) {
-            tradingMode = Environment.settings().getString("TradingMode", TRADING_MODE_LIVE);
+        if (tradingMode != null) {
+            fromSettings = false;
+            message = "constructor parameter args: tradingMode=" + tradingMode;
+        } else {
+            fromSettings = true;
+            message = "constructor parameter args but trading mode not present - will be taken from settings";
         }
-
-        if (!(tradingMode.equals(TRADING_MODE_LIVE) || tradingMode.equals(TRADING_MODE_PAPER))) {
-                Utils.logError("Invalid Trading Mode argument or .ini file setting: " + tradingMode);
-                System.exit(1);
-        }
-        
     }
     
     private void setTradingMode(String value) {
@@ -64,8 +66,20 @@ public class DefaultTradingModeManager implements TradingModeManager {
         tradingMode = value;
     }
 
+    private final String message;
+    private final boolean fromSettings;
+    
+    @Override
+    public void logDiagnosticMessage(){
+        Utils.logToConsole("using default trading mode manager: " + message);
+    }
+
     @Override
     public String getTradingMode() {
+        if (fromSettings) {
+            setTradingMode( Settings.settings().getString("TradingMode", TRADING_MODE_LIVE));
+            Utils.logToConsole("trading mode from settings: tradingMode=" + tradingMode);
+        }
         return tradingMode;
     }
     
