@@ -40,7 +40,7 @@ if defined LOG_PATH (
 )
 echo +
 echo + ** Caution: closing this window will close %MODE% %TWS_MAJOR_VRSN% **
-echo + (It will close automatically when you exit from %MODE% %TWS_MAJOR_VRSN%)
+echo + (window will close automatically when you exit from %MODE% %TWS_MAJOR_VRSN%)
 echo +
 
 set GW_FLAG=
@@ -48,7 +48,8 @@ if /I "%MODE%" == "GATEWAY" set GW_FLAG=/G
 
 call "%IBC_PATH%\Scripts\IBController.bat" "%TWS_MAJOR_VRSN%" %GW_FLAG% ^
      "/TwsPath:%TWS_PATH%" "/IbcPath:%IBC_PATH%" "/IbcIni:%IBC_INI%" ^
-     "/User:%TWSUSERID%" "/PW:%TWSPASSWORD%" "/JavaPath:%JAVA_PATH%" ^
+     "/User:%TWSUSERID%" "/PW:%TWSPASSWORD%" "/FIXUser:%FIXUSERID%" "/FIXPW:%FIXPASSWORD%" ^
+     "/JavaPath:%JAVA_PATH%" ^
      > "%LOG_FILE%" 2>&1
 
 if errorlevel 1 (

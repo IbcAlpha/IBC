@@ -28,6 +28,7 @@ echo.
 echo IBController twsVersion [/G ^| /Gateway] [/TwsPath:twsPath] [/IbcPath:ibcPath]
 echo              [/IbcIni:ibcIni] [/JavaPath:javaPath]
 echo              [/User:userId] [/PW:password]
+echo              [/FIXUser:fixuserId] [/FIXPW:fixpassword]
 echo.
 echo   twsVersion              The major version number for TWS
 echo.
@@ -52,6 +53,10 @@ echo.
 echo   userId                  IB account user id
 echo.
 echo   password                IB account password
+echo.
+echo   fixuserId               FIX account user id (only if /G or /Gateway) 
+echo.
+echo   password                FIX account password (only if /G or /Gateway) 
 echo.
 exit /B
 ::===0=========1=========2=========3=========4=========5=========6=========7=========8
@@ -80,6 +85,8 @@ set IBC_INI=
 set JAVA_PATH=
 set IB_USER_ID=
 set IB_PASSWORD=
+set FIX_USER_ID=
+set FIX_PASSWORD=
 set IBC_CLASSPATH=
 set ERROR_MESSAGE=
 
@@ -104,10 +111,12 @@ if /I "%ARG%" == "/G" (
 	if "%JAVA_PATH%" == """" set JAVA_PATH=
 ) else if /I "%ARG:~0,6%" == "/USER:" (
 	set IB_USER_ID=%ARG:~6%
-	if "%IB_USER_ID%" == """" set IB_USER_ID=
 ) else if /I "%ARG:~0,4%" == "/PW:" (
 	set IB_PASSWORD=%ARG:~4%
-	if "%IB_PASSWORD%" == """" set IB_PASSWORD=
+) else if /I "%ARG:~0,9%" == "/FIXUSER:" (
+	set FIX_USER_ID=%ARG:~9%
+) else if /I "%ARG:~0,7%" == "/FIXPW:" (
+	set FIX_PASSWORD=%ARG:~7%
 ) else if /I "%ARG:~0,1%" == "/" (
 	set ERROR_MESSAGE=Invalid parameter '%ARG%'
 	set ERROR=%E_INVALID_ARG%
@@ -122,6 +131,21 @@ shift
 goto :parse
 	
 :parsingComplete
+
+if defined FIX_USER_ID (
+	if not "%ENTRY_POINT%"=="%ENTRY_POINT_GATEWAY%" (
+		set ERROR_MESSAGE=/FIXUser and /FIXPW invalid without /G
+		set ERROR=%E_INVALID_ARG%
+	)
+)
+if defined FIX_PASSWORD (
+	if not "%ENTRY_POINT%"=="%ENTRY_POINT_GATEWAY%" (
+		set ERROR_MESSAGE=/FIXUser and /FIXPW invalid without /G
+		set ERROR=%E_INVALID_ARG%
+	)
+)
+
+
 if defined ERROR goto :err
 
 echo =================================
@@ -139,15 +163,26 @@ echo /TwsPath = %TWS_PATH%
 echo /IbcPath = %IBC_PATH%
 echo /IbcIni = %IBC_INI%
 echo /JavaPath = %JAVA_PATH%
-if "%IB_USER_ID%" == "" (
-	echo /User = 
-) else (
+set PASSWORD_ARGS=
+if defined IB_USER_ID (
 	echo /User = ***
-)
-if "%IB_PASSWORD%" == "" (
-	echo /PW = 
-) else (
 	echo /PW = ***
+) else if defined IB_PASSWORD (
+	echo /User = ***
+	echo /PW = ***
+) else (
+	echo /User =
+	echo /PW =
+)
+if defined FIX_USER_ID (
+	echo /FIXUser = ***
+	echo /FIXPW = ***
+) else if defined FIX_PASSWORD (
+	echo /FIXUser = ***
+	echo /FIXPW = ***
+) else (
+	echo /FIXUser =
+	echo /FIXPW =
 )
 echo.
 
@@ -207,7 +242,9 @@ if not exist "%IBC_PATH%" (
 	set ERROR=%E_IBC_PATH_NOT_EXIST%
 	goto :err
 )
-if not exist "%IBC_INI%" (
+if not defined IBC_INI (
+	set IBC_INI=NULL
+) else if not exist "%IBC_INI%" (
 	set ERROR_MESSAGE=IBController configuration file: %IBC-INI%  does not exist
 	set ERROR=%E_IBC_INI_NOT_EXIST%
 	goto :err
@@ -285,20 +322,57 @@ echo.
 
 ::======================== Start IBController ===============================
 
-:: prevent other Java tools interfering with IBController
-set JAVA_TOOL_OPTIONS=
-
-pushd %TWS_PATH%
+if defined IB_USER_ID (
+	if defined FIX_USER_ID (
+		set TWS_CREDENTIALS="%FIX_USER_ID%" "%FIX_PASSWORD%" "%IB_USER_ID%" "%IB_PASSWORD%"
+		set TWS_HIDDEN_CREDENTIALS="***" "***" "***" "***"
+ 	) else if defined FIX_PASSWORD (
+		set TWS_CREDENTIALS="%FIX_USER_ID%" "%FIX_PASSWORD%" "%IB_USER_ID%" "%IB_PASSWORD%"
+		set TWS_HIDDEN_CREDENTIALS="***" "***" "***" "***"
+	) else (
+		set TWS_CREDENTIALS="%IB_USER_ID%" "%IB_PASSWORD%"
+		set TWS_HIDDEN_CREDENTIALS="***" "***"
+	)
+) else if defined IB_PASSWORD (
+	if defined FIX_USER_ID (
+		set TWS_CREDENTIALS="%FIX_USER_ID%" "%FIX_PASSWORD%" "%IB_USER_ID%" "%IB_PASSWORD%"
+		set TWS_HIDDEN_CREDENTIALS="***" "***" "***" "***"
+ 	) else if defined FIX_PASSWORD (
+		set TWS_CREDENTIALS="%FIX_USER_ID%" "%FIX_PASSWORD%" "%IB_USER_ID%" "%IB_PASSWORD%"
+		set TWS_HIDDEN_CREDENTIALS="***" "***" "***" "***"
+	) else (
+		set TWS_CREDENTIALS="%IB_USER_ID%" "%IB_PASSWORD%"
+		set TWS_HIDDEN_CREDENTIALS="***" "***"
+	)
+) else (
+	if defined FIX_USER_ID (
+		set TWS_CREDENTIALS="%FIX_USER_ID%" "%FIX_PASSWORD%"
+		set TWS_HIDDEN_CREDENTIALS="***" "***"
+ 	) else if defined FIX_PASSWORD (
+		set TWS_CREDENTIALS="%FIX_USER_ID%" "%FIX_PASSWORD%"
+		set TWS_HIDDEN_CREDENTIALS="***" "***"
+	) else (
+		set TWS_CREDENTIALS=
+		set TWS_HIDDEN_CREDENTIALS=
+	)
+)
+echo TWS_CREDENTIALS=%TWS_CREDENTIALS%
+echo TWS_HIDDEN_CREDENTIALS=%TWS_HIDDEN_CREDENTIALS%
 
 if "%ENTRY_POINT%"=="%ENTRY_POINT_TWS%" (
 	echo Starting IBController with this command:
 ) else (
 	echo Starting IBGateway with this command:
 )
-echo "%JAVA_PATH%\java.exe" -cp  "%IBC_CLASSPATH%" %JAVA_VM_OPTIONS% %ENTRY_POINT% "%IBC_INI%" *** ***
+echo "%JAVA_PATH%\java.exe" -cp  "%IBC_CLASSPATH%" %JAVA_VM_OPTIONS% %ENTRY_POINT% "%IBC_INI%" %TWS_HIDDEN_CREDENTIALS%
 echo.
 
-"%JAVA_PATH%\java.exe" -cp  "%IBC_CLASSPATH%" %JAVA_VM_OPTIONS% %ENTRY_POINT% "%IBC_INI%" %IB_USER_ID% %IB_PASSWORD%
+:: prevent other Java tools interfering with IBController
+set JAVA_TOOL_OPTIONS=
+
+pushd %TWS_PATH%
+
+"%JAVA_PATH%\java.exe" -cp  "%IBC_CLASSPATH%" %JAVA_VM_OPTIONS% %ENTRY_POINT% "%IBC_INI%" %TWS_CREDENTIALS%
 
 popd
 
