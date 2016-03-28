@@ -32,17 +32,11 @@ public class DefaultSettings extends Settings {
     private String path;
 
     public DefaultSettings() {
-        if (System.getProperty("os.name").startsWith("Windows")) {
-            load(System.getenv("HOMEDRIVE") + 
-                    System.getenv("HOMEPATH") + File.separator + 
-                    "Documents" + File.separator + 
-                    "IBController" + File.separator + 
-                    "IBController.ini");
-        } else {
-            load(System.getProperty("user.home") + File.separator + 
-                    "IBController" + File.separator + 
-                    "IBController.ini");
-        }
+        load(generateDefaultIniPath());
+    }
+    
+    public DefaultSettings(String[] args) {
+        load(getSettingsPath(args));
     }
     
     public DefaultSettings(String path) {
@@ -64,6 +58,59 @@ public class DefaultSettings extends Settings {
                     "Exception accessing Properties file " + path);
             Utils.logToConsole(e.toString());
         }
+    }
+    
+    static String generateDefaultIniPath() {
+        if (System.getProperty("os.name").startsWith("Windows")) {
+            return System.getenv("HOMEDRIVE") + 
+                    System.getenv("HOMEPATH") + File.separator + 
+                    "Documents" + File.separator + 
+                    "IBController" + File.separator + 
+                    "IBController.ini";
+        } else {
+            return System.getProperty("user.home") + File.separator + 
+                    "IBController" + File.separator + 
+                    "IBController.ini";
+        }
+    }
+
+    static String getSettingsPath(String [] args) {
+        String iniPath;
+        if (args.length == 0 || args[0].equalsIgnoreCase("NULL")) {
+            iniPath = getWorkingDirectory() + "IBController." + getComputerUserName() + ".ini";
+        } else if (args[0].length() == 0) {
+            iniPath = generateDefaultIniPath();
+        } else {// args.length >= 1
+            iniPath = args[0];
+        }
+        File finiPath = new File(iniPath);
+        if (!finiPath.isFile() || !finiPath.exists()) {
+            Utils.logError("ini file \"" + iniPath +
+                               "\" either does not exist, or is a directory.  quitting...");
+            System.exit(1);
+        }
+        return iniPath;
+    }
+
+    private static String getComputerUserName() {
+        StringBuilder sb = new StringBuilder(System.getProperty("user.name"));
+        int i;
+        for (i = 0; i < sb.length(); i++) {
+            char c = sb.charAt(i);
+            if ((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9')) {
+                continue;
+            }
+            if (c >= 'A' && c <= 'Z') {
+                sb.setCharAt(i, Character.toLowerCase(c));
+            } else {
+                sb.setCharAt(i, '_');
+            }
+        }
+        return sb.toString();
+    }
+
+    private static String getWorkingDirectory() {
+        return System.getProperty("user.dir") + File.separator;
     }
 
     @Override

@@ -59,8 +59,10 @@ final class GatewayLoginFrameHandler extends AbstractLoginHandler {
         } else if (LoginManager.loginManager().IBAPIUserName().length() != 0 || LoginManager.loginManager().IBAPIPassword().length() != 0) {
             if (LoginManager.loginManager().IBAPIUserName().length() == 0) {
                 setMissingCredential(window, 3);
-            } else {
+            } else if (LoginManager.loginManager().IBAPIPassword().length() == 0) {
                 setMissingCredential(window, 4);
+            } else {
+                result = true;
             }
         } else {
             result = true;

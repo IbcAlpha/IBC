@@ -223,7 +223,7 @@ public class IBController {
     }
     
     static void setupDefaultEnvironment(final String[] args, final boolean isGateway) throws Exception {
-        Settings.initialise(new DefaultSettings(getSettingsPath(args)));
+        Settings.initialise(new DefaultSettings(args));
         LoginManager.initialise(new DefaultLoginManager(args));
         MainWindowManager.initialise(new DefaultMainWindowManager(isGateway));
         TradingModeManager.initialise(new DefaultTradingModeManager(args));
@@ -268,9 +268,13 @@ public class IBController {
                 Utils.logRawToConsole("========================================================================");
                 System.exit(0);
             }
-        } else if (args.length == 4 || args.length > 6) {
-                Utils.logError("Incorrect number of arguments passed. quitting...");
-                System.exit(1);
+        } else if (args.length > 6) {
+            Utils.logError("Incorrect number of arguments passed. quitting...");
+            Utils.logRawToConsole("Number of arguments = " +args.length);
+            for (String arg : args) {
+                Utils.logRawToConsole(arg);
+            }
+            System.exit(1);
         }
     }
 
@@ -294,22 +298,6 @@ public class IBController {
         startSavingTwsSettingsAutomatically();
 
         startTwsOrGateway(isGateway);
-    }
-
-    static String getSettingsPath(String [] args) {
-        String iniPath;
-        if (args.length == 0 || args[0].equalsIgnoreCase("NULL")) {
-            iniPath = getWorkingDirectory() + "IBController." + getComputerUserName() + ".ini";
-        } else {// args.length >= 1
-            iniPath = args[0];
-        }
-        File finiPath = new File(iniPath);
-        if (!finiPath.isFile() || !finiPath.exists()) {
-            Utils.logError("ini file \"" + iniPath +
-                               "\" either does not exist, or is a directory.  quitting...");
-            System.exit(1);
-        }
-        return iniPath;
     }
 
     private static void createToolkitListener() {
@@ -376,31 +364,10 @@ public class IBController {
         }
     }
 
-    private static String getComputerUserName() {
-        StringBuilder sb = new StringBuilder(System.getProperty("user.name"));
-        int i;
-        for (i = 0; i < sb.length(); i++) {
-            char c = sb.charAt(i);
-            if ((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9')) {
-                continue;
-            }
-            if (c >= 'A' && c <= 'Z') {
-                sb.setCharAt(i, Character.toLowerCase(c));
-            } else {
-                sb.setCharAt(i, '_');
-            }
-        }
-        return sb.toString();
-    }
-
     private static String getTWSSettingsDirectory() {
         String dir = Settings.settings().getString("IbDir", System.getProperty("user.dir"));
         Utils.logToConsole("TWS settings directory is " + dir);
         return dir;
-    }
-
-    private static String getWorkingDirectory() {
-        return System.getProperty("user.dir") + File.separator;
     }
 
     private static void printProperties() {

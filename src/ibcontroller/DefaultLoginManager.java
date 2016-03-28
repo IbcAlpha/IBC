@@ -146,7 +146,7 @@ public class DefaultLoginManager extends LoginManager {
     }
 
     private boolean getFIXUserNameAndPasswordFromArguments(String[] args) {
-        if (args.length == 3 || args.length == 5) {
+        if (args.length >= 3 && args.length <= 6) {
             FIXUserName = args[1];
             FIXPassword = args[2];
             return true;
@@ -169,17 +169,25 @@ public class DefaultLoginManager extends LoginManager {
 
     private boolean getTWSUserNameAndPasswordFromArguments(String[] args) {
         if (isFIX()) {
-            if (args.length == 5) {
+            if (args.length == 5 || args.length == 6) {
                 IBAPIUserName = args[3];
                 IBAPIPassword = args[4];
                 return true;
             } else {
                 return false;
             }
-        } else if (args.length == 3) {
+        } else if (args.length == 3 || args.length == 4) {
             IBAPIUserName = args[1];
             IBAPIPassword = args[2];
             return true;
+        } else if (args.length == 5 || args.length == 6) {
+            Utils.logError("Incorrect number of arguments passed. quitting...");
+            Utils.logRawToConsole("Number of arguments = " +args.length);
+            for (String arg : args) {
+                Utils.logRawToConsole(arg);
+            }
+            System.exit(1);
+            return false;
         } else {
             return false;
         }
