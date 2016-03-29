@@ -56,7 +56,7 @@ echo   password                IB account password
 echo.
 echo   fixuserId               FIX account user id (only if /G or /Gateway) 
 echo.
-echo   password                FIX account password (only if /G or /Gateway) 
+echo   fixpassword             FIX account password (only if /G or /Gateway) 
 echo.
 exit /B
 ::===0=========1=========2=========3=========4=========5=========6=========7=========8
@@ -132,13 +132,12 @@ goto :parse
 	
 :parsingComplete
 
-if defined FIX_USER_ID (
-	if not "%ENTRY_POINT%"=="%ENTRY_POINT_GATEWAY%" (
-		set ERROR_MESSAGE=/FIXUser and /FIXPW invalid without /G
-		set ERROR=%E_INVALID_ARG%
-	)
-)
-if defined FIX_PASSWORD (
+if defined IB_USER_ID set GOT_API_CREDENTIALS=1
+if defined IB_PASSWORD set GOT_API_CREDENTIALS=1
+if defined FIX_USER_ID set GOT_FIX_CREDENTIALS=1
+if defined FIX_PASSWORD set GOT_FIX_CREDENTIALS=1
+
+if defined GOT_FIX_CREDENTIALS (
 	if not "%ENTRY_POINT%"=="%ENTRY_POINT_GATEWAY%" (
 		set ERROR_MESSAGE=/FIXUser and /FIXPW invalid without /G
 		set ERROR=%E_INVALID_ARG%
@@ -163,21 +162,15 @@ echo /TwsPath = %TWS_PATH%
 echo /IbcPath = %IBC_PATH%
 echo /IbcIni = %IBC_INI%
 echo /JavaPath = %JAVA_PATH%
-set PASSWORD_ARGS=
-if defined IB_USER_ID (
-	echo /User = ***
-	echo /PW = ***
-) else if defined IB_PASSWORD (
+
+if defined GOT_API_CREDENTIALS (
 	echo /User = ***
 	echo /PW = ***
 ) else (
 	echo /User =
 	echo /PW =
 )
-if defined FIX_USER_ID (
-	echo /FIXUser = ***
-	echo /FIXPW = ***
-) else if defined FIX_PASSWORD (
+if defined GOT_FIX_CREDENTIALS (
 	echo /FIXUser = ***
 	echo /FIXPW = ***
 ) else (
@@ -284,7 +277,9 @@ echo Generating the JAVA VM options
 
 for /f "tokens=1 delims= " %%i in (%TWS_VMOPTS%) do (
 	set TOKEN=%%i
-	if not "!TOKEN:~0,1!"=="#" set JAVA_VM_OPTIONS=!JAVA_VM_OPTIONS! %%i
+	if not "!TOKEN!"=="" (
+		if not "!TOKEN:~0,1!"=="#" set JAVA_VM_OPTIONS=!JAVA_VM_OPTIONS! %%i
+	)
 )
 echo Java VM Options=%JAVA_VM_OPTIONS%
 echo.
@@ -322,49 +317,24 @@ echo.
 
 ::======================== Start IBController ===============================
 
-if defined IB_USER_ID (
-	if defined FIX_USER_ID (
-		set TWS_CREDENTIALS="%FIX_USER_ID%" "%FIX_PASSWORD%" "%IB_USER_ID%" "%IB_PASSWORD%"
-		set TWS_HIDDEN_CREDENTIALS="***" "***" "***" "***"
- 	) else if defined FIX_PASSWORD (
-		set TWS_CREDENTIALS="%FIX_USER_ID%" "%FIX_PASSWORD%" "%IB_USER_ID%" "%IB_PASSWORD%"
-		set TWS_HIDDEN_CREDENTIALS="***" "***" "***" "***"
+if defined GOT_FIX_CREDENTIALS (
+	if defined GOT_API_CREDENTIALS (
+		set HIDDEN_CREDENTIALS="***" "***" "***" "***"
 	) else (
-		set TWS_CREDENTIALS="%IB_USER_ID%" "%IB_PASSWORD%"
-		set TWS_HIDDEN_CREDENTIALS="***" "***"
+		set HIDDEN_CREDENTIALS="***" "***"
 	)
-) else if defined IB_PASSWORD (
-	if defined FIX_USER_ID (
-		set TWS_CREDENTIALS="%FIX_USER_ID%" "%FIX_PASSWORD%" "%IB_USER_ID%" "%IB_PASSWORD%"
-		set TWS_HIDDEN_CREDENTIALS="***" "***" "***" "***"
- 	) else if defined FIX_PASSWORD (
-		set TWS_CREDENTIALS="%FIX_USER_ID%" "%FIX_PASSWORD%" "%IB_USER_ID%" "%IB_PASSWORD%"
-		set TWS_HIDDEN_CREDENTIALS="***" "***" "***" "***"
-	) else (
-		set TWS_CREDENTIALS="%IB_USER_ID%" "%IB_PASSWORD%"
-		set TWS_HIDDEN_CREDENTIALS="***" "***"
-	)
-) else (
-	if defined FIX_USER_ID (
-		set TWS_CREDENTIALS="%FIX_USER_ID%" "%FIX_PASSWORD%"
-		set TWS_HIDDEN_CREDENTIALS="***" "***"
- 	) else if defined FIX_PASSWORD (
-		set TWS_CREDENTIALS="%FIX_USER_ID%" "%FIX_PASSWORD%"
-		set TWS_HIDDEN_CREDENTIALS="***" "***"
-	) else (
-		set TWS_CREDENTIALS=
-		set TWS_HIDDEN_CREDENTIALS=
-	)
+) else if defined GOT_API_CREDENTIALS (
+	set HIDDEN_CREDENTIALS="***" "***"
 )
-echo TWS_CREDENTIALS=%TWS_CREDENTIALS%
-echo TWS_HIDDEN_CREDENTIALS=%TWS_HIDDEN_CREDENTIALS%
+	
 
 if "%ENTRY_POINT%"=="%ENTRY_POINT_TWS%" (
-	echo Starting IBController with this command:
+	set MODE=IBController
 ) else (
-	echo Starting IBGateway with this command:
+	set MODE=IBGateway
 )
-echo "%JAVA_PATH%\java.exe" -cp  "%IBC_CLASSPATH%" %JAVA_VM_OPTIONS% %ENTRY_POINT% "%IBC_INI%" %TWS_HIDDEN_CREDENTIALS%
+echo Starting %MODE% with this command:
+echo "%JAVA_PATH%\java.exe" -cp  "%IBC_CLASSPATH%" %JAVA_VM_OPTIONS% %ENTRY_POINT% "%IBC_INI%" %HIDDEN_CREDENTIALS%
 echo.
 
 :: prevent other Java tools interfering with IBController
@@ -372,11 +342,22 @@ set JAVA_TOOL_OPTIONS=
 
 pushd %TWS_PATH%
 
-"%JAVA_PATH%\java.exe" -cp  "%IBC_CLASSPATH%" %JAVA_VM_OPTIONS% %ENTRY_POINT% "%IBC_INI%" %TWS_CREDENTIALS%
+if defined GOT_FIX_CREDENTIALS (
+	if defined GOT_API_CREDENTIALS (
+		"%JAVA_PATH%\java.exe" -cp  "%IBC_CLASSPATH%" %JAVA_VM_OPTIONS% %ENTRY_POINT% "%IBC_INI%" "%FIX_USER_ID%" "%FIX_PASSWORD%" "%IB_USER_ID%" "%IB_PASSWORD%"
+	) else (
+		"%JAVA_PATH%\java.exe" -cp  "%IBC_CLASSPATH%" %JAVA_VM_OPTIONS% %ENTRY_POINT% "%IBC_INI%" "%FIX_USER_ID%" "%FIX_PASSWORD%"
+	)
+) else if defined GOT_API_CREDENTIALS (
+		"%JAVA_PATH%\java.exe" -cp  "%IBC_CLASSPATH%" %JAVA_VM_OPTIONS% %ENTRY_POINT% "%IBC_INI%" "%IB_USER_ID%" "%IB_PASSWORD%"
+)
 
 popd
 
-exit /B 0
+echo %MODE% finished
+echo.
+
+exit /B %ERRORLEVEL%
 
 :err
 echo.
