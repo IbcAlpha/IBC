@@ -8,6 +8,10 @@ setlocal enableextensions enabledelayedexpansion
 ::   capability for running TWS API programs without the complex TWS user      +
 ::   interface.                                                                +
 ::                                                                             +
+::   If you run it without any arguments it will start the Gateway and then    +
+::   exit. If you supply /WAIT as an argument, it will not exit until TWS      +
+::   has been shut down.                                                       +
+::                                                                             +
 ::   The following lines, beginning with 'set', are the only ones you may      +
 ::   need to change, and you probably only need to change the first one.       +
 ::                                                                             +
@@ -19,8 +23,9 @@ setlocal enableextensions enabledelayedexpansion
 
 set TWS_MAJOR_VRSN=952
 set IBC_INI=%HOMEDRIVE%%HOMEPATH%\Documents\IBController\IBController.ini
-set IBC_PATH=C:\IBController
-set TWS_PATH=C:\Jts
+set TRADING_MODE=
+set IBC_PATH=%SYSTEMDRIVE%\IBController
+set TWS_PATH=%SYSTEMDRIVE%\Jts
 set LOG_PATH=%IBC_PATH%\Logs
 set TWSUSERID=
 set TWSPASSWORD=
@@ -57,6 +62,18 @@ set JAVA_PATH=
 ::     privileges can't see the contents. Note that you can use the HOMEPATH
 ::     environment variable to address the root of your personal filestore 
 ::     (HOMEPATH is set automatically by Windows).
+
+
+::   TRADING_MODE
+::
+::     TWS 955 introduced a new Trading Mode combo box on its login dialog. 
+::     This indicates whether the live account or the paper trading account 
+::     corresponding to the supplied credentials is to be used. The values 
+::     allowed here are 'live' and 'paper' (not case-sensitive). For earlier 
+::     versions of TWS, setting this has no effect. If no value is specified 
+::     here, the value is taken from the TradingMode setting in the 
+::     configuration file. If no value is specified there either, the value 
+::     'live' is assumed.
 
 
 ::   IBC_PATH
@@ -123,4 +140,6 @@ set MODE=GATEWAY
 set TITLE=IBController (%MODE% %TWS_MAJOR_VRSN%)
 set MIN=
 if not defined LOG_PATH set MIN=/Min
-start "%TITLE%" %MIN% "%IBC_PATH%\Scripts\DisplayBannerAndLaunch.bat"
+set WAIT=
+if /I "%~1" == "/WAIT" set WAIT=/wait
+start "%TITLE%" %MIN% %WAIT% "%IBC_PATH%\Scripts\DisplayBannerAndLaunch.bat"

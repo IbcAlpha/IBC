@@ -29,6 +29,7 @@ echo IBController twsVersion [/G ^| /Gateway] [/TwsPath:twsPath] [/IbcPath:ibcPa
 echo              [/IbcIni:ibcIni] [/JavaPath:javaPath]
 echo              [/User:userId] [/PW:password]
 echo              [/FIXUser:fixuserId] [/FIXPW:fixpassword]
+echo              [/Mode:tradingMode]
 echo.
 echo   twsVersion              The major version number for TWS
 echo.
@@ -57,6 +58,14 @@ echo.
 echo   fixuserId               FIX account user id (only if /G or /Gateway) 
 echo.
 echo   fixpassword             FIX account password (only if /G or /Gateway) 
+echo.
+echo   tradingMode             Indicates whether the live account or the paper 
+echo                           trading account will be used. Allowed values are:
+echo.
+echo                               live
+echo                               paper
+echo.
+echo                           These values are not case-sensitive.
 echo.
 exit /B
 ::===0=========1=========2=========3=========4=========5=========6=========7=========8
@@ -117,6 +126,8 @@ if /I "%ARG%" == "/G" (
 	set FIX_USER_ID=%ARG:~9%
 ) else if /I "%ARG:~0,7%" == "/FIXPW:" (
 	set FIX_PASSWORD=%ARG:~7%
+) else if /I "%ARG:~0,6%" == "/MODE:" (
+	set MODE=%ARG:~6%
 ) else if /I "%ARG:~0,1%" == "/" (
 	set ERROR_MESSAGE=Invalid parameter '%ARG%'
 	set ERROR=%E_INVALID_ARG%
@@ -138,12 +149,22 @@ if defined FIX_USER_ID set GOT_FIX_CREDENTIALS=1
 if defined FIX_PASSWORD set GOT_FIX_CREDENTIALS=1
 
 if defined GOT_FIX_CREDENTIALS (
-	if not "%ENTRY_POINT%"=="%ENTRY_POINT_GATEWAY%" (
-		set ERROR_MESSAGE=/FIXUser and /FIXPW invalid without /G
+	if not "%ENTRY_POINT%" == "%ENTRY_POINT_GATEWAY%" (
+		set ERROR_MESSAGE=FIX user id and FIX password are only valid for the Gateway
 		set ERROR=%E_INVALID_ARG%
 	)
 )
 
+if defined MODE (
+	if /I "%MODE%" == "LIVE" (
+		echo. > NUL
+	) else if /I "%MODE%" == "PAPER" (
+		echo. > NUL
+	) else (
+		set ERROR_MESSAGE=Trading mode must be either 'live' or 'paper'
+		set ERROR=%E_INVALID_ARG%
+	)
+)
 
 if defined ERROR goto :err
 
@@ -161,6 +182,7 @@ echo Entry point = %ENTRY_POINT%
 echo /TwsPath = %TWS_PATH%
 echo /IbcPath = %IBC_PATH%
 echo /IbcIni = %IBC_INI%
+echo /Mode = %MODE%
 echo /JavaPath = %JAVA_PATH%
 
 if defined GOT_API_CREDENTIALS (
@@ -182,7 +204,7 @@ echo.
 ::======================== Check everything ready to proceed ================
 
 if not defined TWS_VERSION (
-	set ERROR_MESSAGE=TWS major version number has not been supplied - it must be the first argument
+	set ERROR_MESSAGE=TWS major version number has not been supplied
 	set ERROR=%E_NO_TWS_VERSION%
 	goto :err
 )
@@ -329,12 +351,12 @@ if defined GOT_FIX_CREDENTIALS (
 	
 
 if "%ENTRY_POINT%"=="%ENTRY_POINT_TWS%" (
-	set MODE=IBController
+	set PROGRAM=IBController
 ) else (
-	set MODE=IBGateway
+	set PROGRAM=IBGateway
 )
-echo Starting %MODE% with this command:
-echo "%JAVA_PATH%\java.exe" -cp  "%IBC_CLASSPATH%" %JAVA_VM_OPTIONS% %ENTRY_POINT% "%IBC_INI%" %HIDDEN_CREDENTIALS%
+echo Starting %PROGRAM% with this command:
+echo "%JAVA_PATH%\java.exe" -cp  "%IBC_CLASSPATH%" %JAVA_VM_OPTIONS% %ENTRY_POINT% "%IBC_INI%" %HIDDEN_CREDENTIALS% %MODE%
 echo.
 
 :: prevent other Java tools interfering with IBController
@@ -344,17 +366,19 @@ pushd %TWS_PATH%
 
 if defined GOT_FIX_CREDENTIALS (
 	if defined GOT_API_CREDENTIALS (
-		"%JAVA_PATH%\java.exe" -cp  "%IBC_CLASSPATH%" %JAVA_VM_OPTIONS% %ENTRY_POINT% "%IBC_INI%" "%FIX_USER_ID%" "%FIX_PASSWORD%" "%IB_USER_ID%" "%IB_PASSWORD%"
+		"%JAVA_PATH%\java.exe" -cp  "%IBC_CLASSPATH%" %JAVA_VM_OPTIONS% %ENTRY_POINT% "%IBC_INI%" "%FIX_USER_ID%" "%FIX_PASSWORD%" "%IB_USER_ID%" "%IB_PASSWORD%" %MODE%
 	) else (
-		"%JAVA_PATH%\java.exe" -cp  "%IBC_CLASSPATH%" %JAVA_VM_OPTIONS% %ENTRY_POINT% "%IBC_INI%" "%FIX_USER_ID%" "%FIX_PASSWORD%"
+		"%JAVA_PATH%\java.exe" -cp  "%IBC_CLASSPATH%" %JAVA_VM_OPTIONS% %ENTRY_POINT% "%IBC_INI%" "%FIX_USER_ID%" "%FIX_PASSWORD%" %MODE%
 	)
 ) else if defined GOT_API_CREDENTIALS (
-		"%JAVA_PATH%\java.exe" -cp  "%IBC_CLASSPATH%" %JAVA_VM_OPTIONS% %ENTRY_POINT% "%IBC_INI%" "%IB_USER_ID%" "%IB_PASSWORD%"
+		"%JAVA_PATH%\java.exe" -cp  "%IBC_CLASSPATH%" %JAVA_VM_OPTIONS% %ENTRY_POINT% "%IBC_INI%" "%IB_USER_ID%" "%IB_PASSWORD%" %MODE%
+) else (
+		"%JAVA_PATH%\java.exe" -cp  "%IBC_CLASSPATH%" %JAVA_VM_OPTIONS% %ENTRY_POINT% "%IBC_INI%" %MODE%
 )
 
 popd
 
-echo %MODE% finished
+echo %PROGRAM% finished
 echo.
 
 exit /B %ERRORLEVEL%
