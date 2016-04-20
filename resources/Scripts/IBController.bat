@@ -168,9 +168,10 @@ if defined MODE (
 
 if defined ERROR goto :err
 
-echo =================================
 echo.
-echo IBController version = %IBC_VRSN%
+echo ================================================================================
+echo.
+echo Starting IBController version %IBC_VRSN% on %DATE% at %TIME%
 echo.
 
 :: log the arguments

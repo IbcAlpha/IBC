@@ -132,9 +132,10 @@ if [[ -n "${mode}" && ! "${mode^^}" = "LIVE" && ! "${mode^^}" = "PAPER" ]]; then
 	error_exit	${E_INVALID_ARG} "Trading mode must be either 'live' or 'paper'"
 fi
 
-echo =================================
 echo
-echo -e "IBController version = ${IBC_VRSN}"
+echo -e "================================================================================"
+echo
+echo -e "Starting IBController version ${IBC_VRSN} on $(date -I) at $(date +%T)"
 echo
 
 # log the arguments

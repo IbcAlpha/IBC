@@ -13,9 +13,10 @@ if [[ -n "$LOG_PATH" ]]; then
 		echo "You'll be informed if a file is currently in use." >> "$readme"
 	fi
 
-	timestring=`date +%H%M%S%N`
-	log_suffix=${timestring:0:2}${timestring:2:2}${timestring:4:2}${timestring:6:2}
-	log_file=${LOG_PATH}/ibc-${IBC_VRSN}_${MODE}-${TWS_MAJOR_VRSN}_${log_suffix}.txt
+	log_file=${LOG_PATH}/ibc-${IBC_VRSN}_${MODE}-${TWS_MAJOR_VRSN}_$(date +%A).txt
+	if [[ -e "$log_file" ]]; then
+		if [[ $(date -r "$log_file" +%D) != $(date +%D) ]]; then rm "$log_file"; fi
+	fi
 else
 	log_file=/dev/null
 fi
@@ -51,7 +52,7 @@ export IBC_VRSN
      "--tws-path=${TWS_PATH}" "--ibc-path=${IBC_PATH}" "--ibc-ini=${IBC_INI}" \
      "--user=${TWSUSERID}" "--pw=${TWSPASSWORD}" "--fix-user=${FIXUSERID}" "--fix-pw=${FIXPASSWORD}" \
      "--java-path=${JAVA_PATH}" "--mode=${TRADING_MODE}" \
-     > "${log_file}" 2>&1
+     >> "${log_file}" 2>&1
 
 if [ "$?" != "0" ]; then
 	echo -e ${light_red}

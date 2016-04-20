@@ -16,9 +16,13 @@ if defined LOG_PATH (
 		echo Windows will inform you if a file is currently in use.>> "!README!"
 	)
 
-	set TIMESTRING=%TIME: =0%
-	set LOG_SUFFIX=!TIMESTRING:~0,2!!TIMESTRING:~3,2!!TIMESTRING:~6,2!!TIMESTRING:~9,2!
-	set LOG_FILE=!LOG_PATH!\ibc-%IBC_VRSN%_%MODE%-%TWS_MAJOR_VRSN%_!LOG_SUFFIX!.txt
+	call "%IBC_PATH%\Scripts\getDayOfWeek.bat"
+	set LOG_FILE=!LOG_PATH!\ibc-%IBC_VRSN%_%MODE%-%TWS_MAJOR_VRSN%_!DAYOFWEEK!.txt
+	if exist "!LOG_FILE!" (
+		for %%? in (!LOG_FILE!) do (
+			if not "%%~t?" == "%DATE%" rm "!LOG_FILE!"
+		)
+	)
 ) else (
 	set LOG_FILE=NUL
 )
@@ -50,7 +54,7 @@ call "%IBC_PATH%\Scripts\IBController.bat" "%TWS_MAJOR_VRSN%" %GW_FLAG% ^
      "/TwsPath:%TWS_PATH%" "/IbcPath:%IBC_PATH%" "/IbcIni:%IBC_INI%" ^
      "/User:%TWSUSERID%" "/PW:%TWSPASSWORD%" "/FIXUser:%FIXUSERID%" "/FIXPW:%FIXPASSWORD%" ^
      "/JavaPath:%JAVA_PATH%" "/Mode:%TRADING_MODE%" ^
-     > "%LOG_FILE%" 2>&1
+     >> "%LOG_FILE%" 2>&1
 
 if errorlevel 1 (
 	color 0C
