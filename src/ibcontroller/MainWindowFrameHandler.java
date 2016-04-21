@@ -18,7 +18,6 @@
 
 package ibcontroller;
 
-import java.awt.Component;
 import java.awt.Window;
 import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
@@ -38,12 +37,6 @@ class MainWindowFrameHandler implements WindowHandler {
     public void handleWindow(Window window, int eventID) {
         if (eventID != WindowEvent.WINDOW_OPENED) return;
         
-        ComponentIterator iter = new ComponentIterator(window);
-        while (iter.hasNext()) {
-            Component component = iter.next();
-            Utils.logToConsole(component.getName() + "(" + component.getClass().getName() + ")");
-        }
-
         MainWindowManager.mainWindowManager().setMainWindow((JFrame) window);
     }
 

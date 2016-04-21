@@ -182,7 +182,7 @@ public class DefaultLoginManager extends LoginManager {
             return true;
         } else if (args.length == 5 || args.length == 6) {
             Utils.logError("Incorrect number of arguments passed. quitting...");
-            Utils.logRawToConsole("Number of arguments = " +args.length);
+            Utils.logRawToConsole("Number of arguments = " +args.length + " which is only permitted if FIX=yes");
             for (String arg : args) {
                 Utils.logRawToConsole(arg);
             }

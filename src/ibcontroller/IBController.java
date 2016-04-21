@@ -385,7 +385,12 @@ public class IBController {
     private static void startGateway() {
         String[] twsArgs = new String[1];
         twsArgs[0] = getTWSSettingsDirectory();
-        ibgateway.GWClient.main(twsArgs);
+        try {
+            ibgateway.GWClient.main(twsArgs);
+        } catch (Exception e) {
+            Utils.logError("Can't find the Gateway entry point: ibgateway.GWClient.main. Gateway is not correctly installed.");
+            System.exit(1);
+        }
     }
 
     private static void startIBControllerServer(boolean isGateway) {
@@ -414,7 +419,12 @@ public class IBController {
         }
         String[] twsArgs = new String[1];
         twsArgs[0] = getTWSSettingsDirectory();
-        jclient.LoginFrame.main(twsArgs);
+        try {
+            jclient.LoginFrame.main(twsArgs);
+        } catch (Exception e) {
+            Utils.logError("Can't find the TWS entry point: jclient.LoginFrame.main. TWS is not correctly installed.");
+            System.exit(1);
+        }
     }
 
     private static void startTwsOrGateway(boolean isGateway) {

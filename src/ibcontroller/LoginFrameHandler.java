@@ -19,8 +19,6 @@
 package ibcontroller;
 
 import java.awt.Window;
-import java.awt.event.WindowEvent;
-import javax.swing.JComboBox;
 import javax.swing.JFrame;
 
 final class LoginFrameHandler extends AbstractLoginHandler {

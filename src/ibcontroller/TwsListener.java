@@ -29,12 +29,12 @@ import javax.swing.JFrame;
 class TwsListener
         implements AWTEventListener {
 
-    private final List<WindowHandler> _WindowHandlers;
+    private final List<WindowHandler> windowHandlers;
 
     private final String logComponents;
 
     TwsListener (List<WindowHandler> windowHandlers) {
-        _WindowHandlers = windowHandlers;
+        this.windowHandlers = windowHandlers;
 
         String logComponentsSetting =  Settings.settings().getString("LogComponents", "never").toLowerCase();
         switch (logComponentsSetting) {
@@ -71,7 +71,7 @@ class TwsListener
             logWindow(window, eventID);
         }
 
-        for (WindowHandler wh : _WindowHandlers) {
+        for (WindowHandler wh : windowHandlers) {
             if (wh.filterEvent(window, eventID) && wh.recogniseWindow(window))  {
                 wh.handleWindow(window, eventID);
                 break;

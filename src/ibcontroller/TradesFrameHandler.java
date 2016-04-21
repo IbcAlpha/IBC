@@ -74,7 +74,7 @@ public class TradesFrameHandler implements WindowHandler {
                     }
                 }
             } else {
-                Utils.logToConsole("Can't set  trades log to show all trades with this TWS version: user must do this");
+                Utils.logToConsole("Can't set trades log to show all trades with this TWS version: user must do this");
                 /*
                  * For TWS 955 onwards, IB have replaced the row of daily 
                  * checkboxes with what appears visually to be a combo box:
