@@ -127,13 +127,14 @@ JAVA_PATH=
 #==============================================================================
 
 MODE=GATEWAY
-title="IBController ($MODE $TWS_MAJOR_VRSN)"
+TWS_CONFIG_PATH="$TWS_PATH"
 
 export TWS_MAJOR_VRSN
 export IBC_INI
 export TRADING_MODE
 export IBC_PATH
 export TWS_PATH
+export TWS_CONFIG_PATH
 export LOG_PATH
 export TWSUSERID
 export TWSPASSWORD
@@ -142,5 +143,5 @@ export FIXPASSWORD
 export JAVA_PATH
 export MODE
 
-xterm -title "$title" +cm -e bash "${IBC_PATH}/Scripts/DisplayBannerAndLaunch.sh" &
+"${IBC_PATH}/Scripts/DisplayBannerAndLaunch.sh" &
 

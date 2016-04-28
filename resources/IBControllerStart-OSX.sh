@@ -15,7 +15,8 @@ TWS_MAJOR_VRSN=952
 IBC_INI=~/IBController/IBController.ini
 TRADING_MODE=
 IBC_PATH=/opt/IBController
-TWS_PATH=~/Jts
+TWS_PATH=~/Applications
+TWS_CONFIG_PATH=~/Jts
 LOG_PATH=~/IBController/Logs
 TWSUSERID=
 TWSPASSWORD=
@@ -72,10 +73,15 @@ JAVA_PATH=
 #   TWS_PATH
 #
 #     The folder where TWS is installed. The TWS installer always installs to 
-#     ~/Jts. Note that even if you have installed from a Gateway download
-#     rather than a TWS download, you should still use this default setting.
-#     It is possibe to move the TWS installation to a different folder, but
-#     there are virtually no good reasons for doing so.
+#     ~/Applications. Note that even if you have installed from a Gateway 
+#     download rather than a TWS download, you should still use this default 
+#     setting. It is possibe to move the TWS installation to a different folder,
+#     but there are virtually no good reasons for doing so.
+
+
+#   TWS_CONFIG_PATH
+#
+#     The folder where the jts.ini and *.vmoptions files are stored.
 
 
 #   LOG_PATH
@@ -115,11 +121,9 @@ JAVA_PATH=
 #==============================================================================
 
 MODE=TWS
-TWS_CONFIG_PATH="$TWS_PATH"
 
 export TWS_MAJOR_VRSN
 export IBC_INI
-export TRADING_MODE
 export IBC_PATH
 export TWS_PATH
 export TWS_CONFIG_PATH

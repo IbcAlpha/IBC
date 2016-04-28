@@ -10,7 +10,8 @@ echo "Runs IBController, thus loading TWS or the IB Gateway"
 echo
 echo "Usage:"
 echo
-echo "IBController twsVersion [-g \| --gateway] [--tws-path=twsPath] [--ibc-path=ibcPath]"
+echo "IBController twsVersion [-g \| --gateway] [--tws-path=twsPath]"
+echo "             [--tws-settings-path=twsSettingsPath] [--ibc-path=ibcPath]"
 echo "             [--ibc-ini=ibcIni] [--java-path=javaPath]"
 echo "             [--user=userid] [--pw=password]"
 echo "             [--fix-user=fixuserid] [--fix-pw=fixpassword]"
@@ -22,7 +23,10 @@ echo "  -g or --gateway         Indicates that the IB Gateway is to be loaded ra
 echo "                          than TWS"
 echo
 echo "  twsPath                 Path to the TWS installation folder. Defaults to"
-echo "                          ~/Jts"
+echo "                          ~/Jts on Linux, ~/Applications on OS X"
+echo
+echo "  twsSettingsPath         Path to the TWS settings folder. Defaults to"
+echo "                          ~/Jts on both Linux and OS X"
 echo
 echo "  ibcPath                 Path to the IBController installation folder."
 echo "                          Defaults to /opt/IBController"
@@ -81,11 +85,23 @@ E_TWS_VERSION_NOT_INSTALLED=4
 E_IBC_PATH_NOT_EXIST=5
 E_IBC_INI_NOT_EXIST=6
 E_TWS_VMOPTIONS_NOT_FOUND=7
+E_UNKNOWN_OPERATING_SYSTEM=8
 
 ENTRY_POINT_TWS=ibcontroller.IBController
 ENTRY_POINT_GATEWAY=ibcontroller.IBGatewayController
 
+OS_LINUX=Linux
+OS_OSX=OS X
+
 entry_point=$ENTRY_POINT_TWS
+
+if [[ "$OSTYPE" = "linux"* ]]; then
+	os=$OS_LINUX
+elif [[ "$(uname)" = "darwin"* ]]; then
+	os=$OS_OSX
+else
+	error_exit $E_UNKNOWN_OPERATING_SYSTEM "Can't detect operating system"
+fi
 
 shopt -s nocasematch
 
@@ -97,6 +113,8 @@ do
 		entry_point=$ENTRY_POINT_GATEWAY
 	elif [[ "${arg:0:11}" = "--tws-path=" ]]; then
 		tws_path=${arg:11}
+	elif [[ "${arg:0:20}" = "--tws-settings-path=" ]]; then
+		tws_settings_path=${arg:20}
 	elif [[ "${arg:0:11}" = "--ibc-path=" ]]; then
 		ibc_path=${arg:11}
 	elif [[ "${arg:0:10}" = "--ibc-ini=" ]]; then
@@ -137,6 +155,8 @@ echo -e "=======================================================================
 echo
 echo -e "Starting IBController version ${IBC_VRSN} on $(date -I) at $(date +%T)"
 echo
+echo -e "Operating system: $(uname -a)"
+echo
 
 # log the arguments
 
@@ -144,11 +164,12 @@ echo Arguments:
 echo
 echo -e "TWS version = ${tws_version}"
 echo -e "Entry point = ${entry_point}"
-echo -e "--twspath = ${tws_path}"
-echo -e "--ibcpath = ${ibc_path}"
-echo -e "--ibcini = ${ibc_ini}"
+echo -e "--tws-path = ${tws_path}"
+echo -e "--tws-settings-path = ${tws_settings_path}"
+echo -e "--ibc-path = ${ibc_path}"
+echo -e "--ibc-ini = ${ibc_ini}"
 echo -e "--mode = ${mode}"
-echo -e "--javapath = ${java_path}"
+echo -e "--java-path = ${java_path}"
 if [[ -z "${ib_user_id}" && -z "${ib_password}" ]]; then
 	echo -e "--user ="
 	echo -e "--pw ="
@@ -158,11 +179,11 @@ else
 fi
 if [[ "${entry_point}" = "${ENTRY_POINT_GATEWAY}" ]]; then
 	if [[ -z "${fix_user_id}" || -z "${fix_password}" ]]; then
-		echo -e "--fixuser ="
-		echo -e "--fixpw ="
+		echo -e "--fix-user ="
+		echo -e "--fix-pw ="
 	else 
-		echo -e "--fixuser = ***"
-		echo -e "--fixpw = ***"
+		echo -e "--fix-user = ***"
+		echo -e "--fix-pw = ***"
 	fi
 fi
 echo
@@ -173,46 +194,69 @@ if [ "$tws_version" = "" ]; then
 	error_exit $E_NO_TWS_VERSION "TWS major version number has not been supplied"
 fi
 
-if [ "$tws_path" = "" ]; then tws_path=~/Jts ;fi
+if [ "$os" = "$OS_LINUX" ]; then
+	if [ "$tws_path" = "" ]; then tws_path=~/Jts ;fi
+	if [ "$tws_settings_path" = "" ]; then tws_settings_path=~/Jts ;fi
+elif [ "$os" = "$OS_OSX" ]; then
+	if [ "$tws_path" = "" ]; then tws_path=~/Applications ;fi
+	if [ "$tws_settings_path" = "" ]; then tws_settings_path=~/Jts ;fi
+fi
 if [ "$ibc_path" = "" ]; then ibc_path=/opt/IBController ;fi
 if [ "$ibc_ini" = "" ]; then ibc_ini=~/IBController/IBController.ini ;fi
 
 # In the following we try to use the correct .vmoptions file for the chosen entrypoint
 # Note that uninstalling TWS or Gateway leaves the relevant .vmoption file in place, so
 # we can still use the correct one.
+
+if [[ "$os" = "$OS_LINUX" ]]; then
+	tws_vmoptions="${tws_settings_path}/${tws_version}/tws.vmoptions"
+	tws_jars="${tws_path}/${tws_version}/jars"
+	tws_install4j="${tws_path}/ibgateway/${tws_version}/.install4j"
+
+	gateway_vmoptions="${tws_settings_path}/ibgateway/${tws_version}/ibgateway.vmoptions" 
+	gateway_jars="${tws_path}/ibgateway/${tws_version}/jars"
+	gateway_install4j="${tws_path}/ibgateway/${tws_version}/.install4j"
+elif [[ "$os" = "$OS_OSX" ]]; then
+	tws_vmoptions="${tws_settings_path}/tws-${tws_version}.vmoptions"
+	tws_jars="${tws_path}/Trader Workstation ${tws_version}/jars"
+
+	gateway_vmoptions="${tws_settings_path}/ibgateway-${tws_version}.vmoptions" 
+	gateway_jars="${tws_path}/IB Gateway ${tws_version}/jars"
+fi
+
 if [[ "${entry_point}" = "${ENTRY_POINT_TWS}" ]]; then
-	if [[ -e "${tws_path}/${tws_version}/tws.vmoptions" ]]; then
-		tws_vmopts=${tws_path}/${tws_version}/tws.vmoptions 
-	elif [[ -e "${tws_path}/ibgateway/${tws_version}/ibgateway.vmoptions" ]]; then
-		tws_vmopts=${tws_path}/ibgateway/${tws_version}/ibgateway.vmoptions 
+	if [[ -e "${tws_vmoptions}" ]]; then
+		vmoptions_source="${tws_vmoptions}"
+	elif [[ -e "${gateway_vmoptions}" ]]; then
+		vmoptions_source="${gateway_vmoptions}"
 	fi 
 
-	if [[ -e "${tws_path}/${tws_version}/jars" ]]; then
-		tws_jars=${tws_path}/${tws_version}/jars
-		install4j=${tws_path}/${tws_version}/.install4j
+	if [[ -e "${tws_jars}" ]]; then
+		jars="${tws_jars}"
+		install4j="${tws_install4j}"
 	else 
-		tws_jars=${tws_path}/ibgateway/${tws_version}/jars
-		install4j=${tws_path}/ibgateway/${tws_version}/.install4j
+		tws_jars="${gateway_jars}"
+		install4j="${gateway_install4j}"
 	fi
 fi
 if [[ "${entry_point}" = "${ENTRY_POINT_GATEWAY}" ]]; then
-	if [[ -e "${tws_path}/ibgateway/${tws_version}/ibgateway.vmoptions" ]]; then
-		tws_vmopts=${tws_path}/ibgateway/${tws_version}/ibgateway.vmoptions 
-	elif [[ -e "${tws_path}/${tws_version}/tws.vmoptions" ]]; then
-		tws_vmopts=${tws_path}/${tws_version}/tws.vmoptions 
+	if [[ -e "${gateway_vmoptions}" ]]; then
+		vmoptions_source="${gateway_vmoptions}"
+	elif [[ -e "${tws_vmoptions}" ]]; then
+		vmoptions_source="${tws_vmoptions}"
 	fi
 
-	if [[ -e "${tws_path}/ibgateway/${tws_version}/jars" ]]; then
-		tws_jars=${tws_path}/ibgateway/${tws_version}/jars
-		install4j=${tws_path}/ibgateway/${tws_version}/.install4j
+	if [[ -e "${gateway_jars}" ]]; then
+		jars="${gateway_jars}"
+		install4j="${gateway_install4j}"
 	else
-		tws_jars=${tws_path}/${tws_version}/jars
-		install4j=${tws_path}/${tws_version}/.install4j
+		jars="${tws_jars}"
+		install4j="${tws_install4j}"
 	fi
 fi
 
-if [[ ! -e "$tws_jars" ]]; then
-	error_exit $E_TWS_VERSION_NOT_INSTALLED "TWS version $tws_version is not installed"
+if [[ ! -e "$jars" ]]; then
+	error_exit $E_TWS_VERSION_NOT_INSTALLED "TWS version $tws_version is not installed: can't find $jars"
 fi
 
 if [[ ! -e  "$ibc_path" ]]; then
@@ -223,8 +267,8 @@ if [[ ! -e "$ibc_ini" ]]; then
 	error_exit $E_IBC_INI_NOT_EXIST "IBController configuration file: $ibc_ini  does not exist"
 fi
 
-if [[ ! -e "$tws_path/$tws_version/tws.vmoptions" ]]; then
-	error_exit $E_TWS_VMOPTIONS_NOT_FOUND "$tws_path/$tws_version/tws.vmoptions does not exist"
+if [[ ! -e "$vmoptions_source" ]]; then
+	error_exit $E_TWS_VMOPTIONS_NOT_FOUND "$vmoptions_source does not exist"
 fi
 
 if [[ -n "$java_path" ]]; then
@@ -238,7 +282,7 @@ echo =================================
 
 echo Generating the classpath
 
-for jar in "${tws_jars}"/*.jar; do
+for jar in "${jars}"/*.jar; do
 	if [[ -n "${ibc_classpath}" ]]; then
 		ibc_classpath="${ibc_classpath}:"
 	fi
@@ -260,7 +304,7 @@ while read line; do
 		vm_options[$index]="$line"
 		((index++))
 	fi
-done < <( cat "$tws_path/$tws_version/tws.vmoptions" )
+done < <( cat "$vmoptions_source" )
 
 java_vm_options=${vm_options[*]}
 echo -e "Java VM Options=$java_vm_options"
@@ -289,12 +333,14 @@ function read_from_config {
 	fi
 }
 
-tws_installer="$tws_path/$tws_version/.install4j"
-if [[ ! -n "$java_path" ]]; then
-	java_path=$(read_from_config "$tws_installer/pref_jre.cfg")
-fi
-if [[ ! -n "$java_path" ]]; then
-	java_path=$(read_from_config "$tws_installer/inst_jre.cfg")
+if [[ "$os" = "$OS_LINUX" ]]; then
+	tws_installer="$tws_path/$tws_version/.install4j"
+	if [[ ! -n "$java_path" ]]; then
+		java_path=$(read_from_config "$tws_installer/pref_jre.cfg")
+	fi
+	if [[ ! -n "$java_path" ]]; then
+		java_path=$(read_from_config "$tws_installer/inst_jre.cfg")
+	fi
 fi
 
 # alternatively use installed java, if its from oracle (openJDK causes problems with TWS)

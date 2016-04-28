@@ -23,6 +23,7 @@ fi
 
 #   now launch IBController
 
+normal='\033[0m'
 light_red='\033[1;31m'
 light_green='\033[1;32m'
 echo -e ${light_green}
@@ -39,9 +40,6 @@ if [[ -n "$LOG_PATH" ]]; then
 	echo "+"
 fi
 echo "+"
-echo -e "+ ** Caution: closing this window will close ${MODE} ${TWS_MAJOR_VRSN} **"
-echo -e "+ (window will close automatically when you exit from ${MODE} ${TWS_MAJOR_VRSN})"
-echo "+"
 
 if [[ "${MODE^^}" = "GATEWAY" ]]; then 
 	gw_flag=-g
@@ -49,7 +47,8 @@ fi
 
 export IBC_VRSN
 "${IBC_PATH}/Scripts/IBController.sh" "${TWS_MAJOR_VRSN}" ${gw_flag} \
-     "--tws-path=${TWS_PATH}" "--ibc-path=${IBC_PATH}" "--ibc-ini=${IBC_INI}" \
+     "--tws-path=${TWS_PATH}" "--tws-settings-path=${TWS_CONFIG_PATH}" \
+	 "--ibc-path=${IBC_PATH}" "--ibc-ini=${IBC_INI}" \
      "--user=${TWSUSERID}" "--pw=${TWSPASSWORD}" "--fix-user=${FIXUSERID}" "--fix-pw=${FIXPASSWORD}" \
      "--java-path=${JAVA_PATH}" "--mode=${TRADING_MODE}" \
      >> "${log_file}" 2>&1
@@ -64,18 +63,12 @@ if [ "$?" != "0" ]; then
 		echo "+                     Please look in the diagnostics file "
 		echo "+                   mentioned above for further information"
 	fi
-	echo "+"
-	echo "+=============================================================================="
-	echo "+"
-	echo "+ Press ENTER to close this window"
-	read -p "$*"
-	echo "+"
 else
 	echo -e "+ ${MODE} ${TWS_MAJOR_VRSN} has finished"
-	echo "+"
 fi
 
+echo "+"
 echo "+=============================================================================="
-echo
+echo -e ${normal}
 
 exit
