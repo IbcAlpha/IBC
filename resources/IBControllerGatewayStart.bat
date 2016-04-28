@@ -59,9 +59,9 @@ set JAVA_PATH=
 ::     This file should be in a folder in your personal filestore, so that
 ::     other users of your computer can't access it. This folder and its 
 ::     contents should also be encrypted so that even users with administrator 
-::     privileges can't see the contents. Note that you can use the HOMEPATH
-::     environment variable to address the root of your personal filestore 
-::     (HOMEPATH is set automatically by Windows).
+::     privileges can't see the contents. Note that you can use the HOMEDRIVE and
+::     HOMEPATH environment variables to address the root of your personal 
+::     filestore they are set automatically by Windows).
 
 
 ::   TRADING_MODE

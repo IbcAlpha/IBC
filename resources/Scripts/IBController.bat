@@ -173,6 +173,8 @@ echo ===========================================================================
 echo.
 echo Starting IBController version %IBC_VRSN% on %DATE% at %TIME%
 echo.
+for /f "usebackq tokens=* skip=1" %%a in (`wmic OS get Caption^,Version^,OSArchitecture ^| findstr "." `) do echo Operating system:  %%a
+echo.
 
 :: log the arguments
 
