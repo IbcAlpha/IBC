@@ -147,7 +147,7 @@ if [[ -n "${fix_user_id}" || -n "${fix_password}" ]]; then
 fi
 
 if [[ -n "${mode}" && ! "${mode^^}" = "LIVE" && ! "${mode^^}" = "PAPER" ]]; then
-	error_exit	${E_INVALID_ARG} "Trading mode must be either 'live' or 'paper'"
+	error_exit	${E_INVALID_ARG} "Trading mode set to ${mode} but must be either 'live' or 'paper'"
 fi
 
 echo

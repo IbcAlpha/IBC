@@ -161,7 +161,7 @@ if defined MODE (
 	) else if /I "%MODE%" == "PAPER" (
 		echo. > NUL
 	) else (
-		set ERROR_MESSAGE=Trading mode must be either 'live' or 'paper'
+		set ERROR_MESSAGE=Trading mode set to %MODE% but must be either 'live' or 'paper'
 		set ERROR=%E_INVALID_ARG%
 	)
 )

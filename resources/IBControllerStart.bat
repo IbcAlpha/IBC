@@ -122,8 +122,8 @@ set JAVA_PATH=
 ::   End of Notes:
 ::==============================================================================
 
-set MODE=TWS
-set TITLE=IBController (%MODE% %TWS_MAJOR_VRSN%)
+set APP=TWS
+set TITLE=IBController (%APP% %TWS_MAJOR_VRSN%)
 set MIN=
 if not defined LOG_PATH set MIN=/Min
 set WAIT=

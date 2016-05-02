@@ -13,7 +13,7 @@ if [[ -n "$LOG_PATH" ]]; then
 		echo "You'll be informed if a file is currently in use." >> "$readme"
 	fi
 
-	log_file=${LOG_PATH}/ibc-${IBC_VRSN}_${MODE}-${TWS_MAJOR_VRSN}_$(date +%A).txt
+	log_file=${LOG_PATH}/ibc-${IBC_VRSN}_${APP}-${TWS_MAJOR_VRSN}_$(date +%A).txt
 	if [[ -e "$log_file" ]]; then
 		if [[ $(date -r "$log_file" +%D) != $(date +%D) ]]; then rm "$log_file"; fi
 	fi
@@ -31,7 +31,7 @@ echo "+=========================================================================
 echo "+"
 echo -e "+ IBController version ${IBC_VRSN}"
 echo "+"
-echo -e "+ Running ${MODE} ${TWS_MAJOR_VRSN}"
+echo -e "+ Running ${APP} ${TWS_MAJOR_VRSN}"
 echo "+"
 if [[ -n "$LOG_PATH" ]]; then
 	echo "+ Diagnostic information is logged in:"
@@ -41,7 +41,7 @@ if [[ -n "$LOG_PATH" ]]; then
 fi
 echo "+"
 
-if [[ "${MODE^^}" = "GATEWAY" ]]; then 
+if [[ "${APP^^}" = "GATEWAY" ]]; then 
 	gw_flag=-g
 fi
 
@@ -64,7 +64,7 @@ if [ "$?" != "0" ]; then
 		echo "+                   mentioned above for further information"
 	fi
 else
-	echo -e "+ ${MODE} ${TWS_MAJOR_VRSN} has finished"
+	echo -e "+ ${APP} ${TWS_MAJOR_VRSN} has finished"
 fi
 
 echo "+"

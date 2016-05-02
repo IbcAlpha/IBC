@@ -17,7 +17,7 @@ if defined LOG_PATH (
 	)
 
 	call "%IBC_PATH%\Scripts\getDayOfWeek.bat"
-	set LOG_FILE=!LOG_PATH!\ibc-%IBC_VRSN%_%MODE%-%TWS_MAJOR_VRSN%_!DAYOFWEEK!.txt
+	set LOG_FILE=!LOG_PATH!\ibc-%IBC_VRSN%_%APP%-%TWS_MAJOR_VRSN%_!DAYOFWEEK!.txt
 	if exist "!LOG_FILE!" (
 		for %%? in (!LOG_FILE!) do (
 			if not "%%~t?" == "%DATE%" rm "!LOG_FILE!"
@@ -34,7 +34,7 @@ echo +==========================================================================
 echo +
 echo + IBController version %IBC_VRSN%
 echo +
-echo + Running %MODE% %TWS_MAJOR_VRSN%
+echo + Running %APP% %TWS_MAJOR_VRSN%
 echo +
 if defined LOG_PATH (
 	echo + Diagnostic information is logged in:
@@ -43,12 +43,12 @@ if defined LOG_PATH (
 	echo +
 )
 echo +
-echo + ** Caution: closing this window will close %MODE% %TWS_MAJOR_VRSN% **
-echo + (window will close automatically when you exit from %MODE% %TWS_MAJOR_VRSN%)
+echo + ** Caution: closing this window will close %APP% %TWS_MAJOR_VRSN% **
+echo + (window will close automatically when you exit from %APP% %TWS_MAJOR_VRSN%)
 echo +
 
 set GW_FLAG=
-if /I "%MODE%" == "GATEWAY" set GW_FLAG=/G
+if /I "%APP%" == "GATEWAY" set GW_FLAG=/G
 
 call "%IBC_PATH%\Scripts\IBController.bat" "%TWS_MAJOR_VRSN%" %GW_FLAG% ^
      "/TwsPath:%TWS_PATH%" "/IbcPath:%IBC_PATH%" "/IbcIni:%IBC_INI%" ^
@@ -73,7 +73,7 @@ if errorlevel 1 (
 	pause > NUL
 	echo +
 ) else (
-	echo + %MODE% %TWS_MAJOR_VRSN% has finished
+	echo + %APP% %TWS_MAJOR_VRSN% has finished
 	echo +
 )
 

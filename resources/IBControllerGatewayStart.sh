@@ -126,7 +126,7 @@ JAVA_PATH=
 #   End of Notes:
 #==============================================================================
 
-MODE=GATEWAY
+APP=GATEWAY
 TWS_CONFIG_PATH="$TWS_PATH"
 
 export TWS_MAJOR_VRSN
@@ -141,7 +141,7 @@ export TWSPASSWORD
 export FIXUSERID
 export FIXPASSWORD
 export JAVA_PATH
-export MODE
+export APP
 
 "${IBC_PATH}/Scripts/DisplayBannerAndLaunch.sh" &
 
