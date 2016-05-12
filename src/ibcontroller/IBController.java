@@ -387,8 +387,9 @@ public class IBController {
         twsArgs[0] = getTWSSettingsDirectory();
         try {
             ibgateway.GWClient.main(twsArgs);
-        } catch (Exception e) {
+        } catch (Throwable t) {
             Utils.logError("Can't find the Gateway entry point: ibgateway.GWClient.main. Gateway is not correctly installed.");
+            t.printStackTrace(Utils.getErrStream());
             System.exit(1);
         }
     }
@@ -421,21 +422,23 @@ public class IBController {
         twsArgs[0] = getTWSSettingsDirectory();
         try {
             jclient.LoginFrame.main(twsArgs);
-        } catch (Exception e) {
-            Utils.logError("Can't find the TWS entry point: jclient.LoginFrame.main. TWS is not correctly installed.");
+        } catch (Throwable t) {
+            Utils.logError("Can't find the TWS entry point: jclient.LoginFrame.main; TWS is not correctly installed.");
+            t.printStackTrace(Utils.getErrStream());
             System.exit(1);
         }
     }
 
     private static void startTwsOrGateway(boolean isGateway) {
-        int portNumber = Settings.settings().getInt("ForceTwsApiPort", 0);
-        if (portNumber != 0) MyCachedThreadPool.getInstance().execute(new ConfigureTwsApiPortTask(portNumber, isGateway));
-
         if (isGateway) {
             startGateway();
         } else {
             startTws();
         }
+
+        int portNumber = Settings.settings().getInt("ForceTwsApiPort", 0);
+        if (portNumber != 0) MyCachedThreadPool.getInstance().execute(new ConfigureTwsApiPortTask(portNumber, isGateway));
+
         Utils.sendConsoleOutputToTwsLog(!Settings.settings().getBoolean("LogToConsole", false));
     }
     

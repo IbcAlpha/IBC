@@ -120,7 +120,7 @@ class Utils {
         getOutStream().println(formatMessage(msg));
     }
     
-    private static PrintStream getErrStream() {
+    static PrintStream getErrStream() {
         if (sendConsoleOutputToTwsLog) {
             return System.err;
         } else {
@@ -128,7 +128,7 @@ class Utils {
         }
     }
     
-    private static PrintStream getOutStream() {
+    static PrintStream getOutStream() {
         if (sendConsoleOutputToTwsLog) {
             return System.out;
         } else {
