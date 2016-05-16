@@ -1,3 +1,5 @@
+#!/bin/bash
+
 #=============================================================================+
 #                                                                             +
 #   This command file starts the Interactive Brokers' Trader Workstation.     +

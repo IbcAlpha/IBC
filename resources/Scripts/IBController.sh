@@ -91,7 +91,7 @@ ENTRY_POINT_TWS=ibcontroller.IBController
 ENTRY_POINT_GATEWAY=ibcontroller.IBGatewayController
 
 OS_LINUX=Linux
-OS_OSX=OS X
+OS_OSX='OS X'
 
 entry_point=$ENTRY_POINT_TWS
 

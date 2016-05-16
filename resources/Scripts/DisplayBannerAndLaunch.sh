@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # get the IBController version
 read IBC_VRSN < "${IBC_PATH}/version"
 
