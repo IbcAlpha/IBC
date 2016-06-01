@@ -20,7 +20,7 @@ if defined LOG_PATH (
 	set LOG_FILE=!LOG_PATH!\ibc-%IBC_VRSN%_%APP%-%TWS_MAJOR_VRSN%_!DAYOFWEEK!.txt
 	if exist "!LOG_FILE!" (
 		for %%? in (!LOG_FILE!) do (
-			if not "%%~t?" == "%DATE%" rm "!LOG_FILE!"
+			if not "%%~t?" == "%DATE%" del "!LOG_FILE!"
 		)
 	)
 ) else (
