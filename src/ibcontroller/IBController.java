@@ -20,7 +20,13 @@ package ibcontroller;
 
 import java.awt.AWTEvent;
 import java.awt.Toolkit;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -29,8 +35,9 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
+import javax.imageio.IIOException;
+import javax.transaction.InvalidTransactionException;
 
 
 /**
@@ -365,9 +372,7 @@ public class IBController {
     }
 
     private static String getTWSSettingsDirectory() {
-        String dir = Settings.settings().getString("IbDir", System.getProperty("user.dir"));
-        Utils.logToConsole("TWS settings directory is " + dir);
-        return dir;
+        return Settings.settings().getString("IbDir", System.getProperty("user.dir"));
     }
 
     private static void printProperties() {
@@ -385,6 +390,7 @@ public class IBController {
     private static void startGateway() {
         String[] twsArgs = new String[1];
         twsArgs[0] = getTWSSettingsDirectory();
+        Utils.logToConsole("TWS settings directory is " + twsArgs[0]);
         try {
             ibgateway.GWClient.main(twsArgs);
         } catch (Throwable t) {
@@ -415,16 +421,119 @@ public class IBController {
     }
 
     private static void startTws() {
+        ensureJtsIniExists();
         if (Settings.settings().getBoolean("ShowAllTrades", false)) {
             Utils.showTradesLogWindow();
         }
         String[] twsArgs = new String[1];
         twsArgs[0] = getTWSSettingsDirectory();
+        Utils.logToConsole("TWS settings directory is " + twsArgs[0]);
         try {
             jclient.LoginFrame.main(twsArgs);
         } catch (Throwable t) {
             Utils.logError("Can't find the TWS entry point: jclient.LoginFrame.main; TWS is not correctly installed.");
             t.printStackTrace(Utils.getErrStream());
+            System.exit(1);
+        }
+    }
+    
+    private static void ensureJtsIniExists() {
+        /* when TWS starts, there must exist a jts.ini file in the TWS settings directory 
+        *  containing at least the following minimum contents:
+        *
+        * [Logon]
+        * s3store=true
+        *
+        * If this file doesn't exist, or doesn't contain these lines, then TWS won't 
+        * include the 'Store settings on server' checkbox in the login dialog, which
+        * prevents IBController properly handling the StoreSettingsOnServer ini file
+        * option.
+        * 
+        * Note that this is not a problem for the Gateway, which doesn't provide the 
+        * option to store the settings on the server.
+        *
+        */
+        File jtsIniFile = getJtsIniFile();
+        if (jtsIniFile.isFile()) {
+            updateExistingJtsIniFile(jtsIniFile);
+        } else {
+            createMinimalJtsIniFile(jtsIniFile);
+        }
+    }
+    
+    private static File getJtsIniFile() {
+        String jtsIniPath = getTWSSettingsDirectory() + File.separatorChar + "jts.ini";
+        File jtsIniFile = new File(jtsIniPath);
+        if (jtsIniFile.isDirectory()) {
+            Utils.logError(jtsIniPath + " already exists but is a directory");
+            System.exit(1);
+        }
+        return jtsIniFile;
+    }
+    
+    private static void updateExistingJtsIniFile(File jtsIniFile) {
+        Utils.logToConsole("Ensuring " + jtsIniFile.getPath() + " contains s3store=true");
+
+        List<String> lines = getJtsIniFileLines(jtsIniFile);
+        jtsIniFile.delete();
+        rewriteExistingJtsIniFileLines(jtsIniFile, lines);
+    }
+    
+    private static List<String> getJtsIniFileLines (File jtsIniFile) {
+        List<String> lines = new ArrayList<>();
+
+        try (BufferedReader r = new BufferedReader(new FileReader(jtsIniFile))) {
+            String line;
+            while ((line = r.readLine()) != null) {
+                lines.add(line);
+            }
+        } catch (IOException e) {
+            Utils.logError("Unexpected IOException on " + jtsIniFile + ": " + e.getMessage());
+            System.exit(1);
+        }
+        return lines;
+    }
+    
+    private static void createMinimalJtsIniFile(File jtsIniFile) {
+        Utils.logToConsole("Creating minimal " + jtsIniFile.getPath());
+        try (BufferedWriter w = new BufferedWriter(new FileWriter(jtsIniFile))) {
+            writeRequiredJtsIniFileLines(w, jtsIniFile);
+        } catch (IOException e) {
+            Utils.logError("Problem creating " + jtsIniFile.getPath() + ": " + e.getMessage());
+            System.exit(1);
+        }
+    }
+    
+    private static void writeRequiredJtsIniFileLines(BufferedWriter w, File jtsIniFile) {
+        Utils.logToConsole("Writing required lines to "  + jtsIniFile.getPath());
+        try {
+            w.write("[Logon]");
+            w.newLine();
+            w.write("s3store=true");
+            w.newLine();
+        } catch (IOException e) {
+            Utils.logError("Problem writing to " + jtsIniFile.getPath() + ": " + e.getMessage());
+            System.exit(1);
+        }
+    }
+    
+    private static void rewriteExistingJtsIniFileLines(File jtsIniFile, List<String> lines) {
+        boolean foundLogon = false;
+        try (BufferedWriter w = new BufferedWriter(new FileWriter(jtsIniFile))) {
+            for (String l:lines) {
+                if (l.compareTo("[Logon]") == 0) {
+                    foundLogon = true;
+                    writeRequiredJtsIniFileLines(w, jtsIniFile);
+                } else if (l.compareTo("s3store=true") != 0) {
+                    w.write(l);
+                    w.newLine();
+                }
+            }
+            if (! foundLogon) {
+                writeRequiredJtsIniFileLines(w, jtsIniFile);
+            }
+        } catch (IOException e){
+            Utils.logError("Problem writing to " + jtsIniFile.getPath() + ": " + e.getMessage());
             System.exit(1);
         }
     }
