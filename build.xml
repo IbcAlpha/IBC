@@ -9,7 +9,7 @@
     <property name="dist"  location="dist"/>
 
     <path id="external.classpath">
-        <pathelement path="${env.TWS}/jts4launch.jar" />
+        <fileset dir="${env.TWS}" includes="**/*.jar"/>
     </path>
 
     <target name="clean" description="clean up">
