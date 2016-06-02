@@ -17,7 +17,11 @@ if [[ -n "$LOG_PATH" ]]; then
 
 	log_file=${LOG_PATH}/ibc-${IBC_VRSN}_${APP}-${TWS_MAJOR_VRSN}_$(date +%A).txt
 	if [[ -e "$log_file" ]]; then
-		if [[ $(date -r "$log_file" +%D) != $(date +%D) ]]; then rm "$log_file"; fi
+		if [[ $(uname) = [dD]arwin* ]]; then
+			if [[ $(stat -f "%Sm" -t %D "$log_file") != $(date +%D) ]]; then rm "$log_file"; fi
+		else
+			if [[ $(date -r "$log_file" +%D) != $(date +%D) ]]; then rm "$log_file"; fi
+		fi
 	fi
 else
 	log_file=/dev/null
@@ -43,7 +47,7 @@ if [[ -n "$LOG_PATH" ]]; then
 fi
 echo "+"
 
-if [[ "${APP^^}" = "GATEWAY" ]]; then 
+if [[ "$(echo ${APP} | tr [:lower:] [:upper:])" = "GATEWAY" ]]; then 
 	gw_flag=-g
 fi
 

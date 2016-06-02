@@ -120,7 +120,7 @@ JAVA_PATH=
 #   End of Notes:
 #==============================================================================
 
-MODE=TWS
+APP=TWS
 
 export TWS_MAJOR_VRSN
 export IBC_INI

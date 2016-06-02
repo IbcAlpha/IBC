@@ -95,9 +95,9 @@ OS_OSX='OS X'
 
 entry_point=$ENTRY_POINT_TWS
 
-if [[ "$OSTYPE" = "linux"* ]]; then
+if [[ $OSTYPE = [lL]inux* ]]; then
 	os=$OS_LINUX
-elif [[ "$(uname)" = "darwin"* ]]; then
+elif [[ $(uname) = [dD]arwin* ]]; then
 	os=$OS_OSX
 else
 	error_exit $E_UNKNOWN_OPERATING_SYSTEM "Can't detect operating system"
@@ -235,7 +235,7 @@ if [[ "${entry_point}" = "${ENTRY_POINT_TWS}" ]]; then
 		jars="${tws_jars}"
 		install4j="${tws_install4j}"
 	else 
-		tws_jars="${gateway_jars}"
+		jars="${gateway_jars}"
 		install4j="${gateway_install4j}"
 	fi
 fi
@@ -376,7 +376,6 @@ echo
 if [[ -n $fix_user_id || -n $fix_password ]]; then got_fix_credentials=1; fi
 if [[ -n $ib_user_id || -n $ib_password ]]; then got_api_credentials=1; fi
 
-echo -e "if [[ -n $got_fix_credentials && -n $got_api_credentials ]]; then"
 if [[ -n $got_fix_credentials && -n $got_api_credentials ]]; then
 	hidden_credentials="*** *** *** ***"
 elif  [[ -n $got_fix_credentials ]]; then
