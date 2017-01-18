@@ -50,6 +50,6 @@ class GlobalConfigurationDialogHandler implements WindowHandler {
     public boolean recogniseWindow(Window window) {
         if (! (window instanceof JDialog)) return false;
 
-        return (SwingUtils.titleContains(window, "Trader Workstation Configuration"));
+        return (SwingUtils.titleContains(window, "Configuration"));
     }
 }

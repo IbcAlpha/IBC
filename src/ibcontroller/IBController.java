@@ -371,6 +371,10 @@ public class IBController {
         }
     }
 
+    private static String getJtsIniFilePath() {
+        return getTWSSettingsDirectory() + File.separatorChar + "jts.ini";
+    }
+    
     private static String getTWSSettingsDirectory() {
         return Settings.settings().getString("IbDir", System.getProperty("user.dir"));
     }
@@ -421,7 +425,6 @@ public class IBController {
     }
 
     private static void startTws() {
-        ensureJtsIniExists();
         if (Settings.settings().getBoolean("ShowAllTrades", false)) {
             Utils.showTradesLogWindow();
         }
@@ -437,108 +440,9 @@ public class IBController {
         }
     }
     
-    private static void ensureJtsIniExists() {
-        /* when TWS starts, there must exist a jts.ini file in the TWS settings directory 
-        *  containing at least the following minimum contents:
-        *
-        * [Logon]
-        * s3store=true
-        *
-        * If this file doesn't exist, or doesn't contain these lines, then TWS won't 
-        * include the 'Store settings on server' checkbox in the login dialog, which
-        * prevents IBController properly handling the StoreSettingsOnServer ini file
-        * option.
-        * 
-        * Note that this is not a problem for the Gateway, which doesn't provide the 
-        * option to store the settings on the server.
-        *
-        */
-        File jtsIniFile = getJtsIniFile();
-        if (jtsIniFile.isFile()) {
-            updateExistingJtsIniFile(jtsIniFile);
-        } else {
-            createMinimalJtsIniFile(jtsIniFile);
-        }
-    }
-    
-    private static File getJtsIniFile() {
-        String jtsIniPath = getTWSSettingsDirectory() + File.separatorChar + "jts.ini";
-        File jtsIniFile = new File(jtsIniPath);
-        if (jtsIniFile.isDirectory()) {
-            Utils.logError(jtsIniPath + " already exists but is a directory");
-            System.exit(1);
-        }
-        return jtsIniFile;
-    }
-    
-    private static void updateExistingJtsIniFile(File jtsIniFile) {
-        Utils.logToConsole("Ensuring " + jtsIniFile.getPath() + " contains s3store=true");
-
-        List<String> lines = getJtsIniFileLines(jtsIniFile);
-        jtsIniFile.delete();
-        rewriteExistingJtsIniFileLines(jtsIniFile, lines);
-    }
-    
-    private static List<String> getJtsIniFileLines (File jtsIniFile) {
-        List<String> lines = new ArrayList<>();
-
-        try (BufferedReader r = new BufferedReader(new FileReader(jtsIniFile))) {
-            String line;
-            while ((line = r.readLine()) != null) {
-                lines.add(line);
-            }
-        } catch (IOException e) {
-            Utils.logError("Unexpected IOException on " + jtsIniFile + ": " + e.getMessage());
-            System.exit(1);
-        }
-        return lines;
-    }
-    
-    private static void createMinimalJtsIniFile(File jtsIniFile) {
-        Utils.logToConsole("Creating minimal " + jtsIniFile.getPath());
-        try (BufferedWriter w = new BufferedWriter(new FileWriter(jtsIniFile))) {
-            writeRequiredJtsIniFileLines(w, jtsIniFile);
-        } catch (IOException e) {
-            Utils.logError("Problem creating " + jtsIniFile.getPath() + ": " + e.getMessage());
-            System.exit(1);
-        }
-    }
-    
-    private static void writeRequiredJtsIniFileLines(BufferedWriter w, File jtsIniFile) {
-        Utils.logToConsole("Writing required lines to "  + jtsIniFile.getPath());
-        try {
-            w.write("[Logon]");
-            w.newLine();
-            w.write("s3store=true");
-            w.newLine();
-        } catch (IOException e) {
-            Utils.logError("Problem writing to " + jtsIniFile.getPath() + ": " + e.getMessage());
-            System.exit(1);
-        }
-    }
-    
-    private static void rewriteExistingJtsIniFileLines(File jtsIniFile, List<String> lines) {
-        boolean foundLogon = false;
-        try (BufferedWriter w = new BufferedWriter(new FileWriter(jtsIniFile))) {
-            for (String l:lines) {
-                if (l.compareTo("[Logon]") == 0) {
-                    foundLogon = true;
-                    writeRequiredJtsIniFileLines(w, jtsIniFile);
-                } else if (l.compareTo("s3store=true") != 0) {
-                    w.write(l);
-                    w.newLine();
-                }
-            }
-            if (! foundLogon) {
-                writeRequiredJtsIniFileLines(w, jtsIniFile);
-            }
-        } catch (IOException e){
-            Utils.logError("Problem writing to " + jtsIniFile.getPath() + ": " + e.getMessage());
-            System.exit(1);
-        }
-    }
-
     private static void startTwsOrGateway(boolean isGateway) {
+        JtsIniManager.initialise(getJtsIniFilePath());
+        JtsIniManager.ensureValidJtsIniFile();
         if (isGateway) {
             startGateway();
         } else {
