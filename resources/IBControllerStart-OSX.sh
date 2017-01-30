@@ -124,6 +124,7 @@ APP=TWS
 
 export TWS_MAJOR_VRSN
 export IBC_INI
+export TRADING_MODE
 export IBC_PATH
 export TWS_PATH
 export TWS_CONFIG_PATH
@@ -131,7 +132,7 @@ export LOG_PATH
 export TWSUSERID
 export TWSPASSWORD
 export JAVA_PATH
-export MODE
+export APP
 
 "${IBC_PATH}/Scripts/DisplayBannerAndLaunch.sh" &
 

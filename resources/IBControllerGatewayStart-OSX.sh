@@ -146,7 +146,7 @@ export TWSPASSWORD
 export FIXUSERID
 export FIXPASSWORD
 export JAVA_PATH
-export MODE
+export APP
 
 "${IBC_PATH}/Scripts/DisplayBannerAndLaunch.sh" &
 
