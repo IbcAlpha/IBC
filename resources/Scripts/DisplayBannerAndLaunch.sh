@@ -47,7 +47,7 @@ if [[ -n "$LOG_PATH" ]]; then
 fi
 echo "+"
 
-if [[ "$(echo ${APP} | tr [:lower:] [:upper:])" = "GATEWAY" ]]; then 
+if [[ "$(echo ${APP} | tr '[:lower:]' '[:upper:]')" = "GATEWAY" ]]; then 
 	gw_flag=-g
 fi
 
