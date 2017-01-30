@@ -314,7 +314,6 @@ customisations you did for that version.
 - use a command similar to this:
 
 ```
-cd /opt
 sudo unzip ~/Downloads/IBControllerV3.2.0.zip -d \
 /opt/IBController
 ```
@@ -322,7 +321,7 @@ sudo unzip ~/Downloads/IBControllerV3.2.0.zip -d \
 - you'll need to make the script files executable, using a command similar to this:
 
 ```
-cd /opt
+cd /opt/IBController
 chmod -R u+x *.sh
 ```
 
