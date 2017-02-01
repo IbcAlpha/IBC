@@ -211,7 +211,7 @@ if [ "$ibc_ini" = "" ]; then ibc_ini=~/IBController/IBController.ini ;fi
 if [[ "$os" = "$OS_LINUX" ]]; then
 	tws_vmoptions="${tws_settings_path}/${tws_version}/tws.vmoptions"
 	tws_jars="${tws_path}/${tws_version}/jars"
-	tws_install4j="${tws_path}/ibgateway/${tws_version}/.install4j"
+	tws_install4j="${tws_path}/${tws_version}/.install4j"
 
 	gateway_vmoptions="${tws_settings_path}/ibgateway/${tws_version}/ibgateway.vmoptions" 
 	gateway_jars="${tws_path}/ibgateway/${tws_version}/jars"
@@ -219,9 +219,11 @@ if [[ "$os" = "$OS_LINUX" ]]; then
 elif [[ "$os" = "$OS_OSX" ]]; then
 	tws_vmoptions="${tws_settings_path}/tws-${tws_version}.vmoptions"
 	tws_jars="${tws_path}/Trader Workstation ${tws_version}/jars"
+	tws_install4j="${tws_path}/Trader Workstation ${tws_version}/.install4j"
 
 	gateway_vmoptions="${tws_settings_path}/ibgateway-${tws_version}.vmoptions" 
 	gateway_jars="${tws_path}/IB Gateway ${tws_version}/jars"
+	gateway_install4j="${tws_path}/IB Gateway ${tws_version}/.install4j"
 fi
 
 if [[ "${entry_point}" = "${ENTRY_POINT_TWS}" ]]; then
@@ -334,16 +336,17 @@ function read_from_config {
 }
 
 if [[ "$os" = "$OS_LINUX" ]]; then
-	tws_installer="$tws_path/$tws_version/.install4j"
 	if [[ ! -n "$java_path" ]]; then
-		java_path=$(read_from_config "$tws_installer/pref_jre.cfg")
+		java_path=$(read_from_config "$install4j/pref_jre.cfg")
 	fi
 	if [[ ! -n "$java_path" ]]; then
-		java_path=$(read_from_config "$tws_installer/inst_jre.cfg")
+		java_path=$(read_from_config "$install4j/inst_jre.cfg")
 	fi
+elif [[ "$os" = "$OS_OSX" ]]; then
+	java_path="$install4j/jre.bundle/Contents/Home/jre/bin"
 fi
 
-# alternatively use installed java, if its from oracle (openJDK causes problems with TWS)
+# alternatively use installed java, if it's from oracle (openJDK causes problems with TWS)
 if [[ ! -n "$java_path" ]]; then
 	if type -p java > /dev/null; then
 		echo Found java executable in PATH
