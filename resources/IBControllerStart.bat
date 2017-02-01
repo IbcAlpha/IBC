@@ -28,6 +28,7 @@ set LOG_PATH=%IBC_PATH%\Logs
 set TWSUSERID=
 set TWSPASSWORD=
 set JAVA_PATH=
+set HIDE=
 
 
 ::              PLEASE DON'T CHANGE ANYTHING BELOW THIS LINE !!
@@ -119,13 +120,27 @@ set JAVA_PATH=
 ::     without a very good reason.
 
 
+::   HIDE
+::
+::     If set to YES or TRUE, the diagnostic window that contains information 
+::     about the running TWS, and where to find the log file, will be minimized 
+::     to the taskbar. If not set, or set to any other value, the window will be 
+::     displayed. Values are not case-sensitive so for example yEs and yes will 
+::     be interpeted as YES.
+
+
 ::   End of Notes:
 ::==============================================================================
 
 set APP=TWS
 set TITLE=IBController (%APP% %TWS_MAJOR_VRSN%)
-set MIN=
-if not defined LOG_PATH set MIN=/Min
+if /I "%HIDE%" == "YES" (
+    set MIN=/Min
+) else if /I "%HIDE%" == "TRUE" (
+    set MIN=/Min
+) else (
+    set MIN=
+)
 set WAIT=
 if /I "%~1" == "/WAIT" set WAIT=/wait
 start "%TITLE%" %MIN% %WAIT% "%IBC_PATH%\Scripts\DisplayBannerAndLaunch.bat"
