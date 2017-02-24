@@ -39,7 +39,10 @@ class ConfigureTwsApiPortTask implements Runnable{
             
             GuiExecutor.instance().execute(new Runnable(){
                 @Override
-                public void run() {configure(configDialog, mPortNumber);}
+                public void run() {
+                    configure(configDialog, mPortNumber);
+                    ConfigDialogManager.configDialogManager().releaseConfigDialog();
+                }
             });
 
         } catch (Exception e){
@@ -68,16 +71,12 @@ class ConfigureTwsApiPortTask implements Runnable{
                 if (!isGateway) {
                     JCheckBox cb = SwingUtils.findCheckBox(configDialog, "Enable ActiveX and Socket Clients");
                     if (cb == null) throw new IBControllerException("could not find Enable ActiveX checkbox");
-                    if (cb.isSelected()) ConfigDialogManager.configDialogManager().setApiConfigChangeConfirmationExpected(true);
+                    if (cb.isSelected()) ConfigDialogManager.configDialogManager().setApiConfigChangeConfirmationExpected();
                 }
                 Utils.logToConsole("TWS API socket port was set to " + tf.getText());
                 tf.setText(Integer.toString(portNumber));
                 Utils.logToConsole("TWS API socket port now set to " + tf.getText());
             }
-
-            SwingUtils.clickButton(configDialog, "OK");
-
-            configDialog.setVisible(false);
         } catch (IBControllerException e) {
             Utils.logError(e.getMessage());
         }

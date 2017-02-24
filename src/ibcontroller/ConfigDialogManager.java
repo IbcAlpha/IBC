@@ -91,10 +91,14 @@ public abstract class ConfigDialogManager
      */
     public abstract JDialog getConfigDialog() throws IllegalStateException;
 
-    public abstract void setApiConfigChangeConfirmationExpected(boolean yesOrNo);
+    public abstract void releaseConfigDialog();
+
+    public abstract void setApiConfigChangeConfirmationExpected();
+
+    public abstract void setApiConfigChangeConfirmationHandled();
 
     public abstract void setConfigDialog(JDialog window);
 
     public abstract void setSplashScreenClosed();
-    
+        
 }

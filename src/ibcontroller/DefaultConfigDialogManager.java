@@ -32,7 +32,14 @@ public class DefaultConfigDialogManager extends ConfigDialogManager {
     
     private volatile JDialog configDialog = null;
     private volatile GetConfigDialogTask configDialogTask;
-    private volatile Future<JDialog> configDialogFuture;
+    
+    private final Object futureCreationLock = new Object();
+    private Future<JDialog> configDialogFuture;
+    
+    /* records the number of 'things' (including possibly the user) that
+     * are currently accessing the config dialog
+    */
+    private int usageCount;
     
     @Override
     public void logDiagnosticMessage(){
@@ -79,14 +86,23 @@ public class DefaultConfigDialogManager extends ConfigDialogManager {
         
         Utils.logToConsole("Getting config dialog");
         
-        if (configDialog != null) return configDialog;
+        incrementUsage();
+
+        if (configDialog != null) {
+            Utils.logToConsole("Config dialog already found");
+            return configDialog;
+        }
         
-        if (configDialogFuture == null) {
-            Utils.logToConsole("Creating config dialog future");
-            configDialogTask = new GetConfigDialogTask(MainWindowManager.mainWindowManager().isGateway());
-            ExecutorService exec = Executors.newSingleThreadExecutor();
-            configDialogFuture = exec.submit((Callable<JDialog>)configDialogTask);
-            exec.shutdown();
+        synchronized(futureCreationLock) {
+            if (configDialogFuture != null) {
+                    Utils.logToConsole("Waiting for config dialog future to complete");
+            } else {
+                Utils.logToConsole("Creating config dialog future");
+                configDialogTask = new GetConfigDialogTask(MainWindowManager.mainWindowManager().isGateway());
+                ExecutorService exec = Executors.newSingleThreadExecutor();
+                configDialogFuture = exec.submit((Callable<JDialog>)configDialogTask);
+                exec.shutdown();
+            }
         }
         
         try {
@@ -95,6 +111,7 @@ public class DefaultConfigDialogManager extends ConfigDialogManager {
             } else {
                 configDialog = configDialogFuture.get(timeout, unit);
             }
+            Utils.logToConsole("Got config dialog from future");
             return configDialog;
         } catch (TimeoutException | InterruptedException e) {
             return null;
@@ -133,7 +150,10 @@ public class DefaultConfigDialogManager extends ConfigDialogManager {
     @Override
     public void setConfigDialog(JDialog window) {
         configDialog = window;
-        if (configDialogTask != null) {
+        if (configDialogTask == null) {
+            // config dialog opened by user
+            incrementUsage();
+        } else {
             configDialogTask.setConfigDialog(window);
             configDialogTask = null;
             configDialogFuture = null;
@@ -152,10 +172,34 @@ public class DefaultConfigDialogManager extends ConfigDialogManager {
     public boolean getApiConfigChangeConfirmationExpected() {
         return apiConfigChangeConfirmationExpected;
     }
+    
+    @Override
+    public void releaseConfigDialog() {
+        decrementUsage();
+    }
 
     @Override
-    public void setApiConfigChangeConfirmationExpected(boolean yesOrNo) {
-        apiConfigChangeConfirmationExpected = yesOrNo;
+    public void setApiConfigChangeConfirmationExpected() {
+        apiConfigChangeConfirmationExpected = true;
     }
+    
+    @Override
+    public void setApiConfigChangeConfirmationHandled() {
+        apiConfigChangeConfirmationExpected = false;
+    }
+    
+    private synchronized void incrementUsage() {
+        usageCount++;
+    }
+    
+    private synchronized void decrementUsage() {
+        usageCount--;
+        if (usageCount == 0){
+            SwingUtils.clickButton(configDialog, "OK");
+            configDialog.setVisible(false);
+        }
+    }
+            
+
 
 }
