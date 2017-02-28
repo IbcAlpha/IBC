@@ -43,7 +43,9 @@ public class DefaultMainWindowManager extends MainWindowManager {
     private volatile JFrame mainWindow = null;
     
     private volatile GetMainWindowTask mainWindowTask;
-    private volatile Future<JFrame> mainWindowFuture;
+    
+    private final Object futureCreationLock = new Object();
+    private Future<JFrame> mainWindowFuture;
     
     private final boolean isGateway;
     private final String message;
@@ -78,13 +80,23 @@ public class DefaultMainWindowManager extends MainWindowManager {
     public JFrame getMainWindow(long timeout, TimeUnit unit) {
         if (SwingUtilities.isEventDispatchThread()) throw new IllegalStateException();
         
-        if (mainWindow != null) return mainWindow;
+        Utils.logToConsole("Getting main window");
         
-        if (mainWindowFuture == null) {
-            mainWindowTask = new GetMainWindowTask();
-            ExecutorService exec = Executors.newSingleThreadExecutor();
-            mainWindowFuture = exec.submit((Callable<JFrame>) mainWindowTask);
-            exec.shutdown();
+        if (mainWindow != null) {
+            Utils.logToConsole("Main window already found");
+            return mainWindow;
+        }
+        
+        synchronized(futureCreationLock) {
+            if (mainWindowFuture != null) {
+                    Utils.logToConsole("Waiting for main window future to complete");
+            } else {
+                Utils.logToConsole("Creating main window future");
+                mainWindowTask = new GetMainWindowTask();
+                ExecutorService exec = Executors.newSingleThreadExecutor();
+                mainWindowFuture = exec.submit((Callable<JFrame>) mainWindowTask);
+                exec.shutdown();
+            }
         }
         
         try {
@@ -93,15 +105,16 @@ public class DefaultMainWindowManager extends MainWindowManager {
             } else {
                 mainWindow = mainWindowFuture.get(timeout, unit);
             }
-            if (mainWindow != null) mainWindowFuture = null;
+            Utils.logToConsole("Got main window from future");
+            return mainWindow;
         } catch (TimeoutException | InterruptedException e) {
+            return null;
         } catch (ExecutionException e) {
             Throwable t = e.getCause();
             if (t instanceof RuntimeException) throw (RuntimeException)t;
             if (t instanceof Error) throw (Error)t;
             throw new IllegalStateException(t);
         }
-        return mainWindow;
     }
 
     /**
@@ -134,6 +147,9 @@ public class DefaultMainWindowManager extends MainWindowManager {
         Utils.logToConsole("Found " + (isGateway ? "Gateway" : "TWS") + " main window");
         mainWindow = window;
         if (mainWindowTask != null) mainWindowTask.setMainWindow(window);
+        mainWindowTask = null;
+        mainWindowFuture = null;
+                
         if (Settings.settings().getBoolean("MinimizeMainWindow", false)) mainWindow.setExtendedState(java.awt.Frame.ICONIFIED);
     }
     
