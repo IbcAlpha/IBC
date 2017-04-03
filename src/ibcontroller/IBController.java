@@ -335,6 +335,7 @@ public class IBController {
         windowHandlers.add(new SecurityCodeDialogHandler());
         windowHandlers.add(new ReloginDialogHandler());
         windowHandlers.add(new NonBrokerageAccountDialogHandler());
+        windowHandlers.add(new ExitConfirmationDialogHandler());
         
         return windowHandlers;
     }

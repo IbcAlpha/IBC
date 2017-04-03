@@ -48,9 +48,12 @@ class StopTask
             stop();
         } catch (Exception ex) {
             writeNack(ex.getMessage());
-        } finally {
-            _Running.clear();
         }
+    }
+    
+    public final static boolean shutdownInProgress()
+    {
+        return _Running.query();
     }
 
     private void stop() {
