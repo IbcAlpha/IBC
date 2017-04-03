@@ -67,7 +67,8 @@ class CommandDispatcher
             return;
         }
         
-        (new EnableApiTask(mChannel)).run();    // run on the current thread
+        // run on the current thread
+        (new ConfigurationTask(new EnableApiTask(mChannel))).execute();
    }
 
     private void handleReconnectDataCommand() {

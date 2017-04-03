@@ -22,35 +22,17 @@ import java.awt.Component;
 import java.awt.Container;
 import javax.swing.*;
 
-class ConfigureTwsApiPortTask implements Runnable{
+class ConfigureTwsApiPortTask implements ConfigurationAction{
     
-    private final int mPortNumber;
-    private final boolean isGateway;
+    private final int portNumber;
+    private JDialog configDialog;
     
-    ConfigureTwsApiPortTask(int portNumber, boolean isGateway) {
-        mPortNumber = portNumber;
-        this.isGateway = isGateway;
+    ConfigureTwsApiPortTask(int portNumber) {
+        this.portNumber = portNumber;
     }
 
     @Override
     public void run() {
-        try {
-            final JDialog configDialog = ConfigDialogManager.configDialogManager().getConfigDialog();    // blocks the thread until the config dialog is available
-            
-            GuiExecutor.instance().execute(new Runnable(){
-                @Override
-                public void run() {
-                    configure(configDialog, mPortNumber);
-                    ConfigDialogManager.configDialogManager().releaseConfigDialog();
-                }
-            });
-
-        } catch (Exception e){
-            Utils.logError(e.getMessage());
-        }
-    }
-
-    private void configure(final JDialog configDialog, final int portNumber) {
         try {
             Utils.logToConsole("Performing port configuration");
             
@@ -68,7 +50,7 @@ class ConfigureTwsApiPortTask implements Runnable{
             if (currentPort == portNumber) {
                 Utils.logToConsole("TWS API socket port is already set to " + tf.getText());
             } else {
-                if (!isGateway) {
+                if (!MainWindowManager.mainWindowManager().isGateway()) {
                     JCheckBox cb = SwingUtils.findCheckBox(configDialog, "Enable ActiveX and Socket Clients");
                     if (cb == null) throw new IBControllerException("could not find Enable ActiveX checkbox");
                     if (cb.isSelected()) ConfigDialogManager.configDialogManager().setApiConfigChangeConfirmationExpected();
@@ -80,5 +62,10 @@ class ConfigureTwsApiPortTask implements Runnable{
         } catch (IBControllerException e) {
             Utils.logError(e.getMessage());
         }
+    }
+
+    @Override
+    public void initialise(JDialog configDialog) {
+        this.configDialog = configDialog;
     }
 }

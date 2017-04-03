@@ -23,39 +23,17 @@ import java.util.concurrent.FutureTask;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 
-class EnableApiTask implements Runnable{
-
-    private static final SwitchLock _Running = new SwitchLock();
+class EnableApiTask implements ConfigurationAction{
 
     private final CommandChannel mChannel;
+
+    private JDialog configDialog;
 
     EnableApiTask(final CommandChannel channel) {
         mChannel = channel;
     }
 
     @Override public void run() {
-        if (! _Running.set()) {
-            mChannel.writeNack("API configuration already in progress");
-            return;
-        }
-
-        try {
-            final JDialog configDialog = ConfigDialogManager.configDialogManager().getConfigDialog();    // blocks the thread until the config dialog is available
-            
-            FutureTask<Integer> t = new FutureTask<>(new Runnable(){
-                @Override public void run() {configureAPI(configDialog);}
-            }, 0);
-            GuiExecutor.instance().execute(t);
-            t.get();
-        } catch (InterruptedException | ExecutionException e) {
-            Utils.logError("IBControllerServer: " + e.getMessage());
-            mChannel.writeNack(e.getMessage());
-        } finally {
-            _Running.clear();
-        }
-    }
-
-    private void configureAPI(JDialog configDialog) {
         try {
             Utils.logToConsole("Doing ENABLEAPI configuration");
             
@@ -75,12 +53,15 @@ class EnableApiTask implements Runnable{
                 Utils.logToConsole("TWS is already configured to accept API connections");
                 mChannel.writeAck("already configured");
             }
-
-            configDialog.setVisible(false);
         } catch (IBControllerException e) {
             Utils.logError("IBControllerServer: " + e.getMessage());
             mChannel.writeNack(e.getMessage());
         }
+    }
+
+    @Override
+    public void initialise(JDialog configDialog) {
+        this.configDialog = configDialog;
     }
 
 }
