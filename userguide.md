@@ -314,16 +314,17 @@ customisations you did for that version.
 - use a command similar to this:
 
 ```
-sudo unzip ~/Downloads/IBControllerV3.2.0.zip -d \
+sudo unzip ~/Downloads/IBController-3.3.0.zip -d \
 /opt/IBController
 ```
 
-- you'll need to make the script files executable, using a command similar to this:
+- now make sure all the script files are executable:
 
 ```
 cd /opt/IBController
-chmod -R u+x *.sh
+sudo chmod u+x *.sh */*.sh
 ```
+
 
 #### Default Paths
 
@@ -345,10 +346,11 @@ sample files to reflect this.
 | MacOSX   | IB TWS program files       | `/home/<username>/Applications`     |
 |          | IBController program files | `/opt/IBController`                 |
 |          | IBController.ini           | `/home/<username>/IBController`     |
-
+|          |                            |                                     |
 
 Note that installing IBController and/or TWS from a Unix package manager may
 not use these paths. Consult your Linux package instructions for file locations.
+
 
 ### Password Security
 --------------------
@@ -456,7 +458,8 @@ is a list of the settings that you are most likely to need to change:
 | AcceptIncomingConnectionAction | It is safest to set this to `reject` and to explicitly configure TWS to specify which IP addresses are allowed to connnect to the API                                                                                  |
 | IbAutoClosedown    | Set this to `no` to prevent TWS's daily auto closedown        |
 | ClosedownAt        | Set this if you want to keep TWS running all week             |
-| ------------------ | ------------------------------------------------------------- |
+|                    |                                                               |
+
 
 There are two ways that IBController can locate your edited `IBController.ini` file. 
 
