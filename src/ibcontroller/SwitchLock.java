@@ -31,4 +31,8 @@ class SwitchLock {
             return true;
         }
     }
+    
+    synchronized boolean query() {
+        return mIsSet;
+    }
 }
