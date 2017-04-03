@@ -252,6 +252,8 @@ if /I "%ENTRY_POINT%" == "%ENTRY_POINT_GATEWAY%" (
 
 if not exist "%TWS_JARS%" (
 	set ERROR_MESSAGE=TWS version %TWS_VERSION% is not installed
+	set ERROR_MESSAGE1=You must install the offline version of TWS/Gateway
+	set ERROR_MESSAGE2=IBController does not work with the auto-updating TWS/Gateway
 	set ERROR=%E_TWS_VERSION_NOT_INSTALLED%
 	goto :err
 )
@@ -393,5 +395,11 @@ echo.
 echo.
 echo.
 echo Error: %ERROR_MESSAGE% 
+if not "%ERROR_MESSAGE1%"=="" (
+	echo        %ERROR_MESSAGE1%
+)
+if not "%ERROR_MESSAGE2%"=="" (
+	echo        %ERROR_MESSAGE2%
+)
 exit /B %ERROR%
 

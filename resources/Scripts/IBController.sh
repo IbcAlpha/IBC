@@ -66,12 +66,20 @@ fi
 error_exit() {
 	error_number=$1
 	error_message=$2
+	error_message1=$3
+	error_message2=$4
 	>&2 echo
 	>&2 echo =========================== An error has occurred =============================
 	>&2 echo
 	>&2 echo
 	>&2 echo
 	>&2 echo -e "Error: ${error_message}"
+	if [[ -n "${error_message1}" ]]; then
+		>&2 echo -e "       ${error_message1}"
+	fi
+	if [[ -n "${error_message2}" ]]; then
+		>&2 echo -e "       ${error_message2}"
+	fi
 	>&2 exit "${error_number}"
 }
 
@@ -153,7 +161,7 @@ fi
 echo
 echo -e "================================================================================"
 echo
-echo -e "Starting IBController version ${IBC_VRSN} on $(date -I) at $(date +%T)"
+echo -e "Starting IBController version ${IBC_VRSN} on $(date +"%Y-%m-%d") at $(date +%T)"
 echo
 echo -e "Operating system: $(uname -a)"
 echo
@@ -258,7 +266,9 @@ if [[ "${entry_point}" = "${ENTRY_POINT_GATEWAY}" ]]; then
 fi
 
 if [[ ! -e "$jars" ]]; then
-	error_exit $E_TWS_VERSION_NOT_INSTALLED "TWS version $tws_version is not installed: can't find $jars"
+	error_exit $E_TWS_VERSION_NOT_INSTALLED "TWS version $tws_version is not installed: can't find $jars" \
+	                                        "You must install the offline version of TWS/Gateway" \
+                                            "IBController does not work with the auto-updating TWS/Gateway"
 fi
 
 if [[ ! -e  "$ibc_path" ]]; then
@@ -393,7 +403,7 @@ else
 	program=IBGateway
 fi
 echo "Starting $program with this command:"
-echo -e "$java_path/java -cp $ibc_classpath $java_vm_options $entry_point $ibc_ini $hidden_credentials ${mode}" 
+echo -e "\"$java_path/java\" -cp \"$ibc_classpath\" $java_vm_options $entry_point \"$ibc_ini\" $hidden_credentials ${mode}"
 echo
 
 # prevent other Java tools interfering with IBController
