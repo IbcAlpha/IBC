@@ -6,9 +6,11 @@ setlocal enableextensions enabledelayedexpansion
 ::                                                                             +
 ::   This command file starts the Interactive Brokers' Trader Workstation.     +
 ::                                                                             +
-::   If you run it without any arguments it will start TWS and then exit. If   +
-::   you supply /WAIT as an argument, it will not exit until TWS has been      +
-::   shut down.                                                                +
+::   If you run it without any arguments it will display a new window showing  +
+::   useful information and then start TWS. If you supply /INLINE as the first +
+::   argument, the information will be displayed in the current command prompt +
+::   window. (If you are using Task Scheduler to run this, you MUST supply the +
+::   /INLINE argument to ensure correct operation.)                            +
 ::                                                                             +
 ::   The following lines, beginning with 'set', are the only ones you may      +
 ::   need to change, and you probably only need to change the first one.       +
@@ -19,7 +21,7 @@ setlocal enableextensions enabledelayedexpansion
 ::=============================================================================+
 
 
-set TWS_MAJOR_VRSN=952
+set TWS_MAJOR_VRSN=963
 set IBC_INI=%HOMEDRIVE%%HOMEPATH%\Documents\IBController\IBController.ini
 set TRADING_MODE=
 set IBC_PATH=%SYSTEMDRIVE%\IBController
@@ -126,7 +128,8 @@ set HIDE=
 ::     about the running TWS, and where to find the log file, will be minimized 
 ::     to the taskbar. If not set, or set to any other value, the window will be 
 ::     displayed. Values are not case-sensitive so for example yEs and yes will 
-::     be interpeted as YES.
+::     be interpeted as YES. (Note that when the /INLINE argument is supplied,
+::     this setting has no effect.)
 
 
 ::   End of Notes:
@@ -141,6 +144,9 @@ if /I "%HIDE%" == "YES" (
 ) else (
     set MIN=
 )
-set WAIT=
-if /I "%~1" == "/WAIT" set WAIT=/wait
-start "%TITLE%" %MIN% %WAIT% "%IBC_PATH%\Scripts\DisplayBannerAndLaunch.bat"
+
+if /I "%~1" == "/INLINE" (
+	"%IBC_PATH%\Scripts\DisplayBannerAndLaunch.bat"
+) else (
+	start "%TITLE%" %MIN% "%IBC_PATH%\Scripts\DisplayBannerAndLaunch.bat"
+)
