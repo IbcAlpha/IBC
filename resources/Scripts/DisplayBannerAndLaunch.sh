@@ -51,6 +51,8 @@ if [[ "$(echo ${APP} | tr '[:lower:]' '[:upper:]')" = "GATEWAY" ]]; then
 	gw_flag=-g
 fi
 
+echo -e ${normal}
+
 export IBC_VRSN
 "${IBC_PATH}/Scripts/IBController.sh" "${TWS_MAJOR_VRSN}" ${gw_flag} \
      "--tws-path=${TWS_PATH}" "--tws-settings-path=${TWS_CONFIG_PATH}" \
@@ -69,12 +71,17 @@ if [ "$?" != "0" ]; then
 		echo "+                     Please look in the diagnostics file "
 		echo "+                   mentioned above for further information"
 	fi
+	echo "+"
+	echo "+=============================================================================="
+	echo -e ${normal}
+	sleep 5d
 else
+	echo -e ${light_green}
 	echo -e "+ ${APP} ${TWS_MAJOR_VRSN} has finished"
+	echo "+"
+	echo "+=============================================================================="
+	echo -e ${normal}
 fi
 
-echo "+"
-echo "+=============================================================================="
-echo -e ${normal}
 
-exit
+
