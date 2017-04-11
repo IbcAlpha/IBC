@@ -4,12 +4,11 @@
 :: initiate a tidy closedown of TWS or Gateway.
 
 
-:: You will need to change this line. Set it to the name or IP address of the 
-:: computer that is running IBController. Note that using the local loopback 
-:: address (127.0.0.1) does not work: you have to use the computer's actual IP address
-:: ot its name:
+:: You may need to change this line. Set it to the name or IP address of the 
+:: computer that is running IBController. Note that you can use the local loopback 
+:: address (127.0.0.1) if IBController is running on the current machine.
 
-set ServerAddress=MyComputer
+set ServerAddress=127.0.0.1
 
 
 :: You may need to change this line. Make sure its set to the value of the 
