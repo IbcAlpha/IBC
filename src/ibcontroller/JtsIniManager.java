@@ -139,28 +139,30 @@ class JtsIniManager {
     
     private static boolean existingFileOk() {
         return (findSettingInSection(LogonSectionHeader, S3storeFalseSetting) || 
-                findSettingInSection(LogonSectionHeader, S3storeTrueSetting)) &&
+                findSettingInSection(LogonSectionHeader, S3storeTrueSetting)) &
                 findSettingInSection(IBGatewaySectionHeader, ApiOnlyTrueSetting);
     }
     
     private static boolean findSettingInSection(String section, String setting) {
         ListIterator<String> it = lines.listIterator();
-        boolean error = false;
-        while (it.hasNext() && ! error) {
+        while (it.hasNext()) {
             String l = it.next();
             if (l.compareTo(section) == 0) {
                 Utils.logToConsole("Found section: " + section);
-                while (it.hasNext() && ! error) {
+                while (it.hasNext()) {
                     l = it.next();
                     if (l.startsWith("[")) {
-                        error = true;
+                        break;
                     } else if (l.compareTo(setting) == 0) {
                         Utils.logToConsole("Found setting: " + setting);
                         return true;
                     }
                 }
+                Utils.logToConsole("Can't find setting: " + setting);
+                return false;
             } 
         }
+        Utils.logToConsole("Can't find section: " + section);
         return false;
     }
     
@@ -203,16 +205,17 @@ class JtsIniManager {
                 index++;
                 String l = it.next();
                 if (l.compareTo(LogonSectionHeader) == 0) {
+                    writeIniFileLine(l, w);
                     foundLogon = true;
                     index = processSection(lines, index, new String[] {S3storeTrueSetting, S3storeFalseSetting}, w);
                     it = lines.listIterator(index);
                 } else if (l.compareTo(IBGatewaySectionHeader) == 0) {
+                    writeIniFileLine(l, w);
                     foundIBGateway = true;
                     index = processSection(lines, index, new String[] {ApiOnlyTrueSetting}, w);
                     it = lines.listIterator(index);
                 } else {
-                    w.write(l);
-                    w.newLine();
+                    writeIniFileLine(l, w);
                 }
             }
             if (! foundLogon) {
@@ -238,7 +241,6 @@ class JtsIniManager {
         boolean found = false;
         ListIterator<String> it = lines.listIterator(index);
         while (it.hasNext()) {
-            index++;
             String l = it.next();
             for (String s : settings) {
                 if (l.compareTo(s) == 0) {
@@ -246,35 +248,42 @@ class JtsIniManager {
                     break;
                 }
             }
-            if (l.startsWith("[")) {
-                if (! found) w.write(settings[0]);
+            if (l.isEmpty()) {
+                index++;
+            } else if (l.startsWith("[")) {
                 break;
             } else {
-                w.write(l);
-                w.newLine();
+                writeIniFileLine(l, w);
+                index++;
             }
         }
+
+        if (! found) writeIniFileLine(settings[0], w);
+        writeIniFileLine("", w);
+        
         return index;
     }
 
     private static void writeApiOnly(BufferedWriter w) throws IOException {
-        w.write(ApiOnlySetting);
-        w.newLine();
+        writeIniFileLine(ApiOnlyTrueSetting, w);
     }
     
     private static void writeS3store(BufferedWriter w) throws IOException {
-        w.write(S3storeTrueSetting);
+        writeIniFileLine(S3storeTrueSetting, w);
+    }
+    
+    private static void writeIniFileLine(String line, BufferedWriter w) throws IOException {
+        Utils.logToConsole("    jts.ini: " + line);
+        w.write(line);
         w.newLine();
     }
     
     private static void writeLogonSectionHeader(BufferedWriter w) throws IOException {
-        w.write(LogonSectionHeader);
-        w.newLine();
+        writeIniFileLine(LogonSectionHeader, w);
     }
     
     private static void writeIBGatewaySectionHeader(BufferedWriter w) throws IOException {
-        w.write(IBGatewaySectionHeader);
-        w.newLine();
+        writeIniFileLine(IBGatewaySectionHeader, w);
     }
     
 }
