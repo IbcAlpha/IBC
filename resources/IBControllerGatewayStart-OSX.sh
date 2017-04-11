@@ -150,5 +150,10 @@ export FIXPASSWORD
 export JAVA_PATH
 export APP
 
-"${IBC_PATH}/Scripts/DisplayBannerAndLaunch.sh" &
-
+if [[ "$1" == "-inline" ]]; then
+    "${IBC_PATH}/Scripts/DisplayBannerAndLaunch.sh"
+else
+    osascript -e 'tell app "Terminal"
+        do script "${IBC_PATH}/Scripts/DisplayBannerAndLaunch.sh"
+    end tell'
+fi
