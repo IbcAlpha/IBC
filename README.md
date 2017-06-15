@@ -47,6 +47,17 @@ download ZIP.
 Support
 -------
 
+> IMPORTANT
+> By far the most common problem that users have when setting up IBController
+is the result of trying to use it with the self-updating version of TWS.
+>
+>**IBController DOES NOT WORK with the self-updating version of TWS.**
+>
+>You must install the offline version of TWS for use with IBController.
+>
+>Note however that there is no self-updating version of the Gateway, so the
+normal Gateway installer will work fine if you only want to use the Gateway.
+
 If you need assistance with running IBController, or have any queries or 
 suggestions for improvement, you should join the 
 [IBController User Group](https://groups.io/g/ibcontroller).
@@ -58,6 +69,12 @@ or the [GitHub Issue Tracker](https://github.com/ib-controller/ib-controller/iss
 Please provide as much evidence as you can, especially the versions of 
 IBController and TWS/Gateway you're using and a full description of the 
 incorrect behaviour you're seeing.
+
+Note that IBController creates a log file that records a lot of useful 
+information that can be very helpful in diagnosing users' problems. The 
+location of this log file is prominently displayed in the window that appears
+when you run IBController. It is helpful to attach this log file to any 
+problem reports.
 
 Contributing
 ------------
