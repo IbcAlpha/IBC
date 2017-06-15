@@ -27,6 +27,8 @@ the latest official release ZIP which you can find [here](https://github.com/ib-
 Should you ever need to revert to an earlier IBController release, they are also available 
 [here](https://github.com/ib-controller/ib-controller/releases).
 
+A docker container with a working IBController and IBGateway combination is available from [QuantConnect] (https://github.com/QuantConnect/Lean/blob/master/DockerfileLeanFoundation).
+
 If you use Arch Linux you can install the
 [ib-controller](https://aur.archlinux.org/packages/ib-controller/) package
 from AUR: it includes lots of server-oriented features such as multiple daemons,
