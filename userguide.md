@@ -311,7 +311,7 @@ customisations you did for that version.
 
 #### On Unix: 
 
-- use a command similar to this:
+- unpack the ZIP file using a command similar to this:
 
 ```
 sudo unzip ~/Downloads/IBController-3.3.0.zip -d \
@@ -322,7 +322,7 @@ sudo unzip ~/Downloads/IBController-3.3.0.zip -d \
 
 ```
 cd /opt/IBController
-sudo chmod u+x *.sh */*.sh
+sudo chmod o+x *.sh */*.sh
 ```
 
 
@@ -500,7 +500,8 @@ scripts. If you do need to change them, they are commented to help you.
 
 ### Scheduled Tasks (Windows)
 ----------------------------
-On Windows you can start IBController automatically using a Scheduled Task. 
+On Windows you can start IBController automatically using a Scheduled Task to 
+run IBControllerStart.bat or IBControllerGatewayStart.bat.
 
 If you do this, you must make sure that the machine is already logged on before
 the scheduled task runs. Otherwise the task will still run, but you won't be
@@ -518,19 +519,66 @@ morning, keep it running all week and then close down tidily on Friday evening
 or Saturday morning.
 
 The Windows Task Scheduler has many powerful features, and some of these can
-be used to provide even better control. For example, you can run the task every
-5 minutes during the week so that if TWS crashes, it will automatically be
-restarted within 5 minutes. If you also set up your computer to log on
-automatically when it starts (information about this is easily available on the
-internet), this will also restart TWS after a power outage (but make sure you
-understand the security implications of autologon to Windows).
+be used to provide even better control. For example, you can run the task 
+periodically (say every 10 minutes) during the week so that if TWS crashes, 
+it will automatically be restarted. If you also set up your computer to log 
+on automatically when it starts, this will ensure TWS is restarted after a 
+power outage. (Information about how to make your computer log on automatically
+is easily available on the internet: but make sure you understand the security 
+implications of autologon to Windows).
+
+**IMPORTANT** Note that Microsoft have made changes to the Task Scheduler for 
+Windows 10. Because of this, it is advisable to set up your Scheduled Task 
+differently on Windows 10: see the next section _Running under Task Scheduler 
+on Windows 10_.
+
+**IMPORTANT Make sure you use the /INLINE argument to IBControllerStart.bat or 
+IBControllerGatewayStart.bat when starting IBController from Task Scheduler.
+Otherwise IBController will start and run correctly, but Task Scheduler will not
+be aware of it: in particular Task Scheduler will not show the task as running. 
+This prevents correct operation of Task Scheduler features such as killing the 
+task after a specified elapsed time.
 
 A sample scheduled task is included in the IBController distribution ZIP,
 called `Start TWS Live (daily).xml`. You can import this into your Task
-Scheduler if you are running Windows 7 or later. After importing it, you will
+Scheduler if you are running Windows 7, Windows 8 or Windows 8.1 (see below
+for further information about running on Windows 10). After importing it, you will
 need to enable it and change the user account it runs under. This task starts TWS
 daily at 05:55, and assumes that TWS is set to auto-logoff at 05:52, so the
 IBController configuration file must include `IbAutoClosedown=yes`.
+
+#### Running under Task Scheduler on Windows 10
+
+Microsoft have made significant changes to the Task Scheduler in Windows 10.
+Although the management user interface is pretty much the same as in earlier
+Windows versions, there are important changes in some of the 'under the hood'
+operation.
+
+The net effect of these changes is that it is no longer a good idea to start 
+IBController under Task Scheduler by running a command file. It will only work
+correctly if the command given to Task Scheduler directly runs IBController.
+
+To set this up, first run IBController manually (using IBControllerStart.bat 
+or IBControllerGatewayStart.bat), and open the log file in Notepad or any other 
+text editor: if using Notepad, make sure that 'Word Wrap' on the Format menu is 
+not checked). Now create your scheduled task (it's easiest to import the sample
+included in the IBController download zip file), and open the start action editor.
+Find the line in the log file that reads: 'Starting IBController with this 
+command:', then select and copy the first part of the following line (up to but 
+not including `-cp`), and paste it into the `Program/script:` field of the action
+editor. Then select and copy the remainder of the line in the log file (starting
+at `-cp`), and paste it into the `Add arguments (optional):` field of the action
+editor. You can now run this scheduled task in the normal way.
+
+Note that running IBController via from Task Scheduler via a direct command in 
+this way means that there is no permanent IBController log file. Any output 
+from IBController appears in the window that Java creates to host the Java 
+console output, but there is no way to capture this to a file (note that normal
+redirection operators `>` and `>>` cannot be used in a command in a scheduled 
+task). If you've made sure that your IBController installation operates 
+correctly before setting up your scheduled task, this should not be too much
+of a problem. 
+
 
 ### Multiple IBController Instances
 ----------------------------------
@@ -575,7 +623,10 @@ from the same installation folder for each instance.
 
 Because you now have different configuration files, you also need different
 scripts to run each instance (or you could have a single script and pass the
-configuration file details as a parameter).
+configuration file details as a parameter). And you need to ensure that the 
+different instances don't try to write their log files to the same folder 
+(because otherwise they might try to log to the same file, and one instance
+would fail).
 
 As a concrete example, let's take the first scenario described above: you want to
 run both your live and paper trading accounts. So:
@@ -584,18 +635,22 @@ run both your live and paper trading accounts. So:
 
 - create two new folders `C:\JtsLive` and `C:\JtsPaper` to store the settings
 
-- create two IBController configuration files called `IBControllerLive.ini` and
-  `IBControllerPaper.ini`
+- create two IBController configuration files called `IBControllerLive.ini` 
+ and `IBControllerPaper.ini`
 
 - set the IbDir option in them to point to the relevant folder, ie
   `IbDir=C:\\JtsLive` and `IbDir=C:\\JtsPaper`, and set the `IbLoginId`
-  and ``IbPassword`` to the live or paper account values as appropriate
+  and `IbPassword` to the live or paper account values as appropriate
 
 - create two start scripts (by copying `IBControllerStart.bat`) called
   `IBControllerStartLive.bat` and `IBControllerStartPaper.bat`
 
 - change the `set IBC_INI=...` line in each script file to refer to the 
   relevant configuration file
+
+- change the `set LOG_PATH=...` line n each script file the refer to different
+  folders, for example `set LOG_PATH=%IBC_PATH%\LiveLogs` and 
+  `set LOG_PATH=%IBC_PATH%\PaperLogs`
 
 - now you can run the new scripts, and each will start a separate instance of
   TWS connected to a different account, with its settings stored in separate
