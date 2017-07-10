@@ -411,15 +411,23 @@ JAVA_TOOL_OPTIONS=
 
 pushd "$tws_path" > /dev/null
 
+# forward signals (see https://veithen.github.io/2014/11/16/sigterm-propagation.html)
+trap 'kill -TERM $PID' TERM INT
+
 if [[ -n $got_fix_credentials && -n $got_api_credentials ]]; then
-	"$java_path/java" -cp "$ibc_classpath" $java_vm_options $entry_point "$ibc_ini" "$fix_user_id" "$fix_password" "$ib_user_id" "$ib_password" ${mode}
+	"$java_path/java" -cp "$ibc_classpath" $java_vm_options $entry_point "$ibc_ini" "$fix_user_id" "$fix_password" "$ib_user_id" "$ib_password" ${mode} &
 elif  [[ -n $got_fix_credentials ]]; then
-	"$java_path/java" -cp "$ibc_classpath" $java_vm_options $entry_point "$ibc_ini" "$fix_user_id" "$fix_password" ${mode}
+	"$java_path/java" -cp "$ibc_classpath" $java_vm_options $entry_point "$ibc_ini" "$fix_user_id" "$fix_password" ${mode} &
 elif [[ -n $got_api_credentials ]]; then
-	"$java_path/java" -cp "$ibc_classpath" $java_vm_options $entry_point "$ibc_ini" "$ib_user_id" "$ib_password" ${mode}
+	"$java_path/java" -cp "$ibc_classpath" $java_vm_options $entry_point "$ibc_ini" "$ib_user_id" "$ib_password" ${mode} &
 else
-	"$java_path/java" -cp "$ibc_classpath" $java_vm_options $entry_point "$ibc_ini" ${mode}
+	"$java_path/java" -cp "$ibc_classpath" $java_vm_options $entry_point "$ibc_ini" ${mode} &
 fi
+
+PID=$!
+wait $PID
+trap - TERM INT
+wait $PID
 
 exit_code=$?
 echo "$program finished"
