@@ -32,8 +32,7 @@ fi
 normal='\033[0m'
 light_red='\033[1;31m'
 light_green='\033[1;32m'
-echo -e ${light_green}
-echo "+=============================================================================="
+echo -e "${light_green}+=============================================================================="
 echo "+"
 echo -e "+ IBController version ${IBC_VRSN}"
 echo "+"
@@ -45,13 +44,11 @@ if [[ -n "$LOG_PATH" ]]; then
 	echo -e "+ ${log_file}"
 	echo "+"
 fi
-echo "+"
+echo -e "+${normal}"
 
 if [[ "$(echo ${APP} | tr '[:lower:]' '[:upper:]')" = "GATEWAY" ]]; then 
 	gw_flag=-g
 fi
-
-echo -e ${normal}
 
 export IBC_VRSN
 
@@ -60,7 +57,7 @@ trap 'kill -TERM $PID' TERM INT
 
 "${IBC_PATH}/Scripts/IBController.sh" "${TWS_MAJOR_VRSN}" ${gw_flag} \
      "--tws-path=${TWS_PATH}" "--tws-settings-path=${TWS_CONFIG_PATH}" \
-	 "--ibc-path=${IBC_PATH}" "--ibc-ini=${IBC_INI}" \
+     "--ibc-path=${IBC_PATH}" "--ibc-ini=${IBC_INI}" \
      "--user=${TWSUSERID}" "--pw=${TWSPASSWORD}" "--fix-user=${FIXUSERID}" "--fix-pw=${FIXPASSWORD}" \
      "--java-path=${JAVA_PATH}" "--mode=${TRADING_MODE}" \
      >> "${log_file}" 2>&1 &
@@ -70,27 +67,37 @@ wait $PID
 trap - TERM INT
 wait $PID
 
-if [ "$?" != "0" ]; then
-	echo -e ${light_red}
-	echo "+=============================================================================="
+exit_code=$?
+if [ "$exit_code" == "0" ]; then
+	echo -e "${light_green}+ ${APP} ${TWS_MAJOR_VRSN} has finished"
+	echo "+"
+	echo -e "+==============================================================================${normal}"
+elif [ "$exit_code" == "143" ]; then
+	# exit code 143 caused by default signal handler for SIGTERM
+	exit_code=0
+	echo -e "${light_green}+"
+	echo "+ IBController terminated by SIGTERM"
+	echo "+"
+	echo -e "${light_green}+ ${APP} ${TWS_MAJOR_VRSN} has finished"
+	echo "+"
+	echo -e "+==============================================================================${normal}"
+else
+	echo -e "${light_red}+=============================================================================="
 	echo "+"
 	echo -e "+                       **** An error has occurred ****"
 	if [[ -n LOG_PATH ]]; then
 		echo "+"
 		echo "+                     Please look in the diagnostics file "
 		echo "+                   mentioned above for further information"
+		echo "+"
+		echo "+"
+		echo "+                          Press Ctrl-C to continue"
 	fi
 	echo "+"
-	echo "+=============================================================================="
-	echo -e ${normal}
+	echo -e "+==============================================================================${normal}"
 	sleep 5d
-else
-	echo -e ${light_green}
-	echo -e "+ ${APP} ${TWS_MAJOR_VRSN} has finished"
-	echo "+"
-	echo "+=============================================================================="
-	echo -e ${normal}
 fi
 
+exit $exit_code
 
 
