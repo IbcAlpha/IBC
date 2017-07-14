@@ -54,12 +54,21 @@ fi
 echo -e ${normal}
 
 export IBC_VRSN
+
+# forward signals (see https://veithen.github.io/2014/11/16/sigterm-propagation.html)
+trap 'kill -TERM $PID' TERM INT
+
 "${IBC_PATH}/Scripts/IBController.sh" "${TWS_MAJOR_VRSN}" ${gw_flag} \
      "--tws-path=${TWS_PATH}" "--tws-settings-path=${TWS_CONFIG_PATH}" \
 	 "--ibc-path=${IBC_PATH}" "--ibc-ini=${IBC_INI}" \
      "--user=${TWSUSERID}" "--pw=${TWSPASSWORD}" "--fix-user=${FIXUSERID}" "--fix-pw=${FIXPASSWORD}" \
      "--java-path=${JAVA_PATH}" "--mode=${TRADING_MODE}" \
-     >> "${log_file}" 2>&1
+     >> "${log_file}" 2>&1 &
+
+PID=$!
+wait $PID
+trap - TERM INT
+wait $PID
 
 if [ "$?" != "0" ]; then
 	echo -e ${light_red}

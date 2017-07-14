@@ -162,7 +162,7 @@ if [[ "$hide" = "YES" || "$hide" = "TRUE" ]]; then
 fi
 
 if [[ "$1" == "-inline" ]]; then
-    "${IBC_PATH}/Scripts/DisplayBannerAndLaunch.sh"
+    exec "${IBC_PATH}/Scripts/DisplayBannerAndLaunch.sh"
 else
     title="IBController ($APP $TWS_MAJOR_VRSN)"
     xterm $iconic -T "$title" -e "${IBC_PATH}/Scripts/DisplayBannerAndLaunch.sh" &

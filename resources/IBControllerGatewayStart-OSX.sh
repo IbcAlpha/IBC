@@ -151,7 +151,7 @@ export JAVA_PATH
 export APP
 
 if [[ "$1" == "-inline" ]]; then
-    "${IBC_PATH}/Scripts/DisplayBannerAndLaunch.sh"
+    exec "${IBC_PATH}/Scripts/DisplayBannerAndLaunch.sh"
 else
     osascript -e 'tell app "Terminal"
         do script "${IBC_PATH}/Scripts/DisplayBannerAndLaunch.sh"
