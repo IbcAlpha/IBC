@@ -4,6 +4,11 @@
 #                                                                             +
 #   This command file starts the Interactive Brokers' Gateway.                +
 #                                                                             +
+#   If you run it without any arguments it will display a new window showing  +
+#   useful information and then start the Gateway. If you supply -inline as   +
+#   the first argument, the information will be displayed in the current      +
+#   terminal window.                                                          +
+#                                                                             +
 #   The following lines are the only ones you may need to change, and you     +
 #   probably only need to change the first one.                               +
 #                                                                             +
