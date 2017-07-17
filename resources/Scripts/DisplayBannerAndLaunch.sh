@@ -7,7 +7,7 @@ if [[ -n "$LOG_PATH" ]]; then
 	if [[ ! -e  "$LOG_PATH" ]]; then
 		mkdir -p "$LOG_PATH"
 	fi
-	
+
 	readme=${LOG_PATH}/README.txt
 	if [[ ! -e  "$readme" ]]; then
 		echo You can delete the files in this folder at any time > "$readme"
@@ -46,7 +46,7 @@ if [[ -n "$LOG_PATH" ]]; then
 fi
 echo -e "+${normal}"
 
-if [[ "$(echo ${APP} | tr '[:lower:]' '[:upper:]')" = "GATEWAY" ]]; then 
+if [[ "$(echo ${APP} | tr '[:lower:]' '[:upper:]')" = "GATEWAY" ]]; then
 	gw_flag=-g
 fi
 
@@ -89,15 +89,12 @@ else
 		echo "+"
 		echo "+                     Please look in the diagnostics file "
 		echo "+                   mentioned above for further information"
-		echo "+"
-		echo "+"
-		echo "+                          Press Ctrl-C to continue"
 	fi
 	echo "+"
+  echo "+                           Press enter to continue."
+	echo "+"
 	echo -e "+==============================================================================${normal}"
-	sleep 5d
+	read
 fi
 
 exit $exit_code
-
-
