@@ -196,7 +196,6 @@ public class DefaultConfigDialogManager extends ConfigDialogManager {
         usageCount--;
         if (usageCount == 0){
             SwingUtils.clickButton(configDialog, "OK");
-            configDialog.setVisible(false);
         }
     }
             
