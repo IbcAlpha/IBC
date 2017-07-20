@@ -50,7 +50,7 @@ public class ConfigurationTask {
                 t.get();
                 ConfigDialogManager.configDialogManager().releaseConfigDialog();
             } catch (Exception e){
-                Utils.logError(e.getMessage());
+                Utils.logException(e);
             }
         }
     }

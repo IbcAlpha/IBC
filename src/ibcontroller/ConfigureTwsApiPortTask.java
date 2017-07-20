@@ -60,7 +60,7 @@ class ConfigureTwsApiPortTask implements ConfigurationAction{
                 Utils.logToConsole("TWS API socket port now set to " + tf.getText());
             }
         } catch (IBControllerException e) {
-            Utils.logError(e.getMessage());
+            Utils.logException(e);
         }
     }
 
