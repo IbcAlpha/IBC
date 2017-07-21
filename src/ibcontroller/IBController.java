@@ -27,6 +27,9 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -36,6 +39,8 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.IIOException;
 import javax.transaction.InvalidTransactionException;
 
@@ -377,7 +382,17 @@ public class IBController {
     }
     
     private static String getTWSSettingsDirectory() {
-        return Settings.settings().getString("IbDir", System.getProperty("user.dir"));
+        String path = Settings.settings().getString("IbDir", System.getProperty("user.dir"));
+        try {
+            Files.createDirectories(Paths.get(path));
+        } catch (FileAlreadyExistsException ex) {
+            Utils.logError("Failed to create TWS settings directory at: " + path + "; a file of that name already exists");
+            System.exit(1);
+        } catch (IOException ex) {
+            Utils.logException(ex);
+            System.exit(1);
+        }
+        return path;
     }
 
     private static void printProperties() {
@@ -395,7 +410,6 @@ public class IBController {
     private static void startGateway() {
         String[] twsArgs = new String[1];
         twsArgs[0] = getTWSSettingsDirectory();
-        Utils.logToConsole("TWS settings directory is " + twsArgs[0]);
         try {
             ibgateway.GWClient.main(twsArgs);
         } catch (Throwable t) {
@@ -431,7 +445,6 @@ public class IBController {
         }
         String[] twsArgs = new String[1];
         twsArgs[0] = getTWSSettingsDirectory();
-        Utils.logToConsole("TWS settings directory is " + twsArgs[0]);
         try {
             jclient.LoginFrame.main(twsArgs);
         } catch (Throwable t) {
@@ -442,6 +455,7 @@ public class IBController {
     }
     
     private static void startTwsOrGateway(boolean isGateway) {
+        Utils.logToConsole("TWS Settings directory is: " + getTWSSettingsDirectory());
         JtsIniManager.initialise(getJtsIniFilePath());
         JtsIniManager.ensureValidJtsIniFile();
         if (isGateway) {
