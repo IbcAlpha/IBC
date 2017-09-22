@@ -33,7 +33,7 @@ import javax.swing.tree.TreePath;
 
 class Utils {
     
-    static final SimpleDateFormat _DateFormatter = new SimpleDateFormat("HH:mm:ss:SSS");
+    static final SimpleDateFormat _DateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
     
     // set these to the defaults, so that we can continue to use them 
     // even when TWS redirects System.out and System.err to its own logfile
@@ -144,7 +144,7 @@ class Utils {
     }
     
     private static String formatMessage(String message) {
-        return _DateFormatter.format(new Date()) + " IBController: " + message;
+        return _DateFormatter.format(new Date()) + " IBController: " + message.substring(0,1).toUpperCase() + message.substring(1);
     }
 
     /**
