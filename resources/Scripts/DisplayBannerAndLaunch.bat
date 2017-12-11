@@ -36,7 +36,7 @@ echo +==========================================================================
 echo +
 echo + IBController version %IBC_VRSN%
 echo +
-echo + Running %APP% %TWS_MAJOR_VRSN%
+echo + Running %APP% %TWS_MAJOR_VRSN% at %DATE% %TIME%
 echo +
 if defined LOG_PATH (
 	echo + Diagnostic information is logged in:
@@ -56,17 +56,22 @@ call "%IBC_PATH%\Scripts\IBController.bat" "%TWS_MAJOR_VRSN%" %GW_FLAG% ^
      "/TwsPath:%TWS_PATH%" "/IbcPath:%IBC_PATH%" "/IbcIni:%IBC_INI%" ^
      "/User:%TWSUSERID%" "/PW:%TWSPASSWORD%" "/FIXUser:%FIXUSERID%" "/FIXPW:%FIXPASSWORD%" ^
      "/JavaPath:%JAVA_PATH%" "/Mode:%TRADING_MODE%" ^
-     >> "%LOG_FILE%" 2>&1
+     >> "%LOG_FILE%" 2>&1 || set LOGFILE_INACCESSIBLE=1
 
 if errorlevel 1 (
 	color 0C
 	echo +==============================================================================
 	echo +
 	echo +                       **** An error has occurred ****
+	echo +
 	if defined LOG_PATH (
-		echo +
-		echo +                     Please look in the diagnostics file 
-		echo +                   mentioned above for further information
+		if "%LOGFILE_INACCESSIBLE%" == "1" (
+			echo +                     The diagnostics file mentioned above
+			echo +                     is already in use by another process
+		) else (
+			echo +                     Please look in the diagnostics file 
+			echo +                   mentioned above for further information
+		)
 	)
 	echo +
 	echo +==============================================================================
