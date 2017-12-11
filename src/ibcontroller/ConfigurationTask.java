@@ -18,7 +18,6 @@
 
 package ibcontroller;
 
-import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 import javax.swing.JDialog;
 

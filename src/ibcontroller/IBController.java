@@ -20,12 +20,7 @@ package ibcontroller;
 
 import java.awt.AWTEvent;
 import java.awt.Toolkit;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
@@ -39,11 +34,6 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.imageio.IIOException;
-import javax.transaction.InvalidTransactionException;
-
 
 /**
  * @author stevek
