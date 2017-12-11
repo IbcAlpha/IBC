@@ -22,8 +22,8 @@ if defined LOG_PATH (
 		for %%? in (!LOG_FILE!) do (
 			set LOGFILETIME=%%~t?
 		)
-		call set "s=%DATE%%%FILETIME:*%DATE%=%%"
-		if not "%s%" == "%FILETIME%" del "!LOG_FILE!"
+		set s=%DATE%!LOGFILETIME:*%DATE%=!
+		if not "!s!" == "!LOGFILETIME!" del "!LOG_FILE!"
 	)
 ) else (
 	set LOG_FILE=NUL
