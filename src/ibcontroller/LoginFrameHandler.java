@@ -41,7 +41,6 @@ final class LoginFrameHandler extends AbstractLoginHandler {
 
         JtsIniManager.reload();     // because TWS/Gateway modify the jts.ini file before this point
         String s3Store = JtsIniManager.getSetting(JtsIniManager.LogonSectionHeader, JtsIniManager.S3storeSetting);
-        Utils.logToConsole("s3Store=" + s3Store);
         if (s3Store.compareToIgnoreCase("true") == 0 && Settings.settings().getString("StoreSettingsOnServer", "").length() != 0) {
             final String STORE_SETTINGS_ON_SERVER_CHECKBOX = "Use/store settings on server";
             if (! SwingUtils.setCheckBoxSelected(
