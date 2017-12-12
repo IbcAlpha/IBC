@@ -2,7 +2,7 @@
     <property environment="env"/>
     <fail unless="env.TWS" message="Environment variable 'TWS' not set (set it to the fully-qualified directory name containing the TWS jar files)."/>
 
-    <property name="ver" value="3.4.2"/>
+    <property name="ver" value="3.4.3"/>
     <property name="src" location="src"/>
     <property name="resources" location="resources"/>
     <property name="target" location="target"/>
@@ -19,7 +19,7 @@
 
     <target name="compile" description="compile the source ">
         <mkdir dir="${target}/classes"/>
-        <javac srcdir="${src}" destdir="${target}/classes" source="7" target="7" includeantruntime="false">
+        <javac srcdir="${src}" destdir="${target}/classes" source="8" target="8" includeantruntime="false">
             <classpath refid="external.classpath"/>
             <compilerarg value="-Xlint:all"/>
         </javac>
