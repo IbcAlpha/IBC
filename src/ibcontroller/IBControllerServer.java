@@ -52,7 +52,7 @@ class IBControllerServer
             return;
         }
 
-        Utils.logToConsole("IBControllerServer is starting");
+        Utils.logToConsole("IBControllerServer is starting with port " + port);
 
         if (createSocket(port)) {
             Utils.logToConsole("IBControllerServer started and is ready to accept commands");
