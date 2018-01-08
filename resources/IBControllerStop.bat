@@ -11,10 +11,16 @@
 set ServerAddress=127.0.0.1
 
 
-:: You may need to change this line. Make sure its set to the value of the 
+:: You may need to change this line. Make sure it's set to the value of the 
 :: IbControllerPort setting in IBController.ini:
 
 set IBControllerServerPort=7462
+
+
+:: You may need to change this line. Make sure it's set to the location of the 
+:: IBController files:
+
+set IBC_PATH=%SYSTEMDRIVE%\IBController
 
 
 :: IMPORTANT NOTE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -36,7 +42,7 @@ set IBControllerServerPort=7462
 start telnet %ServerAddress% %IBControllerServerPort% 
 
 :: send the required command to IBController 
-cscript Scripts\SendIBControllerCommands.vbs
+cscript %IBC_PATH%\Scripts\SendIBControllerCommands.vbs
 
 
 :: Acknowledgement: many thanks for the help contained in Mukul Goel's answer to this question at:
