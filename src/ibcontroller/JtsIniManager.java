@@ -117,8 +117,8 @@ class JtsIniManager {
     private static void loadIniFile() {
         jtsIniFile = new File(jtsIniFilePath);
         if (jtsIniFile.isDirectory()) {
-            Utils.logError(jtsIniFilePath + " already exists but is a directory");
-            System.exit(1);
+            Utils.exitWithError(ErrorCodes.ERROR_CODE_INVALID_JTSINI_PATH, 
+                                jtsIniFilePath + " already exists but is a directory");
         }
         if (jtsIniFile.isFile()) {
             lines = getFileLines(jtsIniFile);
@@ -167,18 +167,18 @@ class JtsIniManager {
     }
     
     private static List<String> getFileLines (File jtsIniFile) {
-        List<String> lines = new ArrayList<>();
+        List<String> linesList = new ArrayList<>();
 
         try (BufferedReader r = new BufferedReader(new FileReader(jtsIniFile))) {
             String line;
             while ((line = r.readLine()) != null) {
-                lines.add(line);
+                linesList.add(line);
             }
         } catch (IOException e) {
-            Utils.logError("Unexpected IOException on " + jtsIniFile + ": " + e.getMessage());
-            System.exit(1);
+            Utils.exitWithError(ErrorCodes.ERROR_CODE_IO_EXCEPTION_ON_JTSINI, 
+                                "Unexpected IOException on " + jtsIniFile + ": " + e.getMessage());
         }
-        return lines;
+        return linesList;
     }
     
     private static void createMinimalFile() {
@@ -189,8 +189,8 @@ class JtsIniManager {
             writeIBGatewaySectionHeader(w);
             writeApiOnly(w);
         } catch (IOException e) {
-            Utils.logError("Problem creating " + jtsIniFile.getPath() + ": " + e.getMessage());
-            System.exit(1);
+            Utils.exitWithError(ErrorCodes.ERROR_CODE_IO_EXCEPTION_ON_JTSINI, 
+                                "Problem creating " + jtsIniFile.getPath() + ": " + e.getMessage());
         }
     }
     
@@ -227,8 +227,8 @@ class JtsIniManager {
                 writeApiOnly(w);
             }
         } catch (IOException e){
-            Utils.logError("Problem writing to " + jtsIniFile.getPath() + ": " + e.getMessage());
-            System.exit(1);
+            Utils.exitWithError(ErrorCodes.ERROR_CODE_IO_EXCEPTION_ON_JTSINI, 
+                                "Problem writing to " + jtsIniFile.getPath() + ": " + e.getMessage());
         }
     }
     

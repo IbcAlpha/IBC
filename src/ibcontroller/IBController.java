@@ -217,8 +217,11 @@ public class IBController {
      */
 
     private IBController() { }
-
+    
     public static void main(final String[] args) throws Exception {
+        if (Thread.getDefaultUncaughtExceptionHandler() == null) {
+            Thread.setDefaultUncaughtExceptionHandler(new ibcontroller.UncaughtExceptionHandler());
+        }
         checkArguments(args);
         setupDefaultEnvironment(args, false);
         load();
@@ -276,7 +279,7 @@ public class IBController {
             for (String arg : args) {
                 Utils.logRawToConsole(arg);
             }
-            System.exit(1);
+            Utils.exitWithError(ErrorCodes.ERROR_CODE_INCORRECT_NUMBER_OF_ARGUMENTS);
         }
     }
 
@@ -300,7 +303,7 @@ public class IBController {
         startSavingTwsSettingsAutomatically();
 
         startTwsOrGateway(isGateway);
-    }
+}
 
     private static void createToolkitListener() {
         Toolkit.getDefaultToolkit().addAWTEventListener(new TwsListener(createWindowHandlers()), AWTEvent.WINDOW_EVENT_MASK);
@@ -360,8 +363,8 @@ public class IBController {
                     cal.add(Calendar.DAY_OF_MONTH, 7);
                 }
             } catch (ParseException e) {
-                Utils.logError("Invalid ClosedownAt setting: should be: <day hh:mm>   eg Friday 22:00");
-                System.exit(1);
+                Utils.exitWithError(ErrorCodes.ERROR_CODE_INVALID_CLOSEDOWN_AT_SETTING, 
+                                    "Invalid ClosedownAt setting: should be: <day hh:mm>   eg Friday 22:00");
             }
             return cal.getTime();
         }
@@ -376,11 +379,10 @@ public class IBController {
         try {
             Files.createDirectories(Paths.get(path));
         } catch (FileAlreadyExistsException ex) {
-            Utils.logError("Failed to create TWS settings directory at: " + path + "; a file of that name already exists");
-            System.exit(1);
+            Utils.exitWithError(ErrorCodes.ERROR_CODE_CANT_CREATE_TWS_SETTINGS_DIRECTORY, 
+                                "Failed to create TWS settings directory at: " + path + "; a file of that name already exists");
         } catch (IOException ex) {
-            Utils.logException(ex);
-            System.exit(1);
+            Utils.exitWithException(ErrorCodes.ERROR_CODE_CANT_CREATE_TWS_SETTINGS_DIRECTORY, ex);
         }
         return path;
     }
@@ -405,7 +407,7 @@ public class IBController {
         } catch (Throwable t) {
             Utils.logError("Can't find the Gateway entry point: ibgateway.GWClient.main. Gateway is not correctly installed.");
             t.printStackTrace(Utils.getErrStream());
-            System.exit(1);
+            Utils.exitWithError(ErrorCodes.ERROR_CODE_CANT_FIND_ENTRYPOINT);
         }
     }
 
@@ -440,7 +442,7 @@ public class IBController {
         } catch (Throwable t) {
             Utils.logError("Can't find the TWS entry point: jclient.LoginFrame.main; TWS is not correctly installed.");
             t.printStackTrace(Utils.getErrStream());
-            System.exit(1);
+            Utils.exitWithError(ErrorCodes.ERROR_CODE_CANT_FIND_ENTRYPOINT);
         }
     }
     

@@ -45,8 +45,7 @@ public abstract class AbstractLoginHandler implements WindowHandler {
             if (!preLogin(window, eventID)) return;
             doLogin(window);
         } catch (IBControllerException e) {
-            Utils.logError("could not login: could not find control: " + e.getMessage());
-            System.exit(1);
+            Utils.exitWithError(ErrorCodes.ERROR_CODE_CANT_FIND_CONTROL, "could not login: could not find control: " + e.getMessage());
         }
     }
     

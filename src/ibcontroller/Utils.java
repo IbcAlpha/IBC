@@ -96,16 +96,30 @@ class Utils {
         }
     }
 
+    static void exitWithError(int errorCode) {
+        System.exit(errorCode);
+    }
+    
+    static void exitWithError(int errorCode, String message) {
+        logError(message);
+        exitWithError(errorCode);
+    }
+    
+    static void exitWithException(int errorCode, Throwable t) {
+        logException(t);
+        exitWithError(errorCode);
+    }
+    
     static void logError(String message) {
         getErrStream().println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         getErrStream().println(formatMessage(message));
         getErrStream().println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
     }
     
-    static void logException(Exception e) {
+    static void logException(Throwable t) {
         getErrStream().println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         getErrStream().println(formatMessage("An exception has occurred:"));
-        e.printStackTrace(getErrStream());
+        t.printStackTrace(getErrStream());
         getErrStream().println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
     }
     

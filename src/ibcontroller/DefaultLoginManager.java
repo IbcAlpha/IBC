@@ -186,7 +186,7 @@ public class DefaultLoginManager extends LoginManager {
             for (String arg : args) {
                 Utils.logRawToConsole(arg);
             }
-            System.exit(1);
+            Utils.exitWithError(ErrorCodes.ERROR_CODE_INCORRECT_NUMBER_OF_ARGUMENTS);
             return false;
         } else {
             return false;
