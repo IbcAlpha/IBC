@@ -10,7 +10,7 @@
 :: higher level command files. There should be no reason for the end user to modify 
 :: it in any way. So PLEASE DON'T CHANGE IT UNLESS YOU KNOW WHAT YOU'RE DOING!
 
-setlocal enableextensions enabledelayedexpansion
+::setlocal enableextensions enabledelayedexpansion
 
 if "%1"=="" goto :showUsage
 if "%1"=="/?" goto :showUsage
@@ -74,13 +74,13 @@ exit /B
 
 :: Some constants
 
-set E_NO_JAVA=1
-set E_NO_TWS_VERSION=2
-set E_INVALID_ARG=3
-set E_TWS_VERSION_NOT_INSTALLED=4
-set E_IBC_PATH_NOT_EXIST=5
-set E_IBC_INI_NOT_EXIST=6
-set E_TWS_VMOPTIONS_NOT_FOUND=7
+set E_NO_JAVA=1001
+set E_NO_TWS_VERSION=1002
+set E_INVALID_ARG=1003
+set E_TWS_VERSION_NOT_INSTALLED=1004
+set E_IBC_PATH_NOT_EXIST=1005
+set E_IBC_INI_NOT_EXIST=1006
+set E_TWS_VMOPTIONS_NOT_FOUND=1007
 
 set ENTRY_POINT_TWS=ibcontroller.IBController
 set ENTRY_POINT_GATEWAY=ibcontroller.IBGatewayController
@@ -100,6 +100,8 @@ set IBC_CLASSPATH=
 set ERROR_MESSAGE=
 
 ::======================== Parse command line arguments =====================
+set PHASE=Parsing command line arguments 
+
 :parse
 
 if "%~1" == "" goto :parsingComplete
@@ -142,6 +144,8 @@ shift
 goto :parse
 	
 :parsingComplete
+
+set PHASE=Checking supplied configuration data
 
 if defined IB_USER_ID set GOT_API_CREDENTIALS=1
 if defined IB_PASSWORD set GOT_API_CREDENTIALS=1
@@ -265,7 +269,7 @@ if not exist "%IBC_PATH%" (
 if not defined IBC_INI (
 	set IBC_INI=NULL
 ) else if not exist "%IBC_INI%" (
-	set ERROR_MESSAGE=IBController configuration file: %IBC-INI%  does not exist
+	set ERROR_MESSAGE=IBController configuration file: %IBC_INI%  does not exist
 	set ERROR=%E_IBC_INI_NOT_EXIST%
 	goto :err
 )
@@ -289,6 +293,7 @@ echo.
 ::======================== Generate the classpath ===========================
 
 echo Generating the classpath
+set PHASE=Generating the classpath
 
 for %%i in (%TWS_JARS%\*.jar) do (
     if not "!IBC_CLASSPATH!"=="" set IBC_CLASSPATH=!IBC_CLASSPATH!;
@@ -301,6 +306,7 @@ echo.
 ::======================== Generate the JAVA VM options =====================
 
 echo Generating the JAVA VM options
+set PHASE=Generating the JAVA VM options
 
 for /f "tokens=1 delims= " %%i in (%TWS_VMOPTS%) do (
 	set TOKEN=%%i
@@ -314,6 +320,7 @@ echo.
 ::======================== Determine the location of java.exe ===============
 
 echo Determining the location of java.exe 
+set PHASE=Determining the location of java.exe
 
 if not defined JAVA_PATH (
 	if exist "%INSTALL4J%\pref_jre.cfg" (
@@ -344,6 +351,8 @@ echo.
 
 ::======================== Start IBController ===============================
 
+set PHASE=Starting IBController
+
 if defined GOT_FIX_CREDENTIALS (
 	if defined GOT_API_CREDENTIALS (
 		set HIDDEN_CREDENTIALS="***" "***" "***" "***"
@@ -356,11 +365,11 @@ if defined GOT_FIX_CREDENTIALS (
 	
 
 if "%ENTRY_POINT%"=="%ENTRY_POINT_TWS%" (
-	set PROGRAM=IBController
+	set PROGRAM=TWS
 ) else (
-	set PROGRAM=IBGateway
+	set PROGRAM=Gateway
 )
-echo Starting %PROGRAM% with this command:
+echo Starting IBController with this command:
 echo "%JAVA_PATH%\java.exe" -cp  "%IBC_CLASSPATH%" %JAVA_VM_OPTIONS% %ENTRY_POINT% "%IBC_INI%" %HIDDEN_CREDENTIALS% %MODE%
 echo.
 
@@ -383,7 +392,8 @@ if defined GOT_FIX_CREDENTIALS (
 
 popd
 
-echo %PROGRAM% finished
+echo.
+echo %PROGRAM% finished at %DATE% %TIME%
 echo.
 
 exit /B %ERRORLEVEL%
