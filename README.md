@@ -1,8 +1,8 @@
 **Download the
-[latest official release](https://github.com/ib-controller/ib-controller/releases/latest)
+[latest official release](https://github.com/tradewright/TwsAutomater/releases/latest)
 here**
 
-IBController provides hands-free operation of
+TwsAutomater provides hands-free operation of
 [Interactive Brokers](https://www.interactivebrokers.com)
 [Trader Workstation](http://www.interactivebrokers.com/en/pagemap/pagemap_APISolutions.php).
 It's especially useful for developers of automated trading systems who use
@@ -21,28 +21,13 @@ It's especially useful for developers of automated trading systems who use
 Downloads
 ---------
 
-If you just want to use IBController without modifying it, you should download 
-the latest official release ZIP which you can find [here](https://github.com/ib-controller/ib-controller/releases/latest).
-
-Should you ever need to revert to an earlier IBController release, they are also available 
-[here](https://github.com/ib-controller/ib-controller/releases).
-
-A docker container with a working IBController and IBGateway combination is available from [QuantConnect] (https://github.com/QuantConnect/Lean/blob/master/DockerfileLeanFoundation).
-
-If you use Arch Linux you can install the
-[ib-controller](https://aur.archlinux.org/packages/ib-controller/) package
-from AUR: it includes lots of server-oriented features such as multiple daemons,
-systemd units, headless/virtual framebuffer support, Monit monitoring etc.
-
-Developers may wish to embed IBController for integration testing convenience
-(eg see projects
-[GoIB](https://github.com/gofinance/ib/tree/master/testserver) and
-[IB Connect](https://github.com/benalexau/ibconnect/tree/master/testserver))
+If you just want to use TwsAutomater without modifying it, you should download 
+the latest official release ZIP which you can find [here](https://github.com/tradewright/TwsAutomater/releases/latest).
 
 User Guide
 ----------
 
-Please see the [IBController User Guide](userguide.md) for installation and
+Please see the [TwsAutomater User Guide](userguide.md) for installation and
 usage instructions. The User Guide is also included as a PDF file in the 
 download ZIP.
 
@@ -50,32 +35,32 @@ Support
 -------
 
 > IMPORTANT
-> By far the most common problem that users have when setting up IBController
+> By far the most common problem that users have when setting up TwsAutomater
 is the result of trying to use it with the self-updating version of TWS.
 >
->**IBController DOES NOT WORK with the self-updating version of TWS.**
+>**TwsAutomater DOES NOT WORK with the self-updating version of TWS.**
 >
->You must install the offline version of TWS for use with IBController.
+>You must install the offline version of TWS for use with TwsAutomater.
 >
 >Note however that there is no self-updating version of the Gateway, so the
 normal Gateway installer will work fine if you only want to use the Gateway.
 
-If you need assistance with running IBController, or have any queries or 
+If you need assistance with running TwsAutomater, or have any queries or 
 suggestions for improvement, you should join the 
-[IBController User Group](https://groups.io/g/ibcontroller).
+[TwsAutomater User Group](https://groups.io/g/twsautomater).
 
-If you're convinced you've found a bug in IBController, please report it
-via either the [IBController User Group](https://groups.io/g/ibcontroller)
-or the [GitHub Issue Tracker](https://github.com/ib-controller/ib-controller/issues).
+If you're convinced you've found a bug in TwsAutomater, please report it
+via either the [TwsAutomater User Group](https://groups.io/g/twsautomater)
+or the [GitHub Issue Tracker](https://github.com/tradewright/TwsAutomater/issues).
 
 Please provide as much evidence as you can, especially the versions of 
-IBController and TWS/Gateway you're using and a full description of the 
+TwsAutomater and TWS/Gateway you're using and a full description of the 
 incorrect behaviour you're seeing.
 
-Note that IBController creates a log file that records a lot of useful 
+Note that TwsAutomater creates a log file that records a lot of useful 
 information that can be very helpful in diagnosing users' problems. The 
 location of this log file is prominently displayed in the window that appears
-when you run IBController. It is helpful to attach this log file to any 
+when you run TwsAutomater. It is helpful to attach this log file to any 
 problem reports.
 
 Contributing
@@ -85,11 +70,10 @@ We welcome your involvement and contributions! Please read the
 [contributor guidelines](CONTRIBUTING.md), and send us a 
 [pull request](../../pulls).
 
-We also thank past contributors to the original SourceForge project: Richard
-King, Steven Kearns and Ken Geis. Plus of course all those on our GitHub
-[contributor list](../../graphs/contributors).
+We also thank past contributors to the IBController project from which TwsAutomater
+was forked: Richard King, Steven Kearns, Ken Geis, Ben Alex and Shane Castle.
 
 License
 -------
-IBController is licensed under the
+TwsAutomater is licensed under the
 [GNU General Public License](http://www.gnu.org/licenses/gpl.html) version 3.

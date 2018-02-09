@@ -1,8 +1,8 @@
-<project name="IBController" default="dist" basedir=".">
+<project name="TwsAutomater" default="dist" basedir=".">
     <property environment="env"/>
     <fail unless="env.TWS" message="Environment variable 'TWS' not set (set it to the fully-qualified directory name containing the TWS jar files)."/>
 
-    <property name="ver" value="3.4.3"/>
+    <property name="ver" value="4.0.0"/>
     <property name="src" location="src"/>
     <property name="resources" location="resources"/>
     <property name="target" location="target"/>
@@ -26,17 +26,15 @@
     </target>
 
     <target name="jar" depends="compile" description="generate the jar">
-        <jar jarfile="${resources}/IBController.jar" basedir="${target}/classes"/>
+        <jar jarfile="${resources}/TwsAutomater.jar" basedir="${target}/classes"/>
     </target>
 
     <target name="dist" depends="jar" description="generate the distribution zip">
         <echo file="${resources}/version" append="false" message="${ver}"/>
-        <copy todir="${target}/IBController" preservelastmodified="true">
+        <copy todir="${target}/TwsAutomater" preservelastmodified="true">
             <fileset file="LICENSE.txt"/>
-            <fileset dir="${resources}">
-	        <exclude name="IBControllerService/**"/>
-	    </fileset>
+            <fileset dir="${resources}"/>
 	</copy>
-        <zip destfile="${dist}/IBController-${ver}.zip" basedir="${target}/IBController" includes="**"/>
+        <zip destfile="${dist}/TwsAutomater-${ver}.zip" basedir="${target}/TwsAutomater" includes="**"/>
     </target>
 </project>
