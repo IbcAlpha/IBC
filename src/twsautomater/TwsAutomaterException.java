@@ -16,7 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with TwsAutomater.  If not, see <http://www.gnu.org/licenses/>.
 
-package TwsAutomater;
+package twsautomater;
 
 public class TwsAutomaterException extends Exception {
     private static final long serialVersionUID = 20140324L;
