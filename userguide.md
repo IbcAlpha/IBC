@@ -1,11 +1,10 @@
-# TwsAutomater User Guide
------------
+# IBC User Guide
 
 > IMPORTANT
 >
 Make sure you read the information in the **Scope of this User Guide** section.
 >
-TwsAutomater can be used to start TWS running the demo account. However 
+IBC can be used to start TWS running the demo account. However 
 there are many ways in which the demo account differs from a live or a paper
 trading account, which may occasionally cause some inconvenience. In 
 particular when you login to the demo account you are actually allocated 
@@ -13,31 +12,30 @@ a random account number, and when you log out this account may then be
 allocated to another user. Next time you log in to the demo account, you are
 unlikely to be allocated the same account as before, and even if you are given
 the same one, any settings you made last time round will have changed.
-TwsAutomater makes no attempt to avoid these situations: they are simply
+IBC makes no attempt to avoid these situations: they are simply
 an inevitable by-product of using the demo system, which is not intended
 for any serious usage.
 >
 Note that in the remainder of this document, 'Unix' is used to refer to all
-Unix-derived operating systems, including Linux and OS X.
+Unix-derived operating systems, including Linux and macOS.
 
 
 ## Introduction
 
-### Overview of TwsAutomater
-----------------------------
+### Overview of IBC
 
-TwsAutomater enables Interactive Brokers' Trader Workstation (TWS) and Gateway to
+IBC enables Interactive Brokers' Trader Workstation (TWS) and Gateway to
 be run in 'hands-free' mode, so that a user need not be present.  This makes
 possible the deployment of unattended automated trading systems.  
 
-TwsAutomater loads TWS or the Gateway and then 'listens' for various events (such 
+IBC loads TWS or the Gateway and then 'listens' for various events (such 
 as the display of dialogs) that would normally require user intervention. It can then
 automatically take appropriate action on the user's behalf. For example, as well
 as automating the TWS and Gateway login by filling the login dialog with your 
 credentials, it can also deal with TWS's autologoff dialog so that it can keep TWS 
 running continuously.
 
-Here are some of the things TwsAutomater does for you:
+Here are some of the things IBC does for you:
 
 - starts TWS or the Gateway
 
@@ -54,126 +52,126 @@ Here are some of the things TwsAutomater does for you:
 
 - shuts down TWS tidily at a specified day of the week and time.
 
-TwsAutomater also responds to certain commands sent to it by another program,
+IBC also responds to certain commands sent to it by another program,
 for example to tell TWS/Gateway to shut itself down cleanly.
 	
 ### Scope of this User Guide
----------------------------
 
-This User Guide is intended to help you get started with TwsAutomater.
+This User Guide is intended to help you get started with IBC.
 
 ### Acknowledgement
---------------------
 
-This User Guide has been produced using the Markdown editor and PDF 
-export tool at https://stackedit.io/editor.
+This User Guide has been produced using the Markdown editor at:
+
+	https://stackedit.io/editor
+	
+and the Pandoc document conversion system to produce the PDF.
+
 
 ## Getting Started
 
 ### Checklist
-------------
 
-Here is a summary of the steps you need to perform to get TwsAutomater
+Here is a summary of the steps you need to perform to get IBC
 up and running properly.
 
 1. Install the offline version of Interactive Brokers Trader Workstation 
    (see *Interactive Brokers*   *Trader Workstation* in the *Prerequisites* section), 
   and make sure that it uses the English language setting. **Please note**
   **that you MUST download the OFFLINE version of TWS, not the self-**
-  **updating version: TwsAutomater DOES NOT WORK with the self-**
+  **updating version: IBC DOES NOT WORK with the self-**
   **updating version of TWS.**
 
-2. Download the TwsAutomater distribution ZIP file (see the *Where to get* 
-   *TwsAutomater* section).
+2. Download the IBC distribution ZIP file (see the *Where to get* 
+   *IBC* section).
 
-3. Install TwsAutomater (see the *Installing TwsAutomater* section). Please note
-  that if you already have an existing TwsAutomater installation, it's wise to
+3. Install IBC (see the *Installing IBC* section). Please note
+  that if you already have an existing IBC installation, it's wise to
   rename its folder before installing the new version in case you need to 
   revert to it later.
 
-4. Create an encrypted folder called `TwsAutomater` in your personal
+4. Create an encrypted folder called `IBC` in your personal
    filestore (see *Protecting the Password* in the *Password Security* section).
 
-5. Copy the configuration file (called `TwsAutomater.ini`) from the    
-   TwsAutomater installation folder to the encrypted folder created in
+5. Copy the configuration file (called `IBC.ini`) from the    
+   IBC installation folder to the encrypted folder created in
    step 5.
 
 6. Check that the correct major version number for TWS is set in the shell 
-   script files  in the TwsAutomater installation folder: these files are 
-   `TwsAutomaterStart.bat` and `TwsAutomaterGatewayStart.bat`
-   on Windows, `TwsAutomaterStart.sh` and 
-   `TwsAutomaterGatewayStart.sh` on Unix. To find the TWS major 
+   script files  in the IBC installation folder: these files are 
+   `IBCStart.bat` and `IBCGatewayStart.bat`
+   on Windows, `IBCStart.sh` and 
+   `IBCGatewayStart.sh` on Unix. To find the TWS major 
    version number, first run TWS or the Gateway manually using the 
    IB-provided icon, then click `Help > About Trader Workstation` 
    or `Help > About IB Gateway`. In the displayed information you'll 
    see a  line similar to this:
 
-    Build 954.2a, Oct 30, 2015 4:07:54 PM
+    `Build 954.2a, Oct 30, 2015 4:07:54 PM`
 
    Here the major version number is 954. Ignore the rest of the version 
    number. Now open the script files with a text editor and ensure that
    the TWS_MAJOR_VRSN variable is set correctly.
 
-7. At this stage, everything is set up to run TwsAutomater with its default
+7. At this stage, everything is set up to run IBC with its default
    settings, which will start TWS and log it into the IB demo user. It is
    worthwhile doing this just to check that everything works before 
    customising it to suit your needs. To do this, run the relevant
-   shell script (`TwsAutomaterStart.bat` on Windows, 
-   `TwsAutomaterStart.sh` on Unix) from the TwsAutomater 
+   shell script (`IBCStart.bat` on Windows, 
+   `IBCStart.sh` on Unix) from the IBC 
    installation folder. If everything is satisfactory, shut down 
-   TwsAutomater by closing TWS in the usual way. 
+   IBC by closing TWS in the usual way. 
   
-  Note that when you start TwsAutomater, information about the startup 
+  Note that when you start IBC, information about the startup 
   process is logged to a file to aid diagnosing any faults that may 
   occurr. You will be notified of the log file name during the startup
   sequence.
 
-8. Edit the configuration file (`TwsAutomater.ini`) in the encrypted 
-   `TwsAutomater` folder using a text editor such as Notepad. See 
-   *Configuring TwsAutomater* for further information.
+8. Edit the configuration file (`IBC.ini`) in the encrypted 
+   `IBC` folder using a text editor such as Notepad. See 
+   *Configuring IBC* for further information.
 
-9. If you did not install TWS and TwsAutomater in their default locations, 
+9. If you did not install TWS and IBC in their default locations, 
    and store the configuration file in the recommended location, you will
-   have to edit the shell scripts in the TwsAutomater installation folder
+   have to edit the shell scripts in the IBC installation folder
    accordingly. They contain comments that will help you do this correctly.
 
 10. If you intend to run API programs to connect with TWS, you will need
     to manually edit the API settings in TWS's Global Configuration Dialog.
 
 ### Prerequisites
-----------------
 
-This section details the other software that is needed to run TwsAutomater.
+This section details the other software that is needed to run IBC.
 
 #### Java Runtime
 
-Both TwsAutomater and TWS/Gateway are Java programs, and therefore the Java
+Both IBC and TWS/Gateway are Java programs, and therefore the Java
 Runtime needs to be accessible, but you don't have to do anything to ensure
 this.
 
 The TWS installers for Windows and Linux include a hidden version of Java 
 that Interactive Brokers have used for developing and testing TWS. This 
-version also runs TwsAutomater perfectly, and the TwsAutomater scripts 
+version also runs IBC perfectly, and the IBC scripts 
 ensure that it is used. 
 
 This means that it is not necessary to ensure that Java is installed on your 
-computer. It doesn't matter if it is already installed, but the TwsAutomater
+computer. It doesn't matter if it is already installed, but the IBC
 scripts won't use it. However the scripts do make provision for declaring 
 specifically which Java installation is to be used in exceptional situations 
 where necessary.
 
 If you had previously installed Java for use with old versions of Tws, but 
 do not need it for any other programs, then you might want to consider 
-uninstalling it once you have finished setting up TwsAutomater.
+uninstalling it once you have finished setting up IBC.
 
-**Note for OS X users**: the installer for the OS X version of TWS does not 
+**Note for macOS users**: the installer for the macOS version of TWS does not 
 currently include the Java Runtime, so you will have to ensure that Java is 
 installed.
 
 
 #### Interactive Brokers Trader Workstation
 
-Before running TwsAutomater, you will need to download and install the **offline** 
+Before running IBC, you will need to download and install the **offline** 
 version of Trader Workstation from the [Interactive Brokers](http://www.interactivebrokers.com/) website. 
 
 The location of the TWS dowloads page on IB's website varies from time to time,
@@ -184,13 +182,13 @@ select `TWS Software`: currently a valid direct link is [Tws Software](https://w
 IB provides two modes of operation for TWS:
 
 - an online, or self-updating TWS that automatically receives updates as IB 
-enhances it and fixes bugs. TwsAutomater **does not work** with the self-
+enhances it and fixes bugs. IBC **does not work** with the self-
 updating TWS, so **do not install the self-updating version for use with**
-**TwsAutomater**
+**IBC**
 
 - an offline or standalone TWS that, after download and installation, never
 changes (until you download and install another version): you **must** 
-download and install this offline version for use with TwsAutomater.
+download and install this offline version for use with IBC.
 
 Note that the TWS installation includes the code for both TWS and the 
 Gateway: there is no need to do another download for the Gateway. 
@@ -210,67 +208,65 @@ has been installed, the scripts will fail!)
 It is safest to use the 'stable' offline version of TWS rather than the 'latest'
 version for live trading: the latter is more likely to have bugs.
 
-TwsAutomater needs TWS to operate in English so that it can recognise the 
+IBC needs TWS to operate in English so that it can recognise the 
 various dialogues that it interacts with. You can set TWS's language by starting 
-it manually (ie without using TwsAutomater) and selecting the language on the 
+it manually (ie without using IBC) and selecting the language on the 
 initial login dialog. TWS will remember this language setting when you 
-subsequently start it using TwsAutomater.
+subsequently start it using IBC.
 
-Note that you do not need an IB account to try out TwsAutomater, as you can 
+Note that you do not need an IB account to try out IBC, as you can 
 use the IB demo account (username `edemo`, password `demouser`).
 
-### Where to get TwsAutomater
-----------------------------
+### Where to get IBC
 
-TwsAutomater is officially distributed as a ZIP file containing the compiled
+IBC is officially distributed as a ZIP file containing the compiled
 program and some additional files, detailed below.
 
-The ZIP file for the latest version should be downloaded from [Github](https://github.com/tradewright/TwsAutomater/releases). 
+The ZIP file for the latest version should be downloaded from [Github](https://github.com/IbcAlpha/IBC/releases). 
 Earlier versions can also be downloaded from the same place if need be.
 
 The distribution ZIP file contains:
 
 * [License](LICENSE.txt) text
-* Compiled JAR (named similar to `TwsAutomater.jar`)
-* Sample configuration file (named similar to `TwsAutomater.ini`)
+* Compiled JAR (named similar to `IBC.jar`)
+* Sample configuration file (named similar to `IBC.ini`)
 * Sample TWS launch script for Windows (named similar to 
-`TwsAutomaterStart.bat`)
+`IBCStart.bat`)
 * Sample Gateway launch script for Windows (named similar to 
-`TwsAutomaterGatewayStart.bat`)
+`IBCGatewayStart.bat`)
 * Sample TWS launch script for Unix (named similar to 
-`TwsAutomaterStart.sh`)
+`IBCStart.sh`)
 * Sample Gateway launch script for Unix (named similar to 
-`TwsAutomaterGatewayStart.sh`)
-* Sample TWS launch script for OS X (named similar to 
-`TwsAutomaterStart-OSX.sh`)
-* Sample Gateway launch script for OS X (named similar to 
-`TwsAutomaterGatewayStart-OSX.sh`)
+`IBCGatewayStart.sh`)
+* Sample TWS launch script for macOS (named similar to 
+`IBCStart-OSX.sh`)
+* Sample Gateway launch script for macOS (named similar to 
+`IBCGatewayStart-OSX.sh`)
 * Sample Windows Task Scheduler file (named similar to 
 `Start TWS Live (daily).xml`)
 * A Scripts sub-folder containing sub-scripts used by the top-level scripts 
 mentioned above
-* A text file called `version` containing the TwsAutomater version number
+* A text file called `version` containing the IBC version number
 
 Source code and build scripts are not included in the distribution ZIPs, as they
-are freely available from the [TwsAutomater project page](https://github.com/tradewright/TwsAutomater) on Github.
+are freely available from the [IBC project page](https://github.com/IbcAlpha/IBC) on Github.
 
-### Installing TwsAutomater
----------------------------
+### Installing IBC
 
-Installing TwsAutomater is just a matter of extracting the contents of the
+Installing IBC is just a matter of extracting the contents of the
 downloaded ZIP file to wherever you want to install it. You will make things
 easiest for yourself if you use the locations described in 'Default Paths'
 below, because that will minimise customising the configuration file and 
 the shell scripts.
 
-If you already have a previous TwsAutomater installation, it's wise to rename its
-folder (eg to `TwsAutomater.old`) so that you can easily refer back to any 
+If you already have a previous IBC installation, it's wise to rename its
+folder (eg to `IBC.old`) so that you can easily refer back to any 
 customisations you did for that version.
 
 #### On Windows: 
 
-- create the folder where you want to install TwsAutomater, if it doesn't already 
-  exist. As noted above (see Default Paths) this is normally `C:\TwsAutomater` 
+- create the folder where you want to install IBC, if it doesn't already 
+  exist. As noted above (see Default Paths) this is normally `C:\IBC` 
   but it can be anywhere you like
 
 - locate the downloaded ZIP file using File Explorer (Windows Explorer on
@@ -284,21 +280,21 @@ customisations you did for that version.
 - unpack the ZIP file using a command similar to this:
 
 ```
-sudo unzip ~/Downloads/TwsAutomater-3.3.0.zip -d \
-/opt/TwsAutomater
+sudo unzip ~/Downloads/IBC-3.3.0.zip -d \
+/opt/IBC
 ```
 
 - now make sure all the script files are executable:
 
 ```
-cd /opt/TwsAutomater
+cd /opt/IBC
 sudo chmod o+x *.sh */*.sh
 ```
 
 
 #### Default Paths
 
-Several sample files ship in each TwsAutomater release. The sample files (and these 
+Several sample files ship in each IBC release. The sample files (and these 
 instructions) assume the default paths shown in the table below (where 
 ``<username>`` represents your operating system user name, not your IB login id).
 
@@ -308,34 +304,33 @@ sample files to reflect this.
 | Platform | Item                       | Path                                |
 | -------- | -------------------------- | ------------------------------------|
 | Windows  | IB TWS program files       | `C:\Jts`                            |
-|          | TwsAutomater program files | `C:\TwsAutomater`                   |
-|          | TwsAutomater.ini           | `%HOMEDRIVE%%HOMEPATH%\Documents\TwsAutomater` |
+|          | IBC program files | `C:\IBC`                   |
+|          | IBC.ini           | `%HOMEDRIVE%%HOMEPATH%\Documents\IBC` |
 | Unix     | IB TWS program files       | `/home/<username>/Jts`              |
-|          | TwsAutomater program files | `/opt/TwsAutomater`                 |
-|          | TwsAutomater.ini           | `/home/<username>/TwsAutomater`     |
-| MacOSX   | IB TWS program files       | `/home/<username>/Applications`     |
-|          | TwsAutomater program files | `/opt/TwsAutomater`                 |
-|          | TwsAutomater.ini           | `/home/<username>/TwsAutomater`     |
+|          | IBC program files | `/opt/IBC`                 |
+|          | IBC.ini           | `/home/<username>/IBC`     |
+| macOS    | IB TWS program files       | `/home/<username>/Applications`     |
+|          | IBC program files | `/opt/IBC`                 |
+|          | IBC.ini           | `/home/<username>/IBC`     |
 |          |                            |                                     |
 
-Note that installing TwsAutomater and/or TWS from a Unix package manager may
+Note that installing IBC and/or TWS from a Unix package manager may
 not use these paths. Consult your Linux package instructions for file locations.
 
 
 ### Password Security
---------------------
 
-To login to TWS or IB Gateway, TwsAutomater needs to know your Interactive
+To login to TWS or IB Gateway, IBC needs to know your Interactive
 Brokers username and password. You should very carefully secure your IB account
 username and password to prevent unauthorised use by third parties. This section
 gives you guidance on how to achieve this.
 
-The username and password are given to TwsAutomater in one of two ways:
+The username and password are given to IBC in one of two ways:
 
 - via the configuration `.ini` file: this is the preferred method because the 
   configuration file can be protected by the operating system
 
-- via the command line parameters when TwsAutomater is started: this method is 
+- via the command line parameters when IBC is started: this method is 
   strongly deprecated because command line information associated with a 
   process is easily available outside the process (for example via Task 
   Manager on Windows)
@@ -354,7 +349,7 @@ simplest way to achieve this is to store it within your personal filestore:
 
 - on Unix it is the `/home/<username>` directory. 
 
-You are advised to place the file in its own `TwsAutomater` folder within this location.
+You are advised to place the file in its own `IBC` folder within this location.
 
 You should also consider encrypting the folder containing the configuration 
 file. This will prevent another user with administrator privileges gaining 
@@ -375,19 +370,18 @@ To encrypt the folder on Windows:
 Encrypting a folder on Unix is more involved, and you should refer to the 
 documentation for your distribution.
 
-### Configuring TwsAutomater
----------------------------
+### Configuring IBC
 
-TwsAutomater must be supplied with a configuration file. A specimen file called
-TwsAutomater.ini is included in the distribution ZIP. You will need to edit this
-file to include your IB username and password, and to ensure that TwsAutomater 
+IBC must be supplied with a configuration file. A specimen file called
+IBC.ini is included in the distribution ZIP. You will need to edit this
+file to include your IB username and password, and to ensure that IBC 
 behaves in the way that best suits your needs. 
 
-You should copy the supplied file from the TwsAutomater installation folder 
+You should copy the supplied file from the IBC installation folder 
 into the secure location described above before editing it, so that you have 
 a clean copy to revert to if need be.
 
-The sample `TwsAutomater.ini` file contains detailed comments on the 
+The sample `IBC.ini` file contains detailed comments on the 
 meaning of each configuration property. Many of these have sensible defaults, 
 or are only needed in special situations, so to help you get started quickly, here 
 is a list of the settings that you are most likely to need to change:
@@ -405,25 +399,24 @@ is a list of the settings that you are most likely to need to change:
 |                    |                                                               |
 
 
-There are two ways that TwsAutomater can locate your edited `TwsAutomater.ini` file. 
+There are two ways that IBC can locate your edited `IBC.ini` file. 
 
 - the simplest way is to tell it where to find the file in the command that starts
-  TwsAutomater. In this way, you can give the configuration file any name you 
+  IBC. In this way, you can give the configuration file any name you 
   like. This is the recommended approach, and the supplied scripts follow this 
-  approach. If you want change the filename from TwsAutomater.ini, or if you store 
+  approach. If you want change the filename from IBC.ini, or if you store 
   it somewhere other than the default location, you'll have to edit the start script
   to declare it's new name and location.
 
-- if you do not specify a configuration file name, TwsAutomater will expect to
-  find a file named `TwsAutomater.<username>.ini` in the current working
+- if you do not specify a configuration file name, IBC will expect to
+  find a file named `IBC.<username>.ini` in the current working
   directory. In this case, `<username>` is your username on your computer (not
   your IB account username). This method is deprecated, because it is likely to
   result in the `.ini` file being in an insecure location.
 
-### Starting TwsAutomater
-------------------------
+### Starting IBC
 
-The normal way to start TwsAutomater is by use of a shell script. These can be 
+The normal way to start IBC is by use of a shell script. These can be 
 identified by the `.bat` (Windows) or `.sh` (Unix) extensions. Scripts 
 to start TWS and Gateway are included in the distribution ZIP, and due to their  
 complexity you are strongly advised to use them, rather than try to create your
@@ -436,16 +429,16 @@ Windows users can execute a shell script in a number of ways, including:
 * Create a scheduled task to run it automatically at the required times (see 
   below for more information about using scheduled tasks)
 
-If you used the default locations to install TwsAutomater and TWS, and to
-store your TwsAutomater.ini file, you should not need to edit the shell 
+If you used the default locations to install IBC and TWS, and to
+store your IBC.ini file, you should not need to edit the shell 
 scripts. If you do need to change them, they are commented to help you.
 
 ## Other Topics
 
 ### Scheduled Tasks (Windows)
-----------------------------
-On Windows you can start TwsAutomater automatically using a Scheduled Task to 
-run TwsAutomaterStart.bat or TwsAutomaterGatewayStart.bat.
+
+On Windows you can start IBC automatically using a Scheduled Task to 
+run IBCStart.bat or IBCGatewayStart.bat.
 
 If you do this, you must make sure that the machine is already logged on before
 the scheduled task runs. Otherwise the task will still run, but you won't be
@@ -454,11 +447,11 @@ able to see and interact with TWS, even if you subsequently log on.
 Remember also to change the task settings to prevent Windows automatically
 ending it after a certain time.
 
-Also you can use the `IbAutoClosedown=no` setting in the TwsAutomater
+Also you can use the `IbAutoClosedown=no` setting in the IBC
 configuration file to disable TWS's autologoff feature,  and the `ClosedownAt=`
-setting to specify when TwsAutomater will shut down TWS.
+setting to specify when IBC will shut down TWS.
 
-In this way you can start TwsAutomater automatically on Sunday evening or Monday
+In this way you can start IBC automatically on Sunday evening or Monday
 morning, keep it running all week and then close down tidily on Friday evening 
 or Saturday morning.
 
@@ -476,20 +469,20 @@ Windows 10. Because of this, it is advisable to set up your Scheduled Task
 differently on Windows 10: see the next section _Running under Task Scheduler 
 on Windows 10_.
 
-**IMPORTANT Make sure you use the /INLINE argument to TwsAutomaterStart.bat or 
-TwsAutomaterGatewayStart.bat when starting TwsAutomater from Task Scheduler.
-Otherwise TwsAutomater will start and run correctly, but Task Scheduler will not
+**IMPORTANT Make sure you use the /INLINE argument to IBCStart.bat or 
+IBCGatewayStart.bat when starting IBC from Task Scheduler.
+Otherwise IBC will start and run correctly, but Task Scheduler will not
 be aware of it: in particular Task Scheduler will not show the task as running. 
 This prevents correct operation of Task Scheduler features such as killing the 
 task after a specified elapsed time.
 
-A sample scheduled task is included in the TwsAutomater distribution ZIP,
+A sample scheduled task is included in the IBC distribution ZIP,
 called `Start TWS Live (daily).xml`. You can import this into your Task
 Scheduler if you are running Windows 7, Windows 8 or Windows 8.1 (see below
 for further information about running on Windows 10). After importing it, you will
 need to enable it and change the user account it runs under. This task starts TWS
 daily at 05:55, and assumes that TWS is set to auto-logoff at 05:52, so the
-TwsAutomater configuration file must include `IbAutoClosedown=yes`.
+IBC configuration file must include `IbAutoClosedown=yes`.
 
 #### Running under Task Scheduler on Windows 10
 
@@ -499,33 +492,32 @@ Windows versions, there are important changes in some of the 'under the hood'
 operation.
 
 The net effect of these changes is that it is no longer a good idea to start 
-TwsAutomater under Task Scheduler by running a command file. It will only work
-correctly if the command given to Task Scheduler directly runs TwsAutomater.
+IBC under Task Scheduler by running a command file. It will only work
+correctly if the command given to Task Scheduler directly runs IBC.
 
-To set this up, first run TwsAutomater manually (using TwsAutomaterStart.bat 
-or TwsAutomaterGatewayStart.bat), and open the log file in Notepad or any other 
+To set this up, first run IBC manually (using IBCStart.bat 
+or IBCGatewayStart.bat), and open the log file in Notepad or any other 
 text editor: if using Notepad, make sure that 'Word Wrap' on the Format menu is 
 not checked). Now create your scheduled task (it's easiest to import the sample
-included in the TwsAutomater download zip file), and open the start action editor.
-Find the line in the log file that reads: 'Starting TwsAutomater with this 
+included in the IBC download zip file), and open the start action editor.
+Find the line in the log file that reads: 'Starting IBC with this 
 command:', then select and copy the first part of the following line (up to but 
 not including `-cp`), and paste it into the `Program/script:` field of the action
 editor. Then select and copy the remainder of the line in the log file (starting
 at `-cp`), and paste it into the `Add arguments (optional):` field of the action
 editor. You can now run this scheduled task in the normal way.
 
-Note that running TwsAutomater via from Task Scheduler via a direct command in 
-this way means that there is no permanent TwsAutomater log file. Any output 
-from TwsAutomater appears in the window that Java creates to host the Java 
+Note that running IBC via from Task Scheduler via a direct command in 
+this way means that there is no permanent IBC log file. Any output 
+from IBC appears in the window that Java creates to host the Java 
 console output, but there is no way to capture this to a file (note that normal
 redirection operators `>` and `>>` cannot be used in a command in a scheduled 
-task). If you've made sure that your TwsAutomater installation operates 
+task). If you've made sure that your IBC installation operates 
 correctly before setting up your scheduled task, this should not be too much
 of a problem. 
 
 
-### Multiple TwsAutomater Instances
-----------------------------------
+### Multiple IBC Instances
 
 You may want to run more than one instance of TWS or the Gateway on the same 
 computer, perhaps simultaneously. Here are some reasons you might want to do
@@ -558,9 +550,9 @@ one instance of TWS can access them at a time. So you can run multiple TWS
 instances with no problem provided each instance is logged in to a different
 username, AND you don't try to run them at the same time.
 
-However, by using the `IbDir` setting in the TwsAutomater configuration file, 
+However, by using the `IbDir` setting in the IBC configuration file, 
 you can tell TWS to store its settings whereever you like. So to have multiple 
-TwsAutomater instances operating simultaneously, you need to create a separate
+IBC instances operating simultaneously, you need to create a separate
 configuration file for each instance with a different setting for `IbDir`. Note 
 that you do not need to copy the TWS .jar files themselves - you can load TWS 
 from the same installation folder for each instance.
@@ -579,15 +571,15 @@ run both your live and paper trading accounts. So:
 
 - create two new folders `C:\JtsLive` and `C:\JtsPaper` to store the settings
 
-- create two TwsAutomater configuration files called `TwsAutomaterLive.ini` 
- and `TwsAutomaterPaper.ini`
+- create two IBC configuration files called `IBCLive.ini` 
+ and `IBCPaper.ini`
 
 - set the IbDir option in them to point to the relevant folder, ie
   `IbDir=C:\\JtsLive` and `IbDir=C:\\JtsPaper`, and set the `IbLoginId`
   and `IbPassword` to the live or paper account values as appropriate
 
-- create two start scripts (by copying `TwsAutomaterStart.bat`) called
-  `TwsAutomaterStartLive.bat` and `TwsAutomaterStartPaper.bat`
+- create two start scripts (by copying `IBCStart.bat`) called
+  `IBCStartLive.bat` and `IBCStartPaper.bat`
 
 - change the `set IBC_INI=...` line in each script file to refer to the 
   relevant configuration file
@@ -612,20 +604,19 @@ Then follow the advice in the previous section and ensure that each script
 file has the correct value for the `TWS_MAJOR_VRSN` variable.
 
 ### Any Questions?
------------------
 
-If you need assistance with running TwsAutomater, or have any queries or 
-suggestions for improvement, you should join the TwsAutomater User Group
+If you need assistance with running IBC, or have any queries or 
+suggestions for improvement, you should join the IBC User Group
 at:
 
-[https://groups.io/g/TwsAutomater](https://groups.io/g/TwsAutomater).
+[https://groups.io/g/IBC](https://groups.io/g/IBC).
 
-If you're convinced you've found a bug in TwsAutomater, please report it
-via either the TwsAutomater User Group or the GitHub Issue Tracker at:
+If you're convinced you've found a bug in IBC, please report it
+via either the IBC User Group or the GitHub Issue Tracker at:
 
-[https://github.com/tradewright/TwsAutomater/issues](https://github.com/tradewright/TwsAutomater/issues).
+[https://github.com/IbcAlpha/IBC/issues](https://github.com/IbcAlpha/IBC/issues).
 
 Please provide as much evidence as you can, especially the versions of 
-TwsAutomater and TWS/Gateway you're using and a full description of the 
+IBC and TWS/Gateway you're using and a full description of the 
 incorrect behaviour you're seeing.
 

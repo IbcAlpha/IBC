@@ -1,4 +1,4 @@
-<project name="TwsAutomater" default="dist" basedir=".">
+<project name="IBC" default="dist" basedir=".">
     <property environment="env"/>
     <fail unless="env.TWS" message="Environment variable 'TWS' not set (set it to the fully-qualified directory name containing the TWS jar files)."/>
 
@@ -26,15 +26,15 @@
     </target>
 
     <target name="jar" depends="compile" description="generate the jar">
-        <jar jarfile="${resources}/TwsAutomater.jar" basedir="${target}/classes"/>
+        <jar jarfile="${resources}/IBC.jar" basedir="${target}/classes"/>
     </target>
 
     <target name="dist" depends="jar" description="generate the distribution zip">
         <echo file="${resources}/version" append="false" message="${ver}"/>
-        <copy todir="${target}/TwsAutomater" preservelastmodified="true">
+        <copy todir="${target}/IBC" preservelastmodified="true">
             <fileset file="LICENSE.txt"/>
             <fileset dir="${resources}"/>
 	</copy>
-        <zip destfile="${dist}/TwsAutomater-${ver}.zip" basedir="${target}/TwsAutomater" includes="**"/>
+        <zip destfile="${dist}/IBC-${ver}.zip" basedir="${target}/IBC" includes="**"/>
     </target>
 </project>

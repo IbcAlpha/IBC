@@ -6,7 +6,7 @@ to maintain the project and in turn the pull requests we're likely to merge:
    why your proposed change is unlikely to be accepted, or someone else may
    already be working on something similar, or it may even have been proposed
    and rejected before. You can also discuss suggestions for improvement on 
-   the [TwsAutomater User Group](https://groups.io/g/twsautomater).
+   the [IBC User Group](https://groups.io/g/IBC).
    
 2. **Cross-platform**: Changes must work on both Linux/Unix and Windows.
    Please make sure to test thoroughly on both platforms, and for both TWS
@@ -18,15 +18,15 @@ to maintain the project and in turn the pull requests we're likely to merge:
    
 4. **Non-developer users**: A lot of our users aren't developers. It must be
    easy for them to use any improvements. A practical approach is to ensure the
-   [configuration file](resources/TwsAutomater.ini) and/or
+   [configuration file](resources/IBC.ini) and/or
    [user guide](userguide.md) reflects changes.
    
 5. **Backward compatibility**: New versions should not force users of previous
    versions to change their configuration or command files (ie no surprises),
    unless this is absolutely essential. Obviously it may be necessary to 
-   introduce new settings into the [configuration file](resources/TwsAutomater.ini)
+   introduce new settings into the [configuration file](resources/IBC.ini)
    or enhance the script files, but this should be done in such a way that 
-   if a user moves to the new version of TwsAutomater without making any changes
+   if a user moves to the new version of IBC without making any changes
    their TWS/Gateway will continue to operate exactly as before.
    
 6. **Respect IB T&C**: Changes must not be an infringement of the intent or
@@ -35,11 +35,11 @@ to maintain the project and in turn the pull requests we're likely to merge:
    
 7. **Style**: Please maintain the same style as the existing code unless you've
    discussed a refactor with the current maintainers via email or a GitHub
-   [Issue](https://github.com/tradewright/TwsAutomater/issues).
+   [Issue](https://github.com/IbcAlpha/IBC/issues).
 
 Development Tips
 ================
-[Apache Ant](http://ant.apache.org/) is required to build TwsAutomater. After
+[Apache Ant](http://ant.apache.org/) is required to build IBC. After
 installation of Ant and TWS onto your machine, run Ant with the `TWS`
 environment variable set to your local TWS directory. This is required so that
 the compiler can locate the TWS jar files. For example:
