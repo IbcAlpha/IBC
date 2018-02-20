@@ -206,16 +206,6 @@ import java.util.concurrent.TimeUnit;
 
 public class IbcTws {
 
-    /**
-     * starts up the TWS app.
-     * @param args -
-	 *    If length == 1, then args[0] is the path to the ini file.
-	 *    If length == 0, we assume that the ini file is located in the current user
-     *                    directory in a file called "IBC.ini".
-	 *    If length == 2 and args[0] is "encrypt", we print out the encryption of args[1].
-     * @throws java.lang.Exception
-     */
-
     private IbcTws() { }
     
     public static void main(final String[] args) throws Exception {
@@ -240,13 +230,11 @@ public class IbcTws {
          * 
          * 1. No parameters
          * 
-         * 2. ENCRYPT <password>
+         * 2. <iniFile> [<tradingMode>]
          * 
-         * 3. <iniFile> [<tradingMode>]
+         * 3. <iniFile> <apiUserName> <apiPassword> [<tradingMode>]
          * 
-         * 4. <iniFile> <apiUserName> <apiPassword> [<tradingMode>]
-         * 
-         * 5. <iniFile> <fixUserName> <fixPassword> <apiUserName> <apiPassword> [<tradingMode>]
+         * 4. <iniFile> <fixUserName> <fixPassword> <apiUserName> <apiPassword> [<tradingMode>]
          * 
          * where:
          * 
@@ -263,17 +251,7 @@ public class IbcTws {
          *      <fixPassword>   ::= blank | password-for-FIX-CTCI-Gateway
          * 
          */
-        if (args.length == 2) {
-            if (args[0].equalsIgnoreCase("encrypt")) {
-                Utils.logRawToConsole("========================================================================");
-                Utils.logRawToConsole("");
-                Utils.logToConsole("encryption of \"" + args[1] + "\" is \"" +
-                               Encryptor.encrypt(args[1]) + "\"");
-                Utils.logRawToConsole("");
-                Utils.logRawToConsole("========================================================================");
-                System.exit(0);
-            }
-        } else if (args.length > 6) {
+        if (args.length > 6) {
             Utils.logError("Incorrect number of arguments passed. quitting...");
             Utils.logRawToConsole("Number of arguments = " +args.length);
             for (String arg : args) {

@@ -93,7 +93,7 @@ up and running properly.
 4. Create an encrypted folder called `IBC` in your personal
    filestore (see *Protecting the Password* in the *Password Security* section).
 
-5. Copy the configuration file (called `IBC.ini`) from the    
+5. Copy the configuration file (called `Config.ini`) from the    
    IBC installation folder to the encrypted folder created in
    step 5.
 
@@ -127,7 +127,7 @@ up and running properly.
   occurr. You will be notified of the log file name during the startup
   sequence.
 
-8. Edit the configuration file (`IBC.ini`) in the encrypted 
+8. Edit the configuration file (`Config.ini`) in the encrypted 
    `IBC` folder using a text editor such as Notepad. See 
    *Configuring IBC* for further information.
 
@@ -229,7 +229,7 @@ The distribution ZIP file contains:
 
 * [License](LICENSE.txt) text
 * Compiled JAR (named similar to `IBC.jar`)
-* Sample configuration file (named similar to `IBC.ini`)
+* Sample configuration file (named similar to `Config.ini`)
 * Sample TWS launch script for Windows (named similar to 
 `IBCStart.bat`)
 * Sample Gateway launch script for Windows (named similar to 
@@ -301,17 +301,17 @@ instructions) assume the default paths shown in the table below (where
 If you store any of these items in other locations, you will need to edit these 
 sample files to reflect this. 
 
-| Platform | Item                       | Path                                |
-| -------- | -------------------------- | ------------------------------------|
-| Windows  | IB TWS program files       | `C:\Jts`                            |
-|          | IBC program files | `C:\IBC`                   |
-|          | IBC.ini           | `%HOMEDRIVE%%HOMEPATH%\Documents\IBC` |
-| Unix     | IB TWS program files       | `/home/<username>/Jts`              |
-|          | IBC program files | `/opt/IBC`                 |
-|          | IBC.ini           | `/home/<username>/IBC`     |
-| macOS    | IB TWS program files       | `/home/<username>/Applications`     |
-|          | IBC program files | `/opt/IBC`                 |
-|          | IBC.ini           | `/home/<username>/IBC`     |
+| Platform | Item                       | Path                                  |
+| -------- | -------------------------- | --------------------------------------|
+| Windows  | IB TWS program files       | `C:\Jts`                              |
+|          | IBC program files          | `C:\IBC`                              |
+|          | Config.ini                 | `%HOMEDRIVE%%HOMEPATH%\Documents\IBC` |
+| Unix     | IB TWS program files       | `/home/<username>/Jts`                |
+|          | IBC program files          | `/opt/IBC`                            |
+|          | Config.ini                 | `/home/<username>/IBC`                |
+| macOS    | IB TWS program files       | `/home/<username>/Applications`       |
+|          | IBC program files          | `/opt/IBC`                            |
+|          | Config.ini                 | `/home/<username>/IBC`                |
 
 Note that installing IBC and/or TWS from a Unix package manager may
 not use these paths. Consult your Linux package instructions for file locations.
@@ -372,7 +372,7 @@ documentation for your distribution.
 ### Configuring IBC
 
 IBC must be supplied with a configuration file. A specimen file called
-IBC.ini is included in the distribution ZIP. You will need to edit this
+Config.ini is included in the distribution ZIP. You will need to edit this
 file to include your IB username and password, and to ensure that IBC 
 behaves in the way that best suits your needs. 
 
@@ -380,7 +380,7 @@ You should copy the supplied file from the IBC installation folder
 into the secure location described above before editing it, so that you have 
 a clean copy to revert to if need be.
 
-The sample `IBC.ini` file contains detailed comments on the 
+The sample `Config.ini` file contains detailed comments on the 
 meaning of each configuration property. Many of these have sensible defaults, 
 or are only needed in special situations, so to help you get started quickly, here 
 is a list of the settings that you are most likely to need to change:
@@ -408,12 +408,12 @@ is a list of the settings that you are most likely to need to change:
 |                                | all week                                    |
 
 
-There are two ways that IBC can locate your edited `IBC.ini` file. 
+There are two ways that IBC can locate your edited `Config.ini` file. 
 
 - the simplest way is to tell it where to find the file in the command that starts
   IBC. In this way, you can give the configuration file any name you 
   like. This is the recommended approach, and the supplied scripts follow this 
-  approach. If you want change the filename from IBC.ini, or if you store 
+  approach. If you want change the filename from Config.ini, or if you store 
   it somewhere other than the default location, you'll have to edit the start script
   to declare it's new name and location.
 
@@ -439,7 +439,7 @@ Windows users can execute a shell script in a number of ways, including:
   below for more information about using scheduled tasks)
 
 If you used the default locations to install IBC and TWS, and to
-store your IBC.ini file, you should not need to edit the shell 
+store your Config.ini file, you should not need to edit the shell 
 scripts. If you do need to change them, they are commented to help you.
 
 ## Other Topics

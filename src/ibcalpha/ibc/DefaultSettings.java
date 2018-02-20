@@ -66,11 +66,11 @@ public class DefaultSettings extends Settings {
                     System.getenv("HOMEPATH") + File.separator + 
                     "Documents" + File.separator + 
                     "IBC" + File.separator + 
-                    "IBC.ini";
+                    "Config.ini";
         } else {
             return System.getProperty("user.home") + File.separator + 
                     "IBC" + File.separator + 
-                    "IBC.ini";
+                    "Config.ini";
         }
     }
 

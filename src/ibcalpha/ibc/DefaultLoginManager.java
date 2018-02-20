@@ -75,7 +75,7 @@ public class DefaultLoginManager extends LoginManager {
     private volatile String IBAPIUserName;
 
     /**
-     * unencrypted IBAPI password - can either be supplied from the .ini file or as args[2]
+     * IBAPI password - can either be supplied from the .ini file or as args[2]
      */
     private volatile String IBAPIPassword;
 
@@ -89,7 +89,7 @@ public class DefaultLoginManager extends LoginManager {
     private volatile String FIXUserName;
 
     /**
-     * unencrypted FIX password - can either be supplied from the .ini file or as args[2]
+     * FIX password - can either be supplied from the .ini file or as args[2]
      */
     private volatile String FIXPassword;
 
@@ -135,9 +135,6 @@ public class DefaultLoginManager extends LoginManager {
 
     private static String getFIXPasswordFromSettings() {
         String password = Settings.settings().getString("FIXPassword", "");
-        if (password.length() != 0) {
-            if (isFIXPasswordEncrypted()) password = Encryptor.decrypt(password);
-        }
         return password;
     }
 
@@ -157,9 +154,6 @@ public class DefaultLoginManager extends LoginManager {
 
     private static String getTWSPasswordFromSettings() {
         String password = Settings.settings().getString("IbPassword", "");
-        if (password.length() != 0) {
-            if (isTwsPasswordEncrypted()) password = Encryptor.decrypt(password);
-        }
         return password;
     }
 
@@ -195,14 +189,6 @@ public class DefaultLoginManager extends LoginManager {
     
     private static boolean isFIX() {
         return Settings.settings().getBoolean("FIX", false);
-    }
-
-    private static boolean isFIXPasswordEncrypted() {
-        return Settings.settings().getBoolean("FIXPasswordEncrypted", true);
-    }
-
-    private static boolean isTwsPasswordEncrypted() {
-        return Settings.settings().getBoolean("PasswordEncrypted", true);
     }
 
 }
