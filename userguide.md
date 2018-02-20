@@ -2,9 +2,9 @@
 
 > IMPORTANT
 >
-Make sure you read the information in the **Scope of this User Guide** section.
+>Make sure you read the information in the **Scope of this User Guide** section.
 >
-IBC can be used to start TWS running the demo account. However 
+>IBC can be used to start TWS running the demo account. However 
 there are many ways in which the demo account differs from a live or a paper
 trading account, which may occasionally cause some inconvenience. In 
 particular when you login to the demo account you are actually allocated 
@@ -16,7 +16,7 @@ IBC makes no attempt to avoid these situations: they are simply
 an inevitable by-product of using the demo system, which is not intended
 for any serious usage.
 >
-Note that in the remainder of this document, 'Unix' is used to refer to all
+>Note that in the remainder of this document, 'Unix' is used to refer to all
 Unix-derived operating systems, including Linux and macOS.
 
 
@@ -312,7 +312,6 @@ sample files to reflect this.
 | macOS    | IB TWS program files       | `/home/<username>/Applications`     |
 |          | IBC program files | `/opt/IBC`                 |
 |          | IBC.ini           | `/home/<username>/IBC`     |
-|          |                            |                                     |
 
 Note that installing IBC and/or TWS from a Unix package manager may
 not use these paths. Consult your Linux package instructions for file locations.
@@ -386,17 +385,27 @@ meaning of each configuration property. Many of these have sensible defaults,
 or are only needed in special situations, so to help you get started quickly, here 
 is a list of the settings that you are most likely to need to change:
 
-| Setting            | Notes                                                         |
-| ------------------ | ------------------------------------------------------------- |
-| IbLoginID          | You must set this to your IB username                         |
-| PasswordEncrypted  | You must set this to `yes` if you have encrypted your password|
-| Password           | You must set this to your IB password (possibly encrypted)    |
-| TradingMode        | For TWS 955 and later, you must set this to `paper` if you have supplied the username and password for your live account but actually want to use your paper account. Otherwise you can omit the setting entirely or set it to `live`       |
-| IbDir              | You only need to set this if you want TWS to store its settings in a different folder from the one it's installed in                                 |
-| AcceptIncomingConnectionAction | It is safest to set this to `reject` and to explicitly configure TWS to specify which IP addresses are allowed to connnect to the API                                                                                  |
-| IbAutoClosedown    | Set this to `no` to prevent TWS's daily auto closedown        |
-| ClosedownAt        | Set this if you want to keep TWS running all week             |
-|                    |                                                               |
+| Setting                        | Notes                                       |
+| ------------------------------ | --------------------------------------------|
+| IbLoginID                      | You must set this to your IB username       |
+| Password                       | You must set this to your IB password       |
+| TradingMode                    | For TWS 955 and later, you must set this to |
+|                                | `paper` if you have supplied the username   |
+|                                | and password for your live account but      |
+|                                | actually want to use your paper account.    |
+|                                | Otherwise you can omit the setting entirely |
+|                                | or set it to `live`                         |
+| IbDir                          | You only need to set this if you want TWS   |
+|                                | to store its settings in a different folder |
+|                                | from the one it's installed in              |
+| AcceptIncomingConnectionAction | It is safest to set this to `reject` and to |
+|                                | explicitly configure TWS to specify which   |
+|                                | IP addresses are allowed to connnect to the |
+|                                | API                                         |
+| IbAutoClosedown                | Set this to `no` to prevent TWS's daily     |
+|                                | auto closedown                              |
+| ClosedownAt                    | Set this if you want to keep TWS running    |
+|                                | all week                                    |
 
 
 There are two ways that IBC can locate your edited `IBC.ini` file. 
