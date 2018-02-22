@@ -326,7 +326,19 @@ public class IbcTws {
             int shutdownMinute;
             Calendar cal = Calendar.getInstance();
             try {
-                cal.setTime((new SimpleDateFormat("E HH:mm")).parse(shutdownTimeSetting));
+                boolean dailyShutdown = false;
+                try {
+                    cal.setTime((new SimpleDateFormat("E HH:mm")).parse(shutdownTimeSetting));
+                    dailyShutdown = false;
+                } catch (ParseException e) {
+                    try {
+                        String today = (new SimpleDateFormat("E")).format(cal.getTime());
+                        cal.setTime((new SimpleDateFormat("E HH:mm")).parse(today + " " + shutdownTimeSetting));
+                        dailyShutdown = true;
+                    } catch (ParseException x) {
+                        throw x;
+                    }
+                }
                 shutdownDayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
                 shutdownHour = cal.get(Calendar.HOUR_OF_DAY);
                 shutdownMinute = cal.get(Calendar.MINUTE);
@@ -338,11 +350,15 @@ public class IbcTws {
                         (shutdownDayOfWeek + 7 -
                          cal.get(Calendar.DAY_OF_WEEK)) % 7);
                 if (!cal.getTime().after(new Date())) {
-                    cal.add(Calendar.DAY_OF_MONTH, 7);
+                    if (dailyShutdown) {
+                        cal.add(Calendar.DAY_OF_MONTH, 1);
+                    } else {
+                        cal.add(Calendar.DAY_OF_MONTH, 7);
+                    }
                 }
             } catch (ParseException e) {
                 Utils.exitWithError(ErrorCodes.ERROR_CODE_INVALID_CLOSEDOWN_AT_SETTING, 
-                                    "Invalid ClosedownAt setting: should be: <day hh:mm>   eg Friday 22:00");
+                                    "Invalid ClosedownAt setting: '" + shutdownTimeSetting + "'; format should be: <[day ]hh:mm>   eg 22:00 or Friday 22:00");
             }
             return cal.getTime();
         }
