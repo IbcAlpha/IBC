@@ -61,11 +61,8 @@ This User Guide is intended to help you get started with IBC.
 
 ### Acknowledgement
 
-This User Guide has been produced using the Markdown editor at:
-
-	https://stackedit.io/editor
-	
-and the Pandoc document conversion system to produce the PDF.
+This User Guide has been produced using the Pandoc document conversion 
+system to produce the PDF from the markdown source.
 
 
 ## Getting Started
@@ -93,15 +90,15 @@ up and running properly.
 4. Create an encrypted folder called `IBC` in your personal
    filestore (see *Protecting the Password* in the *Password Security* section).
 
-5. Copy the configuration file (called `Config.ini`) from the    
+5. Copy the configuration file (called `config.ini`) from the    
    IBC installation folder to the encrypted folder created in
    step 5.
 
 6. Check that the correct major version number for TWS is set in the shell 
    script files  in the IBC installation folder: these files are 
-   `IBCStart.bat` and `IBCGatewayStart.bat`
-   on Windows, `IBCStart.sh` and 
-   `IBCGatewayStart.sh` on Unix. To find the TWS major 
+   `StartTWS.bat` and `StartGateway.bat`
+   on Windows, `twsstart.sh` and 
+   `gatewaystart.sh` on Unix. To find the TWS major 
    version number, first run TWS or the Gateway manually using the 
    IB-provided icon, then click `Help > About Trader Workstation` 
    or `Help > About IB Gateway`. In the displayed information you'll 
@@ -117,8 +114,8 @@ up and running properly.
    settings, which will start TWS and log it into the IB demo user. It is
    worthwhile doing this just to check that everything works before 
    customising it to suit your needs. To do this, run the relevant
-   shell script (`IBCStart.bat` on Windows, 
-   `IBCStart.sh` on Unix) from the IBC 
+   shell script (`StartTWS.bat` on Windows, 
+   `twsstart.sh` on Unix) from the IBC 
    installation folder. If everything is satisfactory, shut down 
    IBC by closing TWS in the usual way. 
   
@@ -127,7 +124,7 @@ up and running properly.
   occurr. You will be notified of the log file name during the startup
   sequence.
 
-8. Edit the configuration file (`Config.ini`) in the encrypted 
+8. Edit the configuration file (`config.ini`) in the encrypted 
    `IBC` folder using a text editor such as Notepad. See 
    *Configuring IBC* for further information.
 
@@ -229,19 +226,19 @@ The distribution ZIP file contains:
 
 * [License](LICENSE.txt) text
 * Compiled JAR (named similar to `IBC.jar`)
-* Sample configuration file (named similar to `Config.ini`)
+* Sample configuration file (named similar to `config.ini`)
 * Sample TWS launch script for Windows (named similar to 
-`IBCStart.bat`)
+`StartTWS.bat`)
 * Sample Gateway launch script for Windows (named similar to 
-`IBCGatewayStart.bat`)
+`StartGateway.bat`)
 * Sample TWS launch script for Unix (named similar to 
-`IBCStart.sh`)
+`twsstart.sh`)
 * Sample Gateway launch script for Unix (named similar to 
-`IBCGatewayStart.sh`)
+`gatewaystart.sh`)
 * Sample TWS launch script for macOS (named similar to 
-`IBCStart-OSX.sh`)
+`twsstartmacos.sh`)
 * Sample Gateway launch script for macOS (named similar to 
-`IBCGatewayStart-OSX.sh`)
+`gatewaystartmacos.sh`)
 * Sample Windows Task Scheduler file (named similar to 
 `Start TWS Live (daily).xml`)
 * A Scripts sub-folder containing sub-scripts used by the top-level scripts 
@@ -287,7 +284,7 @@ sudo unzip ~/Downloads/IBC-3.3.0.zip -d \
 - now make sure all the script files are executable:
 
 ```
-cd /opt/IBC
+cd /opt/
 sudo chmod o+x *.sh */*.sh
 ```
 
@@ -305,13 +302,13 @@ sample files to reflect this.
 | -------- | -------------------------- | --------------------------------------|
 | Windows  | IB TWS program files       | `C:\Jts`                              |
 |          | IBC program files          | `C:\IBC`                              |
-|          | Config.ini                 | `%HOMEDRIVE%%HOMEPATH%\Documents\IBC` |
+|          | config.ini                 | `%HOMEDRIVE%%HOMEPATH%\Documents\IBC` |
 | Unix     | IB TWS program files       | `/home/<username>/Jts`                |
-|          | IBC program files          | `/opt/IBC`                            |
-|          | Config.ini                 | `/home/<username>/IBC`                |
+|          | IBC program files          | `/opt/ibc`                            |
+|          | config.ini                 | `/home/<username>/ibc`                |
 | macOS    | IB TWS program files       | `/home/<username>/Applications`       |
-|          | IBC program files          | `/opt/IBC`                            |
-|          | Config.ini                 | `/home/<username>/IBC`                |
+|          | IBC program files          | `/opt/ibc`                            |
+|          | config.ini                 | `/home/<username>/ibc`                |
 
 Note that installing IBC and/or TWS from a Unix package manager may
 not use these paths. Consult your Linux package instructions for file locations.
@@ -352,7 +349,7 @@ You are advised to place the file in its own `IBC` folder within this location.
 
 You should also consider encrypting the folder containing the configuration 
 file. This will prevent another user with administrator privileges gaining 
-access to the contents: even if they (ab)use their administrator privileges to
+access to the contents: even if they use their administrator privileges to
 give themselves access to the file, its contents will not be decrypted because
 they are not the user that encrypted it.
 
@@ -372,7 +369,7 @@ documentation for your distribution.
 ### Configuring IBC
 
 IBC must be supplied with a configuration file. A specimen file called
-Config.ini is included in the distribution ZIP. You will need to edit this
+config.ini is included in the distribution ZIP. You will need to edit this
 file to include your IB username and password, and to ensure that IBC 
 behaves in the way that best suits your needs. 
 
@@ -380,7 +377,7 @@ You should copy the supplied file from the IBC installation folder
 into the secure location described above before editing it, so that you have 
 a clean copy to revert to if need be.
 
-The sample `Config.ini` file contains detailed comments on the 
+The sample `config.ini` file contains detailed comments on the 
 meaning of each configuration property. Many of these have sensible defaults, 
 or are only needed in special situations, so to help you get started quickly, here 
 is a list of the settings that you are most likely to need to change:
@@ -405,15 +402,18 @@ is a list of the settings that you are most likely to need to change:
 | IbAutoClosedown                | Set this to `no` to prevent TWS's daily     |
 |                                | auto closedown                              |
 | ClosedownAt                    | Set this if you want to keep TWS running    |
-|                                | all week                                    |
+|                                | until a specified time of day on a          |
+|                                | particular day of the week, or to specify a |
+|                                | time when TWS should be shut down every     |
+|                                | day.                                        |
 
 
-There are two ways that IBC can locate your edited `Config.ini` file. 
+There are two ways that IBC can locate your edited `config.ini` file. 
 
 - the simplest way is to tell it where to find the file in the command that starts
   IBC. In this way, you can give the configuration file any name you 
   like. This is the recommended approach, and the supplied scripts follow this 
-  approach. If you want change the filename from Config.ini, or if you store 
+  approach. If you want change the filename from config.ini, or if you store 
   it somewhere other than the default location, you'll have to edit the start script
   to declare it's new name and location.
 
@@ -439,7 +439,7 @@ Windows users can execute a shell script in a number of ways, including:
   below for more information about using scheduled tasks)
 
 If you used the default locations to install IBC and TWS, and to
-store your Config.ini file, you should not need to edit the shell 
+store your config.ini file, you should not need to edit the shell 
 scripts. If you do need to change them, they are commented to help you.
 
 ## Other Topics
@@ -447,7 +447,7 @@ scripts. If you do need to change them, they are commented to help you.
 ### Scheduled Tasks (Windows)
 
 On Windows you can start IBC automatically using a Scheduled Task to 
-run IBCStart.bat or IBCGatewayStart.bat.
+run StartTWS.bat or StartGateway.bat.
 
 If you do this, you must make sure that the machine is already logged on before
 the scheduled task runs. Otherwise the task will still run, but you won't be
@@ -478,8 +478,8 @@ Windows 10. Because of this, it is advisable to set up your Scheduled Task
 differently on Windows 10: see the next section _Running under Task Scheduler 
 on Windows 10_.
 
-**IMPORTANT Make sure you use the /INLINE argument to IBCStart.bat or 
-IBCGatewayStart.bat when starting IBC from Task Scheduler.
+**IMPORTANT Make sure you use the /INLINE argument to StartTWS.bat or 
+StartGateway.bat when starting IBC from Task Scheduler.
 Otherwise IBC will start and run correctly, but Task Scheduler will not
 be aware of it: in particular Task Scheduler will not show the task as running. 
 This prevents correct operation of Task Scheduler features such as killing the 
@@ -504,8 +504,8 @@ The net effect of these changes is that it is no longer a good idea to start
 IBC under Task Scheduler by running a command file. It will only work
 correctly if the command given to Task Scheduler directly runs IBC.
 
-To set this up, first run IBC manually (using IBCStart.bat 
-or IBCGatewayStart.bat), and open the log file in Notepad or any other 
+To set this up, first run IBC manually (using StartTWS.bat 
+or StartGateway.bat), and open the log file in Notepad or any other 
 text editor: if using Notepad, make sure that 'Word Wrap' on the Format menu is 
 not checked). Now create your scheduled task (it's easiest to import the sample
 included in the IBC download zip file), and open the start action editor.
@@ -587,13 +587,13 @@ run both your live and paper trading accounts. So:
   `IbDir=C:\\JtsLive` and `IbDir=C:\\JtsPaper`, and set the `IbLoginId`
   and `IbPassword` to the live or paper account values as appropriate
 
-- create two start scripts (by copying `IBCStart.bat`) called
-  `IBCStartLive.bat` and `IBCStartPaper.bat`
+- create two start scripts (by copying `StartTWS.bat`) called
+  `StartTWSLive.bat` and `StartTWSPaper.bat`
 
 - change the `set IBC_INI=...` line in each script file to refer to the 
   relevant configuration file
 
-- change the `set LOG_PATH=...` line n each script file the refer to different
+- change the `set LOG_PATH=...` line in each script file to refer to different
   folders, for example `set LOG_PATH=%IBC_PATH%\LiveLogs` and 
   `set LOG_PATH=%IBC_PATH%\PaperLogs`
 
