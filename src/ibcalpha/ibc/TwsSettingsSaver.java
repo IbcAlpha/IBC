@@ -111,12 +111,10 @@ class TwsSettingsSaver {
         }
         
         Calendar startCal = getCalendarForTime(startTime);
-        Utils.logToConsole("startCal.getTime() = " + (new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")).format(startCal.getTime()));
         Calendar endCal = getCalendarForTime(endTime);
         if (!startCal.before(endCal)) {
             endCal.add(Calendar.DAY_OF_MONTH, 1);
         }
-        Utils.logToConsole("endCal.getTime() = " + (new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")).format(endCal.getTime()));
       
         List<Date> saveTimes = new ArrayList<Date>();
         while (startCal.before(endCal)) {
