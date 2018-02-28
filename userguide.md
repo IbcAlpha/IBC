@@ -278,7 +278,7 @@ customisations you did for that version.
 
 ```
 sudo unzip ~/Downloads/IBC-3.3.0.zip -d \
-/opt/IBC
+/opt/ibc
 ```
 
 - now make sure all the script files are executable:
