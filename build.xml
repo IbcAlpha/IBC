@@ -31,10 +31,39 @@
 
     <target name="dist" depends="jar" description="generate the distribution zip">
         <echo file="${resources}/version" append="false" message="${ver}"/>
-        <copy todir="${target}/IBC" preservelastmodified="true">
+        <copy todir="${target}/IBCWin" preservelastmodified="true">
             <fileset file="LICENSE.txt"/>
-            <fileset dir="${resources}"/>
+            <fileset dir="${resources}">
+                <include name="**/*"/>
+                <exclude name="**/*.sh"/>
+            </fileset>
 	</copy>
-        <zip destfile="${dist}/IBC-${ver}.zip" basedir="${target}/IBC" includes="**"/>
+        <zip destfile="${dist}/IBCWin-${ver}.zip" basedir="${target}/IBCWin" includes="**"/>
+        <copy todir="${target}/IBCLinux" preservelastmodified="true">
+            <fileset file="LICENSE.txt"/>
+            <fileset dir="${resources}">
+                <include name="**/*"/>
+                <exclude name="**/*.bat"/>
+                <exclude name="**/*.vbs"/>
+                <exclude name="**/*macos.sh"/>
+                <exclude name="**/*.xml"/>
+                <exclude name="**/IBC (*"/>
+            </fileset>
+	</copy>
+        <zip destfile="${dist}/IBCLinux-${ver}.zip" basedir="${target}/IBCLinux" includes="**"/>
+        <copy todir="${target}/IBCMacos" preservelastmodified="true">
+            <fileset file="LICENSE.txt"/>
+            <fileset dir="${resources}">
+                <include name="**/*"/>
+                <exclude name="**/*.bat"/>
+                <exclude name="**/*.vbs"/>
+                <include name="**/*macos.sh"/>
+                <include name="**/*.sh"/>
+                <exclude name="*start.sh"/>
+                <exclude name="**/*.xml"/>
+                <exclude name="**/IBC (*"/>
+            </fileset>
+	</copy>
+        <zip destfile="${dist}/IBCMacos-${ver}.zip" basedir="${target}/IBCMacos" includes="**"/>
     </target>
 </project>
