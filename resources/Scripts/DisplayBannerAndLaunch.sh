@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# get the IBController version
+# get the IBC version
 read IBC_VRSN < "${IBC_PATH}/version"
 
 if [[ -n "$LOG_PATH" ]]; then
@@ -27,14 +27,14 @@ else
 	log_file=/dev/null
 fi
 
-#   now launch IBController
+#   now launch IBC
 
 normal='\033[0m'
 light_red='\033[1;31m'
 light_green='\033[1;32m'
 echo -e "${light_green}+=============================================================================="
 echo "+"
-echo -e "+ IBController version ${IBC_VRSN}"
+echo -e "+ IBC version ${IBC_VRSN}"
 echo "+"
 echo -e "+ Running ${APP} ${TWS_MAJOR_VRSN}"
 echo "+"
@@ -55,7 +55,7 @@ export IBC_VRSN
 # forward signals (see https://veithen.github.io/2014/11/16/sigterm-propagation.html)
 trap 'kill -TERM $PID' TERM INT
 
-"${IBC_PATH}/Scripts/IBController.sh" "${TWS_MAJOR_VRSN}" ${gw_flag} \
+"${IBC_PATH}/scripts/ibcstart.sh" "${TWS_MAJOR_VRSN}" ${gw_flag} \
      "--tws-path=${TWS_PATH}" "--tws-settings-path=${TWS_CONFIG_PATH}" \
      "--ibc-path=${IBC_PATH}" "--ibc-ini=${IBC_INI}" \
      "--user=${TWSUSERID}" "--pw=${TWSPASSWORD}" "--fix-user=${FIXUSERID}" "--fix-pw=${FIXPASSWORD}" \
@@ -76,7 +76,7 @@ elif [ "$exit_code" == "143" ]; then
 	# exit code 143 caused by default signal handler for SIGTERM
 	exit_code=0
 	echo -e "${light_green}+"
-	echo "+ IBController terminated by SIGTERM"
+	echo "+ IBC terminated by SIGTERM"
 	echo "+"
 	echo -e "${light_green}+ ${APP} ${TWS_MAJOR_VRSN} has finished"
 	echo "+"

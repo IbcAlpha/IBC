@@ -19,17 +19,17 @@
 
 
 TWS_MAJOR_VRSN=963
-IBC_INI=~/IBController/IBController.ini
+IBC_INI=~/ibc/config.ini
 TRADING_MODE=
-IBC_PATH=/opt/IBController
-TWS_PATH=~/Jts
-LOG_PATH=~/IBController/Logs
+IBC_PATH=/opt/ibc
+TWS_PATH=~/Applications
+TWS_CONFIG_PATH=~/Jts
+LOG_PATH=~/ibc/logs
 TWSUSERID=
 TWSPASSWORD=
 FIXUSERID=
 FIXPASSWORD=
 JAVA_PATH=
-HIDE=
 
 
 #              PLEASE DON'T CHANGE ANYTHING BELOW THIS LINE !!
@@ -53,7 +53,7 @@ HIDE=
 
 #   IBC_INI
 #
-#     This is the location and filename of the IBController configuration file.
+#     This is the location and filename of the IBC configuration file.
 #     This file should be in a folder in your personal filestore, so that
 #     other users of your computer can't access it. This folder and its 
 #     contents should also be encrypted so that even users with administrator 
@@ -76,16 +76,21 @@ HIDE=
 
 #   IBC_PATH
 #
-#     The folder containing the IBController files. 
+#     The folder containing the IBC files. 
 
 
 #   TWS_PATH
 #
 #     The folder where Gateway is installed. The Gateway installer always 
-#     installs to ~/Jts. Note that even if you have installed from a Gateway 
-#     download rather than a TWS download, you should still use this default 
-#     setting. It is possibe to move the TWS installation to a different 
-#     folder, but there are virtually no good reasons for doing so.
+#     installs to ~/Applications. Note that even if you have installed from a 
+#     Gateway download rather than a TWS download, you should still use this 
+#     default setting. It is possibe to move the TWS installation to a 
+#     different folder, but there are virtually no good reasons for doing so.
+
+
+#   TWS_CONFIG_PATH
+#
+#     The folder where the jts.ini and *.vmoptions files are stored.
 
 
 #   LOG_PATH
@@ -93,7 +98,7 @@ HIDE=
 #     Specifies the folder where diagnostic information is to be logged while 
 #     this command file is running. This information is very valuable when 
 #     troubleshooting problems, so it is advisable to always have this set to
-#     a valid location, especially when setting up IBController. You must
+#     a valid location, especially when setting up IBC. You must
 #     have write access to the specified folder.
 #
 #     Once everything runs properly, you can prevent further logging by 
@@ -105,20 +110,20 @@ HIDE=
 #   TWSUSERID
 #   TWSPASSWORD
 #
-#     If your TWS user id and password are not included in your IBController 
-#     configuration file, you can set them here (do not encrypt the password). 
-#     However you are strongly advised not to set them here because this file 
-#     is not normally in a protected location.
+#     If your TWS user id and password are not included in your IBC 
+#     configuration file, you can set them here. However you are strongly 
+#     advised not to set them here because this file is not normally in a 
+#     protected location.
 
 
 #   FIXUSERID
 #   FIXPASSWORD
 #
 #     If you are running the FIX Gateway (for which you must set FIX=yes in 
-#     your IBController configuration file), and the FIX user id and password 
-#     are not included in the configuration file, you can set them here (do 
-#     not encrypt the password). However you are strongly advised not to set 
-#     them here because this file is not normally in a protected location.
+#     your IBC configuration file), and the FIX user id and password 
+#     are not included in the configuration file, you can set them here. 
+#     However you are strongly advised not to set them here because this file
+#     is not normally in a protected location.
 
 
 #   JAVA_PATH
@@ -126,26 +131,15 @@ HIDE=
 #     IB's installer for TWS/Gateway includes a hidden version of Java which 
 #     IB have used to develop and test that particular version. This means that
 #     it is not necessary to separately install Java. If there is a separate
-#     Java installation, that does not matter: it won't be used by IBController 
+#     Java installation, that does not matter: it won't be used by IBC 
 #     or TWS/Gateway unless you set the path to it here. You should not do this 
 #     without a very good reason.
-
-
-#   HIDE
-#
-#     If set to YES or TRUE, the diagnostic window that contains information 
-#     about the running TWS, and where to find the log file, will be iconified. 
-#     If not set, or set to any other value, the window will be displayed. 
-#     Values are not case-sensitive so for example yEs and yes are interpeted 
-#     as YES. (Note that when the -inline argument is supplied, this setting 
-#     has no effect.)
 
 
 #   End of Notes:
 #==============================================================================
 
 APP=GATEWAY
-TWS_CONFIG_PATH="$TWS_PATH"
 
 export TWS_MAJOR_VRSN
 export IBC_INI
@@ -161,14 +155,10 @@ export FIXPASSWORD
 export JAVA_PATH
 export APP
 
-hide="$(echo ${HIDE} | tr '[:lower:]' '[:upper:]')"
-if [[ "$hide" = "YES" || "$hide" = "TRUE" ]]; then 
-	iconic=-iconic
-fi
-
 if [[ "$1" == "-inline" ]]; then
-    exec "${IBC_PATH}/Scripts/DisplayBannerAndLaunch.sh"
+    exec "${IBC_PATH}/scripts/displaybannerandlaunch.sh"
 else
-    title="IBController ($APP $TWS_MAJOR_VRSN)"
-    xterm $iconic -T "$title" -e "${IBC_PATH}/Scripts/DisplayBannerAndLaunch.sh" &
+    osascript -e 'tell app "Terminal"
+        do script "${IBC_PATH}/scripts/displaybannerandlaunch.sh"
+    end tell'
 fi

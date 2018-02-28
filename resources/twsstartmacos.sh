@@ -18,13 +18,13 @@
 #=============================================================================+
 
 
-TWS_MAJOR_VRSN=952
-IBC_INI=~/IBController/IBController.ini
+TWS_MAJOR_VRSN=963
+IBC_INI=~/ibc/config.ini
 TRADING_MODE=
-IBC_PATH=/opt/IBController
+IBC_PATH=/opt/ibc
 TWS_PATH=~/Applications
 TWS_CONFIG_PATH=~/Jts
-LOG_PATH=~/IBController/Logs
+LOG_PATH=~/ibc/logs
 TWSUSERID=
 TWSPASSWORD=
 JAVA_PATH=
@@ -51,7 +51,7 @@ JAVA_PATH=
 
 #   IBC_INI
 #
-#     This is the location and filename of the IBController configuration file.
+#     This is the location and filename of the IBC configuration file.
 #     This file should be in a folder in your personal filestore, so that
 #     other users of your computer can't access it. This folder and its 
 #     contents should also be encrypted so that even users with administrator 
@@ -74,16 +74,16 @@ JAVA_PATH=
 
 #   IBC_PATH
 #
-#     The folder containing the IBController files. 
+#     The folder containing the IBC files. 
 
 
 #   TWS_PATH
 #
-#     The folder where TWS is installed. The TWS installer always installs to 
-#     ~/Applications. Note that even if you have installed from a Gateway 
-#     download rather than a TWS download, you should still use this default 
-#     setting. It is possibe to move the TWS installation to a different folder,
-#     but there are virtually no good reasons for doing so.
+#     The folder where Gateway is installed. The Gateway installer always 
+#     installs to ~/Applications. Note that even if you have installed from a 
+#     Gateway download rather than a TWS download, you should still use this 
+#     default setting. It is possibe to move the TWS installation to a 
+#     different folder, but there are virtually no good reasons for doing so.
 
 
 #   TWS_CONFIG_PATH
@@ -96,7 +96,7 @@ JAVA_PATH=
 #     Specifies the folder where diagnostic information is to be logged while 
 #     this command file is running. This information is very valuable when 
 #     troubleshooting problems, so it is advisable to always have this set to
-#     a valid location, especially when setting up IBController. You must
+#     a valid location, especially when setting up IBC. You must
 #     have write access to the specified folder.
 #
 #     Once everything runs properly, you can prevent further logging by 
@@ -108,10 +108,10 @@ JAVA_PATH=
 #   TWSUSERID
 #   TWSPASSWORD
 #
-#     If your TWS user id and password are not included in your IBController 
-#     configuration file, you can set them here (do not encrypt the password). 
-#     However you are strongly advised not to set them here because this file 
-#     is not normally in a protected location.
+#     If your TWS user id and password are not included in your IBC 
+#     configuration file, you can set them here. However you are strongly 
+#     advised not to set them here because this file is not normally in a 
+#     protected location.
 
 
 #   JAVA_PATH
@@ -119,7 +119,7 @@ JAVA_PATH=
 #     IB's installer for TWS/Gateway includes a hidden version of Java which 
 #     IB have used to develop and test that particular version. This means that
 #     it is not necessary to separately install Java. If there is a separate
-#     Java installation, that does not matter: it won't be used by IBController 
+#     Java installation, that does not matter: it won't be used by IBC 
 #     or TWS/Gateway unless you set the path to it here. You should not do this 
 #     without a very good reason.
 
@@ -142,9 +142,9 @@ export JAVA_PATH
 export APP
 
 if [[ "$1" == "-inline" ]]; then
-    exec "${IBC_PATH}/Scripts/DisplayBannerAndLaunch.sh"
+    exec "${IBC_PATH}/scripts/displaybannerandlaunch.sh"
 else
     osascript -e 'tell app "Terminal"
-        do script "${IBC_PATH}/Scripts/DisplayBannerAndLaunch.sh"
+        do script "${IBC_PATH}/scripts/displaybannerandlaunch.sh"
     end tell'
 fi

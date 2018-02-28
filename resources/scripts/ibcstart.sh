@@ -6,11 +6,11 @@
 
 showUsage () {
 echo
-echo "Runs IBController, thus loading TWS or the IB Gateway"
+echo "Runs IBC, thus loading TWS or the IB Gateway"
 echo
 echo "Usage:"
 echo
-echo "IBController twsVersion [-g \| --gateway] [--tws-path=twsPath]"
+echo "ibcstart twsVersion [-g \| --gateway] [--tws-path=twsPath]"
 echo "             [--tws-settings-path=twsSettingsPath] [--ibc-path=ibcPath]"
 echo "             [--ibc-ini=ibcIni] [--java-path=javaPath]"
 echo "             [--user=userid] [--pw=password]"
@@ -28,15 +28,15 @@ echo
 echo "  twsSettingsPath         Path to the TWS settings folder. Defaults to"
 echo "                          ~/Jts on both Linux and OS X"
 echo
-echo "  ibcPath                 Path to the IBController installation folder."
-echo "                          Defaults to /opt/IBController"
+echo "  ibcPath                 Path to the IBC installation folder."
+echo "                          Defaults to /opt/ibc"
 echo
-echo "  ibcIni                  The location and filename of the IBController "
+echo "  ibcIni                  The location and filename of the IBC "
 echo "                          configuration file. Defaults to "
-echo "                          ~/IBController/IBController.ini"
+echo "                          ~/ibc/config.ini"
 echo
 echo "  javaPath                Path to the folder containing the java executable to"
-echo "                          be used to run IBController. Defaults to the java"
+echo "                          be used to run IBC. Defaults to the java"
 echo "                          executable included in the TWS installation; failing "
 echo "                          that, to the Oracle Java installation"
 echo
@@ -95,8 +95,8 @@ E_IBC_INI_NOT_EXIST=6
 E_TWS_VMOPTIONS_NOT_FOUND=7
 E_UNKNOWN_OPERATING_SYSTEM=8
 
-ENTRY_POINT_TWS=ibcontroller.IBController
-ENTRY_POINT_GATEWAY=ibcontroller.IBGatewayController
+ENTRY_POINT_TWS=ibcalpha.ibc.IbcTws
+ENTRY_POINT_GATEWAY=ibcalpha.ibc.IbcGateway
 
 OS_LINUX=Linux
 OS_OSX='OS X'
@@ -161,7 +161,7 @@ fi
 echo
 echo -e "================================================================================"
 echo
-echo -e "Starting IBController version ${IBC_VRSN} on $(date +"%Y-%m-%d") at $(date +%T)"
+echo -e "Starting IBC version ${IBC_VRSN} on $(date +"%Y-%m-%d") at $(date +%T)"
 echo
 echo -e "Operating system: $(uname -a)"
 echo
@@ -209,8 +209,8 @@ elif [ "$os" = "$OS_OSX" ]; then
 	if [ "$tws_path" = "" ]; then tws_path=~/Applications ;fi
 	if [ "$tws_settings_path" = "" ]; then tws_settings_path=~/Jts ;fi
 fi
-if [ "$ibc_path" = "" ]; then ibc_path=/opt/IBController ;fi
-if [ "$ibc_ini" = "" ]; then ibc_ini=~/IBController/IBController.ini ;fi
+if [ "$ibc_path" = "" ]; then ibc_path=/opt/ibc ;fi
+if [ "$ibc_ini" = "" ]; then ibc_ini=~/ibc/config.ini ;fi
 
 # In the following we try to use the correct .vmoptions file for the chosen entrypoint
 # Note that uninstalling TWS or Gateway leaves the relevant .vmoption file in place, so
@@ -268,15 +268,15 @@ fi
 if [[ ! -e "$jars" ]]; then
 	error_exit $E_TWS_VERSION_NOT_INSTALLED "TWS version $tws_version is not installed: can't find $jars" \
 	                                        "You must install the offline version of TWS/Gateway" \
-                                            "IBController does not work with the auto-updating TWS/Gateway"
+                                            "IBC does not work with the auto-updating TWS/Gateway"
 fi
 
 if [[ ! -e  "$ibc_path" ]]; then
-	error_exit $E_IBC_PATH_NOT_EXIST "IBController path: $ibc_path does not exist"
+	error_exit $E_IBC_PATH_NOT_EXIST "IBC path: $ibc_path does not exist"
 fi
 
 if [[ ! -e "$ibc_ini" ]]; then
-	error_exit $E_IBC_INI_NOT_EXIST "IBController configuration file: $ibc_ini  does not exist"
+	error_exit $E_IBC_INI_NOT_EXIST "IBC configuration file: $ibc_ini  does not exist"
 fi
 
 if [[ ! -e "$vmoptions_source" ]]; then
@@ -300,7 +300,7 @@ for jar in "${jars}"/*.jar; do
 	fi
 	ibc_classpath="${ibc_classpath}${jar}"
 done
-ibc_classpath="${ibc_classpath}:${ibc_path}/IBController.jar"
+ibc_classpath="${ibc_classpath}:${ibc_path}/IBC.jar"
 
 echo -e "Classpath=$ibc_classpath"
 echo
@@ -384,7 +384,7 @@ fi
 echo Location of java executable=$java_path
 echo
 
-#======================== Start IBController ===============================
+#======================== Start IBC ===============================
 
 if [[ -n $fix_user_id || -n $fix_password ]]; then got_fix_credentials=1; fi
 if [[ -n $ib_user_id || -n $ib_password ]]; then got_api_credentials=1; fi
@@ -398,15 +398,15 @@ elif [[ -n $got_api_credentials ]]; then
 fi
 
 if [[ "$entry_point" = "$ENTRY_POINT_TWS" ]]; then
-	program=IBController
+	program=TWS
 else
-	program=IBGateway
+	program=Gateway
 fi
 echo "Starting $program with this command:"
 echo -e "\"$java_path/java\" -cp \"$ibc_classpath\" $java_vm_options $entry_point \"$ibc_ini\" $hidden_credentials ${mode}"
 echo
 
-# prevent other Java tools interfering with IBController
+# prevent other Java tools interfering with IBC
 JAVA_TOOL_OPTIONS=
 
 pushd "$tws_path" > /dev/null
