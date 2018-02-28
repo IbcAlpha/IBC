@@ -12,7 +12,7 @@ set ServerAddress=127.0.0.1
 
 
 :: You may need to change this line. Make sure it's set to the value of the 
-:: CommandServerPort setting in Config.ini:
+:: CommandServerPort setting in config.ini:
 
 set CommandServerPort=7462
 

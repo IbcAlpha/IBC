@@ -146,7 +146,7 @@ if /I "%HIDE%" == "YES" (
 )
 
 if /I "%~1" == "/INLINE" (
-	"%IBC_PATH%\Scripts\DisplayBannerAndLaunch.bat"
+	"%IBC_PATH%\scripts\DisplayBannerAndLaunch.bat"
 ) else (
-	start "%TITLE%" %MIN% "%IBC_PATH%\Scripts\DisplayBannerAndLaunch.bat"
+	start "%TITLE%" %MIN% "%IBC_PATH%\scripts\DisplayBannerAndLaunch.bat"
 )
