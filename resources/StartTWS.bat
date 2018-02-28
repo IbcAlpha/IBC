@@ -22,7 +22,7 @@ setlocal enableextensions enabledelayedexpansion
 
 
 set TWS_MAJOR_VRSN=963
-set CONFIG=%HOMEDRIVE%%HOMEPATH%\Documents\IBC\Config.ini
+set CONFIG=%HOMEDRIVE%%HOMEPATH%\Documents\IBC\config.ini
 set TRADING_MODE=
 set IBC_PATH=%SYSTEMDRIVE%\IBC
 set TWS_PATH=%SYSTEMDRIVE%\Jts
@@ -85,7 +85,7 @@ set HIDE=
 ::     The folder where TWS is installed. The TWS installer always installs to 
 ::     C:\Jts. Note that even if you have installed from a Gateway download
 ::     rather than a TWS download, you should still use this default setting.
-::     It is possibe to move the TWS installation to a different folder, but
+::     It is possible to move the TWS installation to a different folder, but
 ::     there are virtually no good reasons for doing so.
 
 
