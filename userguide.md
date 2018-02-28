@@ -284,7 +284,7 @@ sudo unzip ~/Downloads/IBC-3.3.0.zip -d \
 - now make sure all the script files are executable:
 
 ```
-cd /opt/
+cd /opt/ibc
 sudo chmod o+x *.sh */*.sh
 ```
 
