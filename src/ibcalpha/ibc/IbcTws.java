@@ -450,7 +450,7 @@ public class IbcTws {
             startTws();
         }
 
-        int portNumber = Settings.settings().getInt("ForceTwsApiPort", 0);
+        int portNumber = Settings.settings().getInt("OverrideTwsApiPort", 0);
         if (portNumber != 0) (new ConfigurationTask(new ConfigureTwsApiPortTask(portNumber))).executeAsync();
         Utils.sendConsoleOutputToTwsLog(!Settings.settings().getBoolean("LogToConsole", false));
     }
