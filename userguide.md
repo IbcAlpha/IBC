@@ -2,6 +2,11 @@
 
 > IMPORTANT
 >
+> If you have previously been using IBController and are switching over to IBC, 
+there are some differences that you need to be aware of: there is more 
+information about this in the **Changes from IBController** section at the end 
+of this document.
+>
 >Make sure you read the information in the **Scope of this User Guide** section.
 >
 >IBC can be used to start TWS running the demo account. However 
@@ -29,11 +34,11 @@ be run in 'hands-free' mode, so that a user need not be present.  This makes
 possible the deployment of unattended automated trading systems.  
 
 IBC loads TWS or the Gateway and then 'listens' for various events (such 
-as the display of dialogs) that would normally require user intervention. It can then
-automatically take appropriate action on the user's behalf. For example, as well
-as automating the TWS and Gateway login by filling the login dialog with your 
-credentials, it can also deal with TWS's autologoff dialog so that it can keep TWS 
-running continuously.
+as the display of dialogs) that would normally require user intervention. It 
+can then automatically take appropriate action on the user's behalf. For 
+example, as well as automating the TWS and Gateway login by filling the login 
+dialog with your credentials, it can also deal with TWS's autologoff dialog so 
+that it can keep TWS running continuously.
 
 Here are some of the things IBC does for you:
 
@@ -41,7 +46,8 @@ Here are some of the things IBC does for you:
 
 - logs you into TWS or Gateway
 
-- clicks the YES button if the "Accept incoming connection?" dialog is displayed
+- clicks the YES button if the "Accept incoming connection?" dialog is 
+  displayed
 
 - clicks the Close button if the Tip of the Day dialog appears
 
@@ -73,14 +79,15 @@ Here is a summary of the steps you need to perform to get IBC
 up and running properly.
 
 1. Install the offline version of Interactive Brokers Trader Workstation 
-   (see *Interactive Brokers*   *Trader Workstation* in the *Prerequisites* section), 
-  and make sure that it uses the English language setting. **Please note**
-  **that you MUST download the OFFLINE version of TWS, not the self-**
-  **updating version: IBC DOES NOT WORK with the self-**
-  **updating version of TWS.**
+   (see *Interactive Brokers*   *Trader Workstation* in the *Prerequisites* 
+   section), and make sure that it uses the English language setting. 
+   
+   **Please note that you MUST download the OFFLINE version of TWS, not the**
+   **self-updating version: IBC DOES NOT WORK with the self-updating version**
+   **of TWS.**
 
-2. Download the IBC distribution ZIP file (see the *Where to get* 
-   *IBC* section).
+2. Download the appropriate IBC distribution ZIP file for your operating 
+   system (see the *Where to get IBC* section).
 
 3. Install IBC (see the *Installing IBC* section). Please note
   that if you already have an existing IBC installation, it's wise to
@@ -119,10 +126,10 @@ up and running properly.
    installation folder. If everything is satisfactory, shut down 
    IBC by closing TWS in the usual way. 
   
-  Note that when you start IBC, information about the startup 
-  process is logged to a file to aid diagnosing any faults that may 
-  occurr. You will be notified of the log file name during the startup
-  sequence.
+   Note that when you start IBC, information about the startup 
+   process is logged to a file to aid diagnosing any faults that may 
+   occurr. You will be notified of the log file name during the startup
+   sequence.
 
 8. Edit the configuration file (`config.ini`) in the encrypted 
    `IBC` folder using a text editor such as Notepad. See 
@@ -169,12 +176,14 @@ installed.
 #### Interactive Brokers Trader Workstation
 
 Before running IBC, you will need to download and install the **offline** 
-version of Trader Workstation from the [Interactive Brokers](http://www.interactivebrokers.com/) website. 
+version of Trader Workstation from the 
+[Interactive Brokers](http://www.interactivebrokers.com/) website. 
 
 The location of the TWS dowloads page on IB's website varies from time to time,
 and from country to country.  At the time of writing, on IB's US website (linked 
 above) you need to click the `Trading` menu near the top of the page, then
-select `TWS Software`: currently a valid direct link is [Tws Software](https://www.interactivebrokers.com/en/index.php?f=14099#tws-software).
+select `TWS Software`: currently a valid direct link is 
+[Tws Software](https://www.interactivebrokers.com/en/index.php?f=14099#tws-software).
 
 IB provides two modes of operation for TWS:
 
@@ -196,18 +205,18 @@ place. You can install one of these, as well as or instead of the TWS installer.
 You can find these via the LOGIN dropdown in the title bar of IB's website.
 
 When you run the script to load TWS, it will use the TWS installation if there
-is one, and if not it will use the Gateway installation if there is one. Similarly 
-when you run the script to load the Gateway, it will use the Gateway 
-installation if there is one, and if not it will use the TWS installation if there 
-is one. (Needless to say, if neither a TWS download nor a Gateway download
-has been installed, the scripts will fail!)
+is one, and if not it will use the Gateway installation if there is one. 
+Similarly when you run the script to load the Gateway, it will use the Gateway 
+installation if there is one, and if not it will use the TWS installation if 
+there is one. (Needless to say, if neither a TWS download nor a Gateway 
+download has been installed, the scripts will fail!)
 
-It is safest to use the 'stable' offline version of TWS rather than the 'latest'
-version for live trading: the latter is more likely to have bugs.
+It is safest to use the 'stable' offline version of TWS rather than the 
+'latest' version for live trading: the latter is more likely to have bugs.
 
 IBC needs TWS to operate in English so that it can recognise the 
-various dialogues that it interacts with. You can set TWS's language by starting 
-it manually (ie without using IBC) and selecting the language on the 
+various dialogues that it interacts with. You can set TWS's language by 
+starting it manually (ie without using IBC) and selecting the language on the 
 initial login dialog. TWS will remember this language setting when you 
 subsequently start it using IBC.
 
@@ -217,36 +226,34 @@ use the IB demo account (username `edemo`, password `demouser`).
 ### Where to get IBC
 
 IBC is officially distributed as a ZIP file containing the compiled
-program and some additional files, detailed below.
+program and some additional files, detailed below. There are separate 
+ZIP files for Windows, Linux and macOS.
 
-The ZIP file for the latest version should be downloaded from [Github](https://github.com/IbcAlpha/IBC/releases). 
+The ZIP file for the latest version should be downloaded from 
+[Github](https://github.com/IbcAlpha/IBC/releases). 
 Earlier versions can also be downloaded from the same place if need be.
 
 The distribution ZIP file contains:
 
 * [License](LICENSE.txt) text
-* Compiled JAR (named similar to `IBC.jar`)
-* Sample configuration file (named similar to `config.ini`)
-* Sample TWS launch script for Windows (named similar to 
-`StartTWS.bat`)
-* Sample Gateway launch script for Windows (named similar to 
-`StartGateway.bat`)
-* Sample TWS launch script for Unix (named similar to 
-`twsstart.sh`)
-* Sample Gateway launch script for Unix (named similar to 
-`gatewaystart.sh`)
-* Sample TWS launch script for macOS (named similar to 
-`twsstartmacos.sh`)
-* Sample Gateway launch script for macOS (named similar to 
-`gatewaystartmacos.sh`)
-* Sample Windows Task Scheduler file (named similar to 
-`Start TWS Live (daily).xml`)
+* A compiled JAR (named similar to `IBC.jar`), containing the compiled
+ Java code for the IBC program
+* A sample configuration file (named similar to `config.ini`)
+* Top-level script files that run IBC to start TWS or the Gateway. These files
+ are specific to the platform (ie Windows, Linux or macOS) to which the 
+ ZIP file relates
+* A script file that can be used to tidily shut down TWS or Gateway from the 
+ same or another computer.
+* A sample Windows Task Scheduler file (named similar to 
+`Start TWS Live (daily).xml`), which can be used to automate starting TWS 
+ or Gateway on Windows systems (not present in the Linux and macOS ZIPs)
 * A Scripts sub-folder containing sub-scripts used by the top-level scripts 
 mentioned above
 * A text file called `version` containing the IBC version number
 
-Source code and build scripts are not included in the distribution ZIPs, as they
-are freely available from the [IBC project page](https://github.com/IbcAlpha/IBC) on Github.
+Source code and build scripts are not included in the distribution ZIPs, as 
+they are freely available from the 
+[IBC project page](https://github.com/IbcAlpha/IBC) on Github.
 
 ### Installing IBC
 
@@ -277,7 +284,7 @@ customisations you did for that version.
 - unpack the ZIP file using a command similar to this:
 
 ```
-sudo unzip ~/Downloads/IBC-3.3.0.zip -d \
+sudo unzip ~/Downloads/IBCLinux-3.6.0.zip -d \
 /opt/ibc
 ```
 
@@ -291,35 +298,38 @@ sudo chmod o+x *.sh */*.sh
 
 #### Default Paths
 
-Several sample files ship in each IBC release. The sample files (and these 
-instructions) assume the default paths shown in the table below (where 
-``<username>`` represents your operating system user name, not your IB login id).
+Several script files are included in each IBC release. These script files (and 
+these instructions) assume the default paths shown in the table below (where 
+``<username>`` represents your operating system user name, not your IB login 
+id).
 
 If you store any of these items in other locations, you will need to edit these 
-sample files to reflect this. 
+script files to reflect this. 
 
-| Platform | Item                       | Path                                  |
-| -------- | -------------------------- | --------------------------------------|
-| Windows  | IB TWS program files       | `C:\Jts`                              |
-|          | IBC program files          | `C:\IBC`                              |
-|          | config.ini                 | `%HOMEDRIVE%%HOMEPATH%\Documents\IBC` |
-| Unix     | IB TWS program files       | `/home/<username>/Jts`                |
-|          | IBC program files          | `/opt/ibc`                            |
-|          | config.ini                 | `/home/<username>/ibc`                |
-| macOS    | IB TWS program files       | `/home/<username>/Applications`       |
-|          | IBC program files          | `/opt/ibc`                            |
-|          | config.ini                 | `/home/<username>/ibc`                |
+| Platform | Item                      | Path                                  |
+| -------- | ------------------------- | --------------------------------------|
+| Windows  | IB TWS program files      | `C:\Jts`                              |
+|          | IBC program files         | `C:\IBC`                              |
+|          | config.ini                | `%HOMEDRIVE%%HOMEPATH%\Documents\IBC` |
+| Unix     | IB TWS program files      | `/home/<username>/Jts`                |
+|          | IBC program files         | `/opt/ibc`                            |
+|          | config.ini                | `/home/<username>/ibc`                |
+| macOS    | IB TWS program files      | `/home/<username>/Applications`       |
+|          | IBC program files         | `/opt/ibc`                            |
+|          | config.ini                | `/home/<username>/ibc`                |
 
-Note that installing IBC and/or TWS from a Unix package manager may
-not use these paths. Consult your Linux package instructions for file locations.
+Note that you may be able to find third-party Linux packages that allow 
+IBC and/or TWS to be installed using a Linux package manager such as `apt`: 
+they may not use these paths. Consult your Linux package instructions for file 
+locations.
 
 
 ### Password Security
 
 To login to TWS or IB Gateway, IBC needs to know your Interactive
-Brokers username and password. You should very carefully secure your IB account
-username and password to prevent unauthorised use by third parties. This section
-gives you guidance on how to achieve this.
+Brokers username and password. You should very carefully secure your IB 
+account username and password to prevent unauthorised use by third parties. 
+This section gives you guidance on how to achieve this.
 
 The username and password are given to IBC in one of two ways:
 
@@ -333,13 +343,14 @@ The username and password are given to IBC in one of two ways:
 
 #### Protecting the Configuration File
 
-To protect this sensitive information, the configuration file needs to be stored
-in a location where it will not be accessible to other users of the computer. The 
-simplest way to achieve this is to store it within your personal filestore: 
+To protect this sensitive information, the configuration file needs to be 
+stored in a location where it will not be accessible to other users of the 
+computer. The simplest way to achieve this is to store it within your personal 
+filestore: 
 
-- on Windows this is your `Documents` folder (which is normally actually located
-  at `C:\Users\<username>\Documents`). Note that this folder may also be 
-  addressed using environment variables like this:
+- on Windows this is your `Documents` folder (which is normally actually 
+  located at `C:\Users\<username>\Documents`). Note that this folder may also 
+  be addressed using environment variables like this:
   
   `%HOMEDRIVE%%HOMEPATH%\Documents`
 
@@ -369,7 +380,7 @@ documentation for your distribution.
 ### Configuring IBC
 
 IBC must be supplied with a configuration file. A specimen file called
-config.ini is included in the distribution ZIP. You will need to edit this
+config.ini is included in the distribution ZIPs. You will need to edit this
 file to include your IB username and password, and to ensure that IBC 
 behaves in the way that best suits your needs. 
 
@@ -379,8 +390,8 @@ a clean copy to revert to if need be.
 
 The sample `config.ini` file contains detailed comments on the 
 meaning of each configuration property. Many of these have sensible defaults, 
-or are only needed in special situations, so to help you get started quickly, here 
-is a list of the settings that you are most likely to need to change:
+or are only needed in special situations, so to help you get started quickly, 
+here is a list of the settings that you are most likely to need to change:
 
 | Setting                        | Notes                                       |
 | ------------------------------ | --------------------------------------------|
@@ -404,32 +415,34 @@ is a list of the settings that you are most likely to need to change:
 | ClosedownAt                    | Set this if you want to keep TWS running    |
 |                                | until a specified time of day on a          |
 |                                | particular day of the week, or to specify a |
-|                                | time when TWS should be shut down every     |
-|                                | day.                                        |
+|                                | time when Gateway should be shut down every |
+|                                | day (a daily shutdown time for TWS can be   |
+|                                | specified through TWS's own configuration   |
+                                 | dialog.                                     |
 
 
 There are two ways that IBC can locate your edited `config.ini` file. 
 
-- the simplest way is to tell it where to find the file in the command that starts
-  IBC. In this way, you can give the configuration file any name you 
+- the simplest way is to tell it where to find the file in the script that 
+  starts IBC. In this way, you can give the configuration file any name you 
   like. This is the recommended approach, and the supplied scripts follow this 
   approach. If you want change the filename from config.ini, or if you store 
-  it somewhere other than the default location, you'll have to edit the start script
-  to declare it's new name and location.
+  it somewhere other than the default location, you'll have to edit the start 
+  script to declare its new name and location.
 
-- if you do not specify a configuration file name, IBC will expect to
-  find a file named `IBC.<username>.ini` in the current working
-  directory. In this case, `<username>` is your username on your computer (not
-  your IB account username). This method is deprecated, because it is likely to
-  result in the `.ini` file being in an insecure location.
+- if you do not specify a configuration file name, IBC will expect to find a 
+  file named `IBC.<username>.ini` in the current working directory. In this 
+  case, `<username>` is your username on your computer (not your IB account 
+  username). This method is deprecated, because it is likely to result in the 
+  `.ini` file being in an insecure location.
 
 ### Starting IBC
 
 The normal way to start IBC is by use of a shell script. These can be 
 identified by the `.bat` (Windows) or `.sh` (Unix) extensions. Scripts 
-to start TWS and Gateway are included in the distribution ZIP, and due to their  
-complexity you are strongly advised to use them, rather than try to create your
-own.
+to start TWS and Gateway are included in the distribution ZIPs, and due to 
+their complexity you are strongly advised to use them, rather than try to 
+create your own.
 
 Windows users can execute a shell script in a number of ways, including:
 
@@ -438,60 +451,63 @@ Windows users can execute a shell script in a number of ways, including:
 * Create a scheduled task to run it automatically at the required times (see 
   below for more information about using scheduled tasks)
 
-If you used the default locations to install IBC and TWS, and to
-store your config.ini file, you should not need to edit the shell 
-scripts. If you do need to change them, they are commented to help you.
+If you used the default locations to install IBC and TWS, and to store your 
+config.ini file, you should not need to edit the shell scripts. If you do need 
+to change them, they are commented to help you.
 
 ## Other Topics
 
-### Scheduled Tasks (Windows)
+### Scheduled Tasks (Windows only)
 
-On Windows you can start IBC automatically using a Scheduled Task to 
-run StartTWS.bat or StartGateway.bat.
+On Windows you can start IBC automatically using the Task Scheduler to run 
+StartTWS.bat or StartGateway.bat.
 
-If you do this, you must make sure that the machine is already logged on before
-the scheduled task runs. Otherwise the task will still run, but you won't be
-able to see and interact with TWS, even if you subsequently log on. 
+If you do this, you should make sure that the machine is already logged on 
+before the scheduled task runs. Otherwise the task will still run, but you 
+won't be able to see and interact with TWS, even if you subsequently log on. 
 
 Remember also to change the task settings to prevent Windows automatically
 ending it after a certain time.
 
-Also you can use the `IbAutoClosedown=no` setting in the IBC
-configuration file to disable TWS's autologoff feature,  and the `ClosedownAt=`
-setting to specify when IBC will shut down TWS.
+Also you can use the `IbAutoClosedown=no` setting in the IBC configuration 
+file to disable TWS's autologoff feature,  and the `ClosedownAt=` setting to 
+specify when IBC will shut down TWS.
 
-In this way you can start IBC automatically on Sunday evening or Monday
+In this way you can start IBC automatically on Sunday evening or Monday 
 morning, keep it running all week and then close down tidily on Friday evening 
 or Saturday morning.
 
 The Windows Task Scheduler has many powerful features, and some of these can
 be used to provide even better control. For example, you can run the task 
-periodically (say every 10 minutes) during the week so that if TWS crashes, 
-it will automatically be restarted. If you also set up your computer to log 
-on automatically when it starts, this will ensure TWS is restarted after a 
-power outage. (Information about how to make your computer log on automatically
-is easily available on the internet: but make sure you understand the security 
-implications of autologon to Windows).
+periodically (say every 10 minutes) during the week so that if TWS crashes or 
+is manually shut down, it will automatically be restarted. If you also set up 
+your computer to log on automatically when it starts, this will ensure TWS is 
+restarted after a power outage. (Information about how to make your computer 
+log on automatically is easily available on the internet: but make sure you 
+understand the security implications of autologon to Windows).
 
 **IMPORTANT** Note that Microsoft have made changes to the Task Scheduler for 
 Windows 10. Because of this, it is advisable to set up your Scheduled Task 
 differently on Windows 10: see the next section _Running under Task Scheduler 
 on Windows 10_.
 
-**IMPORTANT Make sure you use the /INLINE argument to StartTWS.bat or 
+**IMPORTANT** Make sure you use the /INLINE argument to StartTWS.bat or 
 StartGateway.bat when starting IBC from Task Scheduler.
 Otherwise IBC will start and run correctly, but Task Scheduler will not
 be aware of it: in particular Task Scheduler will not show the task as running. 
 This prevents correct operation of Task Scheduler features such as killing the 
-task after a specified elapsed time.
+task after a specified elapsed time. The reason for this is that as far as 
+Task Scheduler is concerned, the task is simply the command processor process 
+that it creates to run the .bat file, and does not include processes created 
+by it.
 
 A sample scheduled task is included in the IBC distribution ZIP,
 called `Start TWS Live (daily).xml`. You can import this into your Task
 Scheduler if you are running Windows 7, Windows 8 or Windows 8.1 (see below
-for further information about running on Windows 10). After importing it, you will
-need to enable it and change the user account it runs under. This task starts TWS
-daily at 05:55, and assumes that TWS is set to auto-logoff at 05:52, so the
-IBC configuration file must include `IbAutoClosedown=yes`.
+for further information about running on Windows 10). After importing it, you 
+will need to enable it and change the user account it runs under. This task 
+starts TWS daily at 05:55, and assumes that TWS is set to auto-logoff at 05:52, 
+so the IBC configuration file must include `IbAutoClosedown=yes`.
 
 #### Running under Task Scheduler on Windows 10
 
@@ -511,19 +527,18 @@ not checked). Now create your scheduled task (it's easiest to import the sample
 included in the IBC download zip file), and open the start action editor.
 Find the line in the log file that reads: 'Starting IBC with this 
 command:', then select and copy the first part of the following line (up to but 
-not including `-cp`), and paste it into the `Program/script:` field of the action
-editor. Then select and copy the remainder of the line in the log file (starting
-at `-cp`), and paste it into the `Add arguments (optional):` field of the action
-editor. You can now run this scheduled task in the normal way.
+not including `-cp`), and paste it into the `Program/script:` field of the 
+action editor. Then select and copy the remainder of the line in the log file 
+(starting at `-cp`), and paste it into the `Add arguments (optional):` field 
+of the action editor. You can now run this scheduled task in the normal way.
 
-Note that running IBC via from Task Scheduler via a direct command in 
-this way means that there is no permanent IBC log file. Any output 
-from IBC appears in the window that Java creates to host the Java 
-console output, but there is no way to capture this to a file (note that normal
-redirection operators `>` and `>>` cannot be used in a command in a scheduled 
-task). If you've made sure that your IBC installation operates 
-correctly before setting up your scheduled task, this should not be too much
-of a problem. 
+Note that running IBC from Task Scheduler via a direct command in this way 
+means that there is no permanent IBC log file. Any output from IBC appears in 
+the window that Java creates to host the Java console output, but there is no 
+way to capture this to a file (note that normal redirection operators `>` and 
+`>>` cannot be used in a command in a scheduled task). If you've made sure 
+that your IBC installation operates correctly before setting up your scheduled 
+task, this should not be too much of a problem. 
 
 
 ### Multiple IBC Instances
@@ -549,15 +564,16 @@ this:
 - you want to test a new version of TWS in your paper trading account at
   the same time as using your live account in a previous version
 
-When TWS runs, it stores a large number of settings in a folder structure (these
-settings may also be stored in IB's servers, but this is not a useful option if
-you want to use multiple TWS instances). By default, TWS stores this settings
-folder structure in the TWS installation folder. For each username, it creates a
-separate folder structure. Note however that there are some files that TWS
-creates while running that are not separated by username in this way, and only
-one instance of TWS can access them at a time. So you can run multiple TWS 
-instances with no problem provided each instance is logged in to a different
-username, AND you don't try to run them at the same time.
+When TWS runs, it stores a large number of settings in a folder structure 
+(these settings may also be stored in IB's servers, but this may not be a 
+useful option if you want to use multiple TWS instances). By default, TWS 
+stores this settings folder structure in the TWS installation folder. For 
+each username, it creates a separate folder structure. Note however that 
+there are some files that TWS creates while running that are not separated 
+by username in this way, and only one instance of TWS can access them at a 
+time. So you can run multiple TWS instances with no problem provided each 
+instance is logged in to a different username, AND you don't try to run them 
+at the same time.
 
 However, by using the `IbDir` setting in the IBC configuration file, 
 you can tell TWS to store its settings whereever you like. So to have multiple 
@@ -573,8 +589,8 @@ different instances don't try to write their log files to the same folder
 (because otherwise they might try to log to the same file, and one instance
 would fail).
 
-As a concrete example, let's take the first scenario described above: you want to
-run both your live and paper trading accounts. So:
+As a concrete example, let's take the first scenario described above: you want 
+to run both your live and paper trading accounts. So:
 
 - install TWS into the default location (`C:\Jts` on Windows)
 
@@ -605,9 +621,10 @@ run both your live and paper trading accounts. So:
 
 To use more than one version of TWS (for example for testing a new version 
 with your paper-trading account while also using a previous version for
-your live account), you just need to install the required versions in the normal 
-way. Version 952 and later of TWS have installers that automatically place the 
-relevant files in separate folders named according to the version number.
+your live account), you just need to install the required versions in the 
+normal way. Version 952 and later of TWS have installers that automatically 
+place the relevant files in separate folders named according to the version 
+number.
 
 Then follow the advice in the previous section and ensure that each script
 file has the correct value for the `TWS_MAJOR_VRSN` variable.
@@ -629,3 +646,47 @@ Please provide as much evidence as you can, especially the versions of
 IBC and TWS/Gateway you're using and a full description of the 
 incorrect behaviour you're seeing.
 
+### Changes from IBController
+
+Although IBC has been forked from the original IBController project, it is not 
+identical and there are several important differences that you'll need to take 
+account of if you're switching from IBController to IBC.
+
+Here are the main differences between IBC and IBController:
+
+1. Changes to the settings file: 
+
+   - in IBC, the configuration settings were held in a file called 
+    `IBController.ini` by default, whereas the equivalent file in IBC 
+	is called `config.ini` 
+  
+   - the setting previously called `ForceTwsApiPort` has been renamed 
+	`OverrideTwsApiPort`
+  
+   - the `AcceptIncomingConnectionAction` setting previously had a default of 
+	`accept`. This default has now changed to `manual`, which means that the 
+	user must now explicitly configure IBC to automatically accept API 
+	connections from unknown computers.
+   
+   - the settings `PasswordEncrypted` and `FIXPasswordEncrypted` have been 
+    removed, as has the facility to 'encrypt' these passwords.
+   
+2. Changes to top-level script names:
+
+   On Windows:
+   
+       IBControllerStart.bat 				-> 	StartTWS.bat 
+	   IBControllerGatewayStart.bat 		-> 	StartGateway.bat 
+       IBControllerStop.bat 				-> 	Stop.bat 
+	   
+   On Linux:
+   
+       IBControllerStart.sh 				-> 	twsstart.sh 
+	   IBControllerGatewayStart.bat 		-> 	gatewaystart.sh 
+
+   On macOS:
+   
+       IBControllerStart-OSX.sh 			-> 	twsstartmacos.sh 
+	   IBControllerGatewayStart-OSX.bat 	-> 	gatewaystartmacos.sh 
+       
+	
