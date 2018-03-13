@@ -1,14 +1,10 @@
 **Download the
 [latest official release here](https://github.com/IbcAlpha/IBC/releases/latest)**
 
-IBC automates many aspects of running 
-[Interactive Brokers](https://www.interactivebrokers.com)  
-[Trader Workstation and Gateway](https://www.interactivebrokers.com/en/index.php?f=14099#tws-software) 
-that would otherwise involve manual intervention. You may find it helpful 
-if you don't like having to get up early in the morning every day to log 
-into TWS or Gateway, and it's especially useful for those who run automated 
-trading systems based on the 
-[Interactive Brokers API](http://interactivebrokers.github.io). 
+IBC automates many aspects of running [Interactive Brokers](https://www.interactivebrokers.com) [Trader Workstation and Gateway](https://www.interactivebrokers.com/en/index.php?f=14099#tws-software) 
+that would otherwise involve manual intervention. It's especially useful for 
+those who run automated trading systems based on the [Interactive Brokers API](http://interactivebrokers.github.io), 
+but many manual traders find it helpful as well.
 
 Here are some of the things it will do for you:
 
@@ -27,6 +23,7 @@ be useful if they are running in the cloud or on an inaccessible computer
 IBC runs on Windows, macOS and Linux.
 
 > IMPORTANT NOTICES
+>
 > Please note that IBC cannot automatically complete your login if 
 Interactive Brokers have given you a card or device that you must use 
 during login. IBC can still enter your username and password, but you 
@@ -35,7 +32,7 @@ request Interactive Brokers (via your Account Management page on their
 website) to relax this requirement when logging in to TWS or Gateway, 
 but you will lose certain guarantees should you suffer losses as a 
 result of your account being compromised.
-
+>
 > If you're moving to IBC from IBController, there are some changes 
 that you'll have to make. See the [IBC User Guide](userguide.md) for 
 further information. 
