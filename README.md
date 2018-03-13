@@ -4,7 +4,7 @@
 IBC automates many aspects of running 
 [Interactive Brokers](https://www.interactivebrokers.com)
 [Trader Workstation and Gateway]
-(http://www.interactivebrokers.com/en/pagemap/pagemap_APISolutions.php), 
+(https://www.interactivebrokers.com/en/index.php?f=14099#tws-software) 
 that would otherwise involve manual intervention. You may find it helpful 
 if you don't like having to get up early in the morning every day to log 
 into TWS or Gateway, and it's especially useful for those who run automated 
