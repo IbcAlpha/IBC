@@ -77,7 +77,7 @@ public class DefaultSettings extends Settings {
     static String getSettingsPath(String [] args) {
         String iniPath;
         if (args.length == 0 || args[0].equalsIgnoreCase("NULL")) {
-            iniPath = getWorkingDirectory() + "ITwsAutomater." + getComputerUserName() + ".ini";
+            iniPath = getWorkingDirectory() + "config." + getComputerUserName() + ".ini";
         } else if (args[0].length() == 0) {
             iniPath = generateDefaultIniPath();
         } else {// args.length >= 1

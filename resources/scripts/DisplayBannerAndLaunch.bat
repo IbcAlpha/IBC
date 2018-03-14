@@ -77,7 +77,7 @@ echo +
 set GW_FLAG=
 if /I "%APP%" == "GATEWAY" set GW_FLAG=/G
 
-set PHASE=Running StartTwsAutomater.bat
+set PHASE=Running StartIBC.bat
 set ERROR_MESSAGE=
 call "%IBC_PATH%\scripts\StartIBC.bat" "%TWS_MAJOR_VRSN%" %GW_FLAG% ^
      "/TwsPath:%TWS_PATH%" "/IbcPath:%IBC_PATH%" "/Config:%CONFIG%" ^
