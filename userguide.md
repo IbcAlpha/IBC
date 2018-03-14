@@ -654,7 +654,9 @@ account of if you're switching from IBController to IBC.
 
 Here are the main differences between IBC and IBController:
 
-1. Changes to the settings file: 
+1. The program file is now called IBC.jar.
+
+2. Changes to the settings file: 
 
    - in IBC, the configuration settings were held in a file called 
     `IBController.ini` by default, whereas the equivalent file in IBC 
@@ -670,8 +672,16 @@ Here are the main differences between IBC and IBController:
    
    - the settings `PasswordEncrypted` and `FIXPasswordEncrypted` have been 
     removed, as has the facility to 'encrypt' these passwords.
+	
+   - the `IbControllerPort` setting has been renamed to `CommandServerPort`, 
+     and its default value is 0 (zero), which is taken to mean 'do not 
+	 start the command server'
+
+   - the `IbControlFrom` setting has been renamed to `ControlFrom`
    
-2. Changes to top-level script names:
+   - the `IbBindAddress` setting has been renamed to `BindAddress`
+   
+3. Changes to top-level script names:
 
    On Windows:
    
