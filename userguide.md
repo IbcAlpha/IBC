@@ -635,12 +635,12 @@ If you need assistance with running IBC, or have any queries or
 suggestions for improvement, you should join the IBC User Group
 at:
 
-[https://groups.io/g/IBC](https://groups.io/g/IBC).
+[https://groups.io/g/ibcalpha](https://groups.io/g/ibcalpha)
 
 If you're convinced you've found a bug in IBC, please report it
 via either the IBC User Group or the GitHub Issue Tracker at:
 
-[https://github.com/IbcAlpha/IBC/issues](https://github.com/IbcAlpha/IBC/issues).
+[https://github.com/IbcAlpha/IBC/issues](https://github.com/IbcAlpha/IBC/issues)
 
 Please provide as much evidence as you can, especially the versions of 
 IBC and TWS/Gateway you're using and a full description of the 

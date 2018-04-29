@@ -71,11 +71,11 @@ is the result of trying to use it with the self-updating version of TWS.
 normal Gateway installer will work fine if you only want to use the Gateway.
 
 If you need assistance with running IBC, or have any queries or suggestions 
-for improvement, you should join the [IBC User Group](https://groups.io/g/IBC).
+for improvement, you should join the [IBC User Group](https://groups.io/g/ibcalpha).
 
 If you're convinced you've found a bug in IBC, please report it via either 
 the 
-[IBC User Group](https://groups.io/g/IBC) or the 
+[IBC User Group](https://groups.io/g/ibcalpha) or the 
 [GitHub Issue Tracker](https://github.com/IbcAlpha/IBC/issues).
 Please provide as much evidence as you can, especially the versions of IBC 
 and TWS/Gateway you're using and a full description of the incorrect 
