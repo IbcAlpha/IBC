@@ -78,7 +78,7 @@ class CommandServer
     private boolean createSocket(final int port) {
         final int backlog = 5;
         try {
-            final String bindaddr = Settings.settings().getString("IbBindAddress", "");
+            final String bindaddr = Settings.settings().getString("BindAddress", "");
             if (!bindaddr.isEmpty()) {
                 mSocket = new ServerSocket(port,
                                             backlog,
