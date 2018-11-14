@@ -1,4 +1,6 @@
 @echo off
+setlocal enableextensions enabledelayedexpansion
+
 :: Grateful thanks to Rob van der Woude for his wonderful scripting pages website at:
 ::
 :: http://www.robvanderwoude.com/
@@ -94,7 +96,8 @@ set IB_USER_ID=
 set IB_PASSWORD=
 set FIX_USER_ID=
 set FIX_PASSWORD=
-set IBC_CLASSPATH=
+set MODE=
+
 set ERROR_MESSAGE=
 
 ::======================== Parse command line arguments =====================
@@ -293,6 +296,7 @@ echo.
 echo Generating the classpath
 set PHASE=Generating the classpath
 
+set IBC_CLASSPATH=
 for %%i in (%TWS_JARS%\*.jar) do (
     if not "!IBC_CLASSPATH!"=="" set IBC_CLASSPATH=!IBC_CLASSPATH!;
     set IBC_CLASSPATH=!IBC_CLASSPATH!%%i
@@ -306,6 +310,7 @@ echo.
 echo Generating the JAVA VM options
 set PHASE=Generating the JAVA VM options
 
+set JAVA_VM_OPTIONS=
 for /f "tokens=1 delims= " %%i in (%TWS_VMOPTS%) do (
 	set TOKEN=%%i
 	if not "!TOKEN!"=="" (
