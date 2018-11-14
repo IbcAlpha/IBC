@@ -94,7 +94,7 @@ up and running properly.
   rename its folder before installing the new version in case you need to 
   revert to it later.
 
-4. Create an encrypted folder called `IBC` in your personal
+4. Create an encrypted folder called `ibc` in your personal
    filestore (see *Protecting the Password* in the *Password Security* section).
 
 5. Copy the configuration file (called `config.ini`) from the    
@@ -356,7 +356,7 @@ filestore:
 
 - on Unix it is the `/home/<username>` directory. 
 
-You are advised to place the file in its own `IBC` folder within this location.
+You are advised to place the file in its own `ibc` folder within this location.
 
 You should also consider encrypting the folder containing the configuration 
 file. This will prevent another user with administrator privileges gaining 
@@ -658,7 +658,7 @@ Here are the main differences between IBC and IBController:
 
 2. Changes to the settings file: 
 
-   - in IBC, the configuration settings were held in a file called 
+   - in IBController, the configuration settings were held in a file called 
     `IBController.ini` by default, whereas the equivalent file in IBC 
 	is called `config.ini` 
   
