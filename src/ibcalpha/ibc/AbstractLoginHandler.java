@@ -20,6 +20,7 @@ package ibcalpha.ibc;
 
 import java.awt.Window;
 import java.awt.event.WindowEvent;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 
@@ -53,12 +54,12 @@ public abstract class AbstractLoginHandler implements WindowHandler {
     public abstract boolean recogniseWindow(Window window);
     
     private void doLogin(final Window window) throws IbcException {
-        if (SwingUtils.findButton(window, "Login") == null) throw new IbcException("Login button");
+        JButton b = findLoginButton(window);
 
         GuiDeferredExecutor.instance().execute(new Runnable() {
             @Override
             public void run() {
-                SwingUtils.clickButton(window, "Login");
+                SwingUtils.clickButton(window, b.getText());
             }
         });
     }
@@ -68,6 +69,13 @@ public abstract class AbstractLoginHandler implements WindowHandler {
     protected abstract boolean preLogin(final Window window, int eventID) throws IbcException;
     
     protected abstract boolean setFields(Window window, int eventID) throws IbcException;
+    
+    private JButton findLoginButton(Window window) {
+        JButton b = SwingUtils.findButton(window, "Login");
+        if (b == null) b = SwingUtils.findButton(window, "Log In");
+        if (b == null) b = SwingUtils.findButton(window, "Paper Log In");
+        return b;
+    }
 
     protected final void setMissingCredential(final Window window, final int credentialIndex) {
         SwingUtils.findTextField(window, credentialIndex).requestFocus();
@@ -97,6 +105,16 @@ public abstract class AbstractLoginHandler implements WindowHandler {
                 } else {
                     tradingModeCombo.setSelectedItem("Paper Trading");
                 }
+            }
+        } else if (SwingUtils.findToggleButton(window, "Live Trading") != null && 
+                    SwingUtils.findToggleButton(window, "Paper Trading") != null) {
+            // TWS 974 onwards uses toggle buttons rather than a combo box
+            String tradingMode = TradingModeManager.tradingModeManager().getTradingMode();
+            Utils.logToConsole("Setting Trading mode = " + tradingMode);
+            if (tradingMode.equalsIgnoreCase(TradingModeManager.TRADING_MODE_LIVE)) {
+                SwingUtils.findToggleButton(window, "Live Trading").doClick();
+            } else {
+                SwingUtils.findToggleButton(window, "Paper Trading").doClick();
             }
         }
     }

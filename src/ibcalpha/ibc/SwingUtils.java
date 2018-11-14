@@ -36,6 +36,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JRadioButton;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
+import javax.swing.JToggleButton;
 import javax.swing.JTree;
 import javax.swing.MenuElement;
 import javax.swing.tree.TreeModel;
@@ -203,6 +204,25 @@ class SwingUtils {
         while (iter.hasNext()) {
             Component component = iter.next();
             if (component instanceof JTextField && i++ == ith) return (JTextField)component;
+        }
+        return null;
+    }
+
+    /**
+     * Traverses a container hierarchy and returns the radio button with
+     * the given text.
+     * @param container
+     *  the Container to search in
+     * @param text
+     *  the label of the radio button to be found
+     * @return
+     *  the radio button, if it was found;  otherwise null
+     */
+    static JToggleButton findToggleButton(Container container, String text) {
+        ComponentIterator iter = new ComponentIterator(container);
+        while (iter.hasNext()) {
+            Component component = iter.next();
+            if (component instanceof JToggleButton && text.equals(((JToggleButton)component).getText())) return (JToggleButton)component;
         }
         return null;
     }
@@ -449,7 +469,7 @@ class SwingUtils {
         return rb.isSelected();
 
     }
-
+    
 /**
      * Returns a string representing the structure of the specified window.
      * 
@@ -592,72 +612,56 @@ class SwingUtils {
         return title;
     }
     
-    private static void appendComponentDetails(Component component, StringBuilder builder) {
-        builder.append(component.isEnabled() ? "" : "[Disabled]");
+    private static String getComponentDetails(Component component) {
+        String s = component.isEnabled() ? "" : "[Disabled]";
         if (component instanceof JButton) {
-            builder.append("{");
-            builder.append("JButton: "); 
-            builder.append(((JButton)component).getText());
-            builder.append("}");
+            s += "JButton: "; 
+            s += ((JButton)component).getText();
         } else if (component instanceof JCheckBox) {
-            builder.append("{");
-            builder.append("JCheckBox: ");
-            builder.append(((JCheckBox) component).getText());
-            builder.append("}");
+            s += "JCheckBox: ";
+            s += ((JCheckBox) component).getText();
         } else if (component instanceof JLabel) {
-            builder.append("{");
-            builder.append("JLabel: "); 
-            builder.append(((JLabel) component).getText());
-            builder.append("}");
+            s += "JLabel: "; 
+            s += ((JLabel) component).getText();
         } else if (component instanceof JOptionPane) {
-            builder.append("{");
-            builder.append("JOptionPane: ");
-            builder.append(((JOptionPane) component).getMessage().toString());
-            builder.append("}");
+            s += "JOptionPane: ";
+            s += ((JOptionPane) component).getMessage().toString();
         }else if (component instanceof JRadioButton) {
-            builder.append("{");
-            builder.append("JRadioButton: "); 
-            builder.append(((JRadioButton) component).getText());
-            builder.append("}");
+            s += "JRadioButton: "; 
+            s += ((JRadioButton) component).getText();
         } else if (component instanceof JTextField) {
-            builder.append("{");
-            builder.append("JTextField: ");
-            builder.append(((JTextField) component).getText());
-            builder.append("}");
+            s += "JTextField: ";
+            s += ((JTextField) component).getText();
         } else if (component instanceof JMenuBar) {
-            builder.append("{");
-            builder.append("JMenuBar: "); 
-            builder.append(((JMenuBar) component).getName());
-            builder.append("}");
+            s += "JMenuBar: "; 
+            s += ((JMenuBar) component).getName();
         } else if (component instanceof JMenuItem) {
-            builder.append("{");
-            builder.append("JMenuItem: ");
-            builder.append(((JMenuItem) component).getText());
-            builder.append("}");
+            s += "JMenuItem: ";
+            s += ((JMenuItem) component).getText();
         } else if (component instanceof JTree) {
-            builder.append("{");
-            builder.append("JTree: ");
-            builder.append("}");
+            s += "JTree: ";
         }else if (component instanceof JComboBox) {
-            builder.append("{");
-            builder.append("JComboBox: ");
-            builder.append("}");
+            s += "JComboBox: ";
+            s += ((JComboBox) component).getSelectedItem().toString();
         } else if (component instanceof JList) {
-            builder.append("{");
-            builder.append("JList: ");
-            builder.append("}");
+            s += "JList: ";
+        } else if (component instanceof JToggleButton) {
+            s += "JToggleButton: ";
+            s += ((JToggleButton) component).getText();
+        } else {
+            s+= getClassDerivation(component);
         }
+        return s;
     }
     
-    private static void appendClassDerivation(Object object, StringBuilder builder) {
-        builder.append(object.getClass().getSimpleName());
+    private static String getClassDerivation(Object object) {
+        String s = object.getClass().getSimpleName();
         Class<?> c = object.getClass().getSuperclass();
-        String s = null;
         while (c != null) {
             s = c.getSimpleName() + "." + s;
             c = c.getSuperclass();
         }
-        builder.append(s);
+        return s;
     }
 
     private static void appendComponentStructure(Component component, StringBuilder builder) {
@@ -671,7 +675,9 @@ class SwingUtils {
         builder.append("(");
         builder.append(component.getClass().getName());
         builder.append(")");
-        appendComponentDetails(component, builder);
+        builder.append("{");
+        builder.append(getComponentDetails(component));
+        builder.append("}");
         if (component instanceof JTree) appendTreeNodes(((JTree) component).getModel(), ((JTree) component).getModel().getRoot(), builder, "|   " + indent);
         if (component instanceof JMenuBar) {
             appendMenuItem(component, builder, "|   " + indent);
@@ -686,10 +692,11 @@ class SwingUtils {
         if (node instanceof Component) {
             builder.append(node.toString());
             appendComponentStructure((Component)node, builder, "|   " + indent);
+            builder.append(getClassDerivation(node));
         } else {
             builder.append(node.toString());
             builder.append("  (");
-            appendClassDerivation(node, builder);
+            builder.append(getClassDerivation(node));
             builder.append(")");
         }
         for (int i = 0; i < model.getChildCount(node); i++) appendTreeNodes(model, model.getChild(node, i), builder, "|   " + indent);

@@ -21,6 +21,7 @@ package ibcalpha.ibc;
 import java.awt.Window;
 import javax.swing.JFrame;
 import javax.swing.JRadioButton;
+import javax.swing.JToggleButton;
 
 final class GatewayLoginFrameHandler extends AbstractLoginHandler {
     
@@ -29,7 +30,8 @@ final class GatewayLoginFrameHandler extends AbstractLoginHandler {
         if (! (window instanceof JFrame)) return false;
 
         return (SwingUtils.titleContains(window, "IB Gateway") &&
-               (SwingUtils.findButton(window, "Login") != null));
+               (SwingUtils.findButton(window, "Login") != null ||
+                SwingUtils.findButton(window, "Paper Log In") != null));    // TWS 974+
     }
 
     @Override
@@ -87,8 +89,8 @@ final class GatewayLoginFrameHandler extends AbstractLoginHandler {
         if (Settings.settings().getBoolean("FIX", false)) {
             setCredential(window, "FIX user name", 0, LoginManager.loginManager().FIXUserName());
             setCredential(window, "FIX password", 1, LoginManager.loginManager().FIXPassword());
-            setCredential(window, "IBAPI user name", 3, LoginManager.loginManager().IBAPIUserName());
-            setCredential(window, "IBAPI password", 4, LoginManager.loginManager().IBAPIPassword());
+            setCredential(window, "IBAPI user name", 2, LoginManager.loginManager().IBAPIUserName());
+            setCredential(window, "IBAPI password", 3, LoginManager.loginManager().IBAPIPassword());
         } else {
             setCredential(window, "IBAPI user name", 0, LoginManager.loginManager().IBAPIUserName());
             setCredential(window, "IBAPI password", 1, LoginManager.loginManager().IBAPIPassword());
@@ -105,18 +107,24 @@ final class GatewayLoginFrameHandler extends AbstractLoginHandler {
     }
     
     private void switchToFIX(Window window) throws IbcException {
-        JRadioButton button = SwingUtils.findRadioButton(window, "FIX CTCI");
-        if (button == null) throw new IbcException("FIX CTCI radio button");
+        JToggleButton button = SwingUtils.findToggleButton(window, "FIX CTCI");
+        if (button == null) throw new IbcException("FIX CTCI selector");
         
-        if (! button.isSelected()) button.doClick();
+        if (! button.isSelected()) {
+            Utils.logToConsole("Clicking FIX CTCI selector");
+            button.doClick();
+        }
     }
     
     private void switchToIBAPI(Window window) throws IbcException {
-        JRadioButton button = SwingUtils.findRadioButton(window, "IB API");
-        if (button == null) button = SwingUtils.findRadioButton(window, "TWS/API") ;
-        if (button == null) throw new IbcException("IB API radio button");
+        JToggleButton button = SwingUtils.findToggleButton(window, "IB API");
+        if (button == null) button = SwingUtils.findToggleButton(window, "TWS/API") ;
+        if (button == null) throw new IbcException("IB API selector");
         
-        if (! button.isSelected()) button.doClick();
+        if (! button.isSelected()) {
+            Utils.logToConsole("Clicking FIX CTCI selector");
+            button.doClick();
+        }
     }
 
 }

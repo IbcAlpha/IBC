@@ -32,7 +32,9 @@ final class LoginFrameHandler extends AbstractLoginHandler {
         // entitled Login, when it's trying to reconnect
         return ((SwingUtils.titleEquals(window, "New Login") ||
                 SwingUtils.titleEquals(window, "Login")) &&
-                SwingUtils.findButton(window, "Login") != null);
+                (SwingUtils.findButton(window, "Login") != null ||
+                SwingUtils.findButton(window, "Log In") != null ||          // TWS 974+
+                SwingUtils.findButton(window, "Paper Log In") != null));    // TWS 974+
     }
 
     @Override
