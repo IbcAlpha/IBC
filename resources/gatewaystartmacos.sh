@@ -158,7 +158,11 @@ export APP
 if [[ "$1" == "-inline" ]]; then
     exec "${IBC_PATH}/scripts/displaybannerandlaunch.sh"
 else
+    # run in a new terminal session.
+    # NB: "tell app Terminal" doesn't pass the current 
+	# environment, so we just run this script again
+	# inside a new terminal session with the -inline argument
     osascript -e 'tell app "Terminal"
-        do script "${IBC_PATH}/scripts/displaybannerandlaunch.sh"
+        do script "/opt/ibc/gatewaystartmacos.sh -inline"
     end tell'
 fi
