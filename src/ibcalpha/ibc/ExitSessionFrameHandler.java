@@ -74,12 +74,14 @@ class ExitSessionFrameHandler implements WindowHandler {
         }
 
         if (SwingUtils.clickButton(window, "Update")) {
+        } else if (SwingUtils.clickButton(window, "Apply")) {  // TWS 974
         } else if (SwingUtils.clickButton(window, "Aktualisieren")) {
         } else {
             return false;
         }
 
         if (SwingUtils.clickButton(window, "Close")) {
+        } else if (SwingUtils.clickButton(window, "OK")) {  // TWS 974
         } else if (SwingUtils.clickButton(window, "Schliessen")) {
         } else {
             return false;
