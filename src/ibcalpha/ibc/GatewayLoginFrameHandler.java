@@ -31,6 +31,7 @@ final class GatewayLoginFrameHandler extends AbstractLoginHandler {
 
         return (SwingUtils.titleContains(window, "IB Gateway") &&
                (SwingUtils.findButton(window, "Login") != null ||
+                SwingUtils.findButton(window, "Log In") != null ||          // TWS 974+
                 SwingUtils.findButton(window, "Paper Log In") != null));    // TWS 974+
     }
 
