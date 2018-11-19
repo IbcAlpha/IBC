@@ -38,7 +38,7 @@ final class GatewayLoginFrameHandler extends AbstractLoginHandler {
     @Override
     protected final boolean initialise(final Window window, int eventID) throws IbcException {
         selectGatewayMode(window);
-        setTradingModeCombo(window);
+        setTradingMode(window);
         return true;
     }
     

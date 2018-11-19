@@ -39,7 +39,7 @@ final class LoginFrameHandler extends AbstractLoginHandler {
 
     @Override
     protected final boolean initialise(final Window window, int eventID) throws IbcException {
-        setTradingModeCombo(window);
+        setTradingMode(window);
 
         JtsIniManager.reload();     // because TWS/Gateway modify the jts.ini file before this point
         String s3Store = JtsIniManager.getSetting(JtsIniManager.LogonSectionHeader, JtsIniManager.S3storeSetting);
