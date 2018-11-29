@@ -2,4 +2,5 @@ target
 dist
 nbproject
 bin
+build
 .*
