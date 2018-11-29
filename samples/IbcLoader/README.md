@@ -13,7 +13,7 @@ To run this application on Windows, use the RunIbcLoader.bat command
 file, supplying the TWS major version number as the first argument, 
 for example:
 
-RunIbcLoader.bat 947
+`RunIbcLoader.bat 947`
 
 Note that you must already have TWS/Gateway installed. A compiled jar 
 for the program and for IBC are included, so you don't need to build it 
@@ -36,7 +36,7 @@ paper)
 in IBC by setting the main window transparency to 80% and overlaying 
 a simple clock on the main window (this is not to suggest that such 
 things are particularly useful, just that they illustrate what can be 
-done.
+done).
 
 It's worth pointing out that the current version of IBC (3.7.3) doesn't
 have a way of injecting a logging mechanism, so all the logging that IBC
@@ -54,7 +54,7 @@ see this by leaving Task Manager running with the Performance tab
 visible, then closing the RDP session or switching to another program 
 on the host, then returning to the RDP session after a few seconds: the 
 CPU usage graphs will be high, and will return to normal almost 
-immediately after returning to teh session. Also if you show the CPU 
+immediately after returning to the session. Also if you show the CPU 
 time in the Details tab, you'll see that this increases by roughly the 
 same number of seconds as you leave the session for. This behaviour, 
 as far as I can determine, is a bug in the handling of the Swing 
