@@ -606,7 +606,7 @@ to run both your live and paper trading accounts. So:
 - create two start scripts (by copying `StartTWS.bat`) called
   `StartTWSLive.bat` and `StartTWSPaper.bat`
 
-- change the `set IBC_INI=...` line in each script file to refer to the 
+- change the `set CONFIG=...` line in each script file to refer to the 
   relevant configuration file
 
 - change the `set LOG_PATH=...` line in each script file to refer to different
