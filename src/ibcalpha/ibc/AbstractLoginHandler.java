@@ -89,33 +89,31 @@ public abstract class AbstractLoginHandler implements WindowHandler {
     }
     
     protected final void setTradingMode(final Window window) {
-        if (SwingUtils.findLabel(window, "Trading Mode") != null)  {
-            String tradingMode = TradingModeManager.tradingModeManager().getTradingMode();
+        String tradingMode = TradingModeManager.tradingModeManager().getTradingMode();
 
-            if (SwingUtils.findToggleButton(window, "Live Trading") != null && 
-                    SwingUtils.findToggleButton(window, "Paper Trading") != null) {
-                // TWS 974 onwards uses toggle buttons rather than a combo box
+        if (SwingUtils.findToggleButton(window, "Live Trading") != null && 
+                SwingUtils.findToggleButton(window, "Paper Trading") != null) {
+            // TWS 974 onwards uses toggle buttons rather than a combo box
+            Utils.logToConsole("Setting Trading mode = " + tradingMode);
+            if (tradingMode.equalsIgnoreCase(TradingModeManager.TRADING_MODE_LIVE)) {
+                SwingUtils.findToggleButton(window, "Live Trading").doClick();
+            } else {
+                SwingUtils.findToggleButton(window, "Paper Trading").doClick();
+            }
+        } else {
+            JComboBox<?> tradingModeCombo;
+            if (Settings.settings().getBoolean("FIX", false)) {
+                tradingModeCombo = SwingUtils.findComboBox(window, 1);
+            } else {
+                tradingModeCombo = SwingUtils.findComboBox(window, 0);
+            }
+
+            if (tradingModeCombo != null ) {
                 Utils.logToConsole("Setting Trading mode = " + tradingMode);
                 if (tradingMode.equalsIgnoreCase(TradingModeManager.TRADING_MODE_LIVE)) {
-                    SwingUtils.findToggleButton(window, "Live Trading").doClick();
+                    tradingModeCombo.setSelectedItem("Live Trading");
                 } else {
-                    SwingUtils.findToggleButton(window, "Paper Trading").doClick();
-                }
-            } else {
-                JComboBox<?> tradingModeCombo;
-                if (Settings.settings().getBoolean("FIX", false)) {
-                    tradingModeCombo = SwingUtils.findComboBox(window, 1);
-                } else {
-                    tradingModeCombo = SwingUtils.findComboBox(window, 0);
-                }
-
-                if (tradingModeCombo != null ) {
-                    Utils.logToConsole("Setting Trading mode = " + tradingMode);
-                    if (tradingMode.equalsIgnoreCase(TradingModeManager.TRADING_MODE_LIVE)) {
-                        tradingModeCombo.setSelectedItem("Live Trading");
-                    } else {
-                        tradingModeCombo.setSelectedItem("Paper Trading");
-                    }
+                    tradingModeCombo.setSelectedItem("Paper Trading");
                 }
             }
         }

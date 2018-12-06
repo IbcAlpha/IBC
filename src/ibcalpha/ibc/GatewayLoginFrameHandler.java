@@ -38,7 +38,9 @@ final class GatewayLoginFrameHandler extends AbstractLoginHandler {
     @Override
     protected final boolean initialise(final Window window, int eventID) throws IbcException {
         selectGatewayMode(window);
-        setTradingMode(window);
+        if (SwingUtils.findLabel(window, "Trading Mode") != null)  {
+            setTradingMode(window);
+        }
         return true;
     }
     
