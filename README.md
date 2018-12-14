@@ -9,13 +9,16 @@ but many manual traders find it helpful as well.
 Here are some of the things it will do for you:
 
 * It automatically fills in your username and password in the Login 
-dialog when TWS or Gateway start running, and clicks the Login button.
+dialog when TWS or Gateway start running, and clicks the Login button
 * It handles various dialog boxes which TWS sometimes displays, to keep 
 things running smoothly with no user involvement
 * It can keep TWS running indefinitely if required, by dealing with the 
-autologoff mechanism
+autologoff mechanism (however this mechanism no longer works for TWS 974 
+and later version because Interactive Brokers have changed TWS functionality 
+to prevent it)
 * It allows TWS to be shut down at a specified time on a specified day 
-of the week
+of the week (again, this functionality no longer applies for TWS 974 
+and later versions)
 * It allows the Gateway to be shut down at a specified time every day
 * It can be remotely instructed to shut down TWS or Gateway, which can
 be useful if they are running in the cloud or on an inaccessible computer
