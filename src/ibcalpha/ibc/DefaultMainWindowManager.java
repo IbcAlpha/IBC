@@ -52,7 +52,7 @@ public class DefaultMainWindowManager extends MainWindowManager {
     
     @Override
     public void logDiagnosticMessage(){
-        Utils.logToConsole("using default config dialog manager: " + message);
+        Utils.logToConsole("using default main window manager: " + message);
     }
 
     /**
