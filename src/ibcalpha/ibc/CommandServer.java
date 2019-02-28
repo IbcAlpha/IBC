@@ -113,21 +113,34 @@ class CommandServer
         try {
             final Socket socket = mSocket.accept();
 
-            final String allowedAddresses =
-                    Settings.settings().getString("ControlFrom", "");
-
-            if (!socket.getInetAddress().getHostAddress().equals(mSocket.getInetAddress().getHostAddress()) &&
-                    !socket.getInetAddress().getHostAddress().equals(InetAddress.getLoopbackAddress().getHostAddress()) &&
-                    !allowedAddresses.contains(socket.getInetAddress().getHostAddress()) &&
-                    !allowedAddresses.contains(socket.getInetAddress().getHostName())) {
-                Utils.logToConsole("CommandServer denied access to: " +
-                                    socket.getInetAddress().toString());
-                socket.close();
-                return null;
+            final String allowedAddresses = Settings.settings().getString("ControlFrom", "");
+            Utils.logToConsole("CommandServer: ControlFrom setting = " + allowedAddresses);
+            
+            boolean permitted = false; 
+            if (socket.getInetAddress().getHostAddress().equals(mSocket.getInetAddress().getHostAddress())) {
+                permitted = true;
+            } else if (socket.getInetAddress().getHostAddress().equals(InetAddress.getLoopbackAddress().getHostAddress())) {
+                permitted = true;
+            } else {
+                for (String allowedClient : allowedAddresses.split(",")){
+                    if (allowedClient.equals(socket.getInetAddress().getHostAddress()) ||
+                        allowedClient.equalsIgnoreCase(socket.getInetAddress().getHostName())) {
+                        permitted = true;
+                        break;
+                    }
+                }
             }
 
-            Utils.logToConsole("CommandServer accepted connection from: " + socket.getInetAddress().getHostAddress());
-            return socket;
+            if (permitted) {
+                Utils.logToConsole("CommandServer accepted connection from: " + socket.getInetAddress().toString());
+                return socket;
+            } 
+
+            // access denied
+            Utils.logToConsole("CommandServer denied access to: " +
+                                socket.getInetAddress().toString());
+            socket.close();
+            return null;
         } catch (IOException e) {
             e.printStackTrace();
             return null;
