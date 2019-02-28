@@ -114,7 +114,7 @@ class CommandServer
             final Socket socket = mSocket.accept();
 
             final String allowedAddresses =
-                    Settings.settings().getString("IbControlFrom", "");
+                    Settings.settings().getString("ControlFrom", "");
 
             if (!socket.getInetAddress().getHostAddress().equals(mSocket.getInetAddress().getHostAddress()) &&
                     !socket.getInetAddress().getHostAddress().equals(InetAddress.getLoopbackAddress().getHostAddress()) &&
