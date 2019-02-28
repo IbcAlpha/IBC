@@ -78,15 +78,12 @@ Here are some of the things IBC does for you:
 - clicks the YES button if the "Accept incoming connection?" dialog is 
   displayed
 
-- clicks the Close button if the Tip of the Day dialog appears
-
-- dismisses the dialog that warns of a new TWS version upon startup
-
 - responds to TWS's 'Exit Session Setting' to prevent autologoff, enabling
   TWS to be kept running indefinitely. **IMPORTANT** This setting no longer 
   works properly with TWS 974 or later
 
-- shuts down TWS tidily at a specified day of the week and time.
+- shuts down TWS or Gateway tidily at a specified day of the week and time, or 
+  at a specified time every day.
 
 IBC also responds to certain commands sent to it by another program,
 for example to tell TWS/Gateway to shut itself down cleanly.
