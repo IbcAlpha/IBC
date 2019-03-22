@@ -25,7 +25,7 @@ towards the end of this document.
 >
 >2. Abandon the use of IBC and instead use the autorestart mechanism provided 
 by TWS 974 and later versions. To use this, you have to start TWS with the 
-`C:\Jts\nnn\tws.exe` file (on Windows) or the `~jts/nnn/tws` script (on Linux), 
+`C:\Jts\nnn\tws.exe` file (on Windows) or the `~Jts/nnn/tws` script (on Linux), 
 where nnn is the TWS version number. IBC cannot work with this mechanism.
 
 >IMPORTANT
