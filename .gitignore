@@ -3,4 +3,6 @@ dist
 nbproject
 bin
 build
+makedocs/*/*.log
+makedocs/*/*.tex
 .*
