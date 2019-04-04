@@ -105,26 +105,26 @@ system to produce the PDF from the markdown source.
 Here is a summary of the steps you need to perform to get IBC
 up and running properly.
 
-1. Install the offline version of Interactive Brokers Trader Workstation 
-   (see *Interactive Brokers*   *Trader Workstation* in the *Prerequisites* 
+1. Install the offline version of Interactive Brokers Trader Workstation
+   (see *Interactive Brokers*   *Trader Workstation* in the *Prerequisites*
    section), and make sure that it uses the English language setting. 
    
    **Please note that you MUST download the OFFLINE version of TWS, not the**
    **self-updating version: IBC DOES NOT WORK with the self-updating version**
    **of TWS.**
 
-2. Download the appropriate IBC distribution ZIP file for your operating 
+2. Download the appropriate IBC distribution ZIP file for your operating
    system (see the *Where to get IBC* section).
 
 3. Install IBC (see the *Installing IBC* section). Please note
-  that if you already have an existing IBC installation, it's wise to
-  rename its folder before installing the new version in case you need to 
-  revert to it later.
+   that if you already have an existing IBC installation, it's wise to
+   rename its folder before installing the new version in case you need to
+   revert to it later.
 
 4. Create an encrypted folder called `ibc` in your personal
    filestore (see *Protecting the Password* in the *Password Security* section).
 
-5. Copy the configuration file (called `config.ini`) from the    
+5. Copy the configuration file (called `config.ini`) from the
    IBC installation folder to the encrypted folder created in
    step 5.
 
@@ -159,7 +159,7 @@ up and running properly.
    sequence.
 
 8. Edit the configuration file (`config.ini`) in the encrypted 
-   `IBC` folder using a text editor such as Notepad. See 
+   `ibc` folder using a text editor such as Notepad. See 
    *Configuring IBC* for further information.
 
 9. If you did not install TWS and IBC in their default locations, 
@@ -215,9 +215,8 @@ then select `TWS Software`: currently a valid direct link is
 IBKR provides two modes of operation for TWS:
 
 - an online, or self-updating TWS that automatically receives updates as IBKR 
-enhances it and fixes bugs. IBC **does not work** with the self-
-updating TWS, so **do not install the self-updating version for use with**
-**IBC**
+enhances it and fixes bugs. IBC **does not work** with the self-updating
+TWS, so **do not install the self-updating version for use with IBC**
 
 - an offline or standalone TWS that, after download and installation, never
 changes (until you download and install another version): you **must** 
@@ -458,7 +457,7 @@ There are two ways that IBC can locate your edited `config.ini` file.
 - the simplest way is to tell it where to find the file in the script that 
   starts IBC. In this way, you can give the configuration file any name you 
   like. This is the recommended approach, and the supplied scripts follow this 
-  approach. If you want change the filename from config.ini, or if you store 
+  approach. If you want to change the filename from config.ini, or if you store 
   it somewhere other than the default location, you'll have to edit the start 
   script to declare its new name and location.
 
