@@ -110,27 +110,27 @@ IBC is licensed under the
 History
 -------
 
-A brief note by Richard L King (rlktradewright on GitHub) dated 
-13 March 2018.
+A brief note by Richard L King (rlktradewright on GitHub) updated 
+5 April 2019.
 
 IBC is a fork of the original 
 [IBController project](https://github.com/ib-controller/ib-controller). 
-For many years, from 2004 to early 2018, I have been the primary 
+For many years, from 2004 to early 2018, I was the primary 
 maintainer, developer and supporter for that project. 
 
-In June 2016, I granted ownership of the project to a (commercial) 
-organization that makes heavy use of IBController, on the understanding 
-that they would provide ongoing development, maintenance and support 
-effort, to enable me to devote more time to other interests. 
+For reasons beyond my control, in early 2018 I decided to withdraw my direct
+support for the original project, and to create this fork. It is my intention
+to ensure that this fork continues to be developed and supported to the high
+standards of the past.
 
-In fact this effort has not been forthcoming and I have continued to 
-shoulder the burden since then. 
+The status of the original IBController repository now seems unclear, so
+IBController users are invited to switch to IBC.
 
-By the start of 2018 it became clear that this situation was unlikely 
-to change, so I asked that ownership be returned to me. This request 
-was refused, and I therefore felt it necessary to withdraw my support 
-for the original project, and to create this fork under my control, 
-in order to ensure that the project continues to be developed and 
-supported to the high standards of the past.
+If you switch from IBController to IBC, please note that there are some 
+significant differences, and it's best to install IBC from scratch using 
+the download on the [Releases page](https://github.com/IbcAlpha/IBC/releases). 
+The last section of the [IBC User Guide](userguide.md) contains useful 
+information about these differences.
+
 
 
