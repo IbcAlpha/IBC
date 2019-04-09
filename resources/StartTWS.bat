@@ -21,7 +21,7 @@ setlocal enableextensions enabledelayedexpansion
 ::=============================================================================+
 
 
-set TWS_MAJOR_VRSN=963
+set TWS_MAJOR_VRSN=972
 set CONFIG=%HOMEDRIVE%%HOMEPATH%\Documents\IBC\config.ini
 set TRADING_MODE=
 set IBC_PATH=%SYSTEMDRIVE%\IBC

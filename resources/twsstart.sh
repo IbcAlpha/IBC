@@ -18,7 +18,7 @@
 #=============================================================================+
 
 
-TWS_MAJOR_VRSN=963
+TWS_MAJOR_VRSN=972
 IBC_INI=~/ibc/config.ini
 TRADING_MODE=
 IBC_PATH=/opt/ibc
