@@ -36,25 +36,9 @@ public class ReloginDialogHandler implements WindowHandler {
 
     @Override
     public void handleWindow(Window window, int eventID) {
-        String setting = Settings.settings().getString("ExistingSessionDetectedAction", "manual");
-        if (setting.equalsIgnoreCase("primary")) {
-            Utils.logToConsole("Re-login because this is the primary session");
-            if (!SwingUtils.clickButton(window, "Re-login"))  {
-                Utils.logError("could not handle 'Re-login is required' dialog because the 'Re-login' button wasn't found.");
-            }
-        } else if (setting.equalsIgnoreCase("secondary")) {
-            Utils.logToConsole("Don't re-login because this is a secondary session");
-            if (!SwingUtils.clickButton(window, "Exit Application"))  {
-                Utils.logError("could not handle 'Re-login is required' dialog because the 'Exit Application' button wasn't found.");
-            }
-        } else if (setting.equalsIgnoreCase("manual")) {
-            // NB: arguably we should handle re-login automatically here, but in 
-            // practice TWS seems to get itself into a funny state and doesn't display 
-            // the 'Existing session detected' dialog (maybe because IBC responds
-            // too quickly? Who knows...)
-            Utils.logToConsole("Let user choose whether to re-login");
-        } else {
-            Utils.logError("could not handle 'Re-login is required' dialog because the ExistingSessionDetectedAction setting is invalid.");
+        Utils.logToConsole("Re-login to session");
+        if (!SwingUtils.clickButton(window, "Re-login"))  {
+            Utils.logError("could not handle 'Re-login is required' dialog because the 'Re-login' button wasn't found.");
         }
 }
 

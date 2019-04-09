@@ -42,6 +42,8 @@ public class DefaultMainWindowManager extends MainWindowManager {
     
     private volatile JFrame mainWindow = null;
     
+    private volatile boolean loginCompleted;
+    
     private volatile GetMainWindowTask mainWindowTask;
     
     private final Object futureCreationLock = new Object();
@@ -146,11 +148,28 @@ public class DefaultMainWindowManager extends MainWindowManager {
     public void setMainWindow(JFrame window) {
         Utils.logToConsole("Found " + (isGateway ? "Gateway" : "TWS") + " main window");
         mainWindow = window;
+        
+        // For TWS, the main window being opened indicates that login is complete. This is not the case
+        // for the Gateway, because the main window is created right at the start, but the splash frame
+        // being closed indicates that login is complete (see the SplahFrameHandler).
+        if (! isGateway) setLoginComplete();
+        
         if (mainWindowTask != null) mainWindowTask.setMainWindow(window);
         mainWindowTask = null;
         mainWindowFuture = null;
                 
         if (Settings.settings().getBoolean("MinimizeMainWindow", false)) mainWindow.setExtendedState(java.awt.Frame.ICONIFIED);
+    }
+
+    @Override
+    public boolean isLoginComplete() {
+        return loginCompleted;
+    }
+
+    @Override
+    public void setLoginComplete() {
+        Utils.logToConsole("Login completed");
+        loginCompleted = true;
     }
     
 }

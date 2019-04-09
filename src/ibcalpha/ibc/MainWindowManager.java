@@ -86,6 +86,10 @@ public abstract class MainWindowManager {
     public abstract JFrame getMainWindow() throws IllegalStateException;
     
     public abstract boolean isGateway();
+    
+    public abstract boolean isLoginComplete();
+
+    public abstract void setLoginComplete();
 
     public abstract void setMainWindow(JFrame window);
     
