@@ -62,18 +62,15 @@ class Utils {
     static boolean invokeMenuItem(final Container container, final String[] path) throws IllegalStateException {
         if (SwingUtilities.isEventDispatchThread()) throw new IllegalStateException("Function must not be called on the event dispatch thread, as it may block the thread");
         while (true) {
-            FutureTask<Boolean> task = new FutureTask<>(new Callable<Boolean>() {
-                @Override
-                public Boolean call() throws IbcException {
-                    String s = path[0];
-                    for (int i = 1; i < path.length; i++) s = s + " > " + path[i];
-
-                    JMenuItem menuItem = SwingUtils.findMenuItemInAnyMenuBar(container, path);
-                    if (menuItem == null) throw new IbcException("menu item: " + s);
-                    if (!menuItem.isEnabled()) return false;
-                    menuItem.doClick();
-                    return true;
-                }
+            FutureTask<Boolean> task = new FutureTask<>(() -> {
+                String s = path[0];
+                for (int i = 1; i < path.length; i++) s = s + " > " + path[i];
+                
+                JMenuItem menuItem = SwingUtils.findMenuItemInAnyMenuBar(container, path);
+                if (menuItem == null) throw new IbcException("menu item: " + s);
+                if (!menuItem.isEnabled()) return false;
+                menuItem.doClick();
+                return true;
             });
 
             GuiDeferredExecutor.instance().execute(task);

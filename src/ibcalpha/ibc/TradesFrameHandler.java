@@ -120,12 +120,9 @@ public class TradesFrameHandler implements WindowHandler {
             public void stateChanged(ChangeEvent ce) {
                 Utils.logToConsole("Checkbox: " + check.getText() + "; selected=" + check.isSelected());
                 if (!check.isSelected()) {
-                    GuiDeferredExecutor.instance().execute(new Runnable() {
-                        @Override
-                        public void run(){
-                            Utils.logToConsole("Checkbox: " + check.getText() + "; setting selected");
-                            if (!check.isSelected()) check.doClick();
-                        }
+                    GuiDeferredExecutor.instance().execute(() -> {
+                        Utils.logToConsole("Checkbox: " + check.getText() + "; setting selected");
+                        if (!check.isSelected()) check.doClick();
                     });
                 }
             }

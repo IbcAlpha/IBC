@@ -56,11 +56,8 @@ public abstract class AbstractLoginHandler implements WindowHandler {
     private void doLogin(final Window window) throws IbcException {
         JButton b = findLoginButton(window);
 
-        GuiDeferredExecutor.instance().execute(new Runnable() {
-            @Override
-            public void run() {
-                SwingUtils.clickButton(window, b.getText());
-            }
+        GuiDeferredExecutor.instance().execute(() -> {
+            SwingUtils.clickButton(window, b.getText());
         });
     }
     

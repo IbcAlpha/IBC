@@ -416,11 +416,8 @@ public class IbcTws {
             Utils.logToConsole((isGateway ? "Gateway" : "TWS") +
                             " will be shut down at " +
                            (new SimpleDateFormat("yyyy/MM/dd HH:mm")).format(shutdownTime));
-            MyScheduledExecutorService.getInstance().schedule(new Runnable() {
-                @Override
-                public void run() {
-                    MyCachedThreadPool.getInstance().execute(new StopTask(null));
-                }
+            MyScheduledExecutorService.getInstance().schedule(() -> {
+                MyCachedThreadPool.getInstance().execute(new StopTask(null));
             }, delay, TimeUnit.MILLISECONDS);
         }
     }

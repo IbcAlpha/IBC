@@ -145,14 +145,10 @@ class TwsSettingsSaver {
     private static void scheduleSave(Date saveTime) {
         Utils.logToConsole("Tws settings will be saved at " + dateFormat.format(saveTime));
 
-        MyScheduledExecutorService.getInstance().scheduleAtFixedRate(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        Utils.logToConsole("Saving Tws settings");
-                        Utils.invokeMenuItem(MainWindowManager.mainWindowManager().getMainWindow(), new String[] {"File", "Save Settings"});
-                    }
-                }, saveTime.getTime() - System.currentTimeMillis(), 86400000, TimeUnit.MILLISECONDS);
+        MyScheduledExecutorService.getInstance().scheduleAtFixedRate(() -> {
+            Utils.logToConsole("Saving Tws settings");
+            Utils.invokeMenuItem(MainWindowManager.mainWindowManager().getMainWindow(), new String[] {"File", "Save Settings"});
+        }, saveTime.getTime() - System.currentTimeMillis(), 86400000, TimeUnit.MILLISECONDS);
     }
     
 }
