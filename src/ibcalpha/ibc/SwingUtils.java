@@ -620,6 +620,7 @@ class SwingUtils {
         } else if (component instanceof JCheckBox) {
             s += "JCheckBox: ";
             s += ((JCheckBox) component).getText();
+            s += "(" + (((JCheckBox) component).isSelected() ? "selected" : "unselected") + ")";
         } else if (component instanceof JLabel) {
             s += "JLabel: "; 
             s += ((JLabel) component).getText();
