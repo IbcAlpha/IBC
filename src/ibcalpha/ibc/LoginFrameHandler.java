@@ -20,6 +20,9 @@ package ibcalpha.ibc;
 
 import java.awt.Window;
 import javax.swing.JFrame;
+import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 final class LoginFrameHandler extends AbstractLoginHandler {
 
@@ -42,14 +45,52 @@ final class LoginFrameHandler extends AbstractLoginHandler {
         setTradingMode(window);
 
         JtsIniManager.reload();     // because TWS/Gateway modify the jts.ini file before this point
-        String s3Store = JtsIniManager.getSetting(JtsIniManager.LogonSectionHeader, JtsIniManager.S3storeSetting);
-        if (s3Store.compareToIgnoreCase("true") == 0 && Settings.settings().getString("StoreSettingsOnServer", "").length() != 0) {
-            final String STORE_SETTINGS_ON_SERVER_CHECKBOX = "Use/store settings on server";
-            if (! SwingUtils.setCheckBoxSelected(
-                    window,
-                    STORE_SETTINGS_ON_SERVER_CHECKBOX,
-                    Settings.settings().getBoolean("StoreSettingsOnServer", false))) throw new IbcException(STORE_SETTINGS_ON_SERVER_CHECKBOX);
-        }
+        
+        final JTextField userName = SwingUtils.findTextField(window, 0);
+        if (userName == null) throw new IbcException("Username field");
+        
+        // Add a DocumentListener to the username field, which will set the 
+        // "Use/store settings on server" checkbox as required. This is
+        // necessary because when a valid username is entered, TWS sets the
+        // checkbox according to the latest saved settings for that user, which
+        // may not be what is now required by the StoreSettingsOnServer setting.
+        userName.getDocument().addDocumentListener(new DocumentListener(){ 
+            @Override
+            public void insertUpdate(DocumentEvent de) {
+                setStoreSettingsOnServerCheckbox();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent de) {
+                setStoreSettingsOnServerCheckbox();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent de) {
+                setStoreSettingsOnServerCheckbox();
+            }
+
+            private void setStoreSettingsOnServerCheckbox() {
+                boolean s3Store = Boolean.parseBoolean(JtsIniManager.getSetting(JtsIniManager.LogonSectionHeader, JtsIniManager.S3storeSetting));
+                if (s3Store && Settings.settings().getString("StoreSettingsOnServer", "").length() != 0) {
+                    final String STORE_SETTINGS_ON_SERVER_CHECKBOX = "Use/store settings on server";
+                    
+                    // we defer setting the checkbox: if we do it inline, TWS's setting 
+                    // overwrites it
+                    GuiDeferredExecutor.instance().execute(() -> {
+                        boolean storeSettingsOnServer = Settings.settings().getBoolean("StoreSettingsOnServer", false);
+                        if (! SwingUtils.setCheckBoxSelected(
+                                window,
+                                STORE_SETTINGS_ON_SERVER_CHECKBOX,
+                                storeSettingsOnServer)) {
+                            Utils.exitWithError(ErrorCodes.ERROR_CODE_CANT_FIND_CONTROL, "could not login: could not find control: " + STORE_SETTINGS_ON_SERVER_CHECKBOX);
+                        }
+                        Utils.logToConsole("Use/store settings on server selected: " + storeSettingsOnServer);
+                    });
+                }
+            }
+
+        });
         return true;
     }
     
@@ -67,7 +108,9 @@ final class LoginFrameHandler extends AbstractLoginHandler {
     
     @Override
     protected final boolean setFields(Window window, int eventID) throws IbcException {
+        Utils.logToConsole("Setting user name");
         setCredential(window, "IBAPI user name", 0, LoginManager.loginManager().IBAPIUserName());
+        Utils.logToConsole("Setting password");
         setCredential(window, "IBAPI password", 1, LoginManager.loginManager().IBAPIPassword());
         return true;
     }
