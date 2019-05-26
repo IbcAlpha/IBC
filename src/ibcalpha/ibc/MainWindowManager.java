@@ -93,4 +93,6 @@ public abstract class MainWindowManager {
 
     public abstract void setMainWindow(JFrame window);
     
+    public abstract void iconizeIfRequired();
+    
 }

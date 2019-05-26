@@ -158,7 +158,7 @@ public class DefaultMainWindowManager extends MainWindowManager {
         mainWindowTask = null;
         mainWindowFuture = null;
                 
-        if (Settings.settings().getBoolean("MinimizeMainWindow", false)) mainWindow.setExtendedState(java.awt.Frame.ICONIFIED);
+        iconizeIfRequired();
     }
 
     @Override
@@ -170,6 +170,11 @@ public class DefaultMainWindowManager extends MainWindowManager {
     public void setLoginComplete() {
         Utils.logToConsole("Login completed");
         loginCompleted = true;
+    }
+
+    @Override
+    public void iconizeIfRequired() {
+        if (Settings.settings().getBoolean("MinimizeMainWindow", false)) mainWindow.setExtendedState(java.awt.Frame.ICONIFIED);
     }
     
 }

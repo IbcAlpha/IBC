@@ -37,6 +37,8 @@ public class NonBrokerageAccountDialogHandler  implements WindowHandler {
     public void handleWindow(Window window, int eventID) {
         if (! Settings.settings().getBoolean("AcceptNonBrokerageAccountWarning", true)) return;
 
+        GuiDeferredExecutor.instance().execute(() -> MainWindowManager.mainWindowManager().iconizeIfRequired());
+        
         if (! SwingUtils.clickButton(window, "I understand and accept")) {
             Utils.logError("could not dismiss non-brokerage account warning dialog.");
         }

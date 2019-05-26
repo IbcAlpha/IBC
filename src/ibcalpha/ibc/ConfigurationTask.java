@@ -47,6 +47,9 @@ public class ConfigurationTask {
                 FutureTask<?> t = new FutureTask<>((Runnable)configAction, null);
                 GuiExecutor.instance().execute(t);
                 t.get();
+
+                GuiDeferredExecutor.instance().execute(() -> MainWindowManager.mainWindowManager().iconizeIfRequired());
+        
                 ConfigDialogManager.configDialogManager().releaseConfigDialog();
             } catch (Exception e){
                 Utils.logException(e);
