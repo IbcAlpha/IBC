@@ -30,4 +30,9 @@ public class IbcGateway {
         setupDefaultEnvironment(args, true);
         IbcTws.load();
     }
+
+    public static void printVersionInfo() {
+        IbcTws.printVersionInfo();
+    }
+
 }

@@ -2,11 +2,14 @@
     <property environment="env"/>
     <fail unless="env.IBC_BIN" message="Environment variable 'IBC_BIN' not set (set it to the fully-qualified directory name containing the TWS jar files)."/>
 
-    <property name="ver" value="3.8.0"/>
+    <property name="ver" value="3.8.1-beta.1"/>
     <property name="src" location="src"/>
     <property name="resources" location="resources"/>
     <property name="target" location="target"/>
     <property name="dist"  location="dist"/>
+    <property name="nl" value="${line.separator}" />
+    <property name="org" value="ibcalpha"/>
+    <property name="component" value="ibc"/>
 
     <path id="external.classpath">
         <fileset dir="${env.IBC_BIN}" includes="**/*.jar"/>
@@ -17,7 +20,18 @@
         <delete dir="${dist}"/>
     </target>
 
-    <target name="compile" description="compile the source ">
+    <target name="init" description="update the IbcVersionInfo class">
+        <echo file="${src}/${org}/${component}/IbcVersionInfo.java" append="false">// NB: this file is updated by the Ant build script
+
+package ibcalpha.ibc;
+
+public class IbcVersionInfo {
+    public final static String IBC_VERSION = &quot;${ver}&quot;;
+}
+</echo>
+    </target>
+
+    <target name="compile" depends="init" description="compile the source ">
         <mkdir dir="${target}/classes"/>
         <javac srcdir="${src}" destdir="${target}/classes" source="8" target="8" includeantruntime="false">
             <classpath refid="external.classpath"/>

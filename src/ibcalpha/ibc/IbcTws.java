@@ -262,6 +262,8 @@ public class IbcTws {
     }
 
     public static void load() {
+        printVersionInfo();
+        
         printProperties();
         
         Settings.settings().logDiagnosticMessage();
@@ -282,6 +284,10 @@ public class IbcTws {
 
         startTwsOrGateway(isGateway);
 }
+
+    public static void printVersionInfo() {
+        Utils.logToConsole("version: " + IbcVersionInfo.IBC_VERSION);
+    }
 
     private static void createToolkitListener() {
         Toolkit.getDefaultToolkit().addAWTEventListener(new TwsListener(createWindowHandlers()), AWTEvent.WINDOW_EVENT_MASK);
@@ -392,7 +398,7 @@ public class IbcTws {
         }
         Utils.logRawToConsole("------------------------------------------------------------");
     }
-
+    
     private static void startGateway() {
         String[] twsArgs = new String[1];
         twsArgs[0] = getTWSSettingsDirectory();
