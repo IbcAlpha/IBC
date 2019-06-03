@@ -32,6 +32,7 @@ import javax.swing.JList;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButton;
 import javax.swing.JSeparator;
@@ -630,6 +631,9 @@ class SwingUtils {
         }else if (component instanceof JRadioButton) {
             s += "JRadioButton: "; 
             s += ((JRadioButton) component).getText();
+        } else if (component instanceof JPasswordField) {
+            s += "JPasswordField: ";
+            s += "***";
         } else if (component instanceof JTextField) {
             s += "JTextField: ";
             s += ((JTextField) component).getText();
