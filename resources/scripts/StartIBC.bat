@@ -25,7 +25,8 @@ echo Runs IBC, thus loading TWS or the IB Gateway
 echo.
 echo Usage:
 echo.
-echo StartIBC twsVersion [/G ^| /Gateway] [/TwsPath:twsPath] [/IbcPath:ibcPath]
+echo StartIBC twsVersion [/G ^| /Gateway] [/TwsPath:twsPath]
+echo              [/TwsSettingsPath:twsSettingsPath] [/IbcPath:ibcPath]
 echo              [/Config:configfile] [/JavaPath:javaPath]
 echo              [/User:userId] [/PW:password]
 echo              [/FIXUser:fixuserId] [/FIXPW:fixpassword]
@@ -38,6 +39,9 @@ echo                           than TWS
 echo.
 echo   twsPath                 Path to the TWS installation folder. Defaults to
 echo                           C:\Jts
+echo.
+echo   twsSettingsPath         Path to the TWS settings folder. Defaults to
+echo                           the twsPath argument
 echo.
 echo   ibcPath                 Path to the IBC installation folder.
 echo                           Defaults to C:\IBC
@@ -81,6 +85,7 @@ set E_TWS_VERSION_NOT_INSTALLED=1004
 set E_IBC_PATH_NOT_EXIST=1005
 set E_CONFIG_NOT_EXIST=1006
 set E_TWS_VMOPTIONS_NOT_FOUND=1007
+set E_TWS_SETTINGS_PATH_NOT_EXIST=1008
 
 set ENTRY_POINT_TWS=ibcalpha.ibc.IbcTws
 set ENTRY_POINT_GATEWAY=ibcalpha.ibc.IbcGateway
@@ -89,6 +94,7 @@ set ENTRY_POINT_GATEWAY=ibcalpha.ibc.IbcGateway
 set TWS_VERSION=
 set ENTRY_POINT=%ENTRY_POINT_TWS%
 set TWS_PATH=
+set TWS_SETTINGS_PATH=
 set IBC_PATH=
 set CONFIG=
 set JAVA_PATH=
@@ -114,6 +120,8 @@ if /I "%ARG%" == "/G" (
 	set ENTRY_POINT=%ENTRY_POINT_GATEWAY%
 ) else if /I "%ARG:~0,9%" == "/TWSPATH:" (
 	set TWS_PATH=%ARG:~9%
+) else if /I "%ARG:~0,17%" == "/TWSSETTINGSPATH:" (
+	set TWS_SETTINGS_PATH=%ARG:~17%
 ) else if /I "%ARG:~0,9%" == "/IBCPATH:" (
 	set IBC_PATH=%ARG:~9%
 ) else if /I "%ARG:~0,8%" == "/CONFIG:" (
@@ -188,6 +196,7 @@ echo.
 echo TWS version = %TWS_VERSION%
 echo Entry point = %ENTRY_POINT%
 echo /TwsPath = %TWS_PATH%
+echo /TwsSettingsPath = %TWS_SETTINGS_PATH%
 echo /IbcPath = %IBC_PATH%
 echo /Config = %CONFIG%
 echo /Mode = %MODE%
@@ -218,6 +227,7 @@ if not defined TWS_VERSION (
 )
 
 if not defined TWS_PATH set TWS_PATH=C:\Jts
+if not defined TWS_SETTINGS_PATH set TWS_SETTINGS_PATH=%TWS_PATH%
 if not defined IBC_PATH set IBC_PATH=C:\IBC
 if not defined CONFIG set CONFIG=%HOMEPATH%\Documents\IBC\config.ini
 
@@ -260,6 +270,11 @@ if not exist "%TWS_JARS%" (
 	set ERROR_MESSAGE1=You must install the offline version of TWS/Gateway
 	set ERROR_MESSAGE2=IBC does not work with the auto-updating TWS/Gateway
 	set ERROR=%E_TWS_VERSION_NOT_INSTALLED%
+	goto :err
+)
+if not exist "%TWS_SETTINGS_PATH%" (
+	set ERROR_MESSAGE=TWS settings path: %TWS_SETTINGS_PATH% does not exist
+	set ERROR=%E_TWS_SETTINGS_PATH_NOT_EXIST%
 	goto :err
 )
 if not exist "%IBC_PATH%" (
@@ -379,7 +394,7 @@ echo.
 :: prevent other Java tools interfering with IBC
 set JAVA_TOOL_OPTIONS=
 
-pushd %TWS_PATH%
+pushd %TWS_SETTINGS_PATH%
 
 if defined GOT_FIX_CREDENTIALS (
 	if defined GOT_API_CREDENTIALS (

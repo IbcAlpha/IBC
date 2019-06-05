@@ -23,6 +23,7 @@ IBC_INI=~/ibc/config.ini
 TRADING_MODE=
 IBC_PATH=/opt/ibc
 TWS_PATH=~/Jts
+TWS_SETTINGS_PATH=
 LOG_PATH=~/ibc/logs
 TWSUSERID=
 TWSPASSWORD=
@@ -88,6 +89,14 @@ HIDE=
 #     folder, but there are virtually no good reasons for doing so.
 
 
+#   TWS_SETTINGS_PATH
+#
+#     The directory where TWS is to store its settings.  This setting is ignored
+#     if the IbDir setting in the configuration file is specified. If no value 
+#     is specified in either place, the settings are stored in the TWS_PATH 
+#     directory.
+
+
 #   LOG_PATH
 #
 #     Specifies the folder where diagnostic information is to be logged while 
@@ -144,15 +153,19 @@ HIDE=
 #   End of Notes:
 #==============================================================================
 
+if [[ -n $(/usr/bin/pgrep -f "java.*${IBC_INI}") ]]; then
+	>&2 echo -e "Error: process is already running"
+	>&2 exit 1
+fi
+
 APP=GATEWAY
-TWS_CONFIG_PATH="$TWS_PATH"
 
 export TWS_MAJOR_VRSN
 export IBC_INI
 export TRADING_MODE
 export IBC_PATH
 export TWS_PATH
-export TWS_CONFIG_PATH
+export TWS_SETTINGS_PATH
 export LOG_PATH
 export TWSUSERID
 export TWSPASSWORD

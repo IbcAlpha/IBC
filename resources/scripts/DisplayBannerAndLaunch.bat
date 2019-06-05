@@ -80,7 +80,8 @@ if /I "%APP%" == "GATEWAY" set GW_FLAG=/G
 set PHASE=Running StartIBC.bat
 set ERROR_MESSAGE=
 call "%IBC_PATH%\scripts\StartIBC.bat" "%TWS_MAJOR_VRSN%" %GW_FLAG% ^
-     "/TwsPath:%TWS_PATH%" "/IbcPath:%IBC_PATH%" "/Config:%CONFIG%" ^
+     "/TwsPath:%TWS_PATH%" "/TwsSettingsPath:%TWS_SETTINGS_PATH%" ^
+	 "/IbcPath:%IBC_PATH%" "/Config:%CONFIG%" ^
      "/User:%TWSUSERID%" "/PW:%TWSPASSWORD%" "/FIXUser:%FIXUSERID%" "/FIXPW:%FIXPASSWORD%" ^
      "/JavaPath:%JAVA_PATH%" "/Mode:%TRADING_MODE%" ^
      >> "%LOG_FILE%" 2>&1

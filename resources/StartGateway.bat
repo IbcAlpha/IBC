@@ -36,6 +36,7 @@ set CONFIG=%HOMEDRIVE%%HOMEPATH%\Documents\IBC\config.ini
 set TRADING_MODE=
 set IBC_PATH=%SYSTEMDRIVE%\IBC
 set TWS_PATH=%SYSTEMDRIVE%\Jts
+set TWS_SETTINGS_PATH=
 set LOG_PATH=%IBC_PATH%\Logs
 set TWSUSERID=
 set TWSPASSWORD=
@@ -99,6 +100,14 @@ set HIDE=
 ::     rather than a TWS download, you should still use this default setting.
 ::     It is possible to move the TWS installation to a different folder, but
 ::     there are virtually no good reasons for doing so.
+
+
+::   TWS_SETTINGS_PATH
+::
+::     The folder where TWS is to store its settings.  This setting is ignored
+::     if the IbDir setting in the configuration file is specified. If no value 
+::     is specified in either place, the settings are stored in the TWS_PATH 
+::     folder.
 
 
 ::   LOG_PATH

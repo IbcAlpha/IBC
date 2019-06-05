@@ -26,7 +26,7 @@ echo "  twsPath                 Path to the TWS installation folder. Defaults to
 echo "                          ~/Jts on Linux, ~/Applications on OS X"
 echo
 echo "  twsSettingsPath         Path to the TWS settings folder. Defaults to"
-echo "                          ~/Jts on both Linux and OS X"
+echo "                          the twsPath argument"
 echo
 echo "  ibcPath                 Path to the IBC installation folder."
 echo "                          Defaults to /opt/ibc"
@@ -204,10 +204,10 @@ fi
 
 if [ "$os" = "$OS_LINUX" ]; then
 	if [ "$tws_path" = "" ]; then tws_path=~/Jts ;fi
-	if [ "$tws_settings_path" = "" ]; then tws_settings_path=~/Jts ;fi
+	if [ "$tws_settings_path" = "" ]; then tws_settings_path="${tws_path}" ;fi
 elif [ "$os" = "$OS_OSX" ]; then
 	if [ "$tws_path" = "" ]; then tws_path=~/Applications ;fi
-	if [ "$tws_settings_path" = "" ]; then tws_settings_path=~/Jts ;fi
+	if [ "$tws_settings_path" = "" ]; then tws_settings_path="${tws_path}" ;fi
 fi
 if [ "$ibc_path" = "" ]; then ibc_path=/opt/ibc ;fi
 if [ "$ibc_ini" = "" ]; then ibc_ini=~/ibc/config.ini ;fi
@@ -217,19 +217,19 @@ if [ "$ibc_ini" = "" ]; then ibc_ini=~/ibc/config.ini ;fi
 # we can still use the correct one.
 
 if [[ "$os" = "$OS_LINUX" ]]; then
-	tws_vmoptions="${tws_settings_path}/${tws_version}/tws.vmoptions"
+	tws_vmoptions="${tws_path}/${tws_version}/tws.vmoptions"
 	tws_jars="${tws_path}/${tws_version}/jars"
 	tws_install4j="${tws_path}/${tws_version}/.install4j"
 
-	gateway_vmoptions="${tws_settings_path}/ibgateway/${tws_version}/ibgateway.vmoptions" 
+	gateway_vmoptions="${tws_path}/ibgateway/${tws_version}/ibgateway.vmoptions" 
 	gateway_jars="${tws_path}/ibgateway/${tws_version}/jars"
 	gateway_install4j="${tws_path}/ibgateway/${tws_version}/.install4j"
 elif [[ "$os" = "$OS_OSX" ]]; then
-	tws_vmoptions="${tws_settings_path}/tws-${tws_version}.vmoptions"
+	tws_vmoptions="${tws_path}/tws-${tws_version}.vmoptions"
 	tws_jars="${tws_path}/Trader Workstation ${tws_version}/jars"
 	tws_install4j="${tws_path}/Trader Workstation ${tws_version}/.install4j"
 
-	gateway_vmoptions="${tws_settings_path}/ibgateway-${tws_version}.vmoptions" 
+	gateway_vmoptions="${tws_path}/ibgateway-${tws_version}.vmoptions" 
 	gateway_jars="${tws_path}/IB Gateway ${tws_version}/jars"
 	gateway_install4j="${tws_path}/IB Gateway ${tws_version}/.install4j"
 fi
@@ -409,7 +409,7 @@ echo
 # prevent other Java tools interfering with IBC
 JAVA_TOOL_OPTIONS=
 
-pushd "$tws_path" > /dev/null
+pushd "$tws_settings_path" > /dev/null
 
 # forward signals (see https://veithen.github.io/2014/11/16/sigterm-propagation.html)
 trap 'kill -TERM $PID' TERM INT
