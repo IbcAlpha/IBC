@@ -206,6 +206,12 @@ class Utils {
         return true;
     }
 
+    static void selectApiSettings(final JDialog configDialog) throws IbcException, IllegalStateException {
+            if (!Utils.selectConfigSection(configDialog, new String[] {"API","Settings"}))
+                // older versions of TWS don't have the Settings node below the API node
+                Utils.selectConfigSection(configDialog, new String[] {"API"});
+    }
+
     static void showTradesLogWindow() {
             MyCachedThreadPool.getInstance().execute(new Runnable () {
                 @Override public void run() {invokeMenuItem(MainWindowManager.mainWindowManager().getMainWindow(), new String[] {"Account", "Trade Log"});}

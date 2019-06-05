@@ -455,6 +455,11 @@ public class IbcTws {
 
         int portNumber = Settings.settings().getInt("OverrideTwsApiPort", 0);
         if (portNumber != 0) (new ConfigurationTask(new ConfigureTwsApiPortTask(portNumber))).executeAsync();
+        
+        if (!Settings.settings().getString("ReadOnlyApi", "").equals("")) {
+            (new ConfigurationTask(new ConfigureReadOnlyApiTask(Settings.settings().getBoolean("ReadOnlyApi",true)))).executeAsync();
+        }
+
         Utils.sendConsoleOutputToTwsLog(!Settings.settings().getBoolean("LogToConsole", false));
     }
     

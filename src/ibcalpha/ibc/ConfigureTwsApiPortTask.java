@@ -36,9 +36,7 @@ class ConfigureTwsApiPortTask implements ConfigurationAction{
         try {
             Utils.logToConsole("Performing port configuration");
             
-            if (!Utils.selectConfigSection(configDialog, new String[] {"API","Settings"}))
-                // older versions of TWS don't have the Settings node below the API node
-                Utils.selectConfigSection(configDialog, new String[] {"API"});
+            Utils.selectApiSettings(configDialog);
 
             Component comp = SwingUtils.findComponent(configDialog, "Socket port");
             if (comp == null) throw new IbcException("could not find socket port component");
