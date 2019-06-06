@@ -1,6 +1,6 @@
 // This file is part of IBC.
 // Copyright (C) 2004 Steven M. Kearns (skearns23@yahoo.com )
-// Copyright (C) 2004 - 2018 Richard L King (rlking@aultan.com)
+// Copyright (C) 2004 - 2019 Richard L King (rlking@aultan.com)
 // For conditions of distribution and use, see copyright notice in COPYING.txt
 
 // IBC is free software: you can redistribute it and/or modify
@@ -24,32 +24,52 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
+import static java.util.stream.Collectors.toList;
 
 class JtsIniManager {
     
     final static String LogonSectionHeader = "[Logon]";
     final static String IBGatewaySectionHeader = "[IBGateway]";
+    final static String DisplayedProxyMsgSetting="displayedproxymsg";
+    final static String DisplayedProxyMsgSetting_1=DisplayedProxyMsgSetting + "=1";
+    final static String LocaleSetting = "Locale";
+    final static String LocaleSetting_En = LocaleSetting + "=en";
     final static String S3storeSetting = "s3store";
-    static String S3storeFalseSetting = S3storeSetting + "=false";
-    static String S3storeTrueSetting = S3storeSetting + "=true";
+    final static String S3storeSetting_False = S3storeSetting + "=false";
+    final static String S3storeSetting_True = S3storeSetting + "=true";
     final static String ApiOnlySetting = "ApiOnly";
-    final static String ApiOnlyTrueSetting = ApiOnlySetting + "=true";
+    final static String ApiOnlySetting_True = ApiOnlySetting + "=true";
 
     private static String jtsIniFilePath;
     private static File jtsIniFile;
     private static List<String> lines;
     
-    static void initialise(String jtsIniPath) {
-        jtsIniFilePath = jtsIniPath;
-    }
-    
     /* when TWS starts, there must exist a jts.ini file in the TWS settings directory 
     *  containing at least the following minimum contents:
     *
     * [Logon]
+    * Locale=en
+    * displayedproxymsg=1
+    *
+    * The Locale setting is needed to ensure that TWS/Gateway run in English, 
+    * regardless of what the user might have previously set manually.
+    *
+    * The displayedproxymsg setting controls the display of a recently-introduced 
+    * (May 2019) and annoying, factually incorrect, dialog regarding inability to 
+    * access the internet. It's not really important to have this setting, since 
+	* the dialog is non-modal and only appears once per settings location, but
+	* it is very annoying!
+    *
+    * As a historical note, the following information describes problems that 
+    * occurred up to about TWS 963. These problems were the original motivation 
+	* for creating the JtsIniManager class. The processing for these settings is 
+	* retained just in case anyone is still using an affected TWS/Gateway version.
+    *
     * s3store=true
     *
     * If this file doesn't exist, or doesn't contain these lines, then TWS won't 
@@ -79,7 +99,8 @@ class JtsIniManager {
     * contains at least both sets of lines shown above, with the exception that if it 
     * already exists and contains s3store=false then this setting will not be altered.
     */
-    static void ensureValidJtsIniFile() {
+    static void initialise(String jtsIniPath) {
+        jtsIniFilePath = jtsIniPath;
         loadIniFile();
         if (jtsIniFile.isFile()) {
             updateExistingFile();
@@ -90,24 +111,22 @@ class JtsIniManager {
     
     static String getSetting(String section, String setting) {
         String key = setting + "=";
-        boolean found = false;
-        String l = "";
-
-        ListIterator<String> it = lines.listIterator();
-        while (it.hasNext() && ! found) {
-            l = it.next();
+       
+        boolean inSection = false;
+        for (String l : lines) {
             if (l.compareTo(section) == 0) {
-                while (it.hasNext() && ! found) {
-                    l = it.next();
-                    if (l.startsWith(key)) found = true;
-                    if (l.startsWith("[")) return null;
+                inSection = true;
+            } else if (l.startsWith("[")) {
+                if (inSection) return "";
+                inSection = false;
+            } else if (inSection) {
+                if (l.startsWith(key)) {
+                    return l.substring(key.length()) + "";
                 }
-            } 
+            }
         }
         
-        if (! found) return null;
-        String value = l.substring(key.length());
-        return value;
+        return "";
     }
     
     static void reload() {
@@ -126,54 +145,52 @@ class JtsIniManager {
     }
     
     private static void updateExistingFile() {
-        Utils.logToConsole("Ensuring " + jtsIniFile.getPath() + " contains required minimal lines");
+        Utils.logToConsole("Ensuring " + jtsIniFilePath + " contains required minimal lines");
 
-        if (!existingFileOk()) {
-            Utils.logToConsole("Missing lines in " + jtsIniFile.getPath());
+        List<JtsIniSectionSetting> missingSettings = getMissingSettings();
+        if (!missingSettings.isEmpty()) {
+            Utils.logToConsole("Missing lines in " + jtsIniFilePath);
             jtsIniFile.delete();
-            rewriteExistingFile();
+            rewriteExistingFile(missingSettings);
         } else {
-            Utils.logToConsole("Confirmed " + jtsIniFile.getPath() + " contains required minimal lines");
+            Utils.logToConsole("Confirmed " + jtsIniFilePath + " contains required minimal lines");
         }
     }
     
-    private static boolean existingFileOk() {
-        return (findSettingInSection(LogonSectionHeader, S3storeFalseSetting) || 
-                findSettingInSection(LogonSectionHeader, S3storeTrueSetting)) &
-                findSettingInSection(IBGatewaySectionHeader, ApiOnlyTrueSetting);
+    private static List<JtsIniSectionSetting> getMissingSettings() {
+        List<JtsIniSectionSetting> missingSettings = new ArrayList<>();
+        
+        if (!findSettingAndLog(LogonSectionHeader, S3storeSetting, ""))
+            missingSettings.add(new JtsIniSectionSetting(LogonSectionHeader, S3storeSetting_True));
+        
+        if (! findSettingAndLog(LogonSectionHeader, LocaleSetting, "en")) 
+            missingSettings.add(new JtsIniSectionSetting(LogonSectionHeader, LocaleSetting_En));
+        
+        if (! findSettingAndLog(LogonSectionHeader, DisplayedProxyMsgSetting, "1"))
+            missingSettings.add(new JtsIniSectionSetting(LogonSectionHeader, DisplayedProxyMsgSetting_1));
+        
+        if (! findSettingAndLog(IBGatewaySectionHeader, ApiOnlySetting, "true")) 
+            missingSettings.add(new JtsIniSectionSetting(IBGatewaySectionHeader, ApiOnlySetting_True));
+            
+        return missingSettings;
     }
     
-    private static boolean findSettingInSection(String section, String setting) {
-        ListIterator<String> it = lines.listIterator();
-        while (it.hasNext()) {
-            String l = it.next();
-            if (l.compareTo(section) == 0) {
-                Utils.logToConsole("Found section: " + section);
-                while (it.hasNext()) {
-                    l = it.next();
-                    if (l.startsWith("[")) {
-                        break;
-                    } else if (l.compareTo(setting) == 0) {
-                        Utils.logToConsole("Found setting: " + setting);
-                        return true;
-                    }
-                }
-                Utils.logToConsole("Can't find setting: " + setting);
-                return false;
-            } 
+    private static boolean findSettingAndLog(String section, String setting, String expectedValue) {
+        String value = getSetting(section, setting);
+        boolean found = (value.length() != 0 && ((expectedValue.length() != 0) ? value.equals(expectedValue) : true));
+        if (found) {
+            Utils.logToConsole("Found setting: " + section + "/" + setting + "=" + value);
+        } else {
+            Utils.logToConsole("Can't find setting: " + section + "/" + setting + (expectedValue.length() != 0 ? "=" + expectedValue : ""));
         }
-        Utils.logToConsole("Can't find section: " + section);
-        return false;
+        return found;
     }
     
-    private static List<String> getFileLines (File jtsIniFile) {
-        List<String> linesList = new ArrayList<>();
-
-        try (BufferedReader r = new BufferedReader(new FileReader(jtsIniFile))) {
-            String line;
-            while ((line = r.readLine()) != null) {
-                linesList.add(line);
-            }
+    private static List<String> getFileLines(File jtsIniFile) {
+        List<String> linesList = null;
+        
+        try {
+            linesList = Files.readAllLines(jtsIniFile.toPath());
         } catch (IOException e) {
             Utils.exitWithError(ErrorCodes.ERROR_CODE_IO_EXCEPTION_ON_JTSINI, 
                                 "Unexpected IOException on " + jtsIniFile + ": " + e.getMessage());
@@ -182,108 +199,91 @@ class JtsIniManager {
     }
     
     private static void createMinimalFile() {
-        Utils.logToConsole("Creating minimal " + jtsIniFile.getPath());
+        Utils.logToConsole("Creating minimal " + jtsIniFilePath);
         try (BufferedWriter w = new BufferedWriter(new FileWriter(jtsIniFile))) {
-            writeLogonSectionHeader(w);
-            writeS3store(w);
-            writeIBGatewaySectionHeader(w);
-            writeApiOnly(w);
+            writeIniFileLine(LogonSectionHeader, w);
+            writeIniFileLine(S3storeSetting_True, w);
+            writeIniFileLine(LocaleSetting_En, w);
+            writeIniFileLine(DisplayedProxyMsgSetting_1, w);
+            
+            writeIniFileLine(IBGatewaySectionHeader, w);
+            writeIniFileLine(ApiOnlySetting_True, w);
         } catch (IOException e) {
             Utils.exitWithError(ErrorCodes.ERROR_CODE_IO_EXCEPTION_ON_JTSINI, 
-                                "Problem creating " + jtsIniFile.getPath() + ": " + e.getMessage());
+                                "Problem creating " + jtsIniFilePath + ": " + e.getMessage());
         }
     }
-    
-    private static void rewriteExistingFile() {
-        Utils.logToConsole("Rewriting existing " + jtsIniFile.getPath());
-        boolean foundLogon = false;
-        boolean foundIBGateway = false;
+
+    private static void rewriteExistingFile(List<JtsIniSectionSetting> missingSettings) {
+        Utils.logToConsole("Rewriting existing " + jtsIniFilePath);
+
         try (BufferedWriter w = new BufferedWriter(new FileWriter(jtsIniFile))) {
-            ListIterator<String> it = lines.listIterator();
-            int index = 0;
-            while (it.hasNext()) {
-                index++;
-                String l = it.next();
-                if (l.compareTo(LogonSectionHeader) == 0) {
-                    writeIniFileLine(l, w);
-                    foundLogon = true;
-                    index = processSection(lines, index, new String[] {S3storeTrueSetting, S3storeFalseSetting}, w);
-                    it = lines.listIterator(index);
-                } else if (l.compareTo(IBGatewaySectionHeader) == 0) {
-                    writeIniFileLine(l, w);
-                    foundIBGateway = true;
-                    index = processSection(lines, index, new String[] {ApiOnlyTrueSetting}, w);
-                    it = lines.listIterator(index);
-                } else {
-                    writeIniFileLine(l, w);
-                }
-            }
-            if (! foundLogon) {
-                writeLogonSectionHeader(w);
-                writeS3store(w);
-            }
-            if (! foundIBGateway) {
-                writeIBGatewaySectionHeader(w);
-                writeApiOnly(w);
-            }
+            updateExistingSections(missingSettings, w);
+            updateUnprocessedSettings(getUnprocessedSettings(missingSettings), w);
         } catch (IOException e){
             Utils.exitWithError(ErrorCodes.ERROR_CODE_IO_EXCEPTION_ON_JTSINI, 
-                                "Problem writing to " + jtsIniFile.getPath() + ": " + e.getMessage());
+                                "Problem writing to " + jtsIniFilePath + ": " + e.getMessage());
+        }
+    }
+
+    private static void updateExistingSections(
+            List<JtsIniSectionSetting> missingSettings, 
+            BufferedWriter w ) throws IOException {
+        String currentSection = "";
+        for (String line : lines) {
+            if (line.length() != 0 && line.startsWith("[")) {
+                writeMissingSettingsToSection(currentSection, missingSettings, w);
+                currentSection = line;
+            } 
+            writeIniFileLine(line, w);
+        }
+        writeMissingSettingsToSection(currentSection, missingSettings, w);
+    }
+    
+    private static List<JtsIniSectionSetting> getUnprocessedSettings(
+            List<JtsIniSectionSetting> missingSettings) {
+        return missingSettings.stream()
+                               .filter(s -> !s.isProcessed)
+                               .sorted()
+                               .collect(toList());
+    }
+    
+    private static void updateUnprocessedSettings(
+            List<JtsIniSectionSetting> unprocessedSettings, 
+            BufferedWriter w ) throws IOException {
+        if (unprocessedSettings.isEmpty()) return;
+
+        String currentSection = "";
+        for (JtsIniSectionSetting s : unprocessedSettings){
+            if (!s.section.equals(currentSection)) {
+                currentSection = s.section;
+                writeIniFileLine(currentSection, w);
+            }
+            writeIniFileLine(s.setting, w);
         }
     }
     
-    private static int processSection(
-            List<String> lines, 
-            int startIndex, 
-            String[] settings,  
+    private static void writeMissingSettingsToSection(
+            String currentSection, 
+            List<JtsIniSectionSetting> missingSettings,
             BufferedWriter w) throws IOException {
-        int index = startIndex;
-        boolean found = false;
-        ListIterator<String> it = lines.listIterator(index);
-        while (it.hasNext()) {
-            String l = it.next();
-            for (String s : settings) {
-                if (l.compareTo(s) == 0) {
-                    found = true;
-                    break;
-                }
-            }
-            if (l.isEmpty()) {
-                index++;
-            } else if (l.startsWith("[")) {
-                break;
-            } else {
-                writeIniFileLine(l, w);
-                index++;
+        
+        if (currentSection.length() == 0) return;
+        
+        ListIterator<JtsIniSectionSetting> missingSettingsIt = missingSettings.listIterator();
+        while (missingSettingsIt.hasNext()) {
+            JtsIniSectionSetting missingSetting = missingSettingsIt.next();
+            if (missingSetting.section.equals(currentSection)) {
+                writeIniFileLine(missingSetting.setting, w);
+                missingSetting.isProcessed = true;
             }
         }
-
-        if (! found) writeIniFileLine(settings[0], w);
-        writeIniFileLine("", w);
-        
-        return index;
-    }
-
-    private static void writeApiOnly(BufferedWriter w) throws IOException {
-        writeIniFileLine(ApiOnlyTrueSetting, w);
-    }
-    
-    private static void writeS3store(BufferedWriter w) throws IOException {
-        writeIniFileLine(S3storeTrueSetting, w);
     }
     
     private static void writeIniFileLine(String line, BufferedWriter w) throws IOException {
         Utils.logToConsole("    jts.ini: " + line);
         w.write(line);
         w.newLine();
-    }
-    
-    private static void writeLogonSectionHeader(BufferedWriter w) throws IOException {
-        writeIniFileLine(LogonSectionHeader, w);
-    }
-    
-    private static void writeIBGatewaySectionHeader(BufferedWriter w) throws IOException {
-        writeIniFileLine(IBGatewaySectionHeader, w);
     }
     
 }

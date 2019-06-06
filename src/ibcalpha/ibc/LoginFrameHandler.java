@@ -71,8 +71,7 @@ final class LoginFrameHandler extends AbstractLoginHandler {
             }
 
             private void setStoreSettingsOnServerCheckbox() {
-                boolean s3Store = Boolean.parseBoolean(JtsIniManager.getSetting(JtsIniManager.LogonSectionHeader, JtsIniManager.S3storeSetting));
-                if (s3Store && Settings.settings().getString("StoreSettingsOnServer", "").length() != 0) {
+                if (Settings.settings().getString("StoreSettingsOnServer", "").length() != 0) {
                     final String STORE_SETTINGS_ON_SERVER_CHECKBOX = "Use/store settings on server";
                     
                     // we defer setting the checkbox: if we do it inline, TWS's setting 

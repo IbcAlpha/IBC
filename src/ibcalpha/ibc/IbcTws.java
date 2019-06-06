@@ -446,7 +446,6 @@ public class IbcTws {
     private static void startTwsOrGateway(boolean isGateway) {
         Utils.logToConsole("TWS Settings directory is: " + getTWSSettingsDirectory());
         JtsIniManager.initialise(getJtsIniFilePath());
-        JtsIniManager.ensureValidJtsIniFile();
         if (isGateway) {
             startGateway();
         } else {
