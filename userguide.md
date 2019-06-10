@@ -491,7 +491,7 @@ to change them, they are commented to help you.
 ### Scheduled Tasks (Windows only)
 
 On Windows you can start IBC automatically using the Task Scheduler to run 
-StartTWS.bat or StartGateway.bat.
+`StartTWS.bat` or `StartGateway.bat`.
 
 When you define your task, make sure that the option to 'Run only when user 
 is logged on' is selected. Doing this will ensure that you can see and interact 
@@ -539,8 +539,8 @@ Windows 10. Because of this, it is advisable to set up your Scheduled Task
 differently on Windows 10: see the next section _Running under Task Scheduler 
 on Windows 10_.
 
-**IMPORTANT** Make sure you use the /INLINE argument to StartTWS.bat or 
-StartGateway.bat when starting IBC from Task Scheduler.
+**IMPORTANT** Make sure you use the `/INLINE` argument to `StartTWS.bat` or 
+`StartGateway.bat` when starting IBC from Task Scheduler.
 Otherwise IBC will start and run correctly, but Task Scheduler will not
 be aware of it: in particular Task Scheduler will not show the task as running. 
 This prevents correct operation of Task Scheduler features such as killing the 
@@ -569,8 +569,8 @@ The net effect of these changes is that it is no longer a good idea to start
 IBC under Task Scheduler by running a command file. It will only work
 correctly if the command given to Task Scheduler directly runs IBC.
 
-To set this up, first run IBC manually (using StartTWS.bat 
-or StartGateway.bat), and open the log file in Notepad or any other 
+To set this up, first run IBC manually (using `StartTWS.bat` 
+or `StartGateway.bat`), and open the log file in Notepad or any other 
 text editor: if using Notepad, make sure that 'Word Wrap' on the Format menu is 
 not checked). Now create your scheduled task (it's easiest to import the sample
 included in the IBC download zip file), and open the start action editor.
@@ -589,6 +589,34 @@ way to capture this to a file (note that normal redirection operators `>` and
 that your IBC installation operates correctly before setting up your scheduled 
 task, this should not be too much of a problem. 
 
+### Running with crontab (Linux only)
+
+On Linux you can use `crontab` to run `twsstart.sh` or `gatewaystart.sh`
+automatically.
+
+For example, to run `gatewaystart.sh` at 08:00 on Mondays, include a line like
+this in your personal crontab:
+
+`* 8 * * 1 export DISPLAY=:10 && /bin/bash /opt/ibc/gatewaystart.sh`
+
+The value you need for the DISPLAY variable will depend on how your system is
+configured.
+
+Starting with IBC 3.8.1, the `twsstart.sh` and `gatewaystart.sh` scripts include
+a check to see if IBC is already running with the same `config.ini` file: if it
+is, a new instance is not started.
+
+This enables a more sophisticated crontab entry that will periodically attempt
+to start IBC, but only succeed if it is not already running. For example:
+
+`0,15,30,45 * * * 1-5 export DISPLAY=:10 && /bin/bash /opt/ibc/gatewaystart.sh`
+
+will try to run gatewaystart.sh every 15 minutes from Monday to Friday. This can
+be useful to restart TWS/Gateway after an unexpected shutdown, or, in
+conjunction with the use of the `ExistingSessionDetectedAction=primaryoverride`
+setting in `config.ini`, to automatically restart it if using the IBKR Mobile
+app or the Client Portal on the IBKR Account Management page causes your
+TWS/Gateway session to be shut down.
 
 ### Multiple IBC Instances
 
