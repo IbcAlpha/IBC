@@ -1,6 +1,6 @@
 # **IBC USER GUIDE**
 
->IMPORTANT NOTES REGARDING TWS 974 and later versions
+>IMPORTANT NOTES REGARDING TWS 974 and Gateway 975 and later versions
 >
 >In TWS 974, IBKR have changed the way the autologoff function works within 
 TWS. Starting with that version, when the time approaches the configured 
@@ -12,21 +12,28 @@ autologoff time again.
 >This defeats the mechanism that IBC used with earlier TWS versions to prevent 
 autologoff, by changing the configured autologoff each time the 'Exit Session 
 Setting' dialog was displayed. Because of this, you should no longer use the 
-`IbAutoClosedown=no` setting because it won't work properly. 
+`IbAutoClosedown=no` setting because it won't work properly.
+> 
+>Furthermore, in Gateway 975 IBKR have introduced the same autologoff
+functionality as TWS: ie the Gateway will no longer run continuously, and will
+insist on shutting down every day.
 >
 >Instead you have two options:
 >
->1. Restart IBC afresh each day you want to run TWS. This option is useful if 
-you want to automate login to TWS, and you're not enrolled in IBKR's security 
-device scheme (so that you do not need to be present). You can use Task 
+>1. Restart IBC afresh each day you want to run TWS or Gateway. This option is
+useful if you want to automate login to TWS, and you're not enrolled in IBKR's
+security device scheme (so that you do not need to be present). You can use Task 
 Scheduler (on Windows) or crontab (on Linux) to automatically start IBC at the 
-appropriate time. You'll find a section on using Task Scheduler to start IBC 
-towards the end of this document.
+appropriate time. You'll find sections on using Task Scheduler or crontab to
+start IBC towards the end of this document.
 >
 >2. Abandon the use of IBC and instead use the autorestart mechanism provided 
-by TWS 974 and later versions. To use this, you have to start TWS with the 
-`C:\Jts\nnn\tws.exe` file (on Windows) or the `~Jts/nnn/tws` script (on Linux), 
-where nnn is the TWS version number. IBC cannot work with this mechanism.
+by TWS 974, Gateway 975 and later versions. To use this, you have to start TWS
+or Gateway with the .exe files or scripts provided by IBKR, because IBC cannot
+work with this mechanism. On Windows, these files are `C:\Jts\nnn\tws.exe` for
+TWS, and `C:\Jts\ibgateway\nnn\ibgateway.exe` for Gateway (note that desktop
+icons are also provided).  On Linux, the files are `~Jts/nnn/tws` for TWS, and
+`~Jts/ibgateway/nnn/ibgateway` for Gateway. nnn is the TWS version number. 
 
 >IMPORTANT
 >
