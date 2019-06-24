@@ -32,8 +32,8 @@ by TWS 974, Gateway 975 and later versions. To use this, you have to start TWS
 or Gateway with the .exe files or scripts provided by IBKR, because IBC cannot
 work with this mechanism. On Windows, these files are `C:\Jts\nnn\tws.exe` for
 TWS, and `C:\Jts\ibgateway\nnn\ibgateway.exe` for Gateway (note that desktop
-icons are also provided).  On Linux, the files are `~Jts/nnn/tws` for TWS, and
-`~Jts/ibgateway/nnn/ibgateway` for Gateway. nnn is the TWS version number. 
+icons are also provided).  On Linux, the files are `~/Jts/nnn/tws` for TWS, and
+`~/Jts/ibgateway/nnn/ibgateway` for Gateway. nnn is the TWS version number. 
 
 >IMPORTANT
 >
