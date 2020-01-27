@@ -23,7 +23,7 @@ IBC_INI=~/ibc/config.ini
 TRADING_MODE=
 IBC_PATH=/opt/ibc
 TWS_PATH=~/Applications
-TWS_CONFIG_PATH=~/Jts
+TWS_SETTINGS_PATH=
 LOG_PATH=~/ibc/logs
 TWSUSERID=
 TWSPASSWORD=
@@ -88,9 +88,12 @@ JAVA_PATH=
 #     different folder, but there are virtually no good reasons for doing so.
 
 
-#   TWS_CONFIG_PATH
+#   TWS_SETTINGS_PATH
 #
-#     The folder where the jts.ini and *.vmoptions files are stored.
+#     The directory where TWS is to store its settings.  This setting is ignored
+#     if the IbDir setting in the configuration file is specified. If no value 
+#     is specified in either place, the settings are stored in the TWS_PATH 
+#     directory.
 
 
 #   LOG_PATH
@@ -146,7 +149,7 @@ export IBC_INI
 export TRADING_MODE
 export IBC_PATH
 export TWS_PATH
-export TWS_CONFIG_PATH
+export TWS_SETTINGS_PATH
 export LOG_PATH
 export TWSUSERID
 export TWSPASSWORD
