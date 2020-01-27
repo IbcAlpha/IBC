@@ -587,7 +587,7 @@ class SwingUtils {
             case WindowEvent.WINDOW_DEACTIVATED:
                 return "Deactivated";
             case WindowEvent.WINDOW_DEICONIFIED:
-                return "Deiconfied";
+                return "Deiconified";
             case WindowEvent.WINDOW_GAINED_FOCUS:
                 return "Focused";
             case WindowEvent.WINDOW_ICONIFIED:
