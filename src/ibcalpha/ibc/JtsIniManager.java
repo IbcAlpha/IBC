@@ -244,7 +244,6 @@ class JtsIniManager {
             List<JtsIniSectionSetting> missingSettings) {
         return missingSettings.stream()
                                .filter(s -> !s.isProcessed)
-                               .sorted()
                                .collect(toList());
     }
     
