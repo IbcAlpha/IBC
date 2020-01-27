@@ -48,8 +48,6 @@ public class ConfigurationTask {
                 GuiExecutor.instance().execute(t);
                 t.get();
 
-                GuiDeferredExecutor.instance().execute(() -> MainWindowManager.mainWindowManager().iconizeIfRequired());
-        
                 ConfigDialogManager.configDialogManager().releaseConfigDialog();
             } catch (Exception e){
                 Utils.logException(e);

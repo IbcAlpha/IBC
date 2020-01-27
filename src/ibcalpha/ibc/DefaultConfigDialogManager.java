@@ -195,6 +195,7 @@ public class DefaultConfigDialogManager extends ConfigDialogManager {
     private synchronized void decrementUsage() {
         usageCount--;
         if (usageCount == 0){
+            GuiDeferredExecutor.instance().execute(() -> MainWindowManager.mainWindowManager().iconizeIfRequired());
             SwingUtils.clickButton(configDialog, "OK");
         }
     }

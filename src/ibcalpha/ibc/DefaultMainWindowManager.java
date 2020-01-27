@@ -18,6 +18,10 @@
 
 package ibcalpha.ibc;
 
+import java.awt.Frame;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowStateListener;
+import java.util.Calendar;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -25,6 +29,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import javafx.application.Preloader;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
@@ -159,7 +164,23 @@ public class DefaultMainWindowManager extends MainWindowManager {
         mainWindowFuture = null;
                 
         iconizeIfRequired();
+        
+        mainWindow.addWindowStateListener(listener);
     }
+    
+    private final WindowStateListener listener = new WindowStateListener() {
+        @Override
+        public void windowStateChanged(WindowEvent e) {
+            int state = e.getNewState();
+            if (((state & Frame.MAXIMIZED_BOTH) == Frame.MAXIMIZED_BOTH)) {
+                if ((Calendar.getInstance().getTimeInMillis() - lastMinimizeTime) < 2000) {
+                    iconizeIfRequired();
+                } else {
+                    mainWindow.removeWindowStateListener(listener);
+                }
+            }
+        }
+    };
 
     @Override
     public boolean isLoginComplete() {
@@ -172,9 +193,12 @@ public class DefaultMainWindowManager extends MainWindowManager {
         loginCompleted = true;
     }
 
+    private Long lastMinimizeTime;
     @Override
     public void iconizeIfRequired() {
+        Utils.logToConsole("Minimizing main window");
         if (Settings.settings().getBoolean("MinimizeMainWindow", false)) mainWindow.setExtendedState(java.awt.Frame.ICONIFIED);
+        lastMinimizeTime = Calendar.getInstance().getTimeInMillis();
     }
-    
+
 }
