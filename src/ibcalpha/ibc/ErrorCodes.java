@@ -30,5 +30,6 @@ public final class ErrorCodes {
     public static final int ERROR_CODE_CANT_FIND_ENTRYPOINT = 1107;
     public static final int ERROR_CODE_INVALID_JTSINI_PATH = 1108;
     public static final int ERROR_CODE_IO_EXCEPTION_ON_JTSINI = 1109;
+    public static final int ERROR_CODE_INVALID_STATE = 1110;
     
 }
