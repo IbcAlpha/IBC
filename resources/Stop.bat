@@ -18,7 +18,7 @@ set CommandServerPort=7462
 
 
 :: You may need to change this line. Make sure it's set to the location of the 
-:: IBController files:
+:: IBC files:
 
 set IBC_PATH=%SYSTEMDRIVE%\IBC
 
