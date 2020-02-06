@@ -207,7 +207,7 @@ if [ "$os" = "$OS_LINUX" ]; then
 	if [ "$tws_settings_path" = "" ]; then tws_settings_path="${tws_path}" ;fi
 elif [ "$os" = "$OS_OSX" ]; then
 	if [ "$tws_path" = "" ]; then tws_path=~/Applications ;fi
-	if [ "$tws_settings_path" = "" ]; then tws_settings_path="${tws_path}" ;fi
+	if [ "$tws_settings_path" = "" ]; then tws_settings_path=~/Jts ;fi
 fi
 if [ "$ibc_path" = "" ]; then ibc_path=/opt/ibc ;fi
 if [ "$ibc_ini" = "" ]; then ibc_ini=~/ibc/config.ini ;fi
@@ -225,11 +225,11 @@ if [[ "$os" = "$OS_LINUX" ]]; then
 	gateway_jars="${tws_path}/ibgateway/${tws_version}/jars"
 	gateway_install4j="${tws_path}/ibgateway/${tws_version}/.install4j"
 elif [[ "$os" = "$OS_OSX" ]]; then
-	tws_vmoptions="${tws_path}/tws-${tws_version}.vmoptions"
+	tws_vmoptions="~/Jts/tws-${tws_version}.vmoptions"
 	tws_jars="${tws_path}/Trader Workstation ${tws_version}/jars"
 	tws_install4j="${tws_path}/Trader Workstation ${tws_version}/.install4j"
 
-	gateway_vmoptions="${tws_path}/ibgateway-${tws_version}.vmoptions" 
+	gateway_vmoptions="~/Jts/ibgateway-${tws_version}.vmoptions" 
 	gateway_jars="${tws_path}/IB Gateway ${tws_version}/jars"
 	gateway_install4j="${tws_path}/IB Gateway ${tws_version}/.install4j"
 fi
