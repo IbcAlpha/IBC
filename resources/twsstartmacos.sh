@@ -151,7 +151,7 @@ else
     # NB: "tell app Terminal" doesn't pass the current 
 	# environment, so we just run this script again
 	# inside a new terminal session with the -inline argument
-	osascript -e 'tell app "Terminal"
-        do script "/opt/ibc/twsstartmacos.sh -inline"
-    end tell'
+	osascript -e "tell app \"Terminal\"
+        do script \"$0 -inline\"
+    end tell"
 fi
