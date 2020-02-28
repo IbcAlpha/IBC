@@ -1,0 +1,12 @@
+version: '3'
+services:
+  tws:
+    build:
+        context: .
+        dockerfile: docker/Dockerfile
+    image: ibc_tws
+    ports:
+      - "7496:7496"
+    environment:
+      - TWSUSERID=fdemo # IB account fdemo
+      - TWSPASSWORD=demouser # IB account password demouser

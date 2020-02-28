@@ -14,6 +14,12 @@
     <path id="external.classpath">
         <fileset dir="${env.IBC_BIN}" includes="**/*.jar"/>
     </path>
+    <path id="build.classpath">
+    <fileset dir="lib">
+        <include name="**/*.jar"/>
+        <include name="**/*.zip"/>
+    </fileset>
+    </path>
 
     <target name="clean" description="clean up">
         <delete dir="${target}"/>
@@ -35,6 +41,7 @@ public class IbcVersionInfo {
         <mkdir dir="${target}/classes"/>
         <javac srcdir="${src}" destdir="${target}/classes" source="8" target="8" includeantruntime="false">
             <classpath refid="external.classpath"/>
+            <classpath refid="build.classpath" />
             <compilerarg value="-Xlint:all"/>
         </javac>
     </target>
@@ -51,7 +58,7 @@ public class IbcVersionInfo {
                 <include name="**/*"/>
                 <exclude name="**/*.sh"/>
             </fileset>
-	</copy>
+    </copy>
         <zip destfile="${dist}/IBCWin-${ver}.zip" basedir="${target}/IBCWin" includes="**"/>
         <copy todir="${target}/IBCLinux" preservelastmodified="true">
             <fileset file="LICENSE.txt"/>
@@ -63,7 +70,7 @@ public class IbcVersionInfo {
                 <exclude name="**/*.xml"/>
                 <exclude name="**/IBC (*"/>
             </fileset>
-	</copy>
+    </copy>
         <zip destfile="${dist}/IBCLinux-${ver}.zip" basedir="${target}/IBCLinux" includes="**"/>
         <copy todir="${target}/IBCMacos" preservelastmodified="true">
             <fileset file="LICENSE.txt"/>
