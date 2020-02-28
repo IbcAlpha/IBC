@@ -59,6 +59,20 @@ Please see the [IBC User Guide](userguide.md) for installation and
 usage instructions. The User Guide is also included as a PDF file in the 
 download ZIPs.
 
+
+Docker
+------
+
+To run the docker container, copy and edit config.ini in the root folder. Set user and password.
+When the container boots you should get the 2FA notification.
+
+
+```
+cp resources/config.ini .
+docker-compose up
+```
+
+
 Support
 -------
 
