@@ -225,7 +225,7 @@ if [[ "$os" = "$OS_LINUX" ]]; then
 	gateway_jars="${tws_path}/ibgateway/${tws_version}/jars"
 	gateway_install4j="${tws_path}/ibgateway/${tws_version}/.install4j"
 elif [[ "$os" = "$OS_OSX" ]]; then
-	tws_vmoptions=$/Jts/tws-${tws_version}.vmoptions
+	tws_vmoptions=~/Jts/tws-${tws_version}.vmoptions
 	tws_jars="${tws_path}/Trader Workstation ${tws_version}/jars"
 	tws_install4j="${tws_path}/Trader Workstation ${tws_version}/.install4j"
 
