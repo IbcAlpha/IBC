@@ -3,7 +3,7 @@ services:
   tws:
     build:
         context: .
-        dockerfile: Dockerfile
+        dockerfile: docker/Dockerfile
     image: ibc_tws
     ports:
       - "7496:7496"
