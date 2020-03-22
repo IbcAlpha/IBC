@@ -105,6 +105,12 @@ This User Guide has been produced using the Pandoc document conversion
 system to produce the PDF from the markdown source.
 
 
+## Using IBC with docker
+
+You can use the infrastructure on the [docker](docker/README.md) folder for easily startup a gateway
+session which will open a local port 7496 in a similar fashion as if you would run the gateway or
+tws local with API socket enabled.
+
 ## Getting Started
 
 ### Checklist
