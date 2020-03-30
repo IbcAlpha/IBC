@@ -154,8 +154,9 @@ if [[ -n "${fix_user_id}" || -n "${fix_password}" ]]; then
 	fi
 fi
 
-if [[ -n "${mode}" && ! "${mode^^}" = "LIVE" && ! "${mode^^}" = "PAPER" ]]; then
-	error_exit	${E_INVALID_ARG} "Trading mode set to ${mode} but must be either 'live' or 'paper'"
+mode_upper=$(echo ${mode} | tr '[:lower:]' '[:upper:]')
+if [[ -n "${mode_upper}" && ! "${mode_upper}" = "LIVE" && ! "${mode_upper}" = "PAPER" ]]; then
+	error_exit	${E_INVALID_ARG} "Trading mode set to ${mode} but must be either 'live' or 'paper' (case-insensitive)"
 fi
 
 echo
