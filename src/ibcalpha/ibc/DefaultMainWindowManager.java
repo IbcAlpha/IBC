@@ -46,8 +46,6 @@ public class DefaultMainWindowManager extends MainWindowManager {
     
     private volatile JFrame mainWindow = null;
     
-    private volatile boolean loginCompleted;
-    
     private volatile GetMainWindowTask mainWindowTask;
     
     private final Object futureCreationLock = new Object();
@@ -156,7 +154,7 @@ public class DefaultMainWindowManager extends MainWindowManager {
         // For TWS, the main window being opened indicates that login is complete. This is not the case
         // for the Gateway, because the main window is created right at the start, but the splash frame
         // being closed indicates that login is complete (see the SplahFrameHandler).
-        if (! isGateway) setLoginComplete();
+        if (! isGateway) LoginManager.loginManager().setLoginState(LoginManager.LoginState.LOGGED_IN);
         
         if (mainWindowTask != null) mainWindowTask.setMainWindow(window);
         mainWindowTask = null;
@@ -181,22 +179,13 @@ public class DefaultMainWindowManager extends MainWindowManager {
         }
     };
 
-    @Override
-    public boolean isLoginComplete() {
-        return loginCompleted;
-    }
-
-    @Override
-    public void setLoginComplete() {
-        Utils.logToConsole("Login completed");
-        loginCompleted = true;
-    }
-
     private Long lastMinimizeTime;
     @Override
     public void iconizeIfRequired() {
-        Utils.logToConsole("Minimizing main window");
-        if (Settings.settings().getBoolean("MinimizeMainWindow", false)) mainWindow.setExtendedState(java.awt.Frame.ICONIFIED);
+        if (Settings.settings().getBoolean("MinimizeMainWindow", false)) {
+            Utils.logToConsole("Minimizing main window");
+            mainWindow.setExtendedState(java.awt.Frame.ICONIFIED);
+        }
         lastMinimizeTime = Calendar.getInstance().getTimeInMillis();
     }
 

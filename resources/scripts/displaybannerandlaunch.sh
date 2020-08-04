@@ -59,7 +59,7 @@ trap 'kill -TERM $PID' TERM INT
      "--tws-path=${TWS_PATH}" "--tws-settings-path=${TWS_SETTINGS_PATH}" \
      "--ibc-path=${IBC_PATH}" "--ibc-ini=${IBC_INI}" \
      "--user=${TWSUSERID}" "--pw=${TWSPASSWORD}" "--fix-user=${FIXUSERID}" "--fix-pw=${FIXPASSWORD}" \
-     "--java-path=${JAVA_PATH}" "--mode=${TRADING_MODE}" \
+     "--java-path=${JAVA_PATH}" "--mode=${TRADING_MODE}" "--on2fatimeout=${TWOFA_TIMEOUT_ACTION}" \
      >> "${log_file}" 2>&1 &
 
 PID=$!

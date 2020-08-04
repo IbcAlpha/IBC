@@ -53,7 +53,7 @@ public class ExistingSessionDetectedDialogHandler implements WindowHandler {
                 }
             }
         } else if (setting.equalsIgnoreCase("primaryoverride")) {
-            if (! MainWindowManager.mainWindowManager().isLoginComplete()) {
+            if (LoginManager.loginManager().getLoginState() != LoginManager.LoginState.LOGGED_IN){
                 /* The login has not yet been completed, so this is a new IBC instance
                    and we must continue this one and let the other one finish
                 */

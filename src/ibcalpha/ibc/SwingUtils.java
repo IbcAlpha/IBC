@@ -36,6 +36,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButton;
 import javax.swing.JSeparator;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.JTree;
@@ -481,7 +482,11 @@ class SwingUtils {
      */
     static String getWindowStructure(Window window) {
         StringBuilder builder = new StringBuilder();
-        for (Component component : window.getComponents()) appendComponentStructure(component, builder);
+        try {
+            for (Component component : window.getComponents()) appendComponentStructure(component, builder);
+        } catch (Exception e) {
+            builder.append("Exception occurred while generating window structure: " + e);
+        }
         builder.append(NEWLINE);
         builder.append(NEWLINE);
         return builder.toString();
@@ -603,13 +608,15 @@ class SwingUtils {
         }
     }
 
-    private static String getWindowTitle(Window window) {
-        String title = null;
+    static final String NO_TITLE = "** no title **"; 
+    static String getWindowTitle(Window window) {
+        String title = NO_TITLE;
         if (window instanceof JDialog) {
             title = ((JDialog)window).getTitle();
         } else  if (window instanceof JFrame) {
             title =((JFrame)window).getTitle();
         }
+        if (title == null) title = NO_TITLE;
         return title;
     }
     
@@ -634,6 +641,9 @@ class SwingUtils {
         } else if (component instanceof JPasswordField) {
             s += "JPasswordField: ";
             s += "***";
+        } else if (component instanceof JTextArea) {
+            s += "JTextArea: ";
+            s += ((JTextArea) component).getText();
         } else if (component instanceof JTextField) {
             s += "JTextField: ";
             s += ((JTextField) component).getText();

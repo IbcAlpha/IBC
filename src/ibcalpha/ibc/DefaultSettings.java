@@ -69,7 +69,7 @@ public class DefaultSettings extends Settings {
                     "config.ini";
         } else {
             return System.getProperty("user.home") + File.separator + 
-                    "IBC" + File.separator + 
+                    "ibc" + File.separator + 
                     "config.ini";
         }
     }

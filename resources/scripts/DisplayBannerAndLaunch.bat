@@ -83,7 +83,7 @@ call "%IBC_PATH%\scripts\StartIBC.bat" "%TWS_MAJOR_VRSN%" %GW_FLAG% ^
      "/TwsPath:%TWS_PATH%" "/TwsSettingsPath:%TWS_SETTINGS_PATH%" ^
 	 "/IbcPath:%IBC_PATH%" "/Config:%CONFIG%" ^
      "/User:%TWSUSERID%" "/PW:%TWSPASSWORD%" "/FIXUser:%FIXUSERID%" "/FIXPW:%FIXPASSWORD%" ^
-     "/JavaPath:%JAVA_PATH%" "/Mode:%TRADING_MODE%" ^
+     "/JavaPath:%JAVA_PATH%" "/Mode:%TRADING_MODE%" "/On2FATimeout:%TWOFA_TIMEOUT_ACTION%" ^
      >> "%LOG_FILE%" 2>&1
 
 :: note that killing the Java process sets ERRORLEVEL to 1, but we don't want to trap

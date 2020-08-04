@@ -31,5 +31,5 @@ public final class ErrorCodes {
     public static final int ERROR_CODE_INVALID_JTSINI_PATH = 1108;
     public static final int ERROR_CODE_IO_EXCEPTION_ON_JTSINI = 1109;
     public static final int ERROR_CODE_INVALID_STATE = 1110;
-    
+    public static final int ERROR_CODE_2FA_DIALOG_TIMED_OUT = 1111;
 }

@@ -31,7 +31,6 @@ class ExitSessionFrameHandler implements WindowHandler {
 
     public boolean filterEvent(Window window, int eventId) {
         switch (eventId) {
-            case WindowEvent.WINDOW_OPENED:
             case WindowEvent.WINDOW_ACTIVATED:
                 return true;
             default:
@@ -40,9 +39,7 @@ class ExitSessionFrameHandler implements WindowHandler {
     }
 
     public void handleWindow(Window window, int eventID) {
-        if (eventID == WindowEvent.WINDOW_OPENED) {
-            exitSessionFrame = (JFrame) window;
-        }
+        exitSessionFrame = (JFrame) window;
 
         if (Settings.settings().getBoolean("IbAutoClosedown", false)) return;
 

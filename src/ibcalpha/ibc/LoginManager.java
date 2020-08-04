@@ -18,6 +18,10 @@
 
 package ibcalpha.ibc;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import javax.swing.JFrame;
 
 public abstract class LoginManager {
@@ -39,6 +43,89 @@ public abstract class LoginManager {
     
     public static LoginManager loginManager() {
         return _LoginManager;
+    }
+    
+    public enum LoginState{
+        LOGGED_OUT,
+        LOGGED_IN,
+        LOGGING_IN,
+        TWO_FA_IN_PROGRESS,
+        LOGIN_FAILED
+    }
+    
+    void startSession() {
+        Utils.logToConsole("Starting session: will exit if login dialog is not displayed within 30 seconds");
+        MyScheduledExecutorService.getInstance().schedule(()->{
+            GuiExecutor.instance().execute(()->{
+                if (getLoginState() != LoginManager.LoginState.LOGGED_OUT) {
+                    // Login diaog has been shown - no need for IBC to exit
+                    return;
+                }
+                Utils.exitWithError(ErrorCodes.ERROR_CODE_2FA_DIALOG_TIMED_OUT, "IBC closing after TWS/Gateway failed to display login dialog");
+            });
+        }, 30, TimeUnit.SECONDS);
+    }
+    
+    private volatile LoginState loginState = LoginState.LOGGED_OUT;
+    public LoginState getLoginState() {
+        return loginState;
+    }
+    
+    public void setLoginState(LoginState state) {
+        if (state == loginState) return;
+        loginState = state;
+        if (loginState == LoginState.TWO_FA_IN_PROGRESS) {
+            Utils.logToConsole("Second Factor Authentication initiated");
+            if (LoginStartTime == null) LoginStartTime = Instant.now();
+        } else if (loginState == LoginState.LOGGED_IN) {
+            Utils.logToConsole("Login has completed");
+            if (shutdownAfter2FATimeoutTask != null) {
+                shutdownAfter2FATimeoutTask.cancel(false);
+                shutdownAfter2FATimeoutTask = null;
+            }
+        }
+    }
+
+    private Instant LoginStartTime;
+    private ScheduledFuture<?> shutdownAfter2FATimeoutTask;
+
+    public void secondFactorAuthenticationDialogClosed() {
+
+        if (!Settings.settings().getBoolean("ExitAfterSecondFactorAuthenticationTimeout", false)) {
+            Utils.logToConsole("ExitAfterSecondFactorAuthenticationTimeout is set to 'no'");
+        } else {
+            try {
+                // minimum time (seconds) between attempts to login to ensure no 'Too many
+                // failed login attempts' messages
+                final int LOGIN_RETRY_INTERVAL = 300;
+
+                // time (seconds) to allow for login to complete before exiting
+                final int SECOND_FACTOR_AUTHENTICATION_EXIT_INTERVAL = 40;
+                final int exitInterval = Settings.settings().getInt("SecondFactorAuthenticationExitInterval", 
+                                                                    SECOND_FACTOR_AUTHENTICATION_EXIT_INTERVAL);
+                final Duration d = Duration.between(LoginStartTime, Instant.now());
+                LoginStartTime = null;
+
+                final int secondsTillTimeout = LOGIN_RETRY_INTERVAL
+                                                - (int)(d.getSeconds()
+                                                + exitInterval);
+
+                Utils.logToConsole("If login has not completed, IBC will exit in " + secondsTillTimeout + " seconds");
+
+                shutdownAfter2FATimeoutTask = MyScheduledExecutorService.getInstance().schedule(()->{
+                    GuiExecutor.instance().execute(()->{
+                        if (getLoginState() == LoginManager.LoginState.LOGGED_IN) {
+                            Utils.logToConsole("Login has already completed - no need for IBC to exit");
+                            return;
+                        }
+                        Utils.exitWithError(ErrorCodes.ERROR_CODE_2FA_DIALOG_TIMED_OUT, "IBC closing after Second Factor Authentication dialog timeout");
+                    });
+                }, secondsTillTimeout, TimeUnit.SECONDS);
+            } catch (Throwable e) {
+                Utils.exitWithException(99999, e);
+            }
+        }
+        
     }
     
     public abstract void logDiagnosticMessage();

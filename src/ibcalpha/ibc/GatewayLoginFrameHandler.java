@@ -50,7 +50,7 @@ final class GatewayLoginFrameHandler extends AbstractLoginHandler {
         if (Settings.settings().getBoolean("FIX", false)) {
             result = setMissingFIXCredentials(window);
         } else {
-            result =setMissingIBAPICredentials(window);
+            result = setMissingIBAPICredentials(window);
         }
         return result;
     }

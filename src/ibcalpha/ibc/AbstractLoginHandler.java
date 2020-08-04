@@ -29,8 +29,19 @@ public abstract class AbstractLoginHandler implements WindowHandler {
     @Override
     public boolean filterEvent(Window window, int eventId) {
         switch (eventId) {
-            case WindowEvent.WINDOW_OPENED:
-                return true;
+            case WindowEvent.WINDOW_ACTIVATED:
+                switch (LoginManager.loginManager().getLoginState()) {
+                    case LOGGED_IN:
+                        return false;
+                    case LOGIN_FAILED:
+                        return false;
+                    case LOGGING_IN:
+                        return false;
+                    case TWO_FA_IN_PROGRESS:
+                        return false;
+                    default:
+                        return true;
+                }
             default:
                 return false;
         }
@@ -39,14 +50,16 @@ public abstract class AbstractLoginHandler implements WindowHandler {
     @Override
     public final void handleWindow(Window window, int eventID) {
         LoginManager.loginManager().setLoginFrame((JFrame) window);
-
-        try {
-            if (!initialise(window, eventID)) return;
-            if (!setFields(window, eventID)) return;
-            if (!preLogin(window, eventID)) return;
-            doLogin(window);
-        } catch (IbcException e) {
-            Utils.exitWithError(ErrorCodes.ERROR_CODE_CANT_FIND_CONTROL, "could not login: could not find control: " + e.getMessage());
+        switch (LoginManager.loginManager().getLoginState()){
+            case LOGGED_OUT:
+                try {
+                    if (!initialise(window, eventID)) return;
+                    if (!setFields(window, eventID)) return;
+                    if (!preLogin(window, eventID)) return;
+                    doLogin(window);
+                } catch (IbcException e) {
+                    Utils.exitWithError(ErrorCodes.ERROR_CODE_CANT_FIND_CONTROL, "could not login: could not find control: " + e.getMessage());
+                }
         }
     }
     
@@ -57,6 +70,7 @@ public abstract class AbstractLoginHandler implements WindowHandler {
         JButton b = findLoginButton(window);
 
         GuiDeferredExecutor.instance().execute(() -> {
+            LoginManager.loginManager().setLoginState(LoginManager.LoginState.LOGGING_IN);
             SwingUtils.clickButton(window, b.getText());
         });
     }

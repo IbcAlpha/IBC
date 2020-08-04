@@ -31,6 +31,7 @@ echo              [/Config:configfile] [/JavaPath:javaPath]
 echo              [/User:userId] [/PW:password]
 echo              [/FIXUser:fixuserId] [/FIXPW:fixpassword]
 echo              [/Mode:tradingMode]
+echo              [/On2FATimeout:2fatimeoutaction]
 echo.
 echo   twsVersion              The major version number for TWS
 echo.
@@ -71,6 +72,12 @@ echo                               paper
 echo.
 echo                           These values are not case-sensitive.
 echo.
+echo   2fatimeoutaction       Indicates what to do if IBC exits due to second factor
+echo                          authentication timeout. Allowed values are:
+echo
+echo                               restart
+echo                               exit
+echo.
 exit /B
 ::===0=========1=========2=========3=========4=========5=========6=========7=========8
 
@@ -86,6 +93,10 @@ set E_IBC_PATH_NOT_EXIST=1005
 set E_CONFIG_NOT_EXIST=1006
 set E_TWS_VMOPTIONS_NOT_FOUND=1007
 set E_TWS_SETTINGS_PATH_NOT_EXIST=1008
+
+:: errorlevel set by IBC if second factor authentication dialog times out and
+:: ExitAfterSecondFactorAuthenticationTimeout setting is true
+set E_2FA_DIALOG_TIMED_OUT=1111
 
 set ENTRY_POINT_TWS=ibcalpha.ibc.IbcTws
 set ENTRY_POINT_GATEWAY=ibcalpha.ibc.IbcGateway
@@ -103,6 +114,7 @@ set IB_PASSWORD=
 set FIX_USER_ID=
 set FIX_PASSWORD=
 set MODE=
+set TWOFA_TO_ACTION=
 
 set ERROR_MESSAGE=
 
@@ -139,6 +151,8 @@ if /I "%ARG%" == "/G" (
 	set FIX_PASSWORD=%ARG:~7%
 ) else if /I "%ARG:~0,6%" == "/MODE:" (
 	set MODE=%ARG:~6%
+) else if /I "%ARG:~0,14%" == "/ON2FATIMEOUT:" (
+	set TWOFA_TO_ACTION=%ARG:~14%
 ) else if /I "%ARG:~0,1%" == "/" (
 	set ERROR_MESSAGE=Invalid parameter '%ARG%'
 	set ERROR=%E_INVALID_ARG%
@@ -174,7 +188,18 @@ if defined MODE (
 	) else if /I "%MODE%" == "PAPER" (
 		echo. > NUL
 	) else (
-		set ERROR_MESSAGE=Trading mode set to %MODE% but must be either 'live' or 'paper'
+		set ERROR_MESSAGE=Trading mode set to '%MODE%' but must be either 'live' or 'paper'
+		set ERROR=%E_INVALID_ARG%
+	)
+)
+
+if defined TWOFA_TO_ACTION (
+	if /I "%TWOFA_TO_ACTION%" == "RESTART" (
+		echo. > NUL
+	) else if /I "%TWOFA_TO_ACTION%" == "EXIT" (
+		echo. > NUL
+	) else (
+		set ERROR_MESSAGE=2FA timeout action set to %TWOFA_TO_ACTION% but must be either 'restart' or 'exit'
 		set ERROR=%E_INVALID_ARG%
 	)
 )
@@ -396,6 +421,7 @@ set JAVA_TOOL_OPTIONS=
 
 pushd %TWS_SETTINGS_PATH%
 
+:startIBC
 if defined GOT_FIX_CREDENTIALS (
 	if defined GOT_API_CREDENTIALS (
 		"%JAVA_PATH%\java.exe" -cp  "%IBC_CLASSPATH%" %JAVA_VM_OPTIONS% %ENTRY_POINT% "%CONFIG%" "%FIX_USER_ID%" "%FIX_PASSWORD%" "%IB_USER_ID%" "%IB_PASSWORD%" %MODE%
@@ -406,6 +432,15 @@ if defined GOT_FIX_CREDENTIALS (
 		"%JAVA_PATH%\java.exe" -cp  "%IBC_CLASSPATH%" %JAVA_VM_OPTIONS% %ENTRY_POINT% "%CONFIG%" "%IB_USER_ID%" "%IB_PASSWORD%" %MODE%
 ) else (
 		"%JAVA_PATH%\java.exe" -cp  "%IBC_CLASSPATH%" %JAVA_VM_OPTIONS% %ENTRY_POINT% "%CONFIG%" %MODE%
+)
+
+if %ERRORLEVEL% EQU %E_2FA_DIALOG_TIMED_OUT% (
+	if /I "%TWOFA_TO_ACTION%" == "RESTART" (
+		:: wait a few seconds before restarting
+		echo IBC will restart shortly
+		ping localhost -n 5  >NUL
+		goto :startibc
+	)
 )
 
 popd

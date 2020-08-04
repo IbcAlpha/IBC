@@ -18,9 +18,10 @@
 #=============================================================================+
 
 
-TWS_MAJOR_VRSN=972
+TWS_MAJOR_VRSN=978
 IBC_INI=~/ibc/config.ini
 TRADING_MODE=
+TWOFA_TIMEOUT_ACTION=exit
 IBC_PATH=/opt/ibc
 TWS_PATH=~/Jts
 TWS_SETTINGS_PATH=
@@ -63,7 +64,6 @@ HIDE=
 
 #   TRADING_MODE
 #
-#     TWS 955 introduced a new Trading Mode combo box on its login dialog. 
 #     This indicates whether the live account or the paper trading account 
 #     corresponding to the supplied credentials is to be used. The values 
 #     allowed here are 'live' and 'paper' (not case-sensitive). For earlier 
@@ -71,6 +71,22 @@ HIDE=
 #     here, the value is taken from the TradingMode setting in the 
 #     configuration file. If no value is specified there either, the value 
 #     'live' is assumed.
+
+
+#   TWOFA_TIMEOUT_ACTION
+#
+#     If you use the IBKR Mobile app for second factor authentication, and
+#     you don't acknowledge the alert before the timeout expires, this
+#     setting determines what action will occur. If you set it to 'restart',
+#     IBC will be automatically restarted and the authentication sequence
+#     will be repeated, giving you another opportunity to complete the login.
+#     If you set it to 'exit', IBC will simply terminate.
+#
+#     Note that if you have another automated mechanism (such as crontab)
+#     to periodically restart IBC, you should set this to 'exit'.
+#
+#     Note also that if you set this to 'restart', you must also set 
+#     ExitAfterSecondFactorAuthenticationTimeout=yes in your config.ini file.
 
 
 #   IBC_PATH
@@ -151,6 +167,7 @@ APP=TWS
 export TWS_MAJOR_VRSN
 export IBC_INI
 export TRADING_MODE
+export TWOFA_TIMEOUT_ACTION
 export IBC_PATH
 export TWS_PATH
 export TWS_SETTINGS_PATH

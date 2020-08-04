@@ -36,10 +36,11 @@ class TwsListener
     TwsListener (List<WindowHandler> windowHandlers) {
         this.windowHandlers = windowHandlers;
 
-        String logComponentsSetting =  Settings.settings().getString("LogComponents", "never").toLowerCase();
+        final String logComponentsSetting =  Settings.settings().getString("LogComponents", "never").toLowerCase();
         switch (logComponentsSetting) {
             case "activate":
             case "open":
+            case "openclose":
             case "never":
                 logComponents = logComponentsSetting;
                 break;
@@ -60,42 +61,65 @@ class TwsListener
 
     @Override
     public void eventDispatched(AWTEvent event) {
-        int eventID = event.getID();
+        try {
+            final int eventID = event.getID();
 
-        Window window =((WindowEvent) event).getWindow();
+            final Window window;
+            window = ((WindowEvent) event).getWindow();
 
-        if (eventID == WindowEvent.WINDOW_OPENED ||
-                eventID == WindowEvent.WINDOW_ACTIVATED ||
-                eventID == WindowEvent.WINDOW_CLOSING ||
-                eventID == WindowEvent.WINDOW_CLOSED || 
-                eventID == WindowEvent.WINDOW_ICONIFIED ||
-                eventID == WindowEvent.WINDOW_DEICONIFIED) {
-            logWindow(window, eventID);
-        }
-
-        for (WindowHandler wh : windowHandlers) {
-            if (wh.filterEvent(window, eventID) && wh.recogniseWindow(window))  {
-                wh.handleWindow(window, eventID);
-                break;
+            if (eventID == WindowEvent.WINDOW_OPENED ||
+                    eventID == WindowEvent.WINDOW_ACTIVATED ||
+                    eventID == WindowEvent.WINDOW_CLOSING ||
+                    eventID == WindowEvent.WINDOW_CLOSED || 
+                    eventID == WindowEvent.WINDOW_ICONIFIED ||
+                    eventID == WindowEvent.WINDOW_DEICONIFIED ||
+                    eventID == WindowEvent.WINDOW_GAINED_FOCUS ||
+                    eventID == WindowEvent.WINDOW_LOST_FOCUS) {
+                if (SwingUtils.titleContains(window, SwingUtils.NO_TITLE)) {
+                    if (eventID == WindowEvent.WINDOW_OPENED) {
+                        Utils.logRawToConsole(SwingUtils.getWindowStructure(window));
+                    }
+                } else if (SwingUtils.titleContains(window, "Second Factor Authentication")) {
+                    Utils.logToConsole("Second Factor Authentication dialog event: " + SwingUtils.windowEventToString(eventID));
+                    if (eventID == WindowEvent.WINDOW_OPENED) {
+                        Utils.logToConsole("Second Factor Authentication dialog opened");
+                        LoginManager.loginManager().setLoginState(LoginManager.LoginState.TWO_FA_IN_PROGRESS);
+                    } else if (eventID == WindowEvent.WINDOW_CLOSED) {
+                        Utils.logToConsole("Second Factor Authentication dialog closed");
+                        LoginManager.loginManager().secondFactorAuthenticationDialogClosed();
+                    }
+                    return;
+                }
+                logWindow(window, eventID);
             }
-        }
 
+            for (WindowHandler wh : windowHandlers) {
+                if (wh.recogniseWindow(window))  {
+                    if (wh.filterEvent(window, eventID)) wh.handleWindow(window, eventID);
+                    break;
+                }
+            }
+        } catch (Throwable e) {
+            Utils.exitWithException(ErrorCodes.ERROR_CODE_UNHANDLED_EXCEPTION, e);
+        }
     }
 
     private void logWindow(Window window, int eventID) {
-        String event = SwingUtils.windowEventToString(eventID);
+        final String event = SwingUtils.windowEventToString(eventID);
 
         if (window instanceof JFrame) {
-            Utils.logToConsole("detected frame entitled: " + ((JFrame) window).getTitle() + "; event=" + event);
+            Utils.logToConsole("detected frame entitled: " + SwingUtils.getWindowTitle(window) + "; event=" + event);
         } else if (window instanceof JDialog) {
-            Utils.logToConsole("detected dialog entitled: " + ((JDialog) window).getTitle() + "; event=" + event);
+            Utils.logToConsole("detected dialog entitled: " + SwingUtils.getWindowTitle(window) + "; event=" + event);
         } else {
             Utils.logToConsole("detected window: type=" + window.getClass().getName() + "; event=" + event);
         }
         
         if ((eventID == WindowEvent.WINDOW_OPENED && (logComponents.equals("open") || logComponents.equals("activate")))
             ||
-            (eventID == WindowEvent.WINDOW_ACTIVATED && logComponents.equals("activate")))
+            (eventID == WindowEvent.WINDOW_ACTIVATED && logComponents.equals("activate"))
+            ||
+            ((eventID == WindowEvent.WINDOW_OPENED || eventID == WindowEvent.WINDOW_CLOSED) && logComponents.equals("openclose")))
         {
             Utils.logRawToConsole(SwingUtils.getWindowStructure(window));
         }

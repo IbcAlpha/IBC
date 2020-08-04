@@ -16,6 +16,7 @@ echo "             [--ibc-ini=ibcIni] [--java-path=javaPath]"
 echo "             [--user=userid] [--pw=password]"
 echo "             [--fix-user=fixuserid] [--fix-pw=fixpassword]"
 echo "             [--mode=tradingMode]"
+echo "             [--on2fatimeout=2fatimeoutaction]"
 echo
 echo "  twsVersion              The major version number for TWS"
 echo
@@ -56,6 +57,12 @@ echo "                              paper"
 echo
 echo "                          These values are not case-sensitive."
 echo
+echo "  2fatimeoutaction       Indicates what to do if IBC exits due to second factor"
+echo "                         authentication timeout. Allowed values are:"
+echo
+echo "                              restart"
+echo "                              exit"
+echo
 }
 
 if [[ "$1" = "" || "$1" = "-?" || "$1" = "-h" || "$1" = "--HELP" ]]; then
@@ -94,6 +101,10 @@ E_IBC_PATH_NOT_EXIST=5
 E_IBC_INI_NOT_EXIST=6
 E_TWS_VMOPTIONS_NOT_FOUND=7
 E_UNKNOWN_OPERATING_SYSTEM=8
+
+# errorlevel set by IBC if second factor authentication dialog times out and
+# ExitAfterSecondFactorAuthenticationTimeout setting is true
+E_2FA_DIALOG_TIMED_OUT=1111
 
 ENTRY_POINT_TWS=ibcalpha.ibc.IbcTws
 ENTRY_POINT_GATEWAY=ibcalpha.ibc.IbcGateway
@@ -139,6 +150,8 @@ do
 		fix_password=${arg:9}
 	elif [[ "${arg:0:7}" = "--mode=" ]]; then
 		mode=${arg:7}
+    elif [[ "${arg:0:15}" = "--on2fatimeout=" ]]; then
+	    twofa_to_action=${arg:15}
 	elif [[ "${arg:0:1}" = "-" ]]; then
 		error_exit $E_INVALID_ARG "Invalid parameter '${arg}'"
 	elif [[ "$tws_version" = "" ]]; then
@@ -157,6 +170,12 @@ fi
 mode_upper=$(echo ${mode} | tr '[:lower:]' '[:upper:]')
 if [[ -n "${mode_upper}" && ! "${mode_upper}" = "LIVE" && ! "${mode_upper}" = "PAPER" ]]; then
 	error_exit	${E_INVALID_ARG} "Trading mode set to ${mode} but must be either 'live' or 'paper' (case-insensitive)"
+fi
+
+
+twofa_to_action_upper=$(echo ${twofa_to_action} | tr '[:lower:]' '[:upper:]')
+if [[ -n "${twofa_to_action_upper}" && ! "${twofa_to_action_upper}" = "RESTART" && ! "${twofa_to_action_upper}" = "EXIT" ]]; then
+	error_exit	${E_INVALID_ARG} "2FA timeout action set to ${twofa_to_action} but must be either 'live' or 'paper' (case-insensitive)"
 fi
 
 echo
@@ -281,12 +300,12 @@ if [[ ! -e "$ibc_ini" ]]; then
 fi
 
 if [[ ! -e "$vmoptions_source" ]]; then
-	error_exit $E_TWS_VMOPTIONS_NOT_FOUND "$vmoptions_source does not exist"
+	error_exit $E_TWS_VMOPTIONS_NOT_FOUND "vmoptions file $vmoptions_source does not exist"
 fi
 
 if [[ -n "$java_path" ]]; then
 	if [[ ! -e "$java_path/java" ]]; then
-		error_exit $E_NO_JAVA "$java_path/java does not exist"
+		error_exit $E_NO_JAVA "Java installaton at $java_path/java does not exist"
 	fi
 fi
 
@@ -412,25 +431,35 @@ JAVA_TOOL_OPTIONS=
 
 pushd "$tws_settings_path" > /dev/null
 
-# forward signals (see https://veithen.github.io/2014/11/16/sigterm-propagation.html)
-trap 'kill -TERM $PID' TERM INT
+while :
+do
 
-if [[ -n $got_fix_credentials && -n $got_api_credentials ]]; then
-	"$java_path/java" -cp "$ibc_classpath" $java_vm_options $entry_point "$ibc_ini" "$fix_user_id" "$fix_password" "$ib_user_id" "$ib_password" ${mode} &
-elif  [[ -n $got_fix_credentials ]]; then
-	"$java_path/java" -cp "$ibc_classpath" $java_vm_options $entry_point "$ibc_ini" "$fix_user_id" "$fix_password" ${mode} &
-elif [[ -n $got_api_credentials ]]; then
-	"$java_path/java" -cp "$ibc_classpath" $java_vm_options $entry_point "$ibc_ini" "$ib_user_id" "$ib_password" ${mode} &
-else
-	"$java_path/java" -cp "$ibc_classpath" $java_vm_options $entry_point "$ibc_ini" ${mode} &
-fi
+	# forward signals (see https://veithen.github.io/2014/11/16/sigterm-propagation.html)
+	trap 'kill -TERM $PID' TERM INT
 
-PID=$!
-wait $PID
-trap - TERM INT
-wait $PID
+	if [[ -n $got_fix_credentials && -n $got_api_credentials ]]; then
+		"$java_path/java" -cp "$ibc_classpath" $java_vm_options $entry_point "$ibc_ini" "$fix_user_id" "$fix_password" "$ib_user_id" "$ib_password" ${mode} &
+	elif  [[ -n $got_fix_credentials ]]; then
+		"$java_path/java" -cp "$ibc_classpath" $java_vm_options $entry_point "$ibc_ini" "$fix_user_id" "$fix_password" ${mode} &
+	elif [[ -n $got_api_credentials ]]; then
+		"$java_path/java" -cp "$ibc_classpath" $java_vm_options $entry_point "$ibc_ini" "$ib_user_id" "$ib_password" ${mode} &
+	else
+		"$java_path/java" -cp "$ibc_classpath" $java_vm_options $entry_point "$ibc_ini" ${mode} &
+	fi
 
-exit_code=$?
+	PID=$!
+	wait $PID
+	trap - TERM INT
+	wait $PID
+
+	exit_code=$?
+	if [[ ! ($exit_code = $E_2FA_DIALOG_TIMED_OUT && "${twofa_to_action_upper}" = "RESTART") ]]; then break; fi
+	
+	# wait a few seconds before restarting
+	echo IBC will restart shortly
+	echo sleep 10
+done
+
 echo "$program finished"
 echo
 

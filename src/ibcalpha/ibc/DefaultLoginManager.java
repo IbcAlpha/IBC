@@ -64,7 +64,7 @@ public class DefaultLoginManager extends LoginManager {
     
     private volatile JFrame loginFrame = null;
     
-    private boolean fromSettings;
+    private final boolean fromSettings;
 
     /**
      * IBAPI username - can either be supplied from the .ini file or as args[1]

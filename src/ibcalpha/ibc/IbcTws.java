@@ -319,6 +319,7 @@ public class IbcTws {
         windowHandlers.add(new NonBrokerageAccountDialogHandler());
         windowHandlers.add(new ExitConfirmationDialogHandler());
         windowHandlers.add(new TradingLoginHandoffDialogHandler());
+        windowHandlers.add(new LoginFailedDialogHandler());
         
         return windowHandlers;
     }
@@ -404,6 +405,7 @@ public class IbcTws {
         String[] twsArgs = new String[1];
         twsArgs[0] = getTWSSettingsDirectory();
         try {
+            LoginManager.loginManager().startSession();
             ibgateway.GWClient.main(twsArgs);
         } catch (Throwable t) {
             Utils.logError("Can't find the Gateway entry point: ibgateway.GWClient.main. Gateway is not correctly installed.");
@@ -436,6 +438,7 @@ public class IbcTws {
         String[] twsArgs = new String[1];
         twsArgs[0] = getTWSSettingsDirectory();
         try {
+            LoginManager.loginManager().startSession();
             jclient.LoginFrame.main(twsArgs);
         } catch (Throwable t) {
             Utils.logError("Can't find the TWS entry point: jclient.LoginFrame.main; TWS is not correctly installed.");
