@@ -26,11 +26,11 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 class ComponentIterator implements Iterator<Component> {
-    
+
     Deque<NodeState> mStack = new ArrayDeque<>();
-    
+
     Component mCurrent;
-    
+
     ComponentIterator(Container container) {
         mStack.push(new NodeState(container));
     }
@@ -53,7 +53,7 @@ class ComponentIterator implements Iterator<Component> {
     public void remove() {
         throw new UnsupportedOperationException("Not supported");
     }
-    
+
     private boolean moveNext() {
         if (mStack.isEmpty()) return false;
         while (true) {
@@ -73,15 +73,15 @@ class ComponentIterator implements Iterator<Component> {
             }
         }
     }
-    
+
     private class NodeState {
         int index;
         Component[] subComponents;
-        
+
         NodeState(Component component) {
             this.index = 0;
             if (component instanceof Container) subComponents = ((Container)component).getComponents();
         }
     }
-    
+
 }

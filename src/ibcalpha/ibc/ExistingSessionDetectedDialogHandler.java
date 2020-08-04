@@ -23,9 +23,9 @@ import java.awt.event.WindowEvent;
 import javax.swing.JDialog;
 
 public class ExistingSessionDetectedDialogHandler implements WindowHandler {
-    
+
     private boolean hasTakenOverAnotherSession;
-    
+
     public boolean filterEvent(Window window, int eventId) {
         switch (eventId) {
             case WindowEvent.WINDOW_OPENED:

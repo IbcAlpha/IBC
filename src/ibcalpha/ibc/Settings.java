@@ -19,28 +19,28 @@
 package ibcalpha.ibc;
 
 public abstract class Settings {
-    
+
     private static Settings _settings;
 
     static {
         _settings = new DefaultSettings();
     }
-    
+
     public static void initialise(Settings settings){
         if (settings == null) throw new IllegalArgumentException("settings");
         _settings = settings;
     }
-    
+
     public static void setDefault() {
         _settings = new DefaultSettings();
     }
-    
+
     public static Settings settings() {
         return _settings;
     }
-    
+
     public abstract void logDiagnosticMessage();
-    
+
 
     /**
     returns the boolean value associated with property named key.
@@ -88,5 +88,5 @@ public abstract class Settings {
      * @return
      */
     public abstract String getString(String key, String defaultValue);
-    
+
 }

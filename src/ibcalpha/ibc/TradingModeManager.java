@@ -24,26 +24,26 @@ public abstract class TradingModeManager {
     static {
         _TradingModeManager = new DefaultTradingModeManager();
     }
-    
+
     public static void initialise(TradingModeManager tradingModeManager){
         if (tradingModeManager == null) throw new IllegalArgumentException("tradingModeManager");
         _TradingModeManager = tradingModeManager;
     }
-    
+
     public static void setDefault() {
         _TradingModeManager = new DefaultTradingModeManager();
     }
-    
+
     public static TradingModeManager tradingModeManager() {
         return _TradingModeManager;
     }
-    
+
     public abstract void logDiagnosticMessage();
-    
+
 
     public static final String TRADING_MODE_LIVE = "live";
     public static final String TRADING_MODE_PAPER = "paper";
-    
+
     public abstract String getTradingMode();
-    
+
 }

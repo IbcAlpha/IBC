@@ -25,7 +25,7 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 
 public abstract class AbstractLoginHandler implements WindowHandler {
-    
+
     @Override
     public boolean filterEvent(Window window, int eventId) {
         switch (eventId) {
@@ -62,10 +62,10 @@ public abstract class AbstractLoginHandler implements WindowHandler {
                 }
         }
     }
-    
+
     @Override
     public abstract boolean recogniseWindow(Window window);
-    
+
     private void doLogin(final Window window) throws IbcException {
         JButton b = findLoginButton(window);
 
@@ -74,13 +74,13 @@ public abstract class AbstractLoginHandler implements WindowHandler {
             SwingUtils.clickButton(window, b.getText());
         });
     }
-    
+
     protected abstract boolean initialise(final Window window, int eventID) throws IbcException;
-    
+
     protected abstract boolean preLogin(final Window window, int eventID) throws IbcException;
-    
+
     protected abstract boolean setFields(Window window, int eventID) throws IbcException;
-    
+
     private JButton findLoginButton(Window window) {
         JButton b = SwingUtils.findButton(window, "Login");
         if (b == null) b = SwingUtils.findButton(window, "Log In");
@@ -98,7 +98,7 @@ public abstract class AbstractLoginHandler implements WindowHandler {
                                             final String value) throws IbcException {
         if (! SwingUtils.setTextField(window, credentialIndex, value)) throw new IbcException(credentialName);
     }
-    
+
     protected final void setTradingMode(final Window window) {
         String tradingMode = TradingModeManager.tradingModeManager().getTradingMode();
 

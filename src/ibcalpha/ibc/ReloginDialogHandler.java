@@ -47,5 +47,5 @@ public class ReloginDialogHandler implements WindowHandler {
         if (! (window instanceof JDialog)) return false;
         return (SwingUtils.titleContains(window, "Re-login is required"));
     }
-    
+
 }

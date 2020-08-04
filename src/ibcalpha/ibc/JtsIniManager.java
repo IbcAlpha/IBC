@@ -32,7 +32,7 @@ import java.util.ListIterator;
 import static java.util.stream.Collectors.toList;
 
 class JtsIniManager {
-    
+
     final static String LogonSectionHeader = "[Logon]";
     final static String IBGatewaySectionHeader = "[IBGateway]";
     final static String DisplayedProxyMsgSetting="displayedproxymsg";
@@ -48,7 +48,7 @@ class JtsIniManager {
     private static String jtsIniFilePath;
     private static File jtsIniFile;
     private static List<String> lines;
-    
+
     /* when TWS starts, there must exist a jts.ini file in the TWS settings directory 
     *  containing at least the following minimum contents:
     *
@@ -108,10 +108,10 @@ class JtsIniManager {
             createMinimalFile();
         }
     }
-    
+
     static String getSetting(String section, String setting) {
         String key = setting + "=";
-       
+   
         boolean inSection = false;
         for (String l : lines) {
             if (l.compareTo(section) == 0) {
@@ -125,14 +125,14 @@ class JtsIniManager {
                 }
             }
         }
-        
+
         return "";
     }
-    
+
     static void reload() {
         loadIniFile();
     }
-    
+
     private static void loadIniFile() {
         jtsIniFile = new File(jtsIniFilePath);
         if (jtsIniFile.isDirectory()) {
@@ -143,7 +143,7 @@ class JtsIniManager {
             lines = getFileLines(jtsIniFile);
         }
     }
-    
+
     private static void updateExistingFile() {
         Utils.logToConsole("Ensuring " + jtsIniFilePath + " contains required minimal lines");
 
@@ -156,25 +156,25 @@ class JtsIniManager {
             Utils.logToConsole("Confirmed " + jtsIniFilePath + " contains required minimal lines");
         }
     }
-    
+
     private static List<JtsIniSectionSetting> getMissingSettings() {
         List<JtsIniSectionSetting> missingSettings = new ArrayList<>();
-        
+
         if (!findSettingAndLog(LogonSectionHeader, S3storeSetting, ""))
             missingSettings.add(new JtsIniSectionSetting(LogonSectionHeader, S3storeSetting_True));
-        
+
         if (! findSettingAndLog(LogonSectionHeader, LocaleSetting, "en")) 
             missingSettings.add(new JtsIniSectionSetting(LogonSectionHeader, LocaleSetting_En));
-        
+
         if (! findSettingAndLog(LogonSectionHeader, DisplayedProxyMsgSetting, "1"))
             missingSettings.add(new JtsIniSectionSetting(LogonSectionHeader, DisplayedProxyMsgSetting_1));
-        
+
         if (! findSettingAndLog(IBGatewaySectionHeader, ApiOnlySetting, "true")) 
             missingSettings.add(new JtsIniSectionSetting(IBGatewaySectionHeader, ApiOnlySetting_True));
-            
+
         return missingSettings;
     }
-    
+
     private static boolean findSettingAndLog(String section, String setting, String expectedValue) {
         String value = getSetting(section, setting);
         boolean found = (value.length() != 0 && ((expectedValue.length() != 0) ? value.equals(expectedValue) : true));
@@ -185,10 +185,10 @@ class JtsIniManager {
         }
         return found;
     }
-    
+
     private static List<String> getFileLines(File jtsIniFile) {
         List<String> linesList = null;
-        
+
         try {
             linesList = Files.readAllLines(jtsIniFile.toPath());
         } catch (IOException e) {
@@ -197,7 +197,7 @@ class JtsIniManager {
         }
         return linesList;
     }
-    
+
     private static void createMinimalFile() {
         Utils.logToConsole("Creating minimal " + jtsIniFilePath);
         try (BufferedWriter w = new BufferedWriter(new FileWriter(jtsIniFile))) {
@@ -205,7 +205,7 @@ class JtsIniManager {
             writeIniFileLine(S3storeSetting_True, w);
             writeIniFileLine(LocaleSetting_En, w);
             writeIniFileLine(DisplayedProxyMsgSetting_1, w);
-            
+
             writeIniFileLine(IBGatewaySectionHeader, w);
             writeIniFileLine(ApiOnlySetting_True, w);
         } catch (IOException e) {
@@ -239,14 +239,14 @@ class JtsIniManager {
         }
         writeMissingSettingsToSection(currentSection, missingSettings, w);
     }
-    
+
     private static List<JtsIniSectionSetting> getUnprocessedSettings(
             List<JtsIniSectionSetting> missingSettings) {
         return missingSettings.stream()
                                .filter(s -> !s.isProcessed)
                                .collect(toList());
     }
-    
+
     private static void updateUnprocessedSettings(
             List<JtsIniSectionSetting> unprocessedSettings, 
             BufferedWriter w ) throws IOException {
@@ -261,14 +261,14 @@ class JtsIniManager {
             writeIniFileLine(s.setting, w);
         }
     }
-    
+
     private static void writeMissingSettingsToSection(
             String currentSection, 
             List<JtsIniSectionSetting> missingSettings,
             BufferedWriter w) throws IOException {
-        
+
         if (currentSection.length() == 0) return;
-        
+
         ListIterator<JtsIniSectionSetting> missingSettingsIt = missingSettings.listIterator();
         while (missingSettingsIt.hasNext()) {
             JtsIniSectionSetting missingSetting = missingSettingsIt.next();
@@ -278,11 +278,11 @@ class JtsIniManager {
             }
         }
     }
-    
+
     private static void writeIniFileLine(String line, BufferedWriter w) throws IOException {
         Utils.logToConsole("    jts.ini: " + line);
         w.write(line);
         w.newLine();
     }
-    
+
 }

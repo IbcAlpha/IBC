@@ -32,15 +32,15 @@ class GetConfigDialogTask implements Callable<JDialog>{
     private final Condition gotConfigDialog = lock.newCondition();
     private final Condition gatewayInitialised = lock.newCondition();
     private final boolean isGateway;
-    
+
     GetConfigDialogTask(boolean isGateway) {
         this.isGateway = isGateway;
     }
-    
+
     @Override
     public JDialog call() throws IbcException, InterruptedException {
         final JFrame mainForm = MainWindowManager.mainWindowManager().getMainWindow();
-        
+
         if (isGateway) {
             /*
              * For the gateway, the main form is loaded right at the start, and long before
@@ -55,7 +55,7 @@ class GetConfigDialogTask implements Callable<JDialog>{
              * So we wait for the handler for that frame to call setSplashScreenClosed().
              * 
              */
-            
+
             lock.lock();
             try {
                 while (!mGatewayInitialised) {
@@ -65,7 +65,7 @@ class GetConfigDialogTask implements Callable<JDialog>{
                 lock.unlock();
             }
         }
-        
+
         if (isGateway) {
             if (!Utils.invokeMenuItem(mainForm, new String[] {"Configure", "Settings"})) throw new IbcException("'Configure > Settings' menu item");
         } else if (Utils.invokeMenuItem(mainForm, new String[] {"Edit", "Global Configuration..."})) /* TWS's Classic layout */ {
@@ -73,7 +73,7 @@ class GetConfigDialogTask implements Callable<JDialog>{
         } else {
             throw new IbcException("'Edit > Global Configuration' or 'File > Global Configuration' menu items");
         }
-        
+
         lock.lock();
         try {
             while (mConfigDialog == null) {
@@ -94,7 +94,7 @@ class GetConfigDialogTask implements Callable<JDialog>{
             lock.unlock();
         }
     }
-    
+
     void setSplashScreenClosed() {
         if (!isGateway) return;
         lock.lock();

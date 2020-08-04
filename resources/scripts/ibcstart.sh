@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Note that this command file is a 'service file' intended to be called from 
-# higher level command files. There should be no reason for the end user to modify 
+# Note that this command file is a 'service file' intended to be called from
+# higher level command files. There should be no reason for the end user to modify
 # it in any way. So PLEASE DON'T CHANGE IT UNLESS YOU KNOW WHAT YOU'RE DOING!
 
 showUsage () {
@@ -47,7 +47,7 @@ echo "  password                IB account password"
 echo
 echo "  fixuserid               FIX account user id (only if -g or --gateway)"
 echo
-echo "  fixpassword             FIX account password (only if -g or --gateway)" 
+echo "  fixpassword             FIX account password (only if -g or --gateway)"
 echo
 echo "  tradingMode             Indicates whether the live account or the paper "
 echo "                          trading account will be used. Allowed values are:"
@@ -201,7 +201,7 @@ echo -e "--java-path = ${java_path}"
 if [[ -z "${ib_user_id}" && -z "${ib_password}" ]]; then
 	echo -e "--user ="
 	echo -e "--pw ="
-else 
+else
 	echo -e "--user = ***"
 	echo -e "--pw = ***"
 fi
@@ -209,7 +209,7 @@ if [[ "${entry_point}" = "${ENTRY_POINT_GATEWAY}" ]]; then
 	if [[ -z "${fix_user_id}" || -z "${fix_password}" ]]; then
 		echo -e "--fix-user ="
 		echo -e "--fix-pw ="
-	else 
+	else
 		echo -e "--fix-user = ***"
 		echo -e "--fix-pw = ***"
 	fi
@@ -241,7 +241,7 @@ if [[ "$os" = "$OS_LINUX" ]]; then
 	tws_jars="${tws_path}/${tws_version}/jars"
 	tws_install4j="${tws_path}/${tws_version}/.install4j"
 
-	gateway_vmoptions="${tws_path}/ibgateway/${tws_version}/ibgateway.vmoptions" 
+	gateway_vmoptions="${tws_path}/ibgateway/${tws_version}/ibgateway.vmoptions"
 	gateway_jars="${tws_path}/ibgateway/${tws_version}/jars"
 	gateway_install4j="${tws_path}/ibgateway/${tws_version}/.install4j"
 elif [[ "$os" = "$OS_OSX" ]]; then
@@ -259,12 +259,12 @@ if [[ "${entry_point}" = "${ENTRY_POINT_TWS}" ]]; then
 		vmoptions_source="${tws_vmoptions}"
 	elif [[ -e "${gateway_vmoptions}" ]]; then
 		vmoptions_source="${gateway_vmoptions}"
-	fi 
+	fi
 
 	if [[ -e "${tws_jars}" ]]; then
 		jars="${tws_jars}"
 		install4j="${tws_install4j}"
-	else 
+	else
 		jars="${gateway_jars}"
 		install4j="${gateway_install4j}"
 	fi

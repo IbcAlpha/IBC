@@ -27,11 +27,11 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 public class TradesFrameHandler implements WindowHandler {
-    
+
     boolean firstTradesWindowOpened;
-    
+
     boolean showAllTrades;
-    
+
     @Override
     public boolean filterEvent(Window window, int eventId) {
         switch (eventId) {
@@ -88,7 +88,7 @@ public class TradesFrameHandler implements WindowHandler {
                  * 'ShowAllTrades'.
                  * 
                  */
-                
+
                 showAllTrades = false;
                 ((JFrame) window).dispose();
             }

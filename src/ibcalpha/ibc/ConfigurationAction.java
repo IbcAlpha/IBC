@@ -21,7 +21,7 @@ package ibcalpha.ibc;
 import javax.swing.JDialog;
 
 public interface ConfigurationAction extends Runnable{
-    
+
     public  void initialise(JDialog configDialog);
-    
+
 }

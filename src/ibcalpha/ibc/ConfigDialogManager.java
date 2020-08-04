@@ -28,22 +28,22 @@ public abstract class ConfigDialogManager
     static {
         _ConfigDialogManager = new DefaultConfigDialogManager();
     }
-    
+
     public static void initialise(ConfigDialogManager configDialogManager){
         if (configDialogManager == null) throw new IllegalArgumentException("configDialogManager");
         _ConfigDialogManager = configDialogManager;
     }
-    
+
     public static void setDefault() {
         _ConfigDialogManager = new DefaultConfigDialogManager();
     }
-    
+
     public static ConfigDialogManager configDialogManager() {
         return _ConfigDialogManager;
     }
-    
+
     public abstract void logDiagnosticMessage();
-    
+
     /**
      * Records the fact that the config dialog has closed.
      */
@@ -100,5 +100,5 @@ public abstract class ConfigDialogManager
     public abstract void setConfigDialog(JDialog window);
 
     public abstract void setSplashScreenClosed();
-        
+
 }

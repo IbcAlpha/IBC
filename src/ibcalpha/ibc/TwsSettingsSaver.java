@@ -31,21 +31,21 @@ class TwsSettingsSaver {
     private static final TwsSettingsSaver instance = new TwsSettingsSaver();
     private static final DateFormat dateFormat = new SimpleDateFormat("HH:mm");
 
-    
+
     private TwsSettingsSaver() {};
-    
+
     static TwsSettingsSaver getInstance() {return instance;}
-    
+
     public void initialise() {
         // setting format: SaveTwsSettingsAt=hh:mm [hh:mm]...
         //             or: SaveTwsSettingsAt=Every n [{mins | hours}] [hh:mm [hh:mm]]
         String timesSetting = Settings.settings().getString("SaveTwsSettingsAt", "");
         if (timesSetting.length() == 0) return;
-        
+
         String[] times = timesSetting.split("[ ]+");
-        
+
         List<Date> saveTimes = null;
-        
+
         try {
             if (!times[0].equalsIgnoreCase("Every")){
                 saveTimes = convertSuppliedTimes(times);
@@ -56,13 +56,13 @@ class TwsSettingsSaver {
             for (Date c : saveTimes) {
                 scheduleSave(c);
             }
-            
+
         } catch (IbcException e) {
             Utils.logError("Invalid setting SaveTwsSettingsAt=" + timesSetting + ": " + e.getMessage() + "\nTWS Settings will not be saved automatically");
         }
-        
+
     }
-    
+
     private static Calendar adjustCalendar(Calendar calendar) {
         Calendar cal = (Calendar)calendar.clone();
         if (!cal.getTime().after(new Date())) {
@@ -70,7 +70,7 @@ class TwsSettingsSaver {
         }
         return cal;
     }
-    
+
     private static List<Date> convertSuppliedTimes(String[] times) throws IbcException {
         List<Date> saveTimes = new ArrayList<Date>();
         for (String time : times) {
@@ -78,7 +78,7 @@ class TwsSettingsSaver {
         }
         return saveTimes;
     }
-    
+
     private static List<Date> generateSaveTimes(String[] times) throws IbcException {
         int interval = 0;
         try {
@@ -86,9 +86,9 @@ class TwsSettingsSaver {
         } catch (NumberFormatException e) {
             throw new IbcException("interval is '" + times[1] + "' but should be an integer");
         }
-        
+
         int nextIndex = 2;
-        
+
         if (times.length > 2) {
             if (times[2].equalsIgnoreCase("mins")) {
                 nextIndex = 3;
@@ -100,7 +100,7 @@ class TwsSettingsSaver {
         if (interval < 1 || interval > 1439) {
             throw new IbcException("the saving interval must be between 1 and 1439 minutes");
         }
-        
+
         String startTime = "00:00";
         String endTime = "24:00";
         if (times.length > nextIndex) {
@@ -109,23 +109,23 @@ class TwsSettingsSaver {
                 endTime = times[nextIndex + 1];
             }
         }
-        
+
         Calendar startCal = getCalendarForTime(startTime);
         Calendar endCal = getCalendarForTime(endTime);
         if (!startCal.before(endCal)) {
             endCal.add(Calendar.DAY_OF_MONTH, 1);
         }
-      
+  
         List<Date> saveTimes = new ArrayList<Date>();
         while (startCal.before(endCal)) {
             saveTimes.add(adjustCalendar(startCal).getTime());
             startCal.add(Calendar.MINUTE, interval);
         }
         saveTimes.add(adjustCalendar(endCal).getTime());
-        
+
         return saveTimes;
     }
-    
+
     private static Calendar getCalendarForTime(String time) throws IbcException {
         Calendar cal = Calendar.getInstance();
         try {
@@ -141,7 +141,7 @@ class TwsSettingsSaver {
         cal.set(Calendar.SECOND, 0);
         return cal;
     }
-    
+
     private static void scheduleSave(Date saveTime) {
         Utils.logToConsole("Tws settings will be saved at " + dateFormat.format(saveTime));
 
@@ -150,6 +150,6 @@ class TwsSettingsSaver {
             Utils.invokeMenuItem(MainWindowManager.mainWindowManager().getMainWindow(), new String[] {"File", "Save Settings"});
         }, saveTime.getTime() - System.currentTimeMillis(), 86400000, TimeUnit.MILLISECONDS);
     }
-    
+
 }
 

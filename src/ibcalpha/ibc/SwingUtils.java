@@ -44,7 +44,7 @@ import javax.swing.MenuElement;
 import javax.swing.tree.TreeModel;
 
 class SwingUtils {
-    
+
     static final String NEWLINE = System.lineSeparator();
 
     /**
@@ -419,7 +419,7 @@ class SwingUtils {
         }
         return null;
     }
-    
+
     /**
      * Indicates whether the specified JButton is enabled.
      * @param window
@@ -471,7 +471,7 @@ class SwingUtils {
         return rb.isSelected();
 
     }
-    
+
 /**
      * Returns a string representing the structure of the specified window.
      * 
@@ -491,7 +491,7 @@ class SwingUtils {
         builder.append(NEWLINE);
         return builder.toString();
     }
-    
+
     /**
      * Sets or clears the specified JCheckBox.
      * @param window
@@ -509,7 +509,7 @@ class SwingUtils {
         cb.setSelected(value);
         return true;
     }
-    
+
     /**
      * Sets or clears the specified JRadioButton .
      * @param window
@@ -619,7 +619,7 @@ class SwingUtils {
         if (title == null) title = NO_TITLE;
         return title;
     }
-    
+
     private static String getComponentDetails(Component component) {
         String s = component.isEnabled() ? "" : "[Disabled]";
         if (component instanceof JButton) {
@@ -668,7 +668,7 @@ class SwingUtils {
         }
         return s;
     }
-    
+
     private static String getClassDerivation(Object object) {
         String s = object.getClass().getSimpleName();
         Class<?> c = object.getClass().getSuperclass();
@@ -682,7 +682,7 @@ class SwingUtils {
     private static void appendComponentStructure(Component component, StringBuilder builder) {
         appendComponentStructure(component, builder, "");
     }
-    
+
     private static void appendComponentStructure(Component component, StringBuilder builder, String indent) {
         builder.append(NEWLINE);
         builder.append(indent);
@@ -734,7 +734,7 @@ class SwingUtils {
             builder.append("--------");
         }
     }
-    
+
     private static void appendMenuSubElements(MenuElement element, StringBuilder builder, String indent) {
         for (MenuElement subItem : element.getSubElements()) {
             appendMenuItem((Component)subItem, builder, indent);

@@ -26,7 +26,7 @@ import java.util.Date;
 import javax.swing.JFrame;
 
 class ExitSessionFrameHandler implements WindowHandler {
-    
+
     private JFrame exitSessionFrame = null;
 
     public boolean filterEvent(Window window, int eventId) {

@@ -33,27 +33,27 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 public class DefaultMainWindowManager extends MainWindowManager {
-    
+
     public DefaultMainWindowManager() {
         this.isGateway = false;
         message = "parameterless constructor (isGateway = false assumed)";
     }
-    
+
     public DefaultMainWindowManager(boolean isGateway) {
         this.isGateway = isGateway;
         message = "constructor parameter isGateway=" + isGateway;
     }
-    
+
     private volatile JFrame mainWindow = null;
-    
+
     private volatile GetMainWindowTask mainWindowTask;
-    
+
     private final Object futureCreationLock = new Object();
     private Future<JFrame> mainWindowFuture;
-    
+
     private final boolean isGateway;
     private final String message;
-    
+
     @Override
     public void logDiagnosticMessage(){
         Utils.logToConsole("using default main window manager: " + message);
@@ -83,14 +83,14 @@ public class DefaultMainWindowManager extends MainWindowManager {
     @Override
     public JFrame getMainWindow(long timeout, TimeUnit unit) {
         if (SwingUtilities.isEventDispatchThread()) throw new IllegalStateException();
-        
+
         Utils.logToConsole("Getting main window");
-        
+
         if (mainWindow != null) {
             Utils.logToConsole("Main window already found");
             return mainWindow;
         }
-        
+
         synchronized(futureCreationLock) {
             if (mainWindowFuture != null) {
                     Utils.logToConsole("Waiting for main window future to complete");
@@ -102,7 +102,7 @@ public class DefaultMainWindowManager extends MainWindowManager {
                 exec.shutdown();
             }
         }
-        
+
         try {
             if (timeout < 0) {
                 mainWindow = mainWindowFuture.get();
@@ -140,31 +140,31 @@ public class DefaultMainWindowManager extends MainWindowManager {
     public JFrame getMainWindow() throws IllegalStateException{
         return getMainWindow(-1, TimeUnit.MILLISECONDS);
     }
-    
+
     @Override
     public boolean isGateway() {
         return this.isGateway;
     };
-    
+
     @Override
     public void setMainWindow(JFrame window) {
         Utils.logToConsole("Found " + (isGateway ? "Gateway" : "TWS") + " main window");
         mainWindow = window;
-        
+
         // For TWS, the main window being opened indicates that login is complete. This is not the case
         // for the Gateway, because the main window is created right at the start, but the splash frame
         // being closed indicates that login is complete (see the SplahFrameHandler).
         if (! isGateway) LoginManager.loginManager().setLoginState(LoginManager.LoginState.LOGGED_IN);
-        
+
         if (mainWindowTask != null) mainWindowTask.setMainWindow(window);
         mainWindowTask = null;
         mainWindowFuture = null;
-                
+
         iconizeIfRequired();
-        
+
         mainWindow.addWindowStateListener(listener);
     }
-    
+
     private final WindowStateListener listener = new WindowStateListener() {
         @Override
         public void windowStateChanged(WindowEvent e) {

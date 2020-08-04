@@ -39,14 +39,14 @@ JAVA_PATH=
 
 #   TWS_MAJOR_VRSN
 #
-#     Specifies the major version number of TWS to be run. If you are 
-#     unsure of which version number to use, run TWS manually from the 
-#     icon on the desktop, then click Help > About Trader Workstation. In the 
+#     Specifies the major version number of TWS to be run. If you are
+#     unsure of which version number to use, run TWS manually from the
+#     icon on the desktop, then click Help > About Trader Workstation. In the
 #     displayed information you'll see a line similar to this:
 #
 #       Build 954.2a, Oct 30, 2015 4:07:54 PM
 #
-#     Here the major version number is 954. Do not include the rest of the 
+#     Here the major version number is 954. Do not include the rest of the
 #     version number in this setting.
 
 
@@ -54,21 +54,21 @@ JAVA_PATH=
 #
 #     This is the location and filename of the IBC configuration file.
 #     This file should be in a folder in your personal filestore, so that
-#     other users of your computer can't access it. This folder and its 
-#     contents should also be encrypted so that even users with administrator 
+#     other users of your computer can't access it. This folder and its
+#     contents should also be encrypted so that even users with administrator
 #     privileges can't see the contents. Note that you can use the HOMEPATH
-#     environment variable to address the root of your personal filestore 
+#     environment variable to address the root of your personal filestore
 #     (HOMEPATH is set automatically by Windows).
 
 
 #   TRADING_MODE
 #
-#     This indicates whether the live account or the paper trading account 
-#     corresponding to the supplied credentials is to be used. The values 
-#     allowed here are 'live' and 'paper' (not case-sensitive). For earlier 
-#     versions of TWS, setting this has no effect. If no value is specified 
-#     here, the value is taken from the TradingMode setting in the 
-#     configuration file. If no value is specified there either, the value 
+#     This indicates whether the live account or the paper trading account
+#     corresponding to the supplied credentials is to be used. The values
+#     allowed here are 'live' and 'paper' (not case-sensitive). For earlier
+#     versions of TWS, setting this has no effect. If no value is specified
+#     here, the value is taken from the TradingMode setting in the
+#     configuration file. If no value is specified there either, the value
 #     'live' is assumed.
 
 
@@ -84,42 +84,42 @@ JAVA_PATH=
 #     Note that if you have another automated mechanism (such as crontab)
 #     to periodically restart IBC, you should set this to 'exit'.
 #
-#     Note also that if you set this to 'restart', you must also set 
+#     Note also that if you set this to 'restart', you must also set
 #     ExitAfterSecondFactorAuthenticationTimeout=yes in your config.ini file.
 
 
 #   IBC_PATH
 #
-#     The folder containing the IBC files. 
+#     The folder containing the IBC files.
 
 
 #   TWS_PATH
 #
-#     The folder where Gateway is installed. The Gateway installer always 
-#     installs to ~/Applications. Note that even if you have installed from a 
-#     Gateway download rather than a TWS download, you should still use this 
-#     default setting. It is possibe to move the TWS installation to a 
+#     The folder where Gateway is installed. The Gateway installer always
+#     installs to ~/Applications. Note that even if you have installed from a
+#     Gateway download rather than a TWS download, you should still use this
+#     default setting. It is possibe to move the TWS installation to a
 #     different folder, but there are virtually no good reasons for doing so.
 
 
 #   TWS_SETTINGS_PATH
 #
 #     The directory where TWS is to store its settings.  This setting is ignored
-#     if the IbDir setting in the configuration file is specified. If no value 
-#     is specified in either place, the settings are stored in the TWS_PATH 
+#     if the IbDir setting in the configuration file is specified. If no value
+#     is specified in either place, the settings are stored in the TWS_PATH
 #     directory.
 
 
 #   LOG_PATH
 #
-#     Specifies the folder where diagnostic information is to be logged while 
-#     this command file is running. This information is very valuable when 
+#     Specifies the folder where diagnostic information is to be logged while
+#     this command file is running. This information is very valuable when
 #     troubleshooting problems, so it is advisable to always have this set to
 #     a valid location, especially when setting up IBC. You must
 #     have write access to the specified folder.
 #
-#     Once everything runs properly, you can prevent further logging by 
-#     removing the value as show below (but this is not recommended): 
+#     Once everything runs properly, you can prevent further logging by
+#     removing the value as show below (but this is not recommended):
 #
 #     LOG_PATH=
 
@@ -127,19 +127,19 @@ JAVA_PATH=
 #   TWSUSERID
 #   TWSPASSWORD
 #
-#     If your TWS user id and password are not included in your IBC 
-#     configuration file, you can set them here. However you are strongly 
-#     advised not to set them here because this file is not normally in a 
+#     If your TWS user id and password are not included in your IBC
+#     configuration file, you can set them here. However you are strongly
+#     advised not to set them here because this file is not normally in a
 #     protected location.
 
 
 #   JAVA_PATH
 #
-#     IB's installer for TWS/Gateway includes a hidden version of Java which 
+#     IB's installer for TWS/Gateway includes a hidden version of Java which
 #     IB have used to develop and test that particular version. This means that
 #     it is not necessary to separately install Java. If there is a separate
-#     Java installation, that does not matter: it won't be used by IBC 
-#     or TWS/Gateway unless you set the path to it here. You should not do this 
+#     Java installation, that does not matter: it won't be used by IBC
+#     or TWS/Gateway unless you set the path to it here. You should not do this
 #     without a very good reason.
 
 
@@ -165,7 +165,7 @@ if [[ "$1" == "-inline" ]]; then
     exec "${IBC_PATH}/scripts/displaybannerandlaunch.sh"
 else
     # run in a new terminal session.
-    # NB: "tell app Terminal" doesn't pass the current 
+    # NB: "tell app Terminal" doesn't pass the current
 	# environment, so we just run this script again
 	# inside a new terminal session with the -inline argument
 	osascript -e "tell app \"Terminal\"

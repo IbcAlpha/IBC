@@ -31,20 +31,20 @@ public abstract class LoginManager {
     static {
         _LoginManager = new DefaultLoginManager();
     }
-    
+
     public static void initialise(LoginManager loginManager){
         if (loginManager == null) throw new IllegalArgumentException("loginManager");
         _LoginManager = loginManager;
     }
-    
+
     public static void setDefault() {
         _LoginManager = new DefaultLoginManager();
     }
-    
+
     public static LoginManager loginManager() {
         return _LoginManager;
     }
-    
+
     public enum LoginState{
         LOGGED_OUT,
         LOGGED_IN,
@@ -52,7 +52,7 @@ public abstract class LoginManager {
         TWO_FA_IN_PROGRESS,
         LOGIN_FAILED
     }
-    
+
     void startSession() {
         Utils.logToConsole("Starting session: will exit if login dialog is not displayed within 30 seconds");
         MyScheduledExecutorService.getInstance().schedule(()->{
@@ -65,12 +65,12 @@ public abstract class LoginManager {
             });
         }, 30, TimeUnit.SECONDS);
     }
-    
+
     private volatile LoginState loginState = LoginState.LOGGED_OUT;
     public LoginState getLoginState() {
         return loginState;
     }
-    
+
     public void setLoginState(LoginState state) {
         if (state == loginState) return;
         loginState = state;
@@ -125,11 +125,11 @@ public abstract class LoginManager {
                 Utils.exitWithException(99999, e);
             }
         }
-        
+
     }
-    
+
     public abstract void logDiagnosticMessage();
-    
+
     public abstract String FIXPassword();
 
     public abstract String FIXUserName();
@@ -141,5 +141,5 @@ public abstract class LoginManager {
     public abstract JFrame getLoginFrame();
 
     public abstract void setLoginFrame(JFrame window);
-    
+
 }

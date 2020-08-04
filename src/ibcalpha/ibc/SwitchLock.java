@@ -22,7 +22,7 @@ class SwitchLock {
     private boolean mIsSet;
 
     synchronized void clear() {mIsSet = false;}
-    
+
     synchronized boolean set() {
         if (mIsSet) {
             return false;
@@ -31,7 +31,7 @@ class SwitchLock {
             return true;
         }
     }
-    
+
     synchronized boolean query() {
         return mIsSet;
     }

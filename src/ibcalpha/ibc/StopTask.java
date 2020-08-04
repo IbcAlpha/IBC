@@ -43,14 +43,14 @@ class StopTask
         try {
             MyCachedThreadPool.getInstance().shutdownNow();
             MyScheduledExecutorService.getInstance().shutdownNow();
-            
+
             writeInfo("Closing IBC");
             stop();
         } catch (Exception ex) {
             writeNack(ex.getMessage());
         }
     }
-    
+
     public final static boolean shutdownInProgress()
     {
         return _Running.query();
@@ -58,7 +58,7 @@ class StopTask
 
     private void stop() {
         JFrame jf = MainWindowManager.mainWindowManager().getMainWindow();
-        
+
         WindowEvent wev = new WindowEvent(jf, WindowEvent.WINDOW_CLOSING);
         Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(wev);
 

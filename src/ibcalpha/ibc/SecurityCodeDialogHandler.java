@@ -50,5 +50,5 @@ public class SecurityCodeDialogHandler implements WindowHandler {
         if (! (window instanceof JDialog)) return false;
         return (SwingUtils.findButton(window, "Enter Read Only") != null);
     }
-    
+
 }

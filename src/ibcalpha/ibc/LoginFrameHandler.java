@@ -45,10 +45,10 @@ final class LoginFrameHandler extends AbstractLoginHandler {
         setTradingMode(window);
 
         JtsIniManager.reload();     // because TWS/Gateway modify the jts.ini file before this point
-        
+
         final JTextField userName = SwingUtils.findTextField(window, 0);
         if (userName == null) throw new IbcException("Username field");
-        
+
         // Add a DocumentListener to the username field, which will set the 
         // "Use/store settings on server" checkbox as required. This is
         // necessary because when a valid username is entered, TWS sets the
@@ -73,7 +73,7 @@ final class LoginFrameHandler extends AbstractLoginHandler {
             private void setStoreSettingsOnServerCheckbox() {
                 if (Settings.settings().getString("StoreSettingsOnServer", "").length() != 0) {
                     final String STORE_SETTINGS_ON_SERVER_CHECKBOX = "Use/store settings on server";
-                    
+
                     // we defer setting the checkbox: if we do it inline, TWS's setting 
                     // overwrites it
                     GuiDeferredExecutor.instance().execute(() -> {
@@ -92,7 +92,7 @@ final class LoginFrameHandler extends AbstractLoginHandler {
         });
         return true;
     }
-    
+
     @Override
     protected final boolean preLogin(final Window window, int eventID) throws IbcException {
         if (LoginManager.loginManager().IBAPIUserName().length() == 0) {
@@ -104,7 +104,7 @@ final class LoginFrameHandler extends AbstractLoginHandler {
         }
         return false;
     }
-    
+
     @Override
     protected final boolean setFields(Window window, int eventID) throws IbcException {
         Utils.logToConsole("Setting user name");
@@ -113,6 +113,6 @@ final class LoginFrameHandler extends AbstractLoginHandler {
         setCredential(window, "IBAPI password", 1, LoginManager.loginManager().IBAPIPassword());
         return true;
     }
-    
+
 }
 

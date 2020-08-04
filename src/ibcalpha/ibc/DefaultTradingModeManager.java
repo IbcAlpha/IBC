@@ -19,21 +19,21 @@
 package ibcalpha.ibc;
 
 public class DefaultTradingModeManager extends TradingModeManager {
-    
+
     private String tradingMode;
-    
+
     public DefaultTradingModeManager() {
         fromSettings = false;
         setTradingMode(TRADING_MODE_LIVE);
         message = "parameterless constructor (trading mode live assumed)";
     }
-    
+
     public DefaultTradingModeManager(String tradingMode) {
         fromSettings = false;
         setTradingMode(tradingMode);
         message = "constructor parameter tradingMode=" + tradingMode;
     }
-    
+
     /*
      * Must be in either args[1] (if there are two args), or args[3] (if there are 
      * four args), or args[5] (if there are six args)
@@ -48,7 +48,7 @@ public class DefaultTradingModeManager extends TradingModeManager {
         } else if (args.length == 6) {
             setTradingMode(args[5]);
         }
-        
+
         if (tradingMode != null) {
             fromSettings = false;
             message = "constructor parameter args: tradingMode=" + tradingMode;
@@ -57,7 +57,7 @@ public class DefaultTradingModeManager extends TradingModeManager {
             message = "constructor parameter args but trading mode not present - will be taken from settings";
         }
     }
-    
+
     private void setTradingMode(String value) {
         if (!(value.equalsIgnoreCase(TRADING_MODE_LIVE) || value.equalsIgnoreCase(TRADING_MODE_PAPER))) {
                 Utils.exitWithError(ErrorCodes.ERROR_CODE_INVALID_TRADING_MODE, "Invalid Trading Mode argument or .ini file setting: " + tradingMode);
@@ -67,7 +67,7 @@ public class DefaultTradingModeManager extends TradingModeManager {
 
     private final String message;
     private final boolean fromSettings;
-    
+
     @Override
     public void logDiagnosticMessage(){
         Utils.logToConsole("using default trading mode manager: " + message);
@@ -81,5 +81,5 @@ public class DefaultTradingModeManager extends TradingModeManager {
         }
         return tradingMode;
     }
-    
+
 }

@@ -24,5 +24,5 @@ public final class UncaughtExceptionHandler implements Thread.UncaughtExceptionH
     public void uncaughtException(Thread thread, Throwable t) {
         Utils.exitWithException(ErrorCodes.ERROR_CODE_UNHANDLED_EXCEPTION, t);
     }
-    
+
 }

@@ -50,5 +50,5 @@ class ApiChangeConfirmationDialogHandler implements WindowHandler {
 
         return (SwingUtils.findLabel(window, "apply the new socket port setting") != null);
     }
-    
+
 }

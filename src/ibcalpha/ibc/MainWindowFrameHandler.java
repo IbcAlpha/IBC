@@ -36,7 +36,7 @@ class MainWindowFrameHandler implements WindowHandler {
     @Override
     public void handleWindow(Window window, int eventID) {
         if (eventID != WindowEvent.WINDOW_OPENED) return;
-        
+
         MainWindowManager.mainWindowManager().setMainWindow((JFrame) window);
     }
 

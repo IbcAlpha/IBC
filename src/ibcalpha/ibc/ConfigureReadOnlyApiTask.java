@@ -27,10 +27,10 @@ import java.awt.Container;
 import javax.swing.*;
 
 public class ConfigureReadOnlyApiTask implements ConfigurationAction{
-    
+
     private final boolean readOnlyApi;
     private JDialog configDialog;
-    
+
     ConfigureReadOnlyApiTask(boolean readOnlyApi) {
         this.readOnlyApi = readOnlyApi;
     }
@@ -39,7 +39,7 @@ public class ConfigureReadOnlyApiTask implements ConfigurationAction{
     public void run() {
         try {
             Utils.logToConsole("Setting ReadOnlyApi");
-            
+
             Utils.selectApiSettings(configDialog);
 
             JCheckBox readOnlyApiCheckbox = SwingUtils.findCheckBox(configDialog, "Read-Only API");
@@ -48,7 +48,7 @@ public class ConfigureReadOnlyApiTask implements ConfigurationAction{
                 Utils.logError("could not find Read-Only API checkbox");
                 return;
             }
-            
+
             if (readOnlyApiCheckbox.isSelected() == readOnlyApi) {
                 Utils.logToConsole("Read-Only API checkbox is already set to: " + readOnlyApi);
             } else {

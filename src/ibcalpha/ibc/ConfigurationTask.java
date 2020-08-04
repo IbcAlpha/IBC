@@ -22,28 +22,28 @@ import java.util.concurrent.FutureTask;
 import javax.swing.JDialog;
 
 public class ConfigurationTask {
-    
+
     private final ConfigurationAction configAction;
-    
+
     public ConfigurationTask(ConfigurationAction configAction) {
         this.configAction = configAction;
     }
-    
+
     public void executeAsync() {
         MyCachedThreadPool.getInstance().execute(new ConfigTaskRunner());
     }
-    
+
     public void execute() {
         (new ConfigTaskRunner()).run();
     }
-    
+
     private class ConfigTaskRunner implements Runnable {
         @Override
         public void run() {
             try {
                 final JDialog configDialog = ConfigDialogManager.configDialogManager().getConfigDialog();    // blocks the thread until the config dialog is available
                 configAction.initialise(configDialog);
-       
+   
                 FutureTask<?> t = new FutureTask<>((Runnable)configAction, null);
                 GuiExecutor.instance().execute(t);
                 t.get();
@@ -55,5 +55,5 @@ public class ConfigurationTask {
         }
     }
 
-    
+
 }

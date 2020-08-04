@@ -46,5 +46,5 @@ public class ExitConfirmationDialogHandler implements WindowHandler {
 
         return (SwingUtils.findLabel(window, "Are you sure you want to exit?") != null);
     }
-    
+
 }

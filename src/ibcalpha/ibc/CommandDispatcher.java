@@ -66,7 +66,7 @@ class CommandDispatcher
             mChannel.writeNack("ENABLEAPI is not valid for the IB Gateway");
             return;
         }
-        
+
         // run on the current thread
         (new ConfigurationTask(new EnableApiTask(mChannel))).execute();
    }
@@ -81,7 +81,7 @@ class CommandDispatcher
         jf.dispatchEvent(pressed);
         jf.dispatchEvent(typed);
         jf.dispatchEvent(released);
-      
+  
         mChannel.writeAck("");
    }
 
@@ -102,5 +102,5 @@ class CommandDispatcher
     private void handleStopCommand() {
         (new StopTask(mChannel)).run();     // run on the current thread
     }
-    
+
 }

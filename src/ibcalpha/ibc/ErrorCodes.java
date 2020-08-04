@@ -19,7 +19,7 @@
 package ibcalpha.ibc;
 
 public final class ErrorCodes {
-    
+
     public static final int ERROR_CODE_UNHANDLED_EXCEPTION = 1100;
     public static final int ERROR_CODE_CANT_FIND_CONTROL = 1101;
     public static final int ERROR_CODE_INCORRECT_NUMBER_OF_ARGUMENTS = 1102;

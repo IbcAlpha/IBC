@@ -58,5 +58,5 @@ public class SplashFrameHandler implements WindowHandler {
 
         return (SwingUtils.titleContains(window, "Starting application..."));
     }
-    
+
 }

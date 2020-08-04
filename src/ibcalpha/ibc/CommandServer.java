@@ -33,9 +33,9 @@ class CommandServer
 
     private ServerSocket mSocket = null;
     private volatile boolean mQuitting = false;
-    
+
     private final boolean isGateway;
-    
+
 
 
     CommandServer(boolean isGateway) {
@@ -115,7 +115,7 @@ class CommandServer
 
             final String allowedAddresses = Settings.settings().getString("ControlFrom", "");
             Utils.logToConsole("CommandServer: ControlFrom setting = " + allowedAddresses);
-            
+
             boolean permitted = false; 
             if (socket.getInetAddress().getHostAddress().equals(mSocket.getInetAddress().getHostAddress())) {
                 permitted = true;
@@ -149,7 +149,7 @@ class CommandServer
             return null;
         }
     }
-    
+
     private String getAddresses() {
         final List<String> addressList = getAddressList();
         String s = addressList.isEmpty() ? "" : addressList.get(0);
@@ -158,7 +158,7 @@ class CommandServer
         }
         return s;
     }
-    
+
     private List<String> getAddressList() {
         List<String> addressList = new ArrayList<>(); 
         try {

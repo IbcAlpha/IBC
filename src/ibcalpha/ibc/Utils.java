@@ -32,16 +32,16 @@ import javax.swing.SwingUtilities;
 import javax.swing.tree.TreePath;
 
 class Utils {
-    
+
     static final SimpleDateFormat _DateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
-    
+
     // set these to the defaults, so that we can continue to use them 
     // even when TWS redirects System.out and System.err to its own logfile
     private static final PrintStream out = System.out;
     private static final PrintStream err = System.err;
-    
+
     private static boolean sendConsoleOutputToTwsLog = false;
-    
+
     /**
      * Performs a click on the menu item at the specified path, waiting if necessary for the
      * menu item to become enabled.
@@ -65,7 +65,7 @@ class Utils {
             FutureTask<Boolean> task = new FutureTask<>(() -> {
                 String s = path[0];
                 for (int i = 1; i < path.length; i++) s = s + " > " + path[i];
-                
+
                 JMenuItem menuItem = SwingUtils.findMenuItemInAnyMenuBar(container, path);
                 if (menuItem == null) throw new IbcException("menu item: " + s);
                 if (!menuItem.isEnabled()) return false;
@@ -74,7 +74,7 @@ class Utils {
             });
 
             GuiDeferredExecutor.instance().execute(task);
-            
+
             try {
                 if (task.get()) return true;
             } catch (InterruptedException e) {
@@ -88,7 +88,7 @@ class Utils {
                 if (t instanceof RuntimeException) throw (RuntimeException)t;
                 if (t instanceof Error) throw (Error)t;
             }
-            
+
             pause(250);
         }
     }
@@ -96,30 +96,30 @@ class Utils {
     static void exitWithError(int errorCode) {
         System.exit(errorCode);
     }
-    
+
     static void exitWithError(int errorCode, String message) {
         logError(message);
         exitWithError(errorCode);
     }
-    
+
     static void exitWithException(int errorCode, Throwable t) {
         logException(t);
         exitWithError(errorCode);
     }
-    
+
     static void logError(String message) {
         getErrStream().println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         getErrStream().println(formatMessage(message));
         getErrStream().println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
     }
-    
+
     static void logException(Throwable t) {
         getErrStream().println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         getErrStream().println(formatMessage("An exception has occurred:"));
         t.printStackTrace(getErrStream());
         getErrStream().println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
     }
-    
+
     /**
      * Writes a plain one-line text message to the console.
      * @param msg
@@ -128,7 +128,7 @@ class Utils {
     static void logRawToConsole(String msg) {
         getOutStream().println(msg);
     }
-    
+
     /**
      * Writes a text message prefixed with the current time to the console.
      * @param msg
@@ -137,7 +137,7 @@ class Utils {
     static void logToConsole(String msg) {
         getOutStream().println(formatMessage(msg));
     }
-    
+
     static PrintStream getErrStream() {
         if (sendConsoleOutputToTwsLog) {
             return System.err;
@@ -145,7 +145,7 @@ class Utils {
             return err;
         }
     }
-    
+
     static PrintStream getOutStream() {
         if (sendConsoleOutputToTwsLog) {
             return System.out;
@@ -153,7 +153,7 @@ class Utils {
             return out;
         }
     }
-    
+
     private static String formatMessage(String message) {
         return _DateFormatter.format(new Date()) + " IBC: " + message.substring(0,1).toUpperCase() + message.substring(1);
     }
@@ -172,7 +172,7 @@ class Utils {
         } catch (InterruptedException ie) {
         }
     }
-    
+
     /**
      * Selects the specified section in the Global Configuration dialog.
      * @param configDialog
@@ -188,7 +188,7 @@ class Utils {
      */
     static boolean selectConfigSection(final JDialog configDialog, final String[] path) throws IbcException, IllegalStateException {
         if (!SwingUtilities.isEventDispatchThread()) throw new IllegalStateException("selectConfigSection must be run on the event dispatch thread");
-        
+
         JTree configTree = SwingUtils.findTree(configDialog);
         if (configTree == null) throw new IbcException("could not find the config tree in the Global Configuration dialog");
 
@@ -217,7 +217,7 @@ class Utils {
                 @Override public void run() {invokeMenuItem(MainWindowManager.mainWindowManager().getMainWindow(), new String[] {"Account", "Trade Log"});}
             });
     }
-    
+
     static void sendConsoleOutputToTwsLog(boolean value) {
         sendConsoleOutputToTwsLog = value;
     }

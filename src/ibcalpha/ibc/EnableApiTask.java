@@ -34,7 +34,7 @@ class EnableApiTask implements ConfigurationAction{
     @Override public void run() {
         try {
             Utils.logToConsole("Doing ENABLEAPI configuration");
-            
+
             if (!Utils.selectConfigSection(configDialog, new String[] {"API","Settings"}))
                 // older versions of TWS don't have the Settings node below the API node
                 Utils.selectConfigSection(configDialog, new String[] {"API"});

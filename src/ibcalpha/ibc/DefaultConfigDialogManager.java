@@ -29,18 +29,18 @@ import javax.swing.JDialog;
 import javax.swing.SwingUtilities;
 
 public class DefaultConfigDialogManager extends ConfigDialogManager {
-    
+
     private volatile JDialog configDialog = null;
     private volatile GetConfigDialogTask configDialogTask;
-    
+
     private final Object futureCreationLock = new Object();
     private Future<JDialog> configDialogFuture;
-    
+
     /* records the number of 'things' (including possibly the user) that
      * are currently accessing the config dialog
     */
     private int usageCount;
-    
+
     @Override
     public void logDiagnosticMessage(){
         Utils.logToConsole("using default config dialog manager");
@@ -53,7 +53,7 @@ public class DefaultConfigDialogManager extends ConfigDialogManager {
     public void clearConfigDialog() {
         configDialog = null;
     }
-    
+
     /**
      * Returns the Global Configuration dialog, if necessary blocking the calling thread until
      * either it is available or a specified timeout has elapsed.
@@ -81,18 +81,18 @@ public class DefaultConfigDialogManager extends ConfigDialogManager {
          * be one-time-only. So we have to go via the menu each time this 
          * method is called (if it isn't currently open or being opened).
         */
-        
+
         if (SwingUtilities.isEventDispatchThread()) throw new IllegalStateException();
-        
+
         Utils.logToConsole("Getting config dialog");
-        
+
         incrementUsage();
 
         if (configDialog != null) {
             Utils.logToConsole("Config dialog already found");
             return configDialog;
         }
-        
+
         synchronized(futureCreationLock) {
             if (configDialogFuture != null) {
                     Utils.logToConsole("Waiting for config dialog future to complete");
@@ -104,7 +104,7 @@ public class DefaultConfigDialogManager extends ConfigDialogManager {
                 exec.shutdown();
             }
         }
-        
+
         try {
             if (timeout < 0) {
                 configDialog = configDialogFuture.get();
@@ -164,15 +164,15 @@ public class DefaultConfigDialogManager extends ConfigDialogManager {
     public void setSplashScreenClosed() {
         if (configDialogTask != null) configDialogTask.setSplashScreenClosed();
     }
-    
+
 
     private boolean apiConfigChangeConfirmationExpected;
-    
+
     @Override
     public boolean getApiConfigChangeConfirmationExpected() {
         return apiConfigChangeConfirmationExpected;
     }
-    
+
     @Override
     public void releaseConfigDialog() {
         decrementUsage();
@@ -182,16 +182,16 @@ public class DefaultConfigDialogManager extends ConfigDialogManager {
     public void setApiConfigChangeConfirmationExpected() {
         apiConfigChangeConfirmationExpected = true;
     }
-    
+
     @Override
     public void setApiConfigChangeConfirmationHandled() {
         apiConfigChangeConfirmationExpected = false;
     }
-    
+
     private synchronized void incrementUsage() {
         usageCount++;
     }
-    
+
     private synchronized void decrementUsage() {
         usageCount--;
         if (usageCount == 0){
@@ -199,7 +199,7 @@ public class DefaultConfigDialogManager extends ConfigDialogManager {
             SwingUtils.clickButton(configDialog, "OK");
         }
     }
-            
+
 
 
 }

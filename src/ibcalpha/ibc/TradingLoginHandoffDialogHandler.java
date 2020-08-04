@@ -63,7 +63,7 @@ public class TradingLoginHandoffDialogHandler implements WindowHandler {
         final String INFO_MESSAGE = MESSAGE_STUB + "{}";
         final String ERROR_MESSAGE = MESSAGE_STUB + "error: {}";
         final String COULD_NOT_HANDLE_MESSAGE = MESSAGE_STUB + "could not handle because {}";
-        
+
         String setting = Settings.settings().getString("ExistingSessionDetectedAction", "manual");
         if (setting.equalsIgnoreCase("primary")) {
             Utils.logToConsole(String.format(INFO_MESSAGE, "end the other session and continue this one"));

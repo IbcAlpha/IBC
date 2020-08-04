@@ -34,15 +34,15 @@ public class DefaultSettings extends Settings {
     public DefaultSettings() {
         load(generateDefaultIniPath());
     }
-    
+
     public DefaultSettings(String[] args) {
         load(getSettingsPath(args));
     }
-    
+
     public DefaultSettings(String path) {
         load(path);
     }
-    
+
     private void load(String path) {
         this.path = path;
         props.clear();
@@ -59,7 +59,7 @@ public class DefaultSettings extends Settings {
             Utils.logToConsole(e.toString());
         }
     }
-    
+
     static String generateDefaultIniPath() {
         if (System.getProperty("os.name").startsWith("Windows")) {
             return System.getenv("HOMEDRIVE") + 
@@ -128,7 +128,7 @@ public class DefaultSettings extends Settings {
     public String getString(String key,
                             String defaultValue) {
         String value = props.getProperty(key, defaultValue);
-        
+
         // handle key=[empty string] in .ini file 
         if (value.isEmpty()) {
             value = defaultValue;
@@ -150,10 +150,10 @@ public class DefaultSettings extends Settings {
         String value = props.getProperty(key);
 
         // handle key missing or key=[empty string] in .ini file 
-        if (value == null || value.length() == 0) {        
+        if (value == null || value.length() == 0) {
             return defaultValue;
         }
-        
+
         try {
             return Integer.parseInt(value);
         } catch (NumberFormatException e) {
@@ -209,10 +209,10 @@ public class DefaultSettings extends Settings {
         String value = props.getProperty(key);
 
         // handle key missing or key=[empty string] in .ini file 
-        if (value == null || value.length() == 0) {        
+        if (value == null || value.length() == 0) {
             return defaultValue;
         }
-        
+
         try {
             return Double.parseDouble(value);
         } catch (NumberFormatException e) {
@@ -240,10 +240,10 @@ public class DefaultSettings extends Settings {
         String value = props.getProperty(key);
 
         // handle key missing or key=[empty string] in .ini file 
-        if (value == null || value.length() == 0) {        
+        if (value == null || value.length() == 0) {
             return defaultValue;
         }
-        
+
         if (value.equalsIgnoreCase("true")) {
             return true;
         } else if (value.equalsIgnoreCase("yes")) {
@@ -256,5 +256,5 @@ public class DefaultSettings extends Settings {
             return defaultValue;
         }
     }
-    
+
 }

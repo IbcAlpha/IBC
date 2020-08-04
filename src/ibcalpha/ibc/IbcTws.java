@@ -207,7 +207,7 @@ import java.util.concurrent.TimeUnit;
 public class IbcTws {
 
     private IbcTws() { }
-    
+
     public static void main(final String[] args) throws Exception {
         if (Thread.getDefaultUncaughtExceptionHandler() == null) {
             Thread.setDefaultUncaughtExceptionHandler(new ibcalpha.ibc.UncaughtExceptionHandler());
@@ -216,7 +216,7 @@ public class IbcTws {
         setupDefaultEnvironment(args, false);
         load();
     }
-    
+
     static void setupDefaultEnvironment(final String[] args, final boolean isGateway) throws Exception {
         Settings.initialise(new DefaultSettings(args));
         LoginManager.initialise(new DefaultLoginManager(args));
@@ -263,23 +263,23 @@ public class IbcTws {
 
     public static void load() {
         printVersionInfo();
-        
+
         printProperties();
-        
+
         Settings.settings().logDiagnosticMessage();
         LoginManager.loginManager().logDiagnosticMessage();
         MainWindowManager.mainWindowManager().logDiagnosticMessage();
         TradingModeManager.tradingModeManager().logDiagnosticMessage();
         ConfigDialogManager.configDialogManager().logDiagnosticMessage();
-        
+
         boolean isGateway = MainWindowManager.mainWindowManager().isGateway();
-        
+
         startCommandServer(isGateway);
 
         startShutdownTimerIfRequired(isGateway);
 
         createToolkitListener();
-        
+
         startSavingTwsSettingsAutomatically();
 
         startTwsOrGateway(isGateway);
@@ -320,10 +320,10 @@ public class IbcTws {
         windowHandlers.add(new ExitConfirmationDialogHandler());
         windowHandlers.add(new TradingLoginHandoffDialogHandler());
         windowHandlers.add(new LoginFailedDialogHandler());
-        
+
         return windowHandlers;
     }
-    
+
     private static Date getShutdownTime() {
         String shutdownTimeSetting = Settings.settings().getString("ClosedownAt", "");
         if (shutdownTimeSetting.length() == 0) {
@@ -375,7 +375,7 @@ public class IbcTws {
     private static String getJtsIniFilePath() {
         return getTWSSettingsDirectory() + File.separatorChar + "jts.ini";
     }
-    
+
     private static String getTWSSettingsDirectory() {
         String path = Settings.settings().getString("IbDir", System.getProperty("user.dir"));
         try {
@@ -400,7 +400,7 @@ public class IbcTws {
         }
         Utils.logRawToConsole("------------------------------------------------------------");
     }
-    
+
     private static void startGateway() {
         String[] twsArgs = new String[1];
         twsArgs[0] = getTWSSettingsDirectory();
@@ -446,7 +446,7 @@ public class IbcTws {
             Utils.exitWithError(ErrorCodes.ERROR_CODE_CANT_FIND_ENTRYPOINT);
         }
     }
-    
+
     private static void startTwsOrGateway(boolean isGateway) {
         Utils.logToConsole("TWS Settings directory is: " + getTWSSettingsDirectory());
         JtsIniManager.initialise(getJtsIniFilePath());
@@ -458,14 +458,14 @@ public class IbcTws {
 
         int portNumber = Settings.settings().getInt("OverrideTwsApiPort", 0);
         if (portNumber != 0) (new ConfigurationTask(new ConfigureTwsApiPortTask(portNumber))).executeAsync();
-        
+
         if (!Settings.settings().getString("ReadOnlyApi", "").equals("")) {
             (new ConfigurationTask(new ConfigureReadOnlyApiTask(Settings.settings().getBoolean("ReadOnlyApi",true)))).executeAsync();
         }
 
         Utils.sendConsoleOutputToTwsLog(!Settings.settings().getBoolean("LogToConsole", false));
     }
-    
+
     private static void startSavingTwsSettingsAutomatically() {
         TwsSettingsSaver.getInstance().initialise();
     }

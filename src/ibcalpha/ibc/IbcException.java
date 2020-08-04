@@ -24,7 +24,7 @@ public class IbcException extends Exception {
     IbcException(String message){
         super(message);
     }
-    
+
     public String toString() {
         return super.getMessage();
     }

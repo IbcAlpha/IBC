@@ -56,5 +56,5 @@ public class LoginFailedDialogHandler implements WindowHandler  {
 
         return (SwingUtils.titleContains(window, DIALOG_TITLE));
     }
-    
+
 }
