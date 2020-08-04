@@ -44,18 +44,6 @@ of this document.
 >
 >Make sure you read the information in the **Scope of this User Guide** section.
 >
->IBC can be used to start TWS running the demo account. However
-there are many ways in which the demo account differs from a live or a paper
-trading account, which may occasionally cause some inconvenience. In
-particular when you login to the demo account you are actually allocated
-a random account number, and when you log out this account may then be
-allocated to another user. Next time you log in to the demo account, you are
-unlikely to be allocated the same account as before, and even if you are given
-the same one, any settings you made last time round will have changed.
-IBC makes no attempt to avoid these situations: they are simply
-an inevitable by-product of using the demo system, which is not intended
-for any serious usage.
->
 >Note that in the remainder of this document, 'Unix' is used to refer to all
 Unix-derived operating systems, including Linux and macOS.
 
@@ -71,10 +59,8 @@ possible the deployment of unattended automated trading systems.
 IBC loads TWS or the Gateway and then 'listens' for various events (such
 as the display of dialogs) that would normally require user intervention. It
 can then automatically take appropriate action on the user's behalf. For
-example, as well as automating the TWS and Gateway login by filling the login
-dialog with your credentials, it can also deal with TWS's autologoff dialog so
-that it can keep TWS running continuously (but only in TWS versions earlier
-than TWS 974).
+example, it automates the TWS and Gateway login by filling the login
+dialog with your credentials and 'clicking' the login button.
 
 Here are some of the things IBC does for you:
 
@@ -97,7 +83,11 @@ for example to tell TWS/Gateway to shut itself down cleanly.
 	
 ### Scope of this User Guide
 
-This User Guide is intended to help you get started with IBC.
+This User Guide is intended to help you get started with IBC. It does not cover
+every feature in depth.
+
+Note that the configuration file `config.ini` that governs IBC's behaviour
+contains extensive notes that provide more information on the various settings.
 
 ### Acknowledgement
 
@@ -133,17 +123,21 @@ up and running properly.
 
 5. Copy the configuration file (called `config.ini`) from the
    IBC installation folder to the encrypted folder created in
-   step 5.
+   step 4.
 
-6. Check that the correct major version number for TWS is set in the shell
-   script files  in the IBC installation folder: these files are
-   `StartTWS.bat` and `StartGateway.bat`
-   on Windows, `twsstart.sh` and
-   `gatewaystart.sh` on Unix. To find the TWS major
-   version number, first run TWS or the Gateway manually using the
-   IBKR-provided icon, then click `Help > About Trader Workstation`
-   or `Help > About IB Gateway`. In the displayed information you'll
-   see a  line similar to this:
+6. Edit the `config.ini` file,using a text editor such as Notepad, to set
+   your username and password in the `IbLoginId` and `IbPassword` settings.
+   It's advisable to use your paper-trading credentials at first to check
+   things out, and for this you'll also need to set the `TradingMode` setting.
+
+7. Check that the correct major version number for TWS is set in the shell
+   script files in the IBC installation folder: these files are
+   `StartTWS.bat` and `StartGateway.bat` on Windows, `twsstart.sh` and
+   `gatewaystart.sh` on Unix, `twsstartmacos.sh` and `gatewaystartmacos.sh`
+   on macOS. To find the TWS major version number, first run TWS or the
+   Gateway manually using the IBKR-provided icon, then click
+   `Help > About Trader Workstation` or `Help > About IB Gateway`. In
+   the displayed information you'll see a line similar to this:
 
     `Build 954.2a, Oct 30, 2015 4:07:54 PM`
 
@@ -151,30 +145,29 @@ up and running properly.
    number. Now open the script files with a text editor and ensure that
    the TWS_MAJOR_VRSN variable is set correctly.
 
-7. At this stage, everything is set up to run IBC with its default
-   settings, which will start TWS and log it into the IBKR demo user. It is
-   worthwhile doing this just to check that everything works before
-   customising it to suit your needs. To do this, run the relevant
-   shell script (`StartTWS.bat` on Windows,
-   `twsstart.sh` on Unix) from the IBC
-   installation folder. If everything is satisfactory, shut down
-   IBC by closing TWS in the usual way.
+8. At this stage, everything is set up to run IBC with its default
+   settings, which will start TWS and attempt to log it into your
+   paper-trading user. It is worthwhile doing this to check that everything
+   works before further customising it to suit your needs. To do this, run the
+   relevant shell script (`StartTWS.bat` on Windows, `twsstart.sh` on
+   Unix, `twsstartmacos.sh` on macOS) from the IBC installation folder.
+   If everything is satisfactory, shut down IBC by closing TWS in the
+   usual way.
 
    Note that when you start IBC, information about the startup
    process is logged to a file to aid diagnosing any faults that may
-   occurr. You will be notified of the log file name during the startup
+   occur. You will be notified of the log file name during the startup
    sequence.
 
-8. Edit the configuration file (`config.ini`) in the encrypted
-   `ibc` folder using a text editor such as Notepad. See
-   *Configuring IBC* for further information.
+9. Now you can edit the configuration file `config.ini` to make any further
+   customisations you need. See *Configuring IBC* for further information.
 
-9. If you did not install TWS and IBC in their default locations,
+10. If you did not install TWS and IBC in their default locations,
    and store the configuration file in the recommended location, you will
    have to edit the shell scripts in the IBC installation folder
    accordingly. They contain comments that will help you do this correctly.
 
-10. If you intend to run API programs to connect with TWS, you will need
+11. If you intend to run API programs to connect with TWS, you will need
     to manually edit the API settings in TWS's Global Configuration Dialog.
 
 ### Prerequisites
@@ -187,7 +180,7 @@ Both IBC and TWS/Gateway are Java programs, and therefore the Java
 Runtime needs to be accessible, but you don't have to do anything to ensure
 this.
 
-The TWS installers for Windows and Linux include a hidden version of Java
+The TWS and Gateway installers include a hidden version of Java
 that Interactive Brokers have used for developing and testing TWS. This
 version also runs IBC perfectly, and the IBC scripts
 ensure that it is used.
@@ -198,13 +191,10 @@ scripts won't use it. However the scripts do make provision for declaring
 specifically which Java installation is to be used in exceptional situations
 where necessary.
 
-If you had previously installed Java for use with old versions of Tws, but
+If you had previously installed Java for use with old versions of TWS, but
 do not need it for any other programs, then you might want to consider
 uninstalling it once you have finished setting up IBC.
 
-**Note for macOS users**: the installer for the macOS version of TWS does not
-currently include the Java Runtime, so you will have to ensure that Java is
-installed.
 
 
 #### Interactive Brokers Trader Workstation
@@ -216,7 +206,8 @@ version of Trader Workstation from the
 The location of the TWS dowloads page on IBKR's website varies from time to
 time, and from country to country.  At the time of writing, on IBKR's US website
 (linked above) you need to click the `Trading` menu near the top of the page,
-then select `TWS Software`: currently a valid direct link is
+then select `Platforms`, and scroll down to the Desktop TWS section which contains
+a download button: currently a valid direct link is
 [Tws Software](https://www.interactivebrokers.com/en/index.php?f=14099#tws-software).
 
 IBKR provides two modes of operation for TWS:
@@ -253,8 +244,9 @@ starting it manually (ie without using IBC) and selecting the language on the
 initial login dialog. TWS will remember this language setting when you
 subsequently start it using IBC.
 
-Note that you do not need an IBKR account to try out IBC, as you can
-use the IBKR demo account (username `edemo`, password `demouser`).
+Note that you do not need an IBKR account to try out IBC, as you can use IBKR's
+Free Trial offer, for which there is a link at the top of the homepage on the
+website.
 
 ### Where to get IBC
 
@@ -401,7 +393,9 @@ access to the contents: even if they use their administrator privileges to
 give themselves access to the file, its contents will not be decrypted because
 they are not the user that encrypted it.
 
-To encrypt the folder on Windows:
+To encrypt the folder on Windows (note that this requires a Professional or
+higher edition of Windows - the home edition does not provide this
+facility):
 
 - right click the folder and select `Properties`
 
@@ -469,10 +463,9 @@ There are two ways that IBC can locate your edited `config.ini` file.
   script to declare its new name and location.
 
 - if you do not specify a configuration file name, IBC will expect to find a
-  file named `IBC.<username>.ini` in the current working directory. In this
-  case, `<username>` is your username on your computer (not your IBKR account
-  username). This method is deprecated, because it is likely to result in the
-  `.ini` file being in an insecure location.
+  file named `config.ini` in the current computer user's private filestore. For
+  Windows users, the location is `%HOMEDRIVE%%HOMEPATH%\Documents\IBC`. For Unix
+  users, it is `~/ibc`.
 
 ### Starting IBC
 
@@ -494,6 +487,47 @@ config.ini file, you should not need to edit the shell scripts. If you do need
 to change them, they are commented to help you.
 
 ## Other Topics
+
+### Second Factor Authentication
+
+You can use your mobile phone or tablet running Android or IOS to provide
+second factor authentication for your TWS login. To do this you'll need to
+install the IBKR Mobile app on your device, which you can download from the
+relevant app store. Once you've installed it, you can register it for
+second factor authentication via the button that it prominently displays.
+
+Once it's registered, every time you login to TWS or Gateway (including when
+IBC does it for you) you'll receive an alert on your device. When you then
+enter your registered PIN into the app, your login will complete.
+
+Note that IBC cannot itself assist in the process, so you'll have to actually
+perform the necessary actions on your device yourself, but it's fairly
+convenient because you don't need to be anywhere near your computer running
+TWS, which is helpful if you've used some automated mechanism to start TWS.
+
+However, if you fail to respond to the alert within a fixed period (currently
+3 minutes), you will not then be able to complete your login without manual
+intervention at TWS, and this is where IBC _can_ help. You can canfigure IBC
+to detect such timeouts and to shut down when this happens. And you can set
+it so that IBC is automatically restarted, thus restarting the normal login
+sequence and thereby giving you another chance to receive the second factor
+authentication alert on your device. This timeout/restart mechanism can
+repeat any number of times.
+
+To enable this behaviour you need this setting in your `config.ini` file:
+
+`ExitAfterSecondFactorAuthenticationTimeout=yes`
+
+This will ensure that IBC exits when it detects a second factor authentication
+timeout. If you also want it to be automatically restarted, you must also
+set the `TWOFA_TIMEOUT_ACTION` variable in your start script file to `restart`
+(see the notes for this variable in the relevant start script).
+
+If you have another automatic means of restarting IBC after it closes (for
+example Task Scheduler on Windows), then you should consider setting the
+`TWOFA_TIMEOUT_ACTION` variable in your start script to `exit`, to avoid
+the situation where both mechanisms react at the same time.
+
 
 ### Scheduled Tasks (Windows only)
 
