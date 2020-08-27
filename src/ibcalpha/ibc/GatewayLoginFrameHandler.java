@@ -29,7 +29,8 @@ final class GatewayLoginFrameHandler extends AbstractLoginHandler {
     public boolean recogniseWindow(Window window) {
         if (! (window instanceof JFrame)) return false;
 
-        return (SwingUtils.titleContains(window, "IB Gateway") &&
+        return ((SwingUtils.titleContains(window, "IB Gateway") || 
+                    SwingUtils.titleContains(window, "Interactive Brokers Gateway")) &&
                (SwingUtils.findButton(window, "Login") != null ||
                 SwingUtils.findButton(window, "Log In") != null ||          // TWS 974+
                 SwingUtils.findButton(window, "Paper Log In") != null));    // TWS 974+
