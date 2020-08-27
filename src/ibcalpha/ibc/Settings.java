@@ -22,10 +22,6 @@ public abstract class Settings {
 
     private static Settings _settings;
 
-    static {
-        _settings = new DefaultSettings();
-    }
-
     public static void initialise(Settings settings){
         if (settings == null) throw new IllegalArgumentException("settings");
         _settings = settings;
