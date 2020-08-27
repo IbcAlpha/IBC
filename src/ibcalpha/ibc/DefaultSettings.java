@@ -24,7 +24,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Enumeration;
 import java.util.Properties;
+import java.util.Set;
 
 public class DefaultSettings extends Settings {
 
@@ -51,6 +53,14 @@ public class DefaultSettings extends Settings {
             InputStream is = new BufferedInputStream(new FileInputStream(f));
             props.load(is);
             is.close();
+
+            Utils.logRawToConsole("IBC Settings:");
+            Object[] keys = props.stringPropertyNames().toArray();
+            java.util.Arrays.sort(keys);
+            for (Object key : keys){
+                Utils.logRawToConsole("    " + key + "=" + getSettingSanitisedValue(key.toString()));
+            }
+            Utils.logRawToConsole("End IBC Settings\n" );
         } catch (FileNotFoundException e) {
             Utils.logToConsole("Properties file " + path + " not found");
         } catch (IOException e) {
@@ -58,6 +68,16 @@ public class DefaultSettings extends Settings {
                     "Exception accessing Properties file " + path);
             Utils.logToConsole(e.toString());
         }
+    }
+    
+    private String getSettingSanitisedValue(String key) {
+        if (key.equalsIgnoreCase("FIXLoginId") ||
+                key.equalsIgnoreCase("FIXPassword") ||
+                key.equalsIgnoreCase("IbLoginId") ||
+                key.equalsIgnoreCase("IbPassword")) {
+            return "***";
+        }
+        return props.getProperty(key.toString());
     }
 
     static String generateDefaultIniPath() {
