@@ -42,7 +42,8 @@ class GatewayMainWindowFrameHandler  implements WindowHandler {
     public boolean recogniseWindow(Window window) {
         if (! (window instanceof JFrame)) return false;
 
-        return SwingUtils.findMenuItemInAnyMenuBar(window, new String [] {"Help", "About IB Gateway"}) != null;
+        return (SwingUtils.findMenuItemInAnyMenuBar(window, new String [] {"Help", "About Gateway"}) != null) ||
+                (SwingUtils.findMenuItemInAnyMenuBar(window, new String [] {"Help", "About IB Gateway"}) != null);
     }
 
 }
