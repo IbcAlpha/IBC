@@ -79,8 +79,8 @@ class TwsListener
                     if (eventID == WindowEvent.WINDOW_OPENED) {
                         Utils.logRawToConsole(SwingUtils.getWindowStructure(window));
                     }
-                } else if (Settings.settings().getBoolean("ReadOnlyLogin", false)) == false &&
-                        SwingUtils.titleContains(window, "Second Factor Authentication")) {
+                } else if (SwingUtils.titleContains(window, "Second Factor Authentication") &&
+                        ! Settings.settings().getBoolean("ReadOnlyLogin", false))
                     // Only handle SFA while ReadOnlyLogin mode is off.
                     Utils.logToConsole("Second Factor Authentication dialog event: " + SwingUtils.windowEventToString(eventID));
                     if (eventID == WindowEvent.WINDOW_OPENED) {
