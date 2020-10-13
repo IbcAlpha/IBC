@@ -80,8 +80,18 @@ class TwsListener
                         Utils.logRawToConsole(SwingUtils.getWindowStructure(window));
                     }
                 } else if (SwingUtils.titleContains(window, "Second Factor Authentication") &&
-                        ! Settings.settings().getBoolean("ReadOnlyLogin", false))
+                        ! Settings.settings().getBoolean("ReadOnlyLogin", false)) {
                     // Only handle SFA while ReadOnlyLogin mode is off.
+                    
+                    // Ideally we would handle the Second Factor Authentication dialog event using
+                    // a WindowHandler-derived class, as for all the other dialogs. But it turns out that
+                    // this does not work for TWS (though it does for Gateway), because it's impossible to
+                    // recognise the dialog any time after this point. This is completely bizarre, but I
+                    // suspect TWS does something unusual in an attempt to prevent anythinng interfering
+                    // with the dialog. Anyone interested in the background to this discovery should look
+                    // at this rather long thread in the IBC User Group:
+                    //    https://groups.io/g/ibcalpha/topic/73312303#1165
+                    
                     Utils.logToConsole("Second Factor Authentication dialog event: " + SwingUtils.windowEventToString(eventID));
                     if (eventID == WindowEvent.WINDOW_OPENED) {
                         Utils.logToConsole("Second Factor Authentication dialog opened");
