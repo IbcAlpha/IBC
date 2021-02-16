@@ -32,4 +32,5 @@ public final class ErrorCodes {
     public static final int ERROR_CODE_IO_EXCEPTION_ON_JTSINI = 1109;
     public static final int ERROR_CODE_INVALID_STATE = 1110;
     public static final int ERROR_CODE_2FA_DIALOG_TIMED_OUT = 1111;
+    public static final int ERROR_CODE_LOGIN_DIALOG_DISPLAY_TIMEOUT = 1112;
 }

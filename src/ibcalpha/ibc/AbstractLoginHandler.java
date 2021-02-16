@@ -52,6 +52,7 @@ public abstract class AbstractLoginHandler implements WindowHandler {
         LoginManager.loginManager().setLoginFrame((JFrame) window);
         switch (LoginManager.loginManager().getLoginState()){
             case LOGGED_OUT:
+                LoginManager.loginManager().setLoginState(LoginManager.LoginState.AWAITING_CREDENTIALS);
                 try {
                     if (!initialise(window, eventID)) return;
                     if (!setFields(window, eventID)) return;

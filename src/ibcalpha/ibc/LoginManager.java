@@ -50,7 +50,8 @@ public abstract class LoginManager {
         LOGGED_IN,
         LOGGING_IN,
         TWO_FA_IN_PROGRESS,
-        LOGIN_FAILED
+        LOGIN_FAILED,
+        AWAITING_CREDENTIALS
     }
 
     void startSession() {
@@ -61,9 +62,9 @@ public abstract class LoginManager {
                     // Login diaog has been shown - no need for IBC to exit
                     return;
                 }
-                Utils.exitWithError(ErrorCodes.ERROR_CODE_2FA_DIALOG_TIMED_OUT, "IBC closing after TWS/Gateway failed to display login dialog");
+                Utils.exitWithError(ErrorCodes.ERROR_CODE_LOGIN_DIALOG_DISPLAY_TIMEOUT, "IBC closing after TWS/Gateway failed to display login dialog");
             });
-        }, 30, TimeUnit.SECONDS);
+        }, Settings.settings().getInt("LoginDialogDisplayTimeout",60), TimeUnit.SECONDS);
     }
 
     private volatile LoginState loginState = LoginState.LOGGED_OUT;
