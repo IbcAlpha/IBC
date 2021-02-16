@@ -118,16 +118,20 @@ class TwsListener
 
     private void logWindow(Window window, int eventID) {
         final String event = SwingUtils.windowEventToString(eventID);
-
+        final String windowTitle;
         if (window instanceof JFrame) {
-            Utils.logToConsole("detected frame entitled: " + SwingUtils.getWindowTitle(window) + "; event=" + event);
+            windowTitle = SwingUtils.getWindowTitle(window);
+            Utils.logToConsole("detected frame entitled: " + windowTitle + "; event=" + event);
         } else if (window instanceof JDialog) {
-            Utils.logToConsole("detected dialog entitled: " + SwingUtils.getWindowTitle(window) + "; event=" + event);
+            windowTitle = SwingUtils.getWindowTitle(window);
+            Utils.logToConsole("detected dialog entitled: " + windowTitle + "; event=" + event);
         } else {
-            Utils.logToConsole("detected window: type=" + window.getClass().getName() + "; event=" + event);
+            windowTitle = window.getClass().getName();
+            Utils.logToConsole("detected window: type=" + windowTitle + "; event=" + event);
         }
 
-        if ((eventID == WindowEvent.WINDOW_OPENED && (logComponents.equals("open") || logComponents.equals("activate")))
+        if (windowTitle.isEmpty() || 
+            (eventID == WindowEvent.WINDOW_OPENED && (logComponents.equals("open") || logComponents.equals("activate")))
             ||
             (eventID == WindowEvent.WINDOW_ACTIVATED && logComponents.equals("activate"))
             ||
