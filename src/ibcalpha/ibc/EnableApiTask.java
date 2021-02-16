@@ -35,9 +35,7 @@ class EnableApiTask implements ConfigurationAction{
         try {
             Utils.logToConsole("Doing ENABLEAPI configuration");
 
-            if (!Utils.selectConfigSection(configDialog, new String[] {"API","Settings"}))
-                // older versions of TWS don't have the Settings node below the API node
-                Utils.selectConfigSection(configDialog, new String[] {"API"});
+            Utils.selectApiSettings(configDialog);
 
             JCheckBox cb = SwingUtils.findCheckBox(configDialog, "Enable ActiveX and Socket Clients");
             if (cb == null) throw new IbcException("could not find Enable ActiveX checkbox");
