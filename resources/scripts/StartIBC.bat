@@ -295,8 +295,8 @@ if /I "%ENTRY_POINT%" == "%ENTRY_POINT_GATEWAY%" (
 )
 
 if not exist "%TWS_JARS%" (
-	set ERROR_MESSAGE=TWS version %TWS_VERSION% is not installed
-	set ERROR_MESSAGE1=You must install the offline version of TWS/Gateway
+	set ERROR_MESSAGE=Offline TWS/Gateway version %TWS_VERSION% is not installed: can't find jars folder
+	set ERROR_MESSAGE1=Make sure you install the offline version of TWS/Gateway
 	set ERROR_MESSAGE2=IBC does not work with the auto-updating TWS/Gateway
 	set ERROR=%E_TWS_VERSION_NOT_INSTALLED%
 	goto :err
@@ -319,7 +319,7 @@ if not defined CONFIG (
 	goto :err
 )
 if not exist "%TWS_VMOPTS%" (  
-	set ERROR_MESSAGE=%TWS_VMOPTS% does not exist  
+	set ERROR_MESSAGE=Neither tws.vmoptions nor ibgateway.vmoptions could be found
 	set ERROR=%E_TWS_VMOPTIONS_NOT_FOUND%
 	goto :err
 )

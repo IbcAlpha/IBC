@@ -180,7 +180,7 @@ fi
 
 twofa_to_action_upper=$(echo ${twofa_to_action} | tr '[:lower:]' '[:upper:]')
 if [[ -n "${twofa_to_action_upper}" && ! "${twofa_to_action_upper}" = "RESTART" && ! "${twofa_to_action_upper}" = "EXIT" ]]; then
-	error_exit	${E_INVALID_ARG} "2FA timeout action set to ${twofa_to_action} but must be either 'live' or 'paper' (case-insensitive)"
+	error_exit	${E_INVALID_ARG} "2FA timeout action set to ${twofa_to_action} but must be either 'restart' or 'exit' (case-insensitive)"
 fi
 
 echo
@@ -291,8 +291,8 @@ if [[ "${entry_point}" = "${ENTRY_POINT_GATEWAY}" ]]; then
 fi
 
 if [[ ! -e "$jars" ]]; then
-	error_exit $E_TWS_VERSION_NOT_INSTALLED "TWS version $tws_version is not installed: can't find $jars" \
-	                                        "You must install the offline version of TWS/Gateway" \
+	error_exit $E_TWS_VERSION_NOT_INSTALLED "Offline TWS/Gateway version $tws_version is not installed: can't find jars folder" \
+	                                        "Make sure you install the offline version of TWS/Gateway" \
                                             "IBC does not work with the auto-updating TWS/Gateway"
 fi
 
@@ -305,7 +305,7 @@ if [[ ! -e "$ibc_ini" ]]; then
 fi
 
 if [[ ! -e "$vmoptions_source" ]]; then
-	error_exit $E_TWS_VMOPTIONS_NOT_FOUND "vmoptions file $vmoptions_source does not exist"
+	error_exit $E_TWS_VMOPTIONS_NOT_FOUND "Neither tws.vmoptions nor ibgateway.vmoptions could be found"
 fi
 
 if [[ -n "$java_path" ]]; then
