@@ -106,6 +106,11 @@ E_UNKNOWN_OPERATING_SYSTEM=8
 # ExitAfterSecondFactorAuthenticationTimeout setting is true
 E_2FA_DIALOG_TIMED_OUT=1111
 
+# errorlevel set by IBC if login dialog is not displayed within the time
+# specified in the LoginDialogDisplayTimeout setting
+E_LOGIN_DIALOG_DISPLAY_TIMEOUT=1112
+
+
 ENTRY_POINT_TWS=ibcalpha.ibc.IbcTws
 ENTRY_POINT_GATEWAY=ibcalpha.ibc.IbcGateway
 
@@ -453,11 +458,18 @@ do
 	wait $PID
 
 	exit_code=$?
-	if [[ ! ($exit_code = $E_2FA_DIALOG_TIMED_OUT && "${twofa_to_action_upper}" = "RESTART") ]]; then break; fi
+
+	if [[ $exit_code -eq $E_LOGIN_DIALOG_DISPLAY_TIMEOUT ]]; then 
+		:
+	elif [[ $exit_code -ne $E_2FA_DIALOG_TIMED_OUT  ]]; then 
+		break;
+	elif [[ ${twofa_to_action_upper} !=  "RESTART" ]]; then 
+		break; 
+	fi
 	
 	# wait a few seconds before restarting
 	echo IBC will restart shortly
-	echo sleep 10
+	echo sleep 2
 done
 
 echo "$program finished"

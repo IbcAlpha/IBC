@@ -98,6 +98,10 @@ set E_TWS_SETTINGS_PATH_NOT_EXIST=1008
 :: ExitAfterSecondFactorAuthenticationTimeout setting is true
 set E_2FA_DIALOG_TIMED_OUT=1111
 
+:: errorlevel set by IBC if login dialog is not displayed within the time
+:: specified in the LoginDialogDisplayTimeout setting
+set E_LOGIN_DIALOG_DISPLAY_TIMEOUT=1112
+
 set ENTRY_POINT_TWS=ibcalpha.ibc.IbcTws
 set ENTRY_POINT_GATEWAY=ibcalpha.ibc.IbcGateway
 
@@ -438,9 +442,16 @@ if %ERRORLEVEL% EQU %E_2FA_DIALOG_TIMED_OUT% (
 	if /I "%TWOFA_TO_ACTION%" == "RESTART" (
 		:: wait a few seconds before restarting
 		echo IBC will restart shortly
-		ping localhost -n 5  >NUL
+		ping localhost -n 2  >NUL
 		goto :startibc
 	)
+)
+
+if %ERRORLEVEL% EQU %E_LOGIN_DIALOG_DISPLAY_TIMEOUT% (
+	:: wait a few seconds before restarting
+	echo IBC will restart shortly
+	ping localhost -n 2  >NUL
+	goto :startibc
 )
 
 popd
