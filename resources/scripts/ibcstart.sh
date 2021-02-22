@@ -251,7 +251,7 @@ if [[ "$os" = "$OS_LINUX" ]]; then
 	gateway_install4j="${tws_path}/ibgateway/${tws_version}/.install4j"
 elif [[ "$os" = "$OS_OSX" ]]; then
 	if [[ -e "${tws_path}/Trader Workstation ${tws_version}/tws.vmoptions" ]]; then
-		tws_vmoptions=${tws_path}/Trader Workstation ${tws_version}/tws.vmoptions
+		tws_vmoptions="${tws_path}/Trader Workstation ${tws_version}/tws.vmoptions"
 	else
 		# TWS versions before 981
 		tws_vmoptions=~/Jts/tws-${tws_version}.vmoptions
@@ -260,7 +260,7 @@ elif [[ "$os" = "$OS_OSX" ]]; then
 	tws_install4j="${tws_path}/Trader Workstation ${tws_version}/.install4j"
 
 	if [[ -e "${tws_path}/IB Gateway ${tws_version}/ibgateway.vmoptions" ]]; then
-		gateway_vmoptions=${tws_path}/IB Gateway ${tws_version}/ibgateway.vmoptions
+		gateway_vmoptions="${tws_path}/IB Gateway ${tws_version}/ibgateway.vmoptions"
 	else
 		# Gateway versions before 981
 		gateway_vmoptions=~/Jts/ibgateway-${tws_version}.vmoptions
