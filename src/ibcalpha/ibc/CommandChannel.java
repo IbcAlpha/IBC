@@ -47,6 +47,9 @@ final class CommandChannel {
 
     void close() {
         try {
+            if (mSocket == null || mSocket.isClosed()) return;
+            
+            Utils.logToConsole("Closing command channel");
             mSocket.shutdownInput();
             mSocket.shutdownOutput();
 
@@ -60,8 +63,10 @@ final class CommandChannel {
             mSocket = null;
         } catch (SocketException e) {
             // the socket was reset by the client - ignore
+            Utils.logException(e);
         } catch (IOException e) {
             // ignore
+            Utils.logException(e);
         }
     }
 
@@ -80,8 +85,10 @@ final class CommandChannel {
             if (cmd != null) Utils.logToConsole("CommandServer received command: " + cmd);
         } catch (SocketException e) {
             // the socket was reset by the client
+            Utils.logException(e);
             close();
         } catch (IOException e) {
+            Utils.logException(e);
             close();
         }
         return cmd;
@@ -115,6 +122,7 @@ final class CommandChannel {
             mOutstream.flush();
         } catch (SocketException e) {
             // the socket was reset by the client
+            Utils.logException(e);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -131,6 +139,7 @@ final class CommandChannel {
             return true;
         } catch (IOException e) {
             // this is most likely a result of the user closing the command connection
+            Utils.logException(e);
             return false;
         }
     }

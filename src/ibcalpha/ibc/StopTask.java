@@ -20,6 +20,7 @@ package ibcalpha.ibc;
 
 import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
+import java.util.Arrays;
 import javax.swing.JFrame;
 
 class StopTask
@@ -28,26 +29,28 @@ class StopTask
     private static final SwitchLock _Running = new SwitchLock();
 
     private final CommandChannel mChannel;
+    private final boolean mIsGateway;
 
-    public StopTask(final CommandChannel channel) {
+    public StopTask(final CommandChannel channel, boolean isGateway) {
         mChannel = channel;
+        mIsGateway = isGateway;
     }
 
     @Override
     public void run() {
         if (! _Running.set()) {
+            Utils.logToConsole("STOP already in progress");
             writeNack("STOP already in progress");
+            mChannel.close();
             return;
         }
 
         try {
-            MyCachedThreadPool.getInstance().shutdownNow();
-            MyScheduledExecutorService.getInstance().shutdownNow();
-
             writeInfo("Closing IBC");
             stop();
         } catch (Exception ex) {
             writeNack(ex.getMessage());
+            Utils.exitWithException(ErrorCodes.ERROR_CODE_UNHANDLED_EXCEPTION, ex);
         }
     }
 
@@ -57,16 +60,26 @@ class StopTask
     }
 
     private void stop() {
-        JFrame jf = MainWindowManager.mainWindowManager().getMainWindow();
-
-        WindowEvent wev = new WindowEvent(jf, WindowEvent.WINDOW_CLOSING);
-        Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(wev);
-
-        writeAck("Shutting down");
+        try {
+            writeAck("Shutting down");
+            if (mChannel != null) mChannel.close();
+            if (LoginManager.loginManager().getLoginState() != LoginManager.LoginState.LOGGED_IN) {
+                CommandServer.commandServer().shutdown();
+                Utils.logToConsole("Login has not completed: exiting immediately");
+                System.exit(0);
+            } else {
+                String[] closeMenuPath = mIsGateway ? new String[] {"File", "Close"} : new String[] {"File", "Exit"};
+                Utils.logToConsole("Login has completed: exiting via " + Arrays.deepToString(closeMenuPath) + " menu");
+                Utils.invokeMenuItem(MainWindowManager.mainWindowManager().getMainWindow(), closeMenuPath);
+            }
+            
+        } catch (Exception e) {
+            Utils.exitWithException(ErrorCodes.ERROR_CODE_UNHANDLED_EXCEPTION, e);
+        }
     }
 
-    private void writeAck(String message) {if (! (mChannel == null)) mChannel.writeAck(message);}
-    private void writeInfo(String message) {if (! (mChannel == null)) mChannel.writeInfo(message);}
-    private void writeNack(String message) {if (! (mChannel == null)) mChannel.writeNack(message);}
+    private void writeAck(String message) {if (mChannel != null) mChannel.writeAck(message);}
+    private void writeInfo(String message) {if (mChannel != null) mChannel.writeInfo(message);}
+    private void writeNack(String message) {if (mChannel != null) mChannel.writeNack(message);}
 
 }

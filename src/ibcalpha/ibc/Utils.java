@@ -94,6 +94,7 @@ class Utils {
     }
 
     static void exitWithError(int errorCode) {
+        logToConsole("Exiting with exit code=" + errorCode);
         System.exit(errorCode);
     }
 
@@ -105,6 +106,10 @@ class Utils {
     static void exitWithException(int errorCode, Throwable t) {
         logException(t);
         exitWithError(errorCode);
+    }
+
+    static void exitWithoutError() {
+        System.exit(0);
     }
 
     static void logError(String message) {

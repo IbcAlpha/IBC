@@ -262,28 +262,37 @@ public class IbcTws {
     }
 
     public static void load() {
-        printVersionInfo();
+        try {
+            printVersionInfo();
 
-        printProperties();
+            printProperties();
 
-        Settings.settings().logDiagnosticMessage();
-        LoginManager.loginManager().logDiagnosticMessage();
-        MainWindowManager.mainWindowManager().logDiagnosticMessage();
-        TradingModeManager.tradingModeManager().logDiagnosticMessage();
-        ConfigDialogManager.configDialogManager().logDiagnosticMessage();
+            Settings.settings().logDiagnosticMessage();
+            LoginManager.loginManager().logDiagnosticMessage();
+            MainWindowManager.mainWindowManager().logDiagnosticMessage();
+            TradingModeManager.tradingModeManager().logDiagnosticMessage();
+            ConfigDialogManager.configDialogManager().logDiagnosticMessage();
 
-        boolean isGateway = MainWindowManager.mainWindowManager().isGateway();
+            boolean isGateway = MainWindowManager.mainWindowManager().isGateway();
 
-        startCommandServer(isGateway);
+            startCommandServer(isGateway);
 
-        startShutdownTimerIfRequired(isGateway);
+            startShutdownTimerIfRequired(isGateway);
 
-        createToolkitListener();
+            createToolkitListener();
 
-        startSavingTwsSettingsAutomatically();
+            startSavingTwsSettingsAutomatically();
 
-        startTwsOrGateway(isGateway);
-}
+            startTwsOrGateway(isGateway);
+        } catch (IllegalStateException e) {
+            if (e.getMessage().equalsIgnoreCase("Shutdown in progress")) {
+                // an exception with this message can occur if a STOP command is
+                // processed by IBC while TWS/Gateway is still in early stages
+                // of initialisation
+                Utils.exitWithoutError();
+            }
+        }
+    }
 
     public static void printVersionInfo() {
         Utils.logToConsole("version: " + IbcVersionInfo.IBC_VERSION);
@@ -320,7 +329,9 @@ public class IbcTws {
         windowHandlers.add(new ExitConfirmationDialogHandler());
         windowHandlers.add(new TradingLoginHandoffDialogHandler());
         windowHandlers.add(new LoginFailedDialogHandler());
-
+        windowHandlers.add(new TooManyFailedLoginAttemptsDialogHandler());
+        windowHandlers.add(new ShutdownProgressDialogHandler());
+        
         return windowHandlers;
     }
 
@@ -426,7 +437,7 @@ public class IbcTws {
                             " will be shut down at " +
                            (new SimpleDateFormat("yyyy/MM/dd HH:mm")).format(shutdownTime));
             MyScheduledExecutorService.getInstance().schedule(() -> {
-                MyCachedThreadPool.getInstance().execute(new StopTask(null));
+                MyCachedThreadPool.getInstance().execute(new StopTask(null, isGateway));
             }, delay, TimeUnit.MILLISECONDS);
         }
     }

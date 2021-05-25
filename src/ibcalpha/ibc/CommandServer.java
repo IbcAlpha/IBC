@@ -36,10 +36,17 @@ class CommandServer
 
     private final boolean isGateway;
 
+    private static CommandServer _commandServer;
 
 
     CommandServer(boolean isGateway) {
+        if (_commandServer != null) throw new IllegalArgumentException();
         this.isGateway = isGateway;
+        _commandServer = this;
+    }
+    
+    public static CommandServer commandServer() {
+        return _commandServer;
     }
 
     @Override
@@ -57,14 +64,12 @@ class CommandServer
         if (createSocket(port)) {
             Utils.logToConsole("CommandServer started and is ready to accept commands");
             for (; !mQuitting;) {
+                // this will return null if the shutDown method is called
                 Socket socket = getClient();
 
-                if (socket != null)  MyCachedThreadPool.getInstance().execute(new CommandDispatcher(new CommandChannel(socket), isGateway));
-            }
-
-            try {
-                mSocket.close();
-            } catch (Exception e) {
+                if (socket != null) {
+                    MyCachedThreadPool.getInstance().execute(new CommandDispatcher(new CommandChannel(socket), isGateway));
+                }
             }
         }
 
@@ -73,6 +78,15 @@ class CommandServer
 
     public void shutdown() {
         mQuitting = true;
+        if (mSocket != null) {
+            try {
+                Utils.logToConsole("CommandServer closing");
+                mSocket.close();
+            } catch (IOException ex) {
+                Utils.logException(ex);
+            }
+            mSocket = null;
+        }
     }
 
     private boolean createSocket(final int port) {
@@ -93,17 +107,16 @@ class CommandServer
                                    java.lang.String.valueOf(port));
             }
         } catch (java.net.BindException e) {
-            Utils.logError("CommandServer failed to create socket: " + e.getMessage());
-            Utils.logToConsole("CommandServer cannot process commands");
-            mSocket = null;
-            mQuitting = true;
-            return false;
-        } catch (IOException e) {
-            Utils.logError("exception:\n" + e.toString());
+            Utils.logException(e);
             Utils.logToConsole("CommandServer failed to create socket");
             Utils.logToConsole("CommandServer cannot process commands");
             mSocket = null;
-            mQuitting = true;
+            return false;
+        } catch (IOException e) {
+            Utils.logException(e);
+            Utils.logToConsole("CommandServer failed to create socket");
+            Utils.logToConsole("CommandServer cannot process commands");
+            mSocket = null;
             return false;
         }
         return true;
@@ -111,41 +124,28 @@ class CommandServer
 
     private Socket getClient() {
         try {
+            if (mSocket.isClosed()) return null;
+            
             final Socket socket = mSocket.accept();
 
             final String allowedAddresses = Settings.settings().getString("ControlFrom", "");
             Utils.logToConsole("CommandServer: ControlFrom setting = " + allowedAddresses);
 
-            boolean permitted = false; 
-            if (socket.getInetAddress().getHostAddress().equals(mSocket.getInetAddress().getHostAddress())) {
-                permitted = true;
-            } else if (socket.getInetAddress().getHostAddress().equals(InetAddress.getLoopbackAddress().getHostAddress())) {
-                permitted = true;
-            } else {
-                for (String allowedClient : allowedAddresses.split(",")){
-                    if (allowedClient.equals(socket.getInetAddress().getHostAddress()) ||
-                        allowedClient.equalsIgnoreCase(socket.getInetAddress().getHostName())) {
-                        permitted = true;
-                        break;
-                    }
-                }
+            if (!isPermittedClient(socket, allowedAddresses)) {
+                Utils.logToConsole("CommandServer denied access to: " +
+                                    socket.getInetAddress().toString());
+                socket.close();
+                return null;
             }
+             
+            Utils.logToConsole("CommandServer accepted connection from: " + socket.getInetAddress().toString());
+            return socket;
 
-            if (permitted) {
-                Utils.logToConsole("CommandServer accepted connection from: " + socket.getInetAddress().toString());
-                return socket;
-            } 
-
-            // access denied
-            Utils.logToConsole("CommandServer denied access to: " +
-                                socket.getInetAddress().toString());
-            socket.close();
-            return null;
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (java.net.SocketException e) {
+            // occurs if mSocket is closed during the call to mSocket.accept()
             return null;
         } catch (Exception e) {
-            e.printStackTrace();
+            Utils.logException(e);
             return null;
         }
     }
@@ -174,7 +174,23 @@ class CommandServer
             }
         } catch (SocketException e) {
             Utils.logToConsole("SocketException occurred while enumerating network interfaces");
+            Utils.logException(e);
         }
         return addressList;
+    }
+    
+    private boolean isPermittedClient(final Socket socket, final String allowedAddresses) {
+        if (socket.getInetAddress().getHostAddress().equals(mSocket.getInetAddress().getHostAddress())) return true;
+        
+        if (socket.getInetAddress().getHostAddress().equals(InetAddress.getLoopbackAddress().getHostAddress())) return true;
+
+        for (String allowedClient : allowedAddresses.split(",")){
+            if (allowedClient.equals(socket.getInetAddress().getHostAddress()) ||
+                allowedClient.equalsIgnoreCase(socket.getInetAddress().getHostName())) {
+                return true;
+            }
+        }
+        
+        return false;
     }
 }
