@@ -31,32 +31,12 @@ class TwsListener
 
     private final List<WindowHandler> windowHandlers;
 
-    private final String logComponents;
+    private String logStructureScope;
+    private String logStructureWhen;
 
     TwsListener (List<WindowHandler> windowHandlers) {
         this.windowHandlers = windowHandlers;
-
-        final String logComponentsSetting =  Settings.settings().getString("LogComponents", "never").toLowerCase();
-        switch (logComponentsSetting) {
-            case "activate":
-            case "open":
-            case "openclose":
-            case "never":
-                logComponents = logComponentsSetting;
-                break;
-            case "yes":
-            case "true":
-                logComponents="open";
-                break;
-            case "no":
-            case "false":
-                logComponents="never";
-                break;
-            default:
-                logComponents="never";
-                Utils.logError("the LogComponents setting is invalid.");
-                break;
-        }
+        getLogStructureParameters();
     }
 
     @Override
@@ -67,52 +47,110 @@ class TwsListener
             final Window window;
             window = ((WindowEvent) event).getWindow();
 
-            if (eventID == WindowEvent.WINDOW_OPENED ||
-                    eventID == WindowEvent.WINDOW_ACTIVATED ||
-                    eventID == WindowEvent.WINDOW_CLOSING ||
-                    eventID == WindowEvent.WINDOW_CLOSED || 
-                    eventID == WindowEvent.WINDOW_ICONIFIED ||
-                    eventID == WindowEvent.WINDOW_DEICONIFIED ||
-                    eventID == WindowEvent.WINDOW_GAINED_FOCUS ||
-                    eventID == WindowEvent.WINDOW_LOST_FOCUS) {
-                if (SwingUtils.titleContains(window, SwingUtils.NO_TITLE)) {
-                    if (eventID == WindowEvent.WINDOW_OPENED) {
-                        Utils.logRawToConsole(SwingUtils.getWindowStructure(window));
-                    }
-                } else if (SwingUtils.titleContains(window, "Second Factor Authentication") &&
-                        ! Settings.settings().getBoolean("ReadOnlyLogin", false)) {
-                    // Only handle SFA while ReadOnlyLogin mode is off.
-                    
-                    // Ideally we would handle the Second Factor Authentication dialog event using
-                    // a WindowHandler-derived class, as for all the other dialogs. But it turns out that
-                    // this does not work for TWS (though it does for Gateway), because it's impossible to
-                    // recognise the dialog any time after this point. This is completely bizarre, but I
-                    // suspect TWS does something unusual in an attempt to prevent anythinng interfering
-                    // with the dialog. Anyone interested in the background to this discovery should look
-                    // at this rather long thread in the IBC User Group:
-                    //    https://groups.io/g/ibcalpha/topic/73312303#1165
-                    
-                    Utils.logToConsole("Second Factor Authentication dialog event: " + SwingUtils.windowEventToString(eventID));
-                    if (eventID == WindowEvent.WINDOW_OPENED) {
-                        Utils.logToConsole("Second Factor Authentication dialog opened");
-                        LoginManager.loginManager().setLoginState(LoginManager.LoginState.TWO_FA_IN_PROGRESS);
-                    } else if (eventID == WindowEvent.WINDOW_CLOSED) {
-                        Utils.logToConsole("Second Factor Authentication dialog closed");
-                        LoginManager.loginManager().secondFactorAuthenticationDialogClosed();
-                    }
-                    return;
-                }
+            if (SwingUtils.titleContains(window, "Second Factor Authentication") &&
+                    ! Settings.settings().getBoolean("ReadOnlyLogin", false)) {
                 logWindow(window, eventID);
+                logWindowStructure(window, eventID, true);
+                handleSecondFactorAuthenticationDialogue(eventID);
+                return;
             }
+
+            logWindow(window, eventID);
 
             for (WindowHandler wh : windowHandlers) {
                 if (wh.recogniseWindow(window))  {
+                    logWindowStructure(window, eventID, true);
                     if (wh.filterEvent(window, eventID)) wh.handleWindow(window, eventID);
-                    break;
+                    return;
                 }
             }
+
+            logWindowStructure(window, eventID, false);
         } catch (Throwable e) {
             Utils.exitWithException(ErrorCodes.ERROR_CODE_UNHANDLED_EXCEPTION, e);
+        }
+    }
+    
+    private void getLogStructureParameters() {
+        // legacy deprecated setting overrides explicit values of LogStructureScope 
+        // and LogStructureWhen
+        final String logComponentsSetting = Settings.settings().getString("LogComponents", "ignore").toLowerCase();
+        
+        logStructureScope = getLogStructureScope(logComponentsSetting);
+        logStructureWhen = getLogStructureWhen(logComponentsSetting);
+    }
+    
+    private String getLogStructureScope(String logComponentsSetting) {
+        String logStructureScope;
+        if (logComponentsSetting.equals("ignore")) {
+            logStructureScope = Settings.settings().getString("LogStructureScope", "known").toLowerCase();
+        } else {
+            logStructureScope = "all";
+        }
+
+        switch (logStructureScope) {
+            case "known":
+            case "unknown":
+            case "untitled":
+            case "all":
+                break;
+            default:
+                Utils.logError("the LogStructureScope setting is invalid.");
+                logStructureScope = "known";
+        }
+        
+        return logStructureScope;
+    }
+    
+    private String getLogStructureWhen(String logComponentsSetting) {
+        String logStructureWhen;
+        if (logComponentsSetting.equals("ignore")) {
+            logStructureWhen = Settings.settings().getString("LogStructureWhen", "never").toLowerCase();
+        } else {
+            logStructureWhen = logComponentsSetting;
+        }
+
+        switch (logStructureWhen) {
+            case "activate":
+            case "open":
+            case "openclose":
+            case "never":
+                break;
+            case "yes":
+            case "true":
+                logStructureWhen = "open";
+                break;
+            case "no":
+            case "false":
+                logStructureWhen = "never";
+                break;
+            default:
+                logStructureWhen = "never";
+                Utils.logError("the LogStructureWhen setting is invalid.");
+        }
+        
+        return logStructureWhen;
+    }
+
+    private void handleSecondFactorAuthenticationDialogue(final int eventID) {
+        // Only handle SFA while ReadOnlyLogin mode is off.
+
+        // Ideally we would handle the Second Factor Authentication dialog event using
+        // a WindowHandler-derived class, as for all the other dialogs. But it turns out that
+        // this does not work for TWS (though it does for Gateway), because it's impossible to
+        // recognise the dialog any time after this point. This is completely bizarre, but I
+        // suspect TWS does something unusual in an attempt to prevent anything interfering
+        // with the dialog. Anyone interested in the background to this discovery should look
+        // at this rather long thread in the IBC User Group:
+        //    https://groups.io/g/ibcalpha/topic/73312303#1165
+
+        Utils.logToConsole("Second Factor Authentication dialog event: " + SwingUtils.windowEventToString(eventID));
+        if (eventID == WindowEvent.WINDOW_OPENED) {
+            Utils.logToConsole("Second Factor Authentication dialog opened");
+            LoginManager.loginManager().setLoginState(LoginManager.LoginState.TWO_FA_IN_PROGRESS);
+        } else if (eventID == WindowEvent.WINDOW_CLOSED) {
+            Utils.logToConsole("Second Factor Authentication dialog closed");
+            LoginManager.loginManager().secondFactorAuthenticationDialogClosed();
         }
     }
 
@@ -129,18 +167,27 @@ class TwsListener
             windowTitle = window.getClass().getName();
             Utils.logToConsole("detected window: type=" + windowTitle + "; event=" + event);
         }
+    }
 
-        if (windowTitle.isEmpty() || 
-            (eventID == WindowEvent.WINDOW_OPENED && (logComponents.equals("open") || logComponents.equals("activate")))
+    private void logWindowStructure(Window window, int eventID, boolean windowKnown) {
+        if (logStructureScope.equals("known") && !windowKnown) {
+            return;
+        } else if (logStructureScope.equals("unknown") && windowKnown) {
+            return;
+        } else if (logStructureScope.equals("untitled") && 
+                    !SwingUtils.getWindowTitle(window).equals(SwingUtils.NO_TITLE)) {
+            return;
+        }
+
+        if ((eventID == WindowEvent.WINDOW_OPENED && (logStructureWhen.equals("open") || logStructureWhen.equals("activate")))
             ||
-            (eventID == WindowEvent.WINDOW_ACTIVATED && logComponents.equals("activate"))
+            (eventID == WindowEvent.WINDOW_ACTIVATED && logStructureWhen.equals("activate"))
             ||
-            ((eventID == WindowEvent.WINDOW_OPENED || eventID == WindowEvent.WINDOW_CLOSED) && logComponents.equals("openclose")))
+            ((eventID == WindowEvent.WINDOW_OPENED || eventID == WindowEvent.WINDOW_CLOSED) && logStructureWhen.equals("openclose")))
         {
             Utils.logRawToConsole(SwingUtils.getWindowStructure(window));
         }
     }
-
 }
 
 
