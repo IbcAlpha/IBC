@@ -91,6 +91,7 @@ call "%IBC_PATH%\scripts\StartIBC.bat" "%TWS_MAJOR_VRSN%" %GW_FLAG% ^
 :: so there shouldn't be any other reason for ERRORLEVEL to be 1
 if errorlevel 2 goto :err
 
+:exit
 if defined LOG_PATH (
 	(echo IBC running %APP% %TWS_MAJOR_VRSN% has finished at %DATE% %TIME%
 	echo.) >> "%LOG_FILE%"
@@ -101,7 +102,21 @@ if "%INLINE%" == "1" exit /B
 exit
 
 :err
+
 set ERRORCODE=%ERRORLEVEL%
+
+IF "%ERRORCODE%"=="1111" (
+	:: errorlevel set by IBC if second factor authentication dialog times out and
+	:: ExitAfterSecondFactorAuthenticationTimeout setting is true, but IBC wasn't
+	:: restarted
+	echo Second factor authentication dialog has timed out, IBC not restarted
+	if /I "%TWOFA_TIMEOUT_ACTION%"=="exit" (
+		:: this is an expected situation so exit without error message
+		goto :exit
+	)
+	set "ERROR_MESSAGE=TWOFA_TIMEOUT_ACTION is set to %TWOFA_TIMEOUT_ACTION%: something wrong here!"
+)
+
 color 0C
 echo +==============================================================================
 echo +

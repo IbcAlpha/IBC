@@ -189,6 +189,30 @@ class SwingUtils {
     }
 
     /**
+     * Traverses a container hierarchy and returns the JTextArea
+     * that contains the given substring.
+     * @param container
+     *  the Container to search in
+     * @param text
+     *  the substring to find in a JTextArea
+     * @return
+     *  the JTextArea, if it was found;  otherwise null
+     */
+    static JTextArea findTextArea(Container container, String text) {
+        ComponentIterator iter = new ComponentIterator(container);
+        while (iter.hasNext()) {
+            Component component = iter.next();
+            if (component instanceof JTextArea) {
+                String content = ((JTextArea)component).getText();
+                if (content != null && content.contains(text)) {
+                    return (JTextArea)component;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
      * Traverses a container hierarchy and returns the ith JTextField
      * (0 based indexing).
      *

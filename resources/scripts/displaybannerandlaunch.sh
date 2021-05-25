@@ -72,7 +72,10 @@ if [ "$exit_code" == "0" ]; then
 	echo -e "${light_green}+ ${APP} ${TWS_MAJOR_VRSN} has finished"
 	echo "+"
 	echo -e "+==============================================================================${normal}"
-elif [ "$exit_code" == "143" ]; then
+	exit 0
+fi
+
+if [ "$exit_code" == "143" ]; then
 	# exit code 143 caused by default signal handler for SIGTERM
 	exit_code=0
 	echo -e "${light_green}+"
@@ -81,20 +84,35 @@ elif [ "$exit_code" == "143" ]; then
 	echo -e "${light_green}+ ${APP} ${TWS_MAJOR_VRSN} has finished"
 	echo "+"
 	echo -e "+==============================================================================${normal}"
-else
-	echo -e "${light_red}+=============================================================================="
-	echo "+"
-	echo -e "+                       **** An error has occurred ****"
-	if [[ -n LOG_PATH ]]; then
-		echo "+"
-		echo "+                     Please look in the diagnostics file "
-		echo "+                   mentioned above for further information"
-	fi
-	echo "+"
-  echo "+                           Press enter to continue."
-	echo "+"
-	echo -e "+==============================================================================${normal}"
-	read
+	exit 0
 fi
+
+if [ "$exit_code" == "$((1111 % 256))" ]; then
+	# exit code set by IBC if second factor authentication dialog times out and
+	# ExitAfterSecondFactorAuthenticationTimeout setting is true, but IBC wasn't
+	# restarted
+	echo "Second factor authentication dialog has timed out, IBC not restarted"
+	if [[ "$(echo ${TWOFA_TIMEOUT_ACTION} | tr '[:lower:]' '[:upper:]')" = "EXIT" ]]; then
+		# this is an expected situation so exit without error message
+		echo -e "${light_green}+"
+		echo "+"
+		echo -e "+==============================================================================${normal}"
+		exit 0
+	fi
+fi
+
+echo -e "${light_red}+=============================================================================="
+echo "+"
+echo -e "+                       **** An error has occurred ****"
+if [[ -n LOG_PATH ]]; then
+	echo "+"
+	echo "+                     Please look in the diagnostics file "
+	echo "+                   mentioned above for further information"
+fi
+echo "+"
+echo "+                           Press enter to continue."
+echo "+"
+echo -e "+==============================================================================${normal}"
+read
 
 exit $exit_code
