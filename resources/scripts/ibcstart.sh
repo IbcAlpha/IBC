@@ -104,11 +104,11 @@ E_UNKNOWN_OPERATING_SYSTEM=8
 
 # errorlevel set by IBC if second factor authentication dialog times out and
 # ExitAfterSecondFactorAuthenticationTimeout setting is true
-E_2FA_DIALOG_TIMED_OUT=1111
+let E_2FA_DIALOG_TIMED_OUT=$((1111 % 256))
 
 # errorlevel set by IBC if login dialog is not displayed within the time
 # specified in the LoginDialogDisplayTimeout setting
-E_LOGIN_DIALOG_DISPLAY_TIMEOUT=1112
+E_LOGIN_DIALOG_DISPLAY_TIMEOUT=$((1112 % 256))
 
 
 ENTRY_POINT_TWS=ibcalpha.ibc.IbcTws
@@ -467,7 +467,8 @@ do
 	trap - TERM INT
 	wait $PID
 
-	exit_code=$?
+	exit_code=$(($? % 256))
+	echo "IBC returned exit status $exit_code"
 
 	if [[ $exit_code -eq $E_LOGIN_DIALOG_DISPLAY_TIMEOUT ]]; then 
 		:
