@@ -3,6 +3,8 @@ WScript.sleep 200
 
 set OBJECT=WScript.CreateObject("WScript.Shell")
 
+OBJECT.AppActivate WScript.Arguments(0)
+
 ' STOP IBC
 OBJECT.SendKeys "STOP{ENTER}" 
 

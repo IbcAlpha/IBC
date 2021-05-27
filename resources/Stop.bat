@@ -39,10 +39,11 @@ set IBC_PATH=%SYSTEMDRIVE%\IBC
 
 
 :: open a telnet window with a session to IBC
-start telnet %ServerAddress% %CommandServerPort% 
+set TITLE=Stop TWS or Gateway %RANDOM%%RANDOM%%RANDOM%
+start "%TITLE%" telnet %ServerAddress% %CommandServerPort% 
 
 :: send the required command to IBC 
-cscript %IBC_PATH%\Scripts\SendStopCommand.vbs
+cscript %IBC_PATH%\Scripts\SendStopCommand.vbs "%TITLE%"
 
 
 :: Acknowledgement: many thanks for the help contained in Mukul Goel's answer to this question at:
