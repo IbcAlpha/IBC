@@ -124,9 +124,23 @@ class TwsListener
             case "false":
                 logStructureWhen = "never";
                 break;
+
+            // allow window event names
+            case "activated":
+            case "closed":
+            case "closing":
+            case "deactivated":
+            case "deiconified":
+            case "focused":
+            case "iconified":
+            case "lost focus":
+            case "opened":
+            case "state changed":
+                break;
+
             default:
+                Utils.logError("the LogStructureWhen setting is invalid: " + logStructureWhen);
                 logStructureWhen = "never";
-                Utils.logError("the LogStructureWhen setting is invalid.");
         }
         
         return logStructureWhen;
@@ -183,7 +197,9 @@ class TwsListener
             ||
             (eventID == WindowEvent.WINDOW_ACTIVATED && logStructureWhen.equals("activate"))
             ||
-            ((eventID == WindowEvent.WINDOW_OPENED || eventID == WindowEvent.WINDOW_CLOSED) && logStructureWhen.equals("openclose")))
+            ((eventID == WindowEvent.WINDOW_OPENED || eventID == WindowEvent.WINDOW_CLOSED) && logStructureWhen.equals("openclose"))
+            ||
+            (logStructureWhen.equalsIgnoreCase(SwingUtils.windowEventToString(eventID))))
         {
             Utils.logRawToConsole(SwingUtils.getWindowStructure(window));
         }
