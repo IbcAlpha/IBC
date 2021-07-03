@@ -18,18 +18,21 @@
 #=============================================================================+
 
 
-TWS_MAJOR_VRSN=972
-IBC_INI=~/ibc/config.ini
-TRADING_MODE=
-TWOFA_TIMEOUT_ACTION=exit
-IBC_PATH=/opt/ibc
-TWS_PATH=~/Applications
-TWS_SETTINGS_PATH=
-LOG_PATH=~/ibc/logs
-TWSUSERID=
-TWSPASSWORD=
-JAVA_PATH=
+# To set one of these, remove the # in the front of the line.
 
+# TWS_MAJOR_VRSN=972
+# IBC_INI=~/ibc/config.ini
+# TRADING_MODE=
+# TWOFA_TIMEOUT_ACTION=exit
+# IBC_PATH=/opt/ibc
+# TWS_PATH=~/Applications
+# TWS_SETTINGS_PATH=
+# LOG_PATH=~/ibc/logs
+# TWSUSERID=
+# TWSPASSWORD=
+# FIXUSERID=
+# FIXPASSWORD=
+# JAVA_PATH=
 
 #              PLEASE DON'T CHANGE ANYTHING BELOW THIS LINE !!
 #==============================================================================
@@ -147,6 +150,20 @@ JAVA_PATH=
 #==============================================================================
 
 APP=TWS
+
+TWS_MAJOR_VRSN=${TWS_MAJOR_VRSN:-972}
+IBC_INI=${IBC_INI:-"~/ibc/config.ini"}
+TRADING_MODE=${TRADING_MODE:-""}
+TWOFA_TIMEOUT_ACTION=${TWOFA_TIMEOUT_ACTION:-"exit"}
+IBC_PATH=${IBC_PATH:-"/opt/ibc"}
+TWS_PATH=${TWS_PATH:-"~/Applications"}
+TWS_SETTINGS_PATH=${TWS_SETTINGS_PATH:-""}
+LOG_PATH=${LOG_PATH:-"~/ibc/logs"}
+TWSUSERID=${TWSUSERID:-""}
+TWSPASSWORD=${TWSPASSWORD:-""}
+FIXUSERID=${FIXUSERID:-""}
+FIXPASSWORD=${FIXPASSWORD:-""}
+JAVA_PATH=${JAVA_PATH:-""}
 
 export TWS_MAJOR_VRSN
 export IBC_INI

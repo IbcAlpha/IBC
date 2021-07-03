@@ -18,19 +18,22 @@
 #=============================================================================+
 
 
-TWS_MAJOR_VRSN=978
-IBC_INI=~/ibc/config.ini
-TRADING_MODE=
-TWOFA_TIMEOUT_ACTION=exit
-IBC_PATH=/opt/ibc
-TWS_PATH=~/Jts
-TWS_SETTINGS_PATH=
-LOG_PATH=~/ibc/logs
-TWSUSERID=
-TWSPASSWORD=
-JAVA_PATH=
-HIDE=
+# To set one of these, remove the # in the front of the line.
 
+# TWS_MAJOR_VRSN=978
+# IBC_INI=~/ibc/config.ini
+# TRADING_MODE=
+# TWOFA_TIMEOUT_ACTION=exit
+# IBC_PATH=/opt/ibc
+# TWS_PATH=~/Jts
+# TWS_SETTINGS_PATH=
+# LOG_PATH=~/ibc/logs
+# TWSUSERID=
+# TWSPASSWORD=
+# FIXUSERID=
+# FIXPASSWORD=
+# JAVA_PATH=
+# HIDE=
 
 #              PLEASE DON'T CHANGE ANYTHING BELOW THIS LINE !!
 #==============================================================================
@@ -163,6 +166,22 @@ if [[ -n $(/usr/bin/pgrep -f "java.*${IBC_INI}") ]]; then
 fi
 
 APP=TWS
+
+# Ensure we have settings for everything..
+TWS_MAJOR_VRSN=${TWS_MAJOR_VRSN:-978}
+IBC_INI=${IBC_INI:-"${HOME}/ibc/config.ini"}
+TRADING_MODE=${TRADING_MODE:-""}
+TWOFA_TIMEOUT_ACTION=${TWOFA_TIMEOUT_ACTION:-"exit"}
+IBC_PATH=${IBC_PATH:-"/opt/ibc"}
+TWS_PATH=${TWS_PATH:-"${HOME}/Jts"}
+TWS_SETTINGS_PATH=${TWS_SETTINGS_PATH:-""}
+LOG_PATH=${LOG_PATH:-"${HOME}/ibc/logs"}
+TWSUSERID=${TWSUSERID:-""}
+TWSPASSWORD=${TWSPASSWORD:-""}
+FIXUSERID=${FIXUSERID:-""}
+FIXPASSWORD=${FIXPASSWORD:-""}
+JAVA_PATH=${JAVA_PATH:-""}
+HIDE=${HIDE:-""}
 
 export TWS_MAJOR_VRSN
 export IBC_INI
