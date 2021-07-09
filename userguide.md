@@ -335,7 +335,7 @@ script files to reflect this.
 | -------- | ------------------------- | --------------------------------------|
 | Windows  | IBKR TWS program files    | `C:\Jts`                              |
 |          | IBC program files         | `C:\IBC`                              |
-|          | config.ini                | `%HOMEDRIVE%%HOMEPATH%\Documents\IBC` |
+|          | config.ini                | `%USERPROFILE%\Documents\IBC`         |
 | Unix     | IBKR TWS program files    | `/home/<username>/Jts`                |
 |          | IBC program files         | `/opt/ibc`                            |
 |          | config.ini                | `/home/<username>/ibc`                |
@@ -381,7 +381,7 @@ filestore:
   Note that this folder may also be addressed using environment variables like
   this:
 
-  `%HOMEDRIVE%%HOMEPATH%\Documents`
+  `%USERPROFILE%\Documents`
 
 - on Unix it is the `/home/<username>` directory.
 
@@ -464,7 +464,7 @@ There are two ways that IBC can locate your edited `config.ini` file.
 
 - if you do not specify a configuration file name, IBC will expect to find a
   file named `config.ini` in the current computer user's private filestore. For
-  Windows users, the location is `%HOMEDRIVE%%HOMEPATH%\Documents\IBC`. For Unix
+  Windows users, the location is `%USERPROFILE%\Documents\IBC`. For Unix
   users, it is `~/ibc`.
 
 ### Starting IBC
