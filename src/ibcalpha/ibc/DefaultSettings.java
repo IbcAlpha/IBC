@@ -82,8 +82,7 @@ public class DefaultSettings extends Settings {
 
     static String generateDefaultIniPath() {
         if (System.getProperty("os.name").startsWith("Windows")) {
-            return System.getenv("HOMEDRIVE") + 
-                    System.getenv("HOMEPATH") + File.separator + 
+            return System.getenv("USERPROFILE") + File.separator +
                     "Documents" + File.separator + 
                     "IBC" + File.separator + 
                     "config.ini";

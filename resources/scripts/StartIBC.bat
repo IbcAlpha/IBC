@@ -25,7 +25,7 @@ echo Runs IBC, thus loading TWS or the IB Gateway
 echo.
 echo Usage:
 echo.
-echo StartIBC twsVersion [/G ^| /Gateway] [/TwsPath:twsPath]
+echo StartIBC twsVersion [/G ^| /Gateway] [/Stop] [/TwsPath:twsPath]
 echo              [/TwsSettingsPath:twsSettingsPath] [/IbcPath:ibcPath]
 echo              [/Config:configfile] [/JavaPath:javaPath]
 echo              [/User:userId] [/PW:password]
@@ -38,6 +38,8 @@ echo.
 echo   /G or /Gateway          Indicates that the IB Gateway is to be loaded rather
 echo                           than TWS
 echo.
+echo   /Stop                   Indicates that the IB Gateway or TWS is to be stopped
+echo.
 echo   twsPath                 Path to the TWS installation folder. Defaults to
 echo                           C:\Jts
 echo.
@@ -49,7 +51,7 @@ echo                           Defaults to C:\IBC
 echo.
 echo   configfile              The location and filename of the IBC 
 echo                           configuration file. Defaults to 
-echo                           ^%%HOMEPATH^%%\Documents\IBC\config.ini
+echo                           ^%%USERPROFILE^%%\Documents\IBC\config.ini
 echo.
 echo   javaPath                Path to the folder containing the java.exe to be used
 echo                           to run IBC. Defaults to the java.exe included
@@ -104,6 +106,7 @@ set E_LOGIN_DIALOG_DISPLAY_TIMEOUT=1112
 
 set ENTRY_POINT_TWS=ibcalpha.ibc.IbcTws
 set ENTRY_POINT_GATEWAY=ibcalpha.ibc.IbcGateway
+set ENTRY_POINT_STOP=ibcalpha.ibc.IbcStop
 
 :: Variables to be derived from arguments
 set TWS_VERSION=
@@ -134,6 +137,8 @@ if /I "%ARG%" == "/G" (
 	set ENTRY_POINT=%ENTRY_POINT_GATEWAY%
 ) else if /I "%ARG%" == "/GATEWAY" (
 	set ENTRY_POINT=%ENTRY_POINT_GATEWAY%
+) else if /I "%ARG%" == "/STOP" (
+	set ENTRY_POINT=%ENTRY_POINT_STOP%
 ) else if /I "%ARG:~0,9%" == "/TWSPATH:" (
 	set TWS_PATH=%ARG:~9%
 ) else if /I "%ARG:~0,17%" == "/TWSSETTINGSPATH:" (
@@ -258,7 +263,7 @@ if not defined TWS_VERSION (
 if not defined TWS_PATH set TWS_PATH=C:\Jts
 if not defined TWS_SETTINGS_PATH set TWS_SETTINGS_PATH=%TWS_PATH%
 if not defined IBC_PATH set IBC_PATH=C:\IBC
-if not defined CONFIG set CONFIG=%HOMEPATH%\Documents\IBC\config.ini
+if not defined CONFIG set CONFIG=%USERPROFILE%\Documents\IBC\config.ini
 
 :: In the following we try to use the correct .vmoptions file for the chosen entrypoint
 :: Note that uninstalling TWS or Gateway leaves the relevant .vmoption file in place, so
@@ -291,6 +296,21 @@ if /I "%ENTRY_POINT%" == "%ENTRY_POINT_GATEWAY%" (
 	) else (
 		set TWS_JARS=%TWS_PATH%\%TWS_VERSION%\jars
 		set INSTALL4J=%TWS_PATH%\%TWS_VERSION%\.install4j
+	)
+)
+if /I "%ENTRY_POINT%" == "%ENTRY_POINT_STOP%" (
+	if exist "%TWS_PATH%\%TWS_VERSION%\tws.vmoptions" (
+		set TWS_VMOPTS=%TWS_PATH%\%TWS_VERSION%\tws.vmoptions 
+	) else if exist "%TWS_PATH%\ibgateway\%TWS_VERSION%\ibgateway.vmoptions" (
+		set TWS_VMOPTS=%TWS_PATH%\ibgateway\%TWS_VERSION%\ibgateway.vmoptions 
+	) 
+
+	if exist "%TWS_PATH%\%TWS_VERSION%\jars" (
+		set TWS_JARS=%TWS_PATH%\%TWS_VERSION%\jars
+		set INSTALL4J=%TWS_PATH%\%TWS_VERSION%\.install4j
+	) else (
+		set TWS_JARS=%TWS_PATH%\ibgateway\%TWS_VERSION%\jars
+		set INSTALL4J=%TWS_PATH%\ibgateway\%TWS_VERSION%\.install4j
 	)
 )
 
