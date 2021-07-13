@@ -22,7 +22,7 @@ setlocal enableextensions enabledelayedexpansion
 
 
 set TWS_MAJOR_VRSN=978
-set CONFIG=%HOMEDRIVE%%HOMEPATH%\Documents\IBC\config.ini
+set CONFIG=%USERPROFILE%\Documents\IBC\config.ini
 set TRADING_MODE=
 set TWOFA_TIMEOUT_ACTION=exit
 set IBC_PATH=%SYSTEMDRIVE%\IBC
