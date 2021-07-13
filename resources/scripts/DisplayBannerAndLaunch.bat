@@ -76,6 +76,7 @@ echo +
 
 set GW_FLAG=
 if /I "%APP%" == "GATEWAY" set GW_FLAG=/G
+if /I "%APP%" == "STOP" set GW_FLAG=/STOP
 
 set PHASE=Running StartIBC.bat
 set ERROR_MESSAGE=
@@ -147,8 +148,10 @@ if defined LOG_FILE (
 echo +
 echo +==============================================================================
 echo +
-echo + Press any key to close this window
-pause > NUL
+if "%PRESS_ANY_KEY_ON_ERROR%" == "1" (
+	echo + Press any key to close this window
+	pause > NUL
+)
 echo +
 if "%INLINE%" == "1" exit /B
 exit

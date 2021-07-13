@@ -35,7 +35,7 @@ set TWS_MAJOR_VRSN=978
 set CONFIG=%USERPROFILE%\Documents\IBC\config.ini
 set TRADING_MODE=
 set TWOFA_TIMEOUT_ACTION=exit
-set IBC_PATH=%SYSTEMDRIVE%\IBC
+set IBC_PATH=%~dp0.
 set TWS_PATH=%SYSTEMDRIVE%\Jts
 set TWS_SETTINGS_PATH=
 set LOG_PATH=%IBC_PATH%\Logs
@@ -45,6 +45,7 @@ set FIXUSERID=
 set FIXPASSWORD=
 set JAVA_PATH=
 set HIDE=
+set PRESS_ANY_KEY_ON_ERROR=1
 
 
 ::  PLEASE DON'T CHANGE ANYTHING BELOW THIS LINE !!
@@ -72,9 +73,9 @@ set HIDE=
 ::     This file should be in a folder in your personal filestore, so that
 ::     other users of your computer can't access it. This folder and its 
 ::     contents should also be encrypted so that even users with administrator 
-::     privileges can't see the contents. Note that you can use the HOMEDRIVE and
-::     HOMEPATH environment variables to address the root of your personal 
-::     filestore (they are set automatically by Windows).
+::     privileges can't see the contents. Note that you can use the USERPROFILE
+::     environment variable to address the root of your personal filestore
+::     (they are set automatically by Windows).
 
 
 ::   TRADING_MODE
@@ -177,6 +178,15 @@ set HIDE=
 ::     displayed. Values are not case-sensitive so for example yEs and yes will 
 ::     be interpeted as YES. (Note that when the /INLINE argument is supplied,
 ::     this setting has no effect.)
+
+
+::   PRESS_ANY_KEY_ON_ERROR
+::
+::     If set to 1, the diagnostic window will remain open and prompt user for
+::     pressing any key in order to let them read error message. This behaviour
+::     however is not desirable when the script runs in non-interactive mode
+::     (e.g. when it is started by task scheduler). In such case please
+::     set it to 0 or make it empty.
 
 
 ::   End of Notes:
