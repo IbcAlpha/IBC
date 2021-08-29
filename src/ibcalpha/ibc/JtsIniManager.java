@@ -18,14 +18,11 @@
 
 package ibcalpha.ibc;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
@@ -33,21 +30,25 @@ import static java.util.stream.Collectors.toList;
 
 class JtsIniManager {
 
-    final static String LogonSectionHeader = "[Logon]";
-    final static String IBGatewaySectionHeader = "[IBGateway]";
-    final static String DisplayedProxyMsgSetting="displayedproxymsg";
-    final static String DisplayedProxyMsgSetting_1=DisplayedProxyMsgSetting + "=1";
-    final static String LocaleSetting = "Locale";
-    final static String LocaleSetting_En = LocaleSetting + "=en";
-    final static String S3storeSetting = "s3store";
-    final static String S3storeSetting_False = S3storeSetting + "=false";
-    final static String S3storeSetting_True = S3storeSetting + "=true";
-    final static String ApiOnlySetting = "ApiOnly";
-    final static String ApiOnlySetting_True = ApiOnlySetting + "=true";
+    final static String LOGON_SECTION_HEADER = "[Logon]";
+    final static String IBGATEWAY_SECTION_HEADER = "[IBGateway]";
+    final static String DISPLAYEDPROXYMSG_SETTING = "displayedproxymsg";
+    final static String DISPLAYEDPROXYMSG_SETTING_1 = DISPLAYEDPROXYMSG_SETTING + "=1";
+    final static String LOCALE_SETTING = "Locale";
+    final static String LOCALE_SETTING_EN = LOCALE_SETTING + "=en";
+    final static String S3STORE_SETTING = "s3store";
+    final static String S3STORE_SETTING_FALSE = S3STORE_SETTING + "=false";
+    final static String S3STORE_SETTING_TRUE = S3STORE_SETTING + "=true";
+    final static String USESSL_SETTING = "UseSSL";
+    final static String USESSL_SETTING_TRUE = USESSL_SETTING + "=true";
+    final static String APIONLY_SETTING = "ApiOnly";
+    final static String APIONLY_SETTING_TRUE = APIONLY_SETTING + "=true";
 
     private static String jtsIniFilePath;
     private static File jtsIniFile;
     private static List<String> lines;
+    
+    private static boolean settingsUpdated;
 
     /* when TWS starts, there must exist a jts.ini file in the TWS settings directory 
     *  containing at least the following minimum contents:
@@ -55,6 +56,7 @@ class JtsIniManager {
     * [Logon]
     * Locale=en
     * displayedproxymsg=1
+    * UseSSL=true
     *
     * The Locale setting is needed to ensure that TWS/Gateway run in English, 
     * regardless of what the user might have previously set manually.
@@ -62,13 +64,21 @@ class JtsIniManager {
     * The displayedproxymsg setting controls the display of a recently-introduced 
     * (May 2019) and annoying, factually incorrect, dialog regarding inability to 
     * access the internet. It's not really important to have this setting, since 
-	* the dialog is non-modal and only appears once per settings location, but
-	* it is very annoying!
+    * the dialog is non-modal and only appears once per settings location, but
+    * it is very annoying!
     *
+    * The UseSSL=true setting was added in v3.9.0 (August 2021) because IB started
+    * insisting on use of SSL: if UseSSL=false was set, a dialog was displayed by
+    * TWS and Gateway giving the user the choice to restart using SSL or to close
+    * the program. Ensuring UseSSL=true avoids this situation even if the user has
+    * not manually configured used of SSL (which could be done via the login
+    * dialog). Note also that some Docker images start without a jts.ini
+    * containing UseSSL=true, and this new check ensures that they run properly.
+    * 
     * As a historical note, the following information describes problems that 
     * occurred up to about TWS 963. These problems were the original motivation 
-	* for creating the JtsIniManager class. The processing for these settings is 
-	* retained just in case anyone is still using an affected TWS/Gateway version.
+    * for creating the JtsIniManager class. The processing for these settings is 
+    * retained just in case anyone is still using an affected TWS/Gateway version.
     *
     * s3store=true
     *
@@ -108,25 +118,26 @@ class JtsIniManager {
             createMinimalFile();
         }
     }
-
-    static String getSetting(String section, String setting) {
+    
+    private static int getSettingIndex(String section, String setting) {
         String key = setting + "=";
-   
+
         boolean inSection = false;
-        for (String l : lines) {
+        for (int index = 0; index < lines.size(); index++) {
+            String l = lines.get(index);
             if (l.compareTo(section) == 0) {
                 inSection = true;
             } else if (l.startsWith("[")) {
-                if (inSection) return "";
+                if (inSection) return -1;
                 inSection = false;
             } else if (inSection) {
                 if (l.startsWith(key)) {
-                    return l.substring(key.length()) + "";
+                    return index;
                 }
             }
         }
 
-        return "";
+        return -1;
     }
 
     static void reload() {
@@ -148,8 +159,17 @@ class JtsIniManager {
         Utils.logToConsole("Ensuring " + jtsIniFilePath + " contains required minimal lines");
 
         List<JtsIniSectionSetting> missingSettings = getMissingSettings();
+        
+        boolean rewrite = false;
+        if (settingsUpdated) {
+            Utils.logToConsole("Some settings updated in " + jtsIniFilePath);
+            rewrite = true;
+        }
         if (!missingSettings.isEmpty()) {
             Utils.logToConsole("Missing lines in " + jtsIniFilePath);
+            rewrite = true;
+        }
+        if (rewrite){
             jtsIniFile.delete();
             rewriteExistingFile(missingSettings);
         } else {
@@ -160,30 +180,48 @@ class JtsIniManager {
     private static List<JtsIniSectionSetting> getMissingSettings() {
         List<JtsIniSectionSetting> missingSettings = new ArrayList<>();
 
-        if (!findSettingAndLog(LogonSectionHeader, S3storeSetting, ""))
-            missingSettings.add(new JtsIniSectionSetting(LogonSectionHeader, S3storeSetting_True));
+        if (! findSettingAndLog(LOGON_SECTION_HEADER, S3STORE_SETTING, "true", false))
+            missingSettings.add(new JtsIniSectionSetting(LOGON_SECTION_HEADER, S3STORE_SETTING_TRUE));
 
-        if (! findSettingAndLog(LogonSectionHeader, LocaleSetting, "en")) 
-            missingSettings.add(new JtsIniSectionSetting(LogonSectionHeader, LocaleSetting_En));
+        if (! findSettingAndLog(LOGON_SECTION_HEADER, LOCALE_SETTING, "en", true)) 
+            missingSettings.add(new JtsIniSectionSetting(LOGON_SECTION_HEADER, LOCALE_SETTING_EN));
 
-        if (! findSettingAndLog(LogonSectionHeader, DisplayedProxyMsgSetting, "1"))
-            missingSettings.add(new JtsIniSectionSetting(LogonSectionHeader, DisplayedProxyMsgSetting_1));
+        if (! findSettingAndLog(LOGON_SECTION_HEADER, DISPLAYEDPROXYMSG_SETTING, "1", true))
+            missingSettings.add(new JtsIniSectionSetting(LOGON_SECTION_HEADER, DISPLAYEDPROXYMSG_SETTING_1));
 
-        if (! findSettingAndLog(IBGatewaySectionHeader, ApiOnlySetting, "true")) 
-            missingSettings.add(new JtsIniSectionSetting(IBGatewaySectionHeader, ApiOnlySetting_True));
+        if (! findSettingAndLog(LOGON_SECTION_HEADER, USESSL_SETTING, "true", true))
+            missingSettings.add(new JtsIniSectionSetting(LOGON_SECTION_HEADER, USESSL_SETTING_TRUE));
+
+        if (! findSettingAndLog(IBGATEWAY_SECTION_HEADER, APIONLY_SETTING, "true", true)) 
+            missingSettings.add(new JtsIniSectionSetting(IBGATEWAY_SECTION_HEADER, APIONLY_SETTING_TRUE));
 
         return missingSettings;
     }
 
-    private static boolean findSettingAndLog(String section, String setting, String expectedValue) {
-        String value = getSetting(section, setting);
-        boolean found = (value.length() != 0 && ((expectedValue.length() != 0) ? value.equals(expectedValue) : true));
-        if (found) {
+    private static boolean findSettingAndLog(String section, String setting, String expectedValue, boolean updateIfDifferent) {
+        int index = getSettingIndex(section, setting);
+        
+        if (index == -1) {
+            Utils.logToConsole("Can't find setting: " + section + "/" + setting + (expectedValue.length() != 0 ? "=" + expectedValue : ""));
+            return false;
+        }
+
+        String value = lines.get(index).substring(setting.length()+1) + "";
+
+        if (!updateIfDifferent || value.equals(expectedValue)){
             Utils.logToConsole("Found setting: " + section + "/" + setting + "=" + value);
         } else {
-            Utils.logToConsole("Can't find setting: " + section + "/" + setting + (expectedValue.length() != 0 ? "=" + expectedValue : ""));
+            Utils.logToConsole("Found setting: " + section + "/" + setting + "=" + value + ": updating value to " + expectedValue);
+            updateSetting(index, expectedValue);
         }
-        return found;
+        return true;
+    }
+    
+    private static void updateSetting(int index, String newValue) {
+        String line = lines.get(index);
+        String settingName = line.substring(0, line.indexOf("="));
+        lines.set(index, settingName + "=" + newValue);
+        settingsUpdated = true;
     }
 
     private static List<String> getFileLines(File jtsIniFile) {
@@ -201,13 +239,14 @@ class JtsIniManager {
     private static void createMinimalFile() {
         Utils.logToConsole("Creating minimal " + jtsIniFilePath);
         try (BufferedWriter w = new BufferedWriter(new FileWriter(jtsIniFile))) {
-            writeIniFileLine(LogonSectionHeader, w);
-            writeIniFileLine(S3storeSetting_True, w);
-            writeIniFileLine(LocaleSetting_En, w);
-            writeIniFileLine(DisplayedProxyMsgSetting_1, w);
+            writeIniFileLine(LOGON_SECTION_HEADER, w);
+            writeIniFileLine(S3STORE_SETTING_TRUE, w);
+            writeIniFileLine(LOCALE_SETTING_EN, w);
+            writeIniFileLine(DISPLAYEDPROXYMSG_SETTING_1, w);
+            writeIniFileLine(USESSL_SETTING_TRUE, w);
 
-            writeIniFileLine(IBGatewaySectionHeader, w);
-            writeIniFileLine(ApiOnlySetting_True, w);
+            writeIniFileLine(IBGATEWAY_SECTION_HEADER, w);
+            writeIniFileLine(APIONLY_SETTING_TRUE, w);
         } catch (IOException e) {
             Utils.exitWithError(ErrorCodes.ERROR_CODE_IO_EXCEPTION_ON_JTSINI, 
                                 "Problem creating " + jtsIniFilePath + ": " + e.getMessage());
