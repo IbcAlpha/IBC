@@ -331,7 +331,8 @@ public class IbcTws {
         windowHandlers.add(new LoginFailedDialogHandler());
         windowHandlers.add(new TooManyFailedLoginAttemptsDialogHandler());
         windowHandlers.add(new ShutdownProgressDialogHandler());
-        
+        windowHandlers.add(new NavigatingAwayDialogHandler());
+
         return windowHandlers;
     }
 
