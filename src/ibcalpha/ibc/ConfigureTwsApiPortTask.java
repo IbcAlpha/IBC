@@ -20,7 +20,9 @@ package ibcalpha.ibc;
 
 import java.awt.Component;
 import java.awt.Container;
-import javax.swing.*;
+import javax.swing.JCheckBox;
+import javax.swing.JDialog;
+import javax.swing.JTextField;
 
 class ConfigureTwsApiPortTask implements ConfigurationAction{
 
