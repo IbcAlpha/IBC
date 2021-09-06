@@ -331,6 +331,7 @@ public class IbcTws {
         windowHandlers.add(new LoginFailedDialogHandler());
         windowHandlers.add(new TooManyFailedLoginAttemptsDialogHandler());
         windowHandlers.add(new ShutdownProgressDialogHandler());
+        windowHandlers.add(new BidAskLastSizeDisplayUpdateDialogHandler());
         
         return windowHandlers;
     }
@@ -472,6 +473,11 @@ public class IbcTws {
 
         if (!Settings.settings().getString("ReadOnlyApi", "").equals("")) {
             (new ConfigurationTask(new ConfigureReadOnlyApiTask(Settings.settings().getBoolean("ReadOnlyApi",true)))).executeAsync();
+        }
+
+        String sendMarketDataInLots = Settings.settings().getString("SendMarketDataInLotsForUSstocks", "");
+        if (!sendMarketDataInLots.equals("")) {
+            (new ConfigurationTask(new ConfigureSendMarketDataInLotsForUSstocksTask(Settings.settings().getBoolean("SendMarketDataInLotsForUSstocks", true)))).executeAsync();
         }
 
         Utils.sendConsoleOutputToTwsLog(!Settings.settings().getBoolean("LogToConsole", false));

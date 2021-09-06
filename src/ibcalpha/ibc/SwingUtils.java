@@ -38,6 +38,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JSeparator;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
 import javax.swing.JToggleButton;
 import javax.swing.JTree;
 import javax.swing.MenuElement;
@@ -230,6 +231,30 @@ class SwingUtils {
         while (iter.hasNext()) {
             Component component = iter.next();
             if (component instanceof JTextField && i++ == ith) return (JTextField)component;
+        }
+        return null;
+    }
+
+    /**
+     * Traverses a container hierarchy and returns the JTextPane
+     * that contains the given substring.
+     * @param container
+     *  the Container to search in
+     * @param text
+     *  the substring to find in a JTextPane
+     * @return
+     *  the JTextArea, if it was found;  otherwise null
+     */
+    static JTextPane findTextPane(Container container, String text) {
+        ComponentIterator iter = new ComponentIterator(container);
+        while (iter.hasNext()) {
+            Component component = iter.next();
+            if (component instanceof JTextPane) {
+                String content = ((JTextPane)component).getText();
+                if (content != null && content.contains(text)) {
+                    return (JTextPane)component;
+                }
+            }
         }
         return null;
     }
