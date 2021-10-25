@@ -696,6 +696,9 @@ class SwingUtils {
         } else if (component instanceof JTextField) {
             s += "JTextField: ";
             s += ((JTextField) component).getText();
+        } else if (component instanceof JTextPane) {
+            s += "JTextPane: ";
+            s += ((JTextPane) component).getText();
         } else if (component instanceof JMenuBar) {
             s += "JMenuBar: "; 
             s += ((JMenuBar) component).getName();
