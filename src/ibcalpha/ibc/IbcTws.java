@@ -408,7 +408,16 @@ public class IbcTws {
         Utils.logRawToConsole("------------------------------------------------------------");
         while (i.hasMoreElements()) {
             String props = (String) i.nextElement();
-            Utils.logRawToConsole(props + " = " + (String) p.get(props));
+            String vals = (String) p.get(props);
+            if (props.equals("sun.java.command")) {
+                //hide credentials 
+                String[] args = vals.split(" ");
+                for (int j = 2; j < args.length - 1; j++) {
+                    args[j] = "***";
+                }
+                vals = String.join(" ", args);
+            }
+            Utils.logRawToConsole(props + " = " + vals);
         }
         Utils.logRawToConsole("------------------------------------------------------------");
     }
