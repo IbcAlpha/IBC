@@ -48,10 +48,12 @@ class TwsListener
             window = ((WindowEvent) event).getWindow();
 
             if (SwingUtils.titleContains(window, "Second Factor Authentication") &&
-                    ! Settings.settings().getBoolean("ReadOnlyLogin", false)) {
-                logWindow(window, eventID);
-                logWindowStructure(window, eventID, true);
-                handleSecondFactorAuthenticationDialogue(eventID);
+                ! Settings.settings().getBoolean("ReadOnlyLogin", false)) {
+                GuiDeferredExecutor.instance().execute(() -> {
+                    logWindow(window, eventID);
+                    logWindowStructure(window, eventID, true);
+                    handleSecondFactorAuthenticationDialogue(eventID);
+                });
                 return;
             }
 
@@ -59,8 +61,10 @@ class TwsListener
 
             for (WindowHandler wh : windowHandlers) {
                 if (wh.recogniseWindow(window))  {
-                    logWindowStructure(window, eventID, true);
-                    if (wh.filterEvent(window, eventID)) wh.handleWindow(window, eventID);
+                    GuiDeferredExecutor.instance().execute(() -> {
+                        logWindowStructure(window, eventID, true);
+                        if (wh.filterEvent(window, eventID)) wh.handleWindow(window, eventID);
+                    });
                     return;
                 }
             }
@@ -169,17 +173,16 @@ class TwsListener
     }
 
     private void logWindow(Window window, int eventID) {
-        final String event = SwingUtils.windowEventToString(eventID);
-        final String windowTitle;
+        Utils.logToConsole("detected " + getWindowTypeAndTitle(window) + "; event=" + SwingUtils.windowEventToString(eventID));
+    }
+
+    private String getWindowTypeAndTitle(Window window) {
         if (window instanceof JFrame) {
-            windowTitle = SwingUtils.getWindowTitle(window);
-            Utils.logToConsole("detected frame entitled: " + windowTitle + "; event=" + event);
+            return "frame entitled: " + SwingUtils.getWindowTitle(window);
         } else if (window instanceof JDialog) {
-            windowTitle = SwingUtils.getWindowTitle(window);
-            Utils.logToConsole("detected dialog entitled: " + windowTitle + "; event=" + event);
+            return "dialog entitled: " + SwingUtils.getWindowTitle(window);
         } else {
-            windowTitle = window.getClass().getName();
-            Utils.logToConsole("detected window: type=" + windowTitle + "; event=" + event);
+            return "window: type=" + window.getClass().getName();
         }
     }
 
@@ -189,7 +192,7 @@ class TwsListener
         } else if (logStructureScope.equals("unknown") && windowKnown) {
             return;
         } else if (logStructureScope.equals("untitled") && 
-                    !SwingUtils.getWindowTitle(window).equals(SwingUtils.NO_TITLE)) {
+                !SwingUtils.getWindowTitle(window).equals(SwingUtils.NO_TITLE)) {
             return;
         }
 
@@ -201,6 +204,7 @@ class TwsListener
             ||
             (logStructureWhen.equalsIgnoreCase(SwingUtils.windowEventToString(eventID))))
         {
+            Utils.logToConsole("Window structure for " + getWindowTypeAndTitle(window) + "; event=" + SwingUtils.windowEventToString(eventID));
             Utils.logRawToConsole(SwingUtils.getWindowStructure(window));
         }
     }
