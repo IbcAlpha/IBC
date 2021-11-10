@@ -333,7 +333,7 @@ public class IbcTws {
         windowHandlers.add(new ShutdownProgressDialogHandler());
         windowHandlers.add(new BidAskLastSizeDisplayUpdateDialogHandler());
         windowHandlers.add(new LoginErrorDialogHandler());
-        
+        windowHandlers.add(new DiagnosticsUploadDialogHandler());
         return windowHandlers;
     }
 
