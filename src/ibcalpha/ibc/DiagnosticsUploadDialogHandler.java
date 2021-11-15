@@ -57,7 +57,7 @@ class DiagnosticsUploadDialogHandler implements WindowHandler {
 
     public boolean recogniseWindow(Window window) {
         if (! (window instanceof JFrame)) return false;
-        return SwingUtils.getWindowTitle(window).equals("Trader Workstation - diagnostics upload");
+        return "Trader Workstation - diagnostics upload".equalsIgnoreCase(SwingUtils.getWindowTitle(window));
     }
 
     private boolean uploaded = false;
