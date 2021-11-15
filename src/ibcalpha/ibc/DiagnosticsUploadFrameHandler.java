@@ -46,10 +46,11 @@ class DiagnosticsUploadFrameHandler implements WindowHandler {
                     JCheckBox cb = SwingUtils.findCheckBox(window, "Include screenshot of entire desktop");
                     if (cb == null) {
                         //don't fail (return) here. a report without a screenshot is better than no report at all
-                        Utils.logError("could not find Read-Only API checkbox");
+                        Utils.logError("could not find \"Include screenshot of entire desktop\" checkbox");
                     } else {
                         cb.setSelected(true);
                     }
+                    //do not return here as "sendwithscreenshot" means send as well
                 case "send":
                     uploaded = true;
                     Utils.logToConsole("uploading TWS diagnostics bundle");
