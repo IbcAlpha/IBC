@@ -40,16 +40,30 @@ class DiagnosticsUploadFrameHandler implements WindowHandler {
         }
         else
         {
-            String accept = Settings.settings().getString("UploadIBDiagnosticsBundleIfAsked", "");
+            String accept = Settings.settings().getString("TwsDiagnosticsUploadAction", "");
             switch(accept) {
-                case "yes":
+                case "sendwithscreenshot":
+                    JCheckBox cb = SwingUtils.findCheckBox(window, "Include screenshot of entire desktop");
+                    if (cb == null) {
+                        //don't fail (return) here. a report without a screenshot is better than no report at all
+                        Utils.logError("could not find Read-Only API checkbox");
+                    } else {
+                        cb.setSelected(true);
+                    }
+                case "send":
                     uploaded = true;
+                    Utils.logToConsole("uploading TWS diagnostics bundle");
                     if (!SwingUtils.clickButton(window, "Send Diagnostics Bundle")) {
                         Utils.logError("could not upload diagnostics");
                     }
                     return;
+                case "reject":
+                    if (!SwingUtils.clickButton(window, "Don't Send")) {
+                        Utils.logError("could not upload diagnostics");
+                    }
+                    return;
                 default:
-                    Utils.logError("UploadIBDiagnosticsBundleIfAsked : " + accept);
+                    Utils.logToConsole("WARN: UploadIBDiagnosticsBundleIfAsked unknown command : " + accept);
                     return;
             }
         }
