@@ -40,7 +40,7 @@ class DiagnosticsUploadFrameHandler implements WindowHandler {
         }
         else
         {
-            String accept = Settings.settings().getString("TwsDiagnosticsUploadAction", "");
+            String accept = Settings.settings().getString("DiagnosticsUploadAction", "");
             switch(accept) {
                 case "sendwithscreenshot":
                     JCheckBox cb = SwingUtils.findCheckBox(window, "Include screenshot of entire desktop");
