@@ -63,7 +63,7 @@ class DiagnosticsUploadFrameHandler implements WindowHandler {
                 Utils.logToConsole("ignoring the TWS diagnostics upload frame");
                 return;
             default:
-                Utils.logToConsole("WARN: UploadIBDiagnosticsBundleIfAsked unknown command : " + accept);
+                Utils.logToConsole("DiagnosticsUploadAction setting has invalid value : " + accept);
                 return;
         }
     }
