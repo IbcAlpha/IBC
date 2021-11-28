@@ -53,8 +53,10 @@ class DiagnosticsUploadFrameHandler implements WindowHandler {
                 if (!SwingUtils.clickButton(window, "Send Diagnostics Bundle")) {
                     Utils.logError("could not upload diagnostics");
                 }
-                return; case "reject": if (!SwingUtils.clickButton(window, "Don't Send")) {
-                    Utils.logError("could not upload diagnostics");
+                return;
+            case "reject":
+                if (!SwingUtils.clickButton(window, "Don't Send")) {
+                    Utils.logToConsole("rejected TWS diagnostics upload");
                 }
                 return;
             default:
