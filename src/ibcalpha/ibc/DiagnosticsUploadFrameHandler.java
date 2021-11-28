@@ -36,6 +36,7 @@ class DiagnosticsUploadFrameHandler implements WindowHandler {
 
     public void handleWindow(Window window, int eventID) {
         String accept = Settings.settings().getString("DiagnosticsUploadAction", "");
+        String msgIncludeScreenshot = ", screenshot off";
         switch(accept) {
             case "sendwithscreenshot":
                 JCheckBox cb = SwingUtils.findCheckBox(window, "Include screenshot of entire desktop");
@@ -44,10 +45,11 @@ class DiagnosticsUploadFrameHandler implements WindowHandler {
                     Utils.logError("could not find \"Include screenshot of entire desktop\" checkbox");
                 } else {
                     cb.setSelected(true);
+                    msgIncludeScreenshot = ", screenshot on";
                 }
                 //do not return here as "sendwithscreenshot" means send as well
             case "send":
-                Utils.logToConsole("uploading TWS diagnostics bundle");
+                Utils.logToConsole("uploading TWS diagnostics bundle" + msgIncludeScreenshot);
                 if (!SwingUtils.clickButton(window, "Send Diagnostics Bundle")) {
                     Utils.logError("could not upload diagnostics");
                 }
