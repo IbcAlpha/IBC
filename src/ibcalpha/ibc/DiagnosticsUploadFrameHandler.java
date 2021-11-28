@@ -35,38 +35,29 @@ class DiagnosticsUploadFrameHandler implements WindowHandler {
     }
 
     public void handleWindow(Window window, int eventID) {
-        if (uploaded) {
-            Utils.logError("TODO. Second upload request. Will upload diagnostics only once");
-        }
-        else
-        {
-            String accept = Settings.settings().getString("DiagnosticsUploadAction", "");
-            switch(accept) {
-                case "sendwithscreenshot":
-                    JCheckBox cb = SwingUtils.findCheckBox(window, "Include screenshot of entire desktop");
-                    if (cb == null) {
-                        //don't fail (return) here. a report without a screenshot is better than no report at all
-                        Utils.logError("could not find \"Include screenshot of entire desktop\" checkbox");
-                    } else {
-                        cb.setSelected(true);
-                    }
-                    //do not return here as "sendwithscreenshot" means send as well
-                case "send":
-                    uploaded = true;
-                    Utils.logToConsole("uploading TWS diagnostics bundle");
-                    if (!SwingUtils.clickButton(window, "Send Diagnostics Bundle")) {
-                        Utils.logError("could not upload diagnostics");
-                    }
-                    return;
-                case "reject":
-                    if (!SwingUtils.clickButton(window, "Don't Send")) {
-                        Utils.logError("could not upload diagnostics");
-                    }
-                    return;
-                default:
-                    Utils.logToConsole("WARN: UploadIBDiagnosticsBundleIfAsked unknown command : " + accept);
-                    return;
-            }
+        String accept = Settings.settings().getString("DiagnosticsUploadAction", "");
+        switch(accept) {
+            case "sendwithscreenshot":
+                JCheckBox cb = SwingUtils.findCheckBox(window, "Include screenshot of entire desktop");
+                if (cb == null) {
+                    //don't fail (return) here. a report without a screenshot is better than no report at all
+                    Utils.logError("could not find \"Include screenshot of entire desktop\" checkbox");
+                } else {
+                    cb.setSelected(true);
+                }
+                //do not return here as "sendwithscreenshot" means send as well
+            case "send":
+                Utils.logToConsole("uploading TWS diagnostics bundle");
+                if (!SwingUtils.clickButton(window, "Send Diagnostics Bundle")) {
+                    Utils.logError("could not upload diagnostics");
+                }
+                return; case "reject": if (!SwingUtils.clickButton(window, "Don't Send")) {
+                    Utils.logError("could not upload diagnostics");
+                }
+                return;
+            default:
+                Utils.logToConsole("WARN: UploadIBDiagnosticsBundleIfAsked unknown command : " + accept);
+                return;
         }
     }
 
@@ -74,6 +65,4 @@ class DiagnosticsUploadFrameHandler implements WindowHandler {
         if (! (window instanceof JFrame)) return false;
         return "Trader Workstation - diagnostics upload".equalsIgnoreCase(SwingUtils.getWindowTitle(window));
     }
-
-    private boolean uploaded = false;
 }
