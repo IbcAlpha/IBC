@@ -47,7 +47,9 @@ public class LoginErrorDialogHandler implements WindowHandler {
         if (! (window instanceof JDialog)) return false;
 
         return (SwingUtils.titleContains(window, "Login Error") &&
-                SwingUtils.findTextArea(window, "Login failed - Server disconnected, please try again") != null);
+                    SwingUtils.findTextArea(window, "Login failed - Server disconnected, please try again") != null) 
+                ||
+                (SwingUtils.findTextArea(window, "Connection to server failed: Server disconnected, please try again") != null);
     }
     
 }
