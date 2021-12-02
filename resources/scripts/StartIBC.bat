@@ -49,7 +49,7 @@ echo                           Defaults to C:\IBC
 echo.
 echo   configfile              The location and filename of the IBC 
 echo                           configuration file. Defaults to 
-echo                           ^%%HOMEPATH^%%\Documents\IBC\config.ini
+echo                           ^%%USERPROFILE^%%\Documents\IBC\config.ini
 echo.
 echo   javaPath                Path to the folder containing the java.exe to be used
 echo                           to run IBC. Defaults to the java.exe included
@@ -258,7 +258,7 @@ if not defined TWS_VERSION (
 if not defined TWS_PATH set TWS_PATH=C:\Jts
 if not defined TWS_SETTINGS_PATH set TWS_SETTINGS_PATH=%TWS_PATH%
 if not defined IBC_PATH set IBC_PATH=C:\IBC
-if not defined CONFIG set CONFIG=%HOMEPATH%\Documents\IBC\config.ini
+if not defined CONFIG set CONFIG=%USERPROFILE%\Documents\IBC\config.ini
 
 :: In the following we try to use the correct .vmoptions file for the chosen entrypoint
 :: Note that uninstalling TWS or Gateway leaves the relevant .vmoption file in place, so
