@@ -345,7 +345,7 @@ for %%i in (%TWS_JARS%\*.jar) do (
     if not "!IBC_CLASSPATH!"=="" set IBC_CLASSPATH=!IBC_CLASSPATH!;
     set IBC_CLASSPATH=!IBC_CLASSPATH!%%i
 )
-set IBC_CLASSPATH=%IBC_CLASSPATH%;%IBC_PATH%\IBC.jar
+set IBC_CLASSPATH=%IBC_CLASSPATH%;%INSTALL4J%\i4jruntime.jar;%IBC_PATH%\IBC.jar
 echo Classpath=%IBC_CLASSPATH%
 echo.
 
@@ -361,6 +361,8 @@ for /f "tokens=1 delims= " %%i in (%TWS_VMOPTS%) do (
 		if not "!TOKEN:~0,1!"=="#" set JAVA_VM_OPTIONS=!JAVA_VM_OPTIONS! %%i
 	)
 )
+set JAVA_VM_OPTIONS=%JAVA_VM_OPTIONS% -Dtwslaunch.autoupdate.serviceImpl=com.ib.tws.twslaunch.install4j.Install4jAutoUpdateService
+set JAVA_VM_OPTIONS=%JAVA_VM_OPTIONS% -Dchannel=latest
 echo Java VM Options=%JAVA_VM_OPTIONS%
 echo.
 

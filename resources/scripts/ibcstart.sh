@@ -335,7 +335,7 @@ for jar in "${jars}"/*.jar; do
 	fi
 	ibc_classpath="${ibc_classpath}${jar}"
 done
-ibc_classpath="${ibc_classpath}:${ibc_path}/IBC.jar"
+ibc_classpath="${ibc_classpath}:$install4j/i4jruntime.jar:${ibc_path}/IBC.jar"
 
 echo -e "Classpath=$ibc_classpath"
 echo
@@ -354,6 +354,9 @@ while read line; do
 done < <( cat "$vmoptions_source" )
 
 java_vm_options=${vm_options[*]}
+java_vm_options="$java_vm_options -Dtwslaunch.autoupdate.serviceImpl=com.ib.tws.twslaunch.install4j.Install4jAutoUpdateService"
+java_vm_options="$java_vm_options -Dchannel=latest"
+
 echo -e "Java VM Options=$java_vm_options"
 echo
 
