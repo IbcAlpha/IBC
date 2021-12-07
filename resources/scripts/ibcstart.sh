@@ -356,6 +356,8 @@ done < <( cat "$vmoptions_source" )
 java_vm_options=${vm_options[*]}
 java_vm_options="$java_vm_options -Dtwslaunch.autoupdate.serviceImpl=com.ib.tws.twslaunch.install4j.Install4jAutoUpdateService"
 java_vm_options="$java_vm_options -Dchannel=latest"
+java_vm_options="$java_vm_options -Dexe4j.isInstall4j=true"
+java_vm_options="$java_vm_options -Dinstall4jType=standalone" 
 
 echo -e "Java VM Options=$java_vm_options"
 echo

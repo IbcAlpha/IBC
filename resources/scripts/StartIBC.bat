@@ -363,6 +363,9 @@ for /f "tokens=1 delims= " %%i in (%TWS_VMOPTS%) do (
 )
 set JAVA_VM_OPTIONS=%JAVA_VM_OPTIONS% -Dtwslaunch.autoupdate.serviceImpl=com.ib.tws.twslaunch.install4j.Install4jAutoUpdateService
 set JAVA_VM_OPTIONS=%JAVA_VM_OPTIONS% -Dchannel=latest
+set JAVA_VM_OPTIONS=%JAVA_VM_OPTIONS% -Dexe4j.isInstall4j=true
+set JAVA_VM_OPTIONS=%JAVA_VM_OPTIONS%  -Dinstall4jType=standalone 
+
 echo Java VM Options=%JAVA_VM_OPTIONS%
 echo.
 
