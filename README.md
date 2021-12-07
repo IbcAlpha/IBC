@@ -44,6 +44,11 @@ should you suffer losses as a result of your account being compromised.
 > If you're moving to IBC from IBController, there are some changes
 that you'll have to make. See the [IBC User Guide](userguide.md) for
 further information.
+>
+> No guarantee is given that this repository will be in a fully
+self-consistent state at all times. In particular, if you build IBC.jar
+directly from this repository, you should test thoroughly before
+deploying it (an example of this might be when composing a Docker image).
 
 
 Downloads
