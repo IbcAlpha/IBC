@@ -25,6 +25,9 @@ import java.awt.event.WindowEvent;
 import java.util.List;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JList;
+import javax.swing.JTextArea;
+import javax.swing.ListModel;
 
 class TwsListener
         implements AWTEventListener {
@@ -52,7 +55,7 @@ class TwsListener
                 GuiDeferredExecutor.instance().execute(() -> {
                     logWindow(window, eventID);
                     logWindowStructure(window, eventID, true);
-                    handleSecondFactorAuthenticationDialogue(eventID);
+                    handleSecondFactorAuthenticationDialogue(window, eventID);
                 });
                 return;
             }
@@ -99,7 +102,7 @@ class TwsListener
             case "all":
                 break;
             default:
-                Utils.logError("the LogStructureScope setting is invalid.");
+                Utils.logError("the LogStructureScope setting '" + logStructureScope + "' is invalid.");
                 logStructureScope = "known";
         }
         
@@ -150,7 +153,7 @@ class TwsListener
         return logStructureWhen;
     }
 
-    private void handleSecondFactorAuthenticationDialogue(final int eventID) {
+    private void handleSecondFactorAuthenticationDialogue(final Window window, final int eventID) {
         // Only handle SFA while ReadOnlyLogin mode is off.
 
         // Ideally we would handle the Second Factor Authentication dialog event using
@@ -165,7 +168,37 @@ class TwsListener
         Utils.logToConsole("Second Factor Authentication dialog event: " + SwingUtils.windowEventToString(eventID));
         if (eventID == WindowEvent.WINDOW_OPENED) {
             Utils.logToConsole("Second Factor Authentication dialog opened");
-            LoginManager.loginManager().setLoginState(LoginManager.LoginState.TWO_FA_IN_PROGRESS);
+
+            JTextArea t = SwingUtils.findTextArea(window, "Select second factor device");
+            if (t != null){
+                // this area appears in the Second Factor Authentication dialog when the
+                // user has enabled more than one second factor authentication method
+                
+                JList<?> deviceList = SwingUtils.findList(window, 0);
+                if (deviceList == null) {
+                    Utils.logError("could not find second factor device list.");
+                    return;
+                }
+                String secondFactorDevice = Settings.settings().getString("SecondFactorDevice", "");
+                if (secondFactorDevice.length() == 0) return;
+                
+                ListModel<?> model = deviceList.getModel();
+                for (int i = 0; i < model.getSize(); i++) {
+                    String entry = model.getElementAt(i).toString().trim();
+                    if (entry.equals(secondFactorDevice)) {
+                        deviceList.setSelectedIndex(i);
+                        
+                        if (!SwingUtils.clickButton(window, "OK")) {
+                            Utils.logError("could not select second factor device: OK button not found");
+                        }
+                        return;
+                    }
+                }
+                Utils.logError("could not find second factor device '" + secondFactorDevice + "' in the list");
+                
+            } else {
+                LoginManager.loginManager().setLoginState(LoginManager.LoginState.TWO_FA_IN_PROGRESS);
+            }
         } else if (eventID == WindowEvent.WINDOW_CLOSED) {
             Utils.logToConsole("Second Factor Authentication dialog closed");
             LoginManager.loginManager().secondFactorAuthenticationDialogClosed();
