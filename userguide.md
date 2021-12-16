@@ -21,11 +21,10 @@ insist on shutting down every day.
 >Instead you have two options:
 >
 >1. Restart IBC afresh each day you want to run TWS or Gateway. This option is
-useful if you want to automate login to TWS, and you're not enrolled in IBKR's
-security device scheme (so that you do not need to be present). You can use Task
-Scheduler (on Windows) or crontab (on Linux) to automatically start IBC at the
-appropriate time. You'll find sections on using Task Scheduler or crontab to
-start IBC towards the end of this document.
+useful if you want to automate login to TWS. You can use Task Scheduler (on
+Windows) or crontab (on Linux) to automatically start IBC at the appropriate
+time. You'll find sections on using Task Scheduler or crontab to start IBC
+towards the end of this document.
 >
 >2. Abandon the use of IBC and instead use the autorestart mechanism provided
 by TWS 974, Gateway 975 and later versions. To use this, you have to start TWS
@@ -34,6 +33,13 @@ work with this mechanism. On Windows, these files are `C:\Jts\nnn\tws.exe` for
 TWS, and `C:\Jts\ibgateway\nnn\ibgateway.exe` for Gateway (note that desktop
 icons are also provided).  On Linux, the files are `~/Jts/nnn/tws` for TWS, and
 `~/Jts/ibgateway/nnn/ibgateway` for Gateway. nnn is the TWS version number.
+>
+>   Note that as mentioned above, IBC cannot currently work with this
+auto-restart mechanism. The setting for it may appear in the relevant
+TWS/Gateway configuration dialogs, but if you use it then TWS/Gateway will
+actually attempt to relogin at the appropriate time but may not succeed - and
+in any case the restarted process will not include IBC so no IBC functionality
+will work.
 
 >IMPORTANT
 >
@@ -134,16 +140,25 @@ up and running properly.
    script files in the IBC installation folder: these files are
    `StartTWS.bat` and `StartGateway.bat` on Windows, `twsstart.sh` and
    `gatewaystart.sh` on Unix, `twsstartmacos.sh` and `gatewaystartmacos.sh`
-   on macOS. To find the TWS major version number, first run TWS or the
-   Gateway manually using the IBKR-provided icon, then click
-   `Help > About Trader Workstation` or `Help > About IB Gateway`. In
-   the displayed information you'll see a line similar to this:
+   on macOS. 
+   
+   To find the TWS major version number, first run TWS or the Gateway manually
+   using the IBKR-provided icon, then click `Help > About Trader Workstation`
+   or `Help > About IB Gateway`. In the displayed information you'll see a
+   line similar to either this:
 
-    `Build 954.2a, Oct 30, 2015 4:07:54 PM`
+       `Build 981.3c, Jun 29, 2021 3:57:06 PM`
 
-   Here the major version number is 954. Ignore the rest of the version
-   number. Now open the script files with a text editor and ensure that
-   the TWS_MAJOR_VRSN variable is set correctly.
+   or this:
+
+       `Build 10.12.2a, Dec 14, 2021 11:07:54 AM`
+
+   In the first case, the major version number is 981. In the second case,
+   it is 1012 (ie ignore the period after the first past of the version
+   number).
+
+   Ignore the rest of the version number. Now open the script files with a
+   text editor and ensure that the TWS_MAJOR_VRSN variable is set correctly.
 
 8. At this stage, everything is set up to run IBC with its default
    settings, which will start TWS and attempt to log it into your
