@@ -394,6 +394,9 @@ if [[ "$os" = "$OS_LINUX" ]]; then
 	fi
 elif [[ "$os" = "$OS_OSX" ]]; then
 	java_path="$install4j/jre.bundle/Contents/Home/jre/bin"
+	if [[ ! -e "$java_path/java" ]]; then
+		java_path="$install4j/jre.bundle/Contents/Home/bin"
+	fi
 fi
 
 # alternatively use installed java, if it's from oracle (openJDK causes problems with TWS)
