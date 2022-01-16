@@ -331,6 +331,8 @@ public class IbcTws {
         windowHandlers.add(new LoginFailedDialogHandler());
         windowHandlers.add(new TooManyFailedLoginAttemptsDialogHandler());
         windowHandlers.add(new ShutdownProgressDialogHandler());
+        windowHandlers.add(new BidAskLastSizeDisplayUpdateDialogHandler());
+        windowHandlers.add(new LoginErrorDialogHandler());
         windowHandlers.add(new NavigatingAwayDialogHandler());
 
         return windowHandlers;
@@ -408,7 +410,16 @@ public class IbcTws {
         Utils.logRawToConsole("------------------------------------------------------------");
         while (i.hasMoreElements()) {
             String props = (String) i.nextElement();
-            Utils.logRawToConsole(props + " = " + (String) p.get(props));
+            String vals = (String) p.get(props);
+            if (props.equals("sun.java.command")) {
+                //hide credentials 
+                String[] args = vals.split(" ");
+                for (int j = 2; j < args.length - 1; j++) {
+                    args[j] = "***";
+                }
+                vals = String.join(" ", args);
+            }
+            Utils.logRawToConsole(props + " = " + vals);
         }
         Utils.logRawToConsole("------------------------------------------------------------");
     }
@@ -473,6 +484,11 @@ public class IbcTws {
 
         if (!Settings.settings().getString("ReadOnlyApi", "").equals("")) {
             (new ConfigurationTask(new ConfigureReadOnlyApiTask(Settings.settings().getBoolean("ReadOnlyApi",true)))).executeAsync();
+        }
+
+        String sendMarketDataInLots = Settings.settings().getString("SendMarketDataInLotsForUSstocks", "");
+        if (!sendMarketDataInLots.equals("")) {
+            (new ConfigurationTask(new ConfigureSendMarketDataInLotsForUSstocksTask(Settings.settings().getBoolean("SendMarketDataInLotsForUSstocks", true)))).executeAsync();
         }
 
         Utils.sendConsoleOutputToTwsLog(!Settings.settings().getBoolean("LogToConsole", false));

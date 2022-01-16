@@ -18,13 +18,8 @@
 
 package ibcalpha.ibc;
 
-import ibcalpha.ibc.ConfigDialogManager;
-import ibcalpha.ibc.ConfigurationAction;
-import ibcalpha.ibc.IbcException;
-import ibcalpha.ibc.MainWindowManager;
-import java.awt.Component;
-import java.awt.Container;
-import javax.swing.*;
+import javax.swing.JCheckBox;
+import javax.swing.JDialog;
 
 public class ConfigureReadOnlyApiTask implements ConfigurationAction{
 

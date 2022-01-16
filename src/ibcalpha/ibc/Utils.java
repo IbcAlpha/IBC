@@ -22,7 +22,6 @@ import java.awt.Container;
 import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import javax.swing.JDialog;
@@ -225,6 +224,15 @@ class Utils {
 
     static void sendConsoleOutputToTwsLog(boolean value) {
         sendConsoleOutputToTwsLog = value;
+    }
+    
+    static String stringToHex(String value) {
+        char[] chars = value.toCharArray();
+        StringBuilder sb = new StringBuilder();
+        for (int i=0; i < chars.length; i++) {
+            sb.append(Integer.toHexString(chars[i]));
+        }
+        return sb.toString();
     }
 
 }

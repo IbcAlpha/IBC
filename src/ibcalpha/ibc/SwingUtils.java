@@ -22,6 +22,7 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Window;
 import java.awt.event.WindowEvent;
+import javax.swing.ComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -38,8 +39,10 @@ import javax.swing.JRadioButton;
 import javax.swing.JSeparator;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
 import javax.swing.JToggleButton;
 import javax.swing.JTree;
+import javax.swing.ListModel;
 import javax.swing.MenuElement;
 import javax.swing.tree.TreeModel;
 
@@ -189,6 +192,28 @@ class SwingUtils {
     }
 
     /**
+     * Traverses a container hierarchy and returns the ith JList
+     * (0 based indexing).
+     *
+     * @param container
+     *  the Container to search in
+     * @param ith
+     *   specifies which JList to return (the first one is specified by 0,
+     * the next by 1, etc)
+     * @return
+     *  the required JList if it is found, otherwise null
+     */
+    static JList<?> findList(Container container, int ith) {
+        ComponentIterator iter = new ComponentIterator(container);
+        int i = 0;
+        while (iter.hasNext()) {
+            Component component = iter.next();
+            if (component instanceof JList<?> && i++ == ith) return (JList<?>)component;
+        }
+        return null;
+    }
+
+    /**
      * Traverses a container hierarchy and returns the JTextArea
      * that contains the given substring.
      * @param container
@@ -230,6 +255,30 @@ class SwingUtils {
         while (iter.hasNext()) {
             Component component = iter.next();
             if (component instanceof JTextField && i++ == ith) return (JTextField)component;
+        }
+        return null;
+    }
+
+    /**
+     * Traverses a container hierarchy and returns the JTextPane
+     * that contains the given substring.
+     * @param container
+     *  the Container to search in
+     * @param text
+     *  the substring to find in a JTextPane
+     * @return
+     *  the JTextArea, if it was found;  otherwise null
+     */
+    static JTextPane findTextPane(Container container, String text) {
+        ComponentIterator iter = new ComponentIterator(container);
+        while (iter.hasNext()) {
+            Component component = iter.next();
+            if (component instanceof JTextPane) {
+                String content = ((JTextPane)component).getText();
+                if (content != null && content.contains(text)) {
+                    return (JTextPane)component;
+                }
+            }
         }
         return null;
     }
@@ -671,6 +720,9 @@ class SwingUtils {
         } else if (component instanceof JTextField) {
             s += "JTextField: ";
             s += ((JTextField) component).getText();
+        } else if (component instanceof JTextPane) {
+            s += "JTextPane: ";
+            s += ((JTextPane) component).getText();
         } else if (component instanceof JMenuBar) {
             s += "JMenuBar: "; 
             s += ((JMenuBar) component).getName();
@@ -718,6 +770,8 @@ class SwingUtils {
         builder.append(getComponentDetails(component));
         builder.append("}");
         if (component instanceof JTree) appendTreeNodes(((JTree) component).getModel(), ((JTree) component).getModel().getRoot(), builder, "|   " + indent);
+        if (component instanceof JList<?>) appendListItems(((JList<?>) component).getModel(), builder, "|   " + indent);
+        if (component instanceof JComboBox<?>) appendComboItems(((JComboBox<?>) component).getModel(), builder, "|   " + indent);
         if (component instanceof JMenuBar) {
             appendMenuItem(component, builder, "|   " + indent);
         } else if (component instanceof Container) {
@@ -725,6 +779,22 @@ class SwingUtils {
         }
     }
 
+    private static void appendComboItems(ComboBoxModel<?> model, StringBuilder builder, String indent) {
+        for (int i = 0; i < model.getSize(); i++) {
+            builder.append(NEWLINE);
+            builder.append(indent);
+            builder.append(model.getElementAt(i).toString());
+        }
+    }
+    
+    private static void appendListItems(ListModel<?> model, StringBuilder builder, String indent) {
+        for (int i = 0; i < model.getSize(); i++) {
+            builder.append(NEWLINE);
+            builder.append(indent);
+            builder.append(model.getElementAt(i).toString());
+        }
+    }
+    
     private static void appendTreeNodes(TreeModel model, Object node, StringBuilder builder, String indent) {
         builder.append(NEWLINE);
         builder.append(indent);
