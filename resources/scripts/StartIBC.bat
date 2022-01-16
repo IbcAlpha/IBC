@@ -49,7 +49,7 @@ echo                           Defaults to C:\IBC
 echo.
 echo   configfile              The location and filename of the IBC 
 echo                           configuration file. Defaults to 
-echo                           ^%%HOMEPATH^%%\Documents\IBC\config.ini
+echo                           ^%%USERPROFILE^%%\Documents\IBC\config.ini
 echo.
 echo   javaPath                Path to the folder containing the java.exe to be used
 echo                           to run IBC. Defaults to the java.exe included
@@ -258,7 +258,7 @@ if not defined TWS_VERSION (
 if not defined TWS_PATH set TWS_PATH=C:\Jts
 if not defined TWS_SETTINGS_PATH set TWS_SETTINGS_PATH=%TWS_PATH%
 if not defined IBC_PATH set IBC_PATH=C:\IBC
-if not defined CONFIG set CONFIG=%HOMEPATH%\Documents\IBC\config.ini
+if not defined CONFIG set CONFIG=%USERPROFILE%\Documents\IBC\config.ini
 
 :: In the following we try to use the correct .vmoptions file for the chosen entrypoint
 :: Note that uninstalling TWS or Gateway leaves the relevant .vmoption file in place, so
@@ -345,7 +345,7 @@ for %%i in (%TWS_JARS%\*.jar) do (
     if not "!IBC_CLASSPATH!"=="" set IBC_CLASSPATH=!IBC_CLASSPATH!;
     set IBC_CLASSPATH=!IBC_CLASSPATH!%%i
 )
-set IBC_CLASSPATH=%IBC_CLASSPATH%;%IBC_PATH%\IBC.jar
+set IBC_CLASSPATH=%IBC_CLASSPATH%;%INSTALL4J%\i4jruntime.jar;%IBC_PATH%\IBC.jar
 echo Classpath=%IBC_CLASSPATH%
 echo.
 
@@ -361,6 +361,11 @@ for /f "tokens=1 delims= " %%i in (%TWS_VMOPTS%) do (
 		if not "!TOKEN:~0,1!"=="#" set JAVA_VM_OPTIONS=!JAVA_VM_OPTIONS! %%i
 	)
 )
+set JAVA_VM_OPTIONS=%JAVA_VM_OPTIONS% -Dtwslaunch.autoupdate.serviceImpl=com.ib.tws.twslaunch.install4j.Install4jAutoUpdateService
+set JAVA_VM_OPTIONS=%JAVA_VM_OPTIONS% -Dchannel=latest
+set JAVA_VM_OPTIONS=%JAVA_VM_OPTIONS% -Dexe4j.isInstall4j=true
+set JAVA_VM_OPTIONS=%JAVA_VM_OPTIONS%  -Dinstall4jType=standalone 
+
 echo Java VM Options=%JAVA_VM_OPTIONS%
 echo.
 

@@ -18,7 +18,7 @@
 #=============================================================================+
 
 
-TWS_MAJOR_VRSN=972
+TWS_MAJOR_VRSN=981
 IBC_INI=~/ibc/config.ini
 TRADING_MODE=
 TWOFA_TIMEOUT_ACTION=exit
@@ -45,12 +45,19 @@ HIDE=
 #     Specifies the major version number of Gateway to be run. If you are
 #     unsure of which version number to use, run Gateway manually from the
 #     icon on the desktop, then click Help > About IB Gateway. In the
-#     displayed information you'll see a line similar to this:
+#     displayed information you'll see a line similar to either this:
 #
-#       Build 954.2a, Oct 30, 2015 4:07:54 PM
+#       Build 981.3c, Jun 29, 2021 3:57:06 PM
 #
-#     Here the major version number is 954. Do not include the rest of the
-#     version number in this setting.
+#     or this:
+#
+#       Build 10.12.2a, Dec 14, 2021 11:07:54 AM
+#
+#     In the first case, the major version number is 981. In the second case,
+#     it is 1012 (ie ignore the period after the first past of the version
+#     number).
+#
+#     Do not include the rest of the version number in this setting.
 
 
 #   IBC_INI
