@@ -33,7 +33,7 @@ class MustEnterValidPriceDialogHandler implements WindowHandler {
     }
 
     public void handleWindow(Window window, int eventID) {
-        //if (! Settings.settings().getBoolean("SuppressYouMustEnterValidPriceWarning", false)) return;
+        if (! Settings.settings().getBoolean("SuppressYouMustEnterValidPriceWarning", false)) return;
 
         if (SwingUtils.clickButton(window, "OK")) {
         } else {
@@ -44,7 +44,8 @@ class MustEnterValidPriceDialogHandler implements WindowHandler {
     public boolean recogniseWindow(Window window) {
         if (! (window instanceof JDialog)) return false;
 
-        return (SwingUtils.findLabel(window, "You must enter a valid price.") != null);
+        return (SwingUtils.findTextPane(window, "You must enter a valid price") != null);
+
     }
 }
 

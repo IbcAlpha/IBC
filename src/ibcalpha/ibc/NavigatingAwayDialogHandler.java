@@ -21,6 +21,7 @@ package ibcalpha.ibc;
 import java.awt.Window;
 import java.awt.event.WindowEvent;
 import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 
 class NavigatingAwayDialogHandler implements WindowHandler {
     public boolean filterEvent(Window window, int eventId) {
@@ -43,6 +44,15 @@ class NavigatingAwayDialogHandler implements WindowHandler {
 
     public boolean recogniseWindow(Window window) {
         if (! (window instanceof JDialog)) return false;
+
+        JOptionPane optionsPane = SwingUtils.findOptionPane(window);
+
+        if (optionsPane == null) return false;
+
+        String label = optionsPane.getMessage().toString();
+
+        if (label.contains("Navigating away from") && label.contains("will reset the order entry."))
+            return true;
 
         return (SwingUtils.findLabel(window, "Navigating away from") != null) &&
                (SwingUtils.findLabel(window, "will reset the order entry.") != null);
