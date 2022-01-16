@@ -334,6 +334,7 @@ public class IbcTws {
         windowHandlers.add(new BidAskLastSizeDisplayUpdateDialogHandler());
         windowHandlers.add(new LoginErrorDialogHandler());
         windowHandlers.add(new NavigatingAwayDialogHandler());
+        windowHandlers.add(new MustEnterValidPriceDialogHandler());
 
         return windowHandlers;
     }
