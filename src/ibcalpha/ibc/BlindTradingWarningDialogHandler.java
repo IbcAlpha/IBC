@@ -35,15 +35,19 @@ class BlindTradingWarningDialogHandler implements WindowHandler {
     public void handleWindow(Window window, int eventID) {
         if (! Settings.settings().getBoolean("AllowBlindTrading", false)) return;
 
-        if (! SwingUtils.clickButton(window, "Yes")) {
+        if (! SwingUtils.clickButton(window, "Override and Transmit") &&
+            ! SwingUtils.clickButton(window, "Yes")) {
             Utils.logError("could not dismiss blind trading warning dialog.");
         }
     }
 
     public boolean recogniseWindow(Window window) {
         if (! (window instanceof JDialog)) return false;
-        return (SwingUtils.findLabel(window, "blind trading") != null &&
-                SwingUtils.findLabel(window, "Are you sure you want to submit this order?") != null);
+        return ((SwingUtils.titleContains(window, "Order Preview")) &&
+                SwingUtils.findTextPane(window, "blind trading") != null)
+                || 
+                ((SwingUtils.findLabel(window, "blind trading") != null &&
+                SwingUtils.findLabel(window, "Are you sure you want to submit this order?") != null));
     }
 
 }
