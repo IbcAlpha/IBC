@@ -92,8 +92,10 @@ for example to tell TWS/Gateway to shut itself down cleanly.
 This User Guide is intended to help you get started with IBC. It does not cover
 every feature in depth.
 
-Note that the configuration file `config.ini` that governs IBC's behaviour
-contains extensive notes that provide more information on the various settings.
+Note that the configuration file
+[`config.ini`](https://github.com/IbcAlpha/IBC/blob/master/resources/config.ini)
+that governs IBC's behaviour contains extensive notes that provide more
+information on the various settings.
 
 ### Acknowledgement
 
