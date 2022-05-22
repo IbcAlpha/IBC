@@ -346,12 +346,21 @@ echo Generating the JAVA VM options
 
 declare -a vm_options
 index=0
-while read line; do
-	if [[ -n ${line} && ! "${line:0:1}" = "#" && ! "${line:0:2}" = "-D" ]]; then
-		vm_options[$index]="$line"
-		((index++))
-	fi
-done < <( cat "$vmoptions_source" )
+if [[ "$os" = "$OS_LINUX" ]]; then
+	while read line; do
+		if [[ -n ${line} && ! "${line:0:1}" = "#" && ! "${line:0:2}" = "-D" ]]; then
+			vm_options[$index]="$line"
+			((index++))
+		fi
+	done <<< $(cat ${vmoptions_source})
+elif [[ "$os" = "$OS_OSX" ]]; then
+	while read line; do
+		if [[ -n ${line} && ! "${line:0:1}" = "#" && ! "${line:0:2}" = "-D" ]]; then
+			vm_options[$index]="$line"
+			((index++))
+		fi
+	done < <( cat "$vmoptions_source" )
+fi
 
 java_vm_options=${vm_options[*]}
 java_vm_options="$java_vm_options -Dtwslaunch.autoupdate.serviceImpl=com.ib.tws.twslaunch.install4j.Install4jAutoUpdateService"
