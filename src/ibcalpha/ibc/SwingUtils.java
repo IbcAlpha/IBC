@@ -651,7 +651,7 @@ class SwingUtils {
      */
     static boolean titleEquals(Window window, String text) {
         String title = getWindowTitle(window);
-        return (title != null && title.equals(text));
+        return (title != null && title.equalsIgnoreCase(text));
     }
 
     static String windowEventToString(int eventID) {
