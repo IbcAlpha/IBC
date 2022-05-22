@@ -141,10 +141,11 @@ set HIDE=
 ::     a valid location, especially when setting up IBC. You must
 ::     have write access to the specified folder.
 ::
-::     Once everything runs properly, you can prevent further logging by 
-::     removing the value as show below (but this is not recommended): 
+::    If the value is set to "CON", log information is sent to the terminal
+::    window.
 ::
-::     set LOG_PATH=
+::    If the setting is removed entirely (or commented out), no log information
+::    is captured at all (but this is not recommended).
 
 
 ::   TWSUSERID

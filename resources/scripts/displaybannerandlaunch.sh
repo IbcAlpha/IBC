@@ -3,7 +3,9 @@
 # get the IBC version
 read IBC_VRSN < "${IBC_PATH}/version"
 
-if [[ -n "$LOG_PATH" ]]; then
+if [[ -z ${LOG_PATH+x} ]]; then
+	:
+elif [[ -n "$LOG_PATH" ]]; then
 	if [[ ! -e  "$LOG_PATH" ]]; then
 		mkdir -p "$LOG_PATH"
 	fi
@@ -55,13 +57,20 @@ export IBC_VRSN
 # forward signals (see https://veithen.github.io/2014/11/16/sigterm-propagation.html)
 trap 'kill -TERM $PID' TERM INT
 
+if [[ -z ${LOG_PATH+x} ]]; then
+"${IBC_PATH}/scripts/ibcstart.sh" "${TWS_MAJOR_VRSN}" ${gw_flag} \
+     "--tws-path=${TWS_PATH}" "--tws-settings-path=${TWS_SETTINGS_PATH}" \
+     "--ibc-path=${IBC_PATH}" "--ibc-ini=${IBC_INI}" \
+     "--user=${TWSUSERID}" "--pw=${TWSPASSWORD}" "--fix-user=${FIXUSERID}" "--fix-pw=${FIXPASSWORD}" \
+     "--java-path=${JAVA_PATH}" "--mode=${TRADING_MODE}" "--on2fatimeout=${TWOFA_TIMEOUT_ACTION}"
+else
 "${IBC_PATH}/scripts/ibcstart.sh" "${TWS_MAJOR_VRSN}" ${gw_flag} \
      "--tws-path=${TWS_PATH}" "--tws-settings-path=${TWS_SETTINGS_PATH}" \
      "--ibc-path=${IBC_PATH}" "--ibc-ini=${IBC_INI}" \
      "--user=${TWSUSERID}" "--pw=${TWSPASSWORD}" "--fix-user=${FIXUSERID}" "--fix-pw=${FIXPASSWORD}" \
      "--java-path=${JAVA_PATH}" "--mode=${TRADING_MODE}" "--on2fatimeout=${TWOFA_TIMEOUT_ACTION}" \
      >> "${log_file}" 2>&1 &
-
+fi
 PID=$!
 wait $PID
 trap - TERM INT
