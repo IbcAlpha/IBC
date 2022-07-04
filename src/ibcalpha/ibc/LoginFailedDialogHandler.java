@@ -21,6 +21,7 @@ package ibcalpha.ibc;
 import java.awt.Frame;
 import java.awt.Window;
 import java.awt.event.WindowEvent;
+import java.util.concurrent.TimeUnit;
 import javax.swing.JDialog;
 
 public class LoginFailedDialogHandler implements WindowHandler  {
@@ -44,9 +45,10 @@ public class LoginFailedDialogHandler implements WindowHandler  {
             Utils.logToConsole("Login failed");
             LoginManager.loginManager().setLoginState(LoginManager.LoginState.LOGIN_FAILED);
         } else {
-            if ((LoginManager.loginManager().getLoginFrame().getExtendedState() & Frame.ICONIFIED) == Frame.ICONIFIED)
+            if ((LoginManager.loginManager().getLoginFrame().getExtendedState() & Frame.ICONIFIED) == Frame.ICONIFIED) {
                 Utils.logToConsole("Ensure login frame visible");
                 LoginManager.loginManager().getLoginFrame().setExtendedState(Frame.NORMAL);
+            }
         }
     }
 

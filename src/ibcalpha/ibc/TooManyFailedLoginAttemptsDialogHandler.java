@@ -18,10 +18,13 @@
 
 package ibcalpha.ibc;
 
-import java.awt.Frame;
 import java.awt.Window;
 import java.awt.event.WindowEvent;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.concurrent.TimeUnit;
 import javax.swing.JDialog;
+import java.util.regex.*;
 
 public class TooManyFailedLoginAttemptsDialogHandler implements WindowHandler {
         @Override
@@ -36,17 +39,42 @@ public class TooManyFailedLoginAttemptsDialogHandler implements WindowHandler {
 
     @Override
     public void handleWindow(Window window, int eventID) {
-        // restart IBC in 5 minutes, which will ensure enough
-        // time has passed before the next login attempt
-        Utils.logToConsole("Too many failed login attempts");
-        
-        if (Settings.settings().getBoolean("ExitAfterSecondFactorAuthenticationTimeout", false)) {
-            Utils.logToConsole("Restarting in 5 minutes");
-            LoginManager.loginManager().restartAfterTime(300,"IBC closing after too many failed login attempts");
-            if (!SwingUtils.clickButton(window, "OK")) {
-                Utils.logError("could not dismiss \"Too many failed login attempts\" dialog because we could not find one of the controls.");
+        // this dialog will contain a text area with a message like this:
+        //      "Too many failed login attempts. Please wait 53 seconds before attempting to re-login again."
+        // or like this:
+        //      "Too many failed login attempts. Please wait 4 minutes & 47 seconds before attempting to re-login again."
+        //
+            String message = SwingUtils.findTextArea(window, "Too many failed login attempts").getText();
+            Utils.logToConsole(message);
+            Pattern p = Pattern.compile("(?:Too many failed login attempts. Please wait (?:(\\d\\d?) minute(?:s)? )?(?:& )?(?:(\\d\\d?) second(?:s)?)?)?");
+            Matcher m = p.matcher(message);
+            String minutes = "";
+            String seconds = "";
+            if (m.find()) {
+                minutes = m.group(1);
+                if (minutes == null || minutes.isEmpty()) minutes = "0";
+                seconds = m.group(2);
+                if (seconds == null || seconds.isEmpty()) seconds = "0";
             }
-        }
+            Duration waitfor = Duration.parse("PT" + minutes + "M" + seconds + "S").plus(Duration.ofSeconds(3));
+
+            if (Settings.settings().getBoolean("ReloginAfterSecondFactorAuthenticationTimeout", false)) {
+                Utils.logToConsole("Will re-login at " + Utils.formatDate(LocalDateTime.now().plus(waitfor)) + 
+                                    "; login number: " + 
+                                    (LoginManager.loginManager().getLoginHandler().currentLoginAttemptNumber() + 1));
+
+                MyScheduledExecutorService.getInstance().schedule(() -> {
+                    GuiDeferredExecutor.instance().execute(
+                        () -> {
+                            LoginManager.loginManager().getLoginHandler().initiateLogin(LoginManager.loginManager().getLoginFrame());
+                        }
+                    );
+                }, waitfor.getSeconds(), TimeUnit.SECONDS);
+
+                if (!SwingUtils.clickButton(window, "OK")) {
+                    Utils.logError("could not dismiss \"Too many failed login attempts\" dialog because we could not find one of the controls.");
+                }
+            }
     }
 
     @Override

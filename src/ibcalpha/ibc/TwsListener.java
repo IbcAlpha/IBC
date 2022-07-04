@@ -61,17 +61,21 @@ class TwsListener
             }
 
             GuiDeferredExecutor.instance().execute(() -> {
-                logWindow(window, eventID);
+                try{
+                    logWindow(window, eventID);
 
-                for (WindowHandler wh : windowHandlers) {
-                    if (wh.recogniseWindow(window))  {
-                            logWindowStructure(window, eventID, true);
-                            if (wh.filterEvent(window, eventID)) wh.handleWindow(window, eventID);
-                        return;
+                    for (WindowHandler wh : windowHandlers) {
+                        if (wh.recogniseWindow(window))  {
+                                logWindowStructure(window, eventID, true);
+                                if (wh.filterEvent(window, eventID)) wh.handleWindow(window, eventID);
+                            return;
+                        }
                     }
-                }
 
-                logWindowStructure(window, eventID, false);
+                    logWindowStructure(window, eventID, false);
+                } catch (Throwable e) {
+                    Utils.exitWithException(ErrorCodes.ERROR_CODE_UNHANDLED_EXCEPTION, e);
+                }
             });
         } catch (Throwable e) {
             Utils.exitWithException(ErrorCodes.ERROR_CODE_UNHANDLED_EXCEPTION, e);

@@ -86,7 +86,7 @@ set HIDE=
 ::   TWOFA_TIMEOUT_ACTION
 ::
 ::     If you use the IBKR Mobile app for second factor authentication, and
-::     you don't acknowledge the alert before the timeout expires, this
+::     after you acknowledge the alert login fails to proceed, this
 ::     setting determines what action will occur. If you set it to 'restart',
 ::     IBC will be automatically restarted and the authentication sequence
 ::     will be repeated, giving you another opportunity to complete the login.
@@ -96,7 +96,7 @@ set HIDE=
 ::     to periodically restart IBC, you should set this to 'exit'.
 ::
 ::     Note also that if you set this to 'restart', you must also set 
-::     ExitAfterSecondFactorAuthenticationTimeout=yes in your config.ini file.
+::     ReloginAfterSecondFactorAuthenticationTimeout=yes in your config.ini file.
 
 
 ::   IBC_PATH

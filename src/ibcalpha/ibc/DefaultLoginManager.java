@@ -63,6 +63,8 @@ public class DefaultLoginManager extends LoginManager {
     private final String message;
 
     private volatile JFrame loginFrame = null;
+    
+    private volatile AbstractLoginHandler loginHandler = null;
 
     private final boolean fromSettings;
 
@@ -131,6 +133,16 @@ public class DefaultLoginManager extends LoginManager {
     @Override
     public void setLoginFrame(JFrame window) {
         loginFrame = window;
+    }
+
+    @Override
+    public AbstractLoginHandler getLoginHandler() {
+        return loginHandler;
+    }
+
+    @Override
+    public void setLoginHandler(AbstractLoginHandler handler) {
+        loginHandler = handler;
     }
 
     private static String getFIXPasswordFromSettings() {

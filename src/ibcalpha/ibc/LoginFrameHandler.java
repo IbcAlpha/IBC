@@ -38,6 +38,8 @@ final class LoginFrameHandler extends AbstractLoginHandler {
                 (SwingUtils.findButton(window, "Log In") != null ||
                 SwingUtils.findButton(window, "Paper Log In") != null));
     }
+    
+    private boolean listeningForUsernameChange;
 
     @Override
     protected final boolean initialise(final Window window, int eventID) throws IbcException {
@@ -48,47 +50,51 @@ final class LoginFrameHandler extends AbstractLoginHandler {
         final JTextField userName = SwingUtils.findTextField(window, 0);
         if (userName == null) throw new IbcException("Username field");
 
-        // Add a DocumentListener to the username field, which will set the 
-        // "Use/store settings on server" checkbox as required. This is
-        // necessary because when a valid username is entered, TWS sets the
-        // checkbox according to the latest saved settings for that user, which
-        // may not be what is now required by the StoreSettingsOnServer setting.
-        userName.getDocument().addDocumentListener(new DocumentListener(){ 
-            @Override
-            public void insertUpdate(DocumentEvent de) {
-                setStoreSettingsOnServerCheckbox();
-            }
+        if (! listeningForUsernameChange) {
+            listeningForUsernameChange = true;
 
-            @Override
-            public void removeUpdate(DocumentEvent de) {
-                setStoreSettingsOnServerCheckbox();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent de) {
-                setStoreSettingsOnServerCheckbox();
-            }
-
-            private void setStoreSettingsOnServerCheckbox() {
-                if (Settings.settings().getString("StoreSettingsOnServer", "").length() != 0) {
-                    final String STORE_SETTINGS_ON_SERVER_CHECKBOX = "Use/store settings on server";
-
-                    // we defer setting the checkbox: if we do it inline, TWS's setting 
-                    // overwrites it
-                    GuiDeferredExecutor.instance().execute(() -> {
-                        boolean storeSettingsOnServer = Settings.settings().getBoolean("StoreSettingsOnServer", false);
-                        if (! SwingUtils.setCheckBoxSelected(
-                                window,
-                                STORE_SETTINGS_ON_SERVER_CHECKBOX,
-                                storeSettingsOnServer)) {
-                            Utils.exitWithError(ErrorCodes.ERROR_CODE_CANT_FIND_CONTROL, "could not login: could not find control: " + STORE_SETTINGS_ON_SERVER_CHECKBOX);
-                        }
-                        Utils.logToConsole("Use/store settings on server selected: " + storeSettingsOnServer);
-                    });
+            // Add a DocumentListener to the username field, which will set the 
+            // "Use/store settings on server" checkbox as required. This is
+            // necessary because when a valid username is entered, TWS sets the
+            // checkbox according to the latest saved settings for that user, which
+            // may not be what is now required by the StoreSettingsOnServer setting.
+            userName.getDocument().addDocumentListener(new DocumentListener(){ 
+                @Override
+                public void insertUpdate(DocumentEvent de) {
+                    setStoreSettingsOnServerCheckbox();
                 }
-            }
 
-        });
+                @Override
+                public void removeUpdate(DocumentEvent de) {
+                    //setStoreSettingsOnServerCheckbox();
+                }
+
+                @Override
+                public void changedUpdate(DocumentEvent de) {
+                    setStoreSettingsOnServerCheckbox();
+                }
+
+                private void setStoreSettingsOnServerCheckbox() {
+                    if (Settings.settings().getString("StoreSettingsOnServer", "").length() != 0) {
+                        final String STORE_SETTINGS_ON_SERVER_CHECKBOX = "Use/store settings on server";
+
+                        // we defer setting the checkbox: if we do it inline, TWS's setting 
+                        // overwrites it
+                        GuiDeferredExecutor.instance().execute(() -> {
+                            boolean storeSettingsOnServer = Settings.settings().getBoolean("StoreSettingsOnServer", false);
+                            if (! SwingUtils.setCheckBoxSelected(
+                                    window,
+                                    STORE_SETTINGS_ON_SERVER_CHECKBOX,
+                                    storeSettingsOnServer)) {
+                                Utils.exitWithError(ErrorCodes.ERROR_CODE_CANT_FIND_CONTROL, "could not login: could not find control: " + STORE_SETTINGS_ON_SERVER_CHECKBOX);
+                            }
+                            Utils.logToConsole("Use/store settings on server selected: " + storeSettingsOnServer);
+                        });
+                    }
+                }
+
+            });
+        }
         return true;
     }
 

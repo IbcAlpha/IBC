@@ -49,23 +49,35 @@ public abstract class AbstractLoginHandler implements WindowHandler {
 
     @Override
     public final void handleWindow(Window window, int eventID) {
+        if (LoginManager.loginManager().getLoginHandler() == null) LoginManager.loginManager().setLoginHandler(this);
         LoginManager.loginManager().setLoginFrame((JFrame) window);
         switch (LoginManager.loginManager().getLoginState()){
             case LOGGED_OUT:
-                LoginManager.loginManager().setLoginState(LoginManager.LoginState.AWAITING_CREDENTIALS);
-                try {
-                    if (!initialise(window, eventID)) return;
-                    if (!setFields(window, eventID)) return;
-                    if (!preLogin(window, eventID)) return;
-                    doLogin(window);
-                } catch (IbcException e) {
-                    Utils.exitWithError(ErrorCodes.ERROR_CODE_CANT_FIND_CONTROL, "could not login: could not find control: " + e.getMessage());
-                }
+                initiateLogin(window);
         }
     }
 
     @Override
     public abstract boolean recogniseWindow(Window window);
+    
+    private static int loginAttemptNumber = 0;
+    int currentLoginAttemptNumber() {
+        return loginAttemptNumber;
+    }
+    
+    void initiateLogin(Window window) {
+        LoginManager.loginManager().setLoginState(LoginManager.LoginState.AWAITING_CREDENTIALS);
+        try {
+            if (!initialise(window, WindowEvent.WINDOW_OPENED)) return;
+            if (!setFields(window, WindowEvent.WINDOW_OPENED)) return;
+            if (!preLogin(window, WindowEvent.WINDOW_OPENED)) return;
+
+            Utils.logToConsole("Login attempt: " + ++loginAttemptNumber);
+            doLogin(window);
+        } catch (IbcException e) {
+            Utils.exitWithError(ErrorCodes.ERROR_CODE_CANT_FIND_CONTROL, "could not login: could not find control: " + e.getMessage());
+        }
+    }
 
     private void doLogin(final Window window) throws IbcException {
         JButton b = findLoginButton(window);
