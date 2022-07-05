@@ -102,6 +102,8 @@ public abstract class LoginManager {
 
         final Duration d = Duration.between(LoginStartTime, Instant.now());
         LoginStartTime = null;
+        
+        Utils.logToConsole("Duration since login: " + d.getSeconds() + " seconds");
 
         if (d.getSeconds() < SecondFactorAuthenticationTimeout) {
             // The 2FA prompt must have been handled by the user, so authentication

@@ -25,9 +25,6 @@ import java.awt.event.WindowEvent;
 import java.util.List;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.JList;
-import javax.swing.JTextArea;
-import javax.swing.ListModel;
 
 class TwsListener
         implements AWTEventListener {
@@ -49,16 +46,6 @@ class TwsListener
 
             final Window window;
             window = ((WindowEvent) event).getWindow();
-
-            if (SwingUtils.titleContains(window, "Second Factor Authentication") &&
-                ! Settings.settings().getBoolean("ReadOnlyLogin", false)) {
-                GuiDeferredExecutor.instance().execute(() -> {
-                    logWindow(window, eventID);
-                    logWindowStructure(window, eventID, true);
-                    handleSecondFactorAuthenticationDialogue(window, eventID);
-                });
-                return;
-            }
 
             GuiDeferredExecutor.instance().execute(() -> {
                 try{
@@ -155,58 +142,6 @@ class TwsListener
         }
         
         return logStructureWhen;
-    }
-
-    private void handleSecondFactorAuthenticationDialogue(final Window window, final int eventID) {
-        // Only handle SFA while ReadOnlyLogin mode is off.
-
-        // Ideally we would handle the Second Factor Authentication dialog event using
-        // a WindowHandler-derived class, as for all the other dialogs. But it turns out that
-        // this does not work for TWS (though it does for Gateway), because it's impossible to
-        // recognise the dialog any time after this point. This is completely bizarre, but I
-        // suspect TWS does something unusual in an attempt to prevent anything interfering
-        // with the dialog. Anyone interested in the background to this discovery should look
-        // at this rather long thread in the IBC User Group:
-        //    https://groups.io/g/ibcalpha/topic/73312303#1165
-
-        Utils.logToConsole("Second Factor Authentication dialog event: " + SwingUtils.windowEventToString(eventID));
-        if (eventID == WindowEvent.WINDOW_OPENED) {
-            Utils.logToConsole("Second Factor Authentication dialog opened");
-
-            JTextArea t = SwingUtils.findTextArea(window, "Select second factor device");
-            if (t != null){
-                // this area appears in the Second Factor Authentication dialog when the
-                // user has enabled more than one second factor authentication method
-                
-                JList<?> deviceList = SwingUtils.findList(window, 0);
-                if (deviceList == null) {
-                    Utils.logError("could not find second factor device list.");
-                    return;
-                }
-                String secondFactorDevice = Settings.settings().getString("SecondFactorDevice", "");
-                if (secondFactorDevice.length() == 0) return;
-                
-                ListModel<?> model = deviceList.getModel();
-                for (int i = 0; i < model.getSize(); i++) {
-                    String entry = model.getElementAt(i).toString().trim();
-                    if (entry.equals(secondFactorDevice)) {
-                        deviceList.setSelectedIndex(i);
-                        
-                        if (!SwingUtils.clickButton(window, "OK")) {
-                            Utils.logError("could not select second factor device: OK button not found");
-                        }
-                        return;
-                    }
-                }
-                Utils.logError("could not find second factor device '" + secondFactorDevice + "' in the list");
-                
-            } else {
-                LoginManager.loginManager().setLoginState(LoginManager.LoginState.TWO_FA_IN_PROGRESS);
-            }
-        } else if (eventID == WindowEvent.WINDOW_CLOSED) {
-            Utils.logToConsole("Second Factor Authentication dialog closed");
-            LoginManager.loginManager().secondFactorAuthenticationDialogClosed();
-        }
     }
 
     private void logWindow(Window window, int eventID) {

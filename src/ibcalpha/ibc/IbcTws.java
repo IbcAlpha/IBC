@@ -323,7 +323,12 @@ public class IbcTws {
         windowHandlers.add(new ExistingSessionDetectedDialogHandler());
         windowHandlers.add(new ApiChangeConfirmationDialogHandler());
         windowHandlers.add(new SplashFrameHandler());
+
+        // this line must come before the one for SecurityCodeDialogHandler
+        // because both contain an "Enter Read Only" button
+        windowHandlers.add(new SecondFactorAuthenticationDialogHandler());
         windowHandlers.add(new SecurityCodeDialogHandler());
+        
         windowHandlers.add(new ReloginDialogHandler());
         windowHandlers.add(new NonBrokerageAccountDialogHandler());
         windowHandlers.add(new ExitConfirmationDialogHandler());
