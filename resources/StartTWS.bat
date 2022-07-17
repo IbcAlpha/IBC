@@ -21,7 +21,7 @@ setlocal enableextensions enabledelayedexpansion
 ::=============================================================================+
 
 
-set TWS_MAJOR_VRSN=981
+set TWS_MAJOR_VRSN=1012
 set CONFIG=%USERPROFILE%\Documents\IBC\config.ini
 set TRADING_MODE=
 set TWOFA_TIMEOUT_ACTION=exit
