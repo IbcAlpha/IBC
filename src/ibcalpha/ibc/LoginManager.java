@@ -54,6 +54,15 @@ public abstract class LoginManager {
         AWAITING_CREDENTIALS
     }
 
+    boolean readonlyLoginRequired() {
+        boolean readOnly = Settings.settings().getBoolean("ReadOnlyLogin", false);
+        if (readOnly && MainWindowManager.mainWindowManager().isGateway()) {
+            Utils.logError("Read-only login not supported by Gateway");
+            return false;
+        }
+        return readOnly;
+    }
+    
     void startSession() {
         int loginDialogDisplayTimeout = Settings.settings().getInt("LoginDialogDisplayTimeout", 60);
         Utils.logToConsole("Starting session: will exit if login dialog is not displayed within " + loginDialogDisplayTimeout + " seconds");

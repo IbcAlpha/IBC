@@ -31,8 +31,8 @@ class TwsListener
 
     private final List<WindowHandler> windowHandlers;
 
-    private String logStructureScope;
-    private String logStructureWhen;
+    private static String logStructureScope;
+    private static String logStructureWhen;
 
     TwsListener (List<WindowHandler> windowHandlers) {
         this.windowHandlers = windowHandlers;
@@ -69,7 +69,7 @@ class TwsListener
         }
     }
     
-    private void getLogStructureParameters() {
+    private static void getLogStructureParameters() {
         // legacy deprecated setting overrides explicit values of LogStructureScope 
         // and LogStructureWhen
         final String logComponentsSetting = Settings.settings().getString("LogComponents", "ignore").toLowerCase();
@@ -78,8 +78,7 @@ class TwsListener
         logStructureWhen = getLogStructureWhen(logComponentsSetting);
     }
     
-    private String getLogStructureScope(String logComponentsSetting) {
-        String logStructureScope;
+    private static String getLogStructureScope(String logComponentsSetting) {
         if (logComponentsSetting.equals("ignore")) {
             logStructureScope = Settings.settings().getString("LogStructureScope", "known").toLowerCase();
         } else {
@@ -100,8 +99,7 @@ class TwsListener
         return logStructureScope;
     }
     
-    private String getLogStructureWhen(String logComponentsSetting) {
-        String logStructureWhen;
+    private static String getLogStructureWhen(String logComponentsSetting) {
         if (logComponentsSetting.equals("ignore")) {
             logStructureWhen = Settings.settings().getString("LogStructureWhen", "never").toLowerCase();
         } else {
@@ -144,11 +142,12 @@ class TwsListener
         return logStructureWhen;
     }
 
-    private void logWindow(Window window, int eventID) {
+    static void logWindow(Window window, int eventID) {
         Utils.logToConsole("detected " + getWindowTypeAndTitle(window) + "; event=" + SwingUtils.windowEventToString(eventID));
     }
 
-    private String getWindowTypeAndTitle(Window window) {
+    private static String getWindowTypeAndTitle(Window window) {
+        if (window == null) throw new NullPointerException("window is null");
         if (window instanceof JFrame) {
             return "frame entitled: " + SwingUtils.getWindowTitle(window);
         } else if (window instanceof JDialog) {
@@ -158,7 +157,7 @@ class TwsListener
         }
     }
 
-    private void logWindowStructure(Window window, int eventID, boolean windowKnown) {
+    static void logWindowStructure(Window window, int eventID, boolean windowKnown) {
         if (logStructureScope.equals("known") && !windowKnown) {
             return;
         } else if (logStructureScope.equals("unknown") && windowKnown) {

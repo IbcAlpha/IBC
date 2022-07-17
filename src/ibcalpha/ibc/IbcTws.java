@@ -303,7 +303,7 @@ public class IbcTws {
     }
 
     private static List<WindowHandler> createWindowHandlers() {
-        List<WindowHandler> windowHandlers = new ArrayList<WindowHandler>();
+        List<WindowHandler> windowHandlers = new ArrayList<>();
 
         windowHandlers.add(new AcceptIncomingConnectionDialogHandler());
         windowHandlers.add(new BlindTradingWarningDialogHandler());
@@ -326,7 +326,7 @@ public class IbcTws {
 
         // this line must come before the one for SecurityCodeDialogHandler
         // because both contain an "Enter Read Only" button
-        windowHandlers.add(new SecondFactorAuthenticationDialogHandler());
+        windowHandlers.add(SecondFactorAuthenticationDialogHandler.getInstance());
         windowHandlers.add(new SecurityCodeDialogHandler());
         
         windowHandlers.add(new ReloginDialogHandler());

@@ -21,12 +21,19 @@ package ibcalpha.ibc;
 import java.awt.Window;
 import java.awt.event.WindowEvent;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JList;
-import javax.swing.JTextArea;
 import javax.swing.ListModel;
 
 public class SecondFactorAuthenticationDialogHandler implements WindowHandler {
-
+    private SecondFactorAuthenticationDialogHandler() {};
+    
+    static SecondFactorAuthenticationDialogHandler _secondFactorAuthenticationDialogHandler = new SecondFactorAuthenticationDialogHandler();
+    
+    static SecondFactorAuthenticationDialogHandler getInstance() {
+        return _secondFactorAuthenticationDialogHandler;
+    }
+    
     @Override
     public boolean filterEvent(Window window, int eventId) {
         switch (eventId) {
@@ -42,7 +49,7 @@ public class SecondFactorAuthenticationDialogHandler implements WindowHandler {
     @Override
     public void handleWindow(Window window, int eventID) {
         if (eventID == WindowEvent.WINDOW_OPENED) {
-            if (readonlyLoginRequired()) {
+            if (LoginManager.loginManager().readonlyLoginRequired()) {
                 doReadonlyLogin(window);
             } else if (secondFactorDeviceSelectionRequired(window)) {
                 selectSecondFactorDevice(window);
@@ -50,22 +57,19 @@ public class SecondFactorAuthenticationDialogHandler implements WindowHandler {
                 LoginManager.loginManager().setLoginState(LoginManager.LoginState.TWO_FA_IN_PROGRESS);
             }
         } else if (eventID == WindowEvent.WINDOW_CLOSED) {
-            if (readonlyLoginRequired()) return;
+            if (LoginManager.loginManager().readonlyLoginRequired()) return;
             LoginManager.loginManager().secondFactorAuthenticationDialogClosed();
         }
     }
 
     @Override
     public boolean recogniseWindow(Window window) {
-        if (! (window instanceof JDialog)) return false;
+        // For TWS this window is a JFrame; for Gateway it is a JDialog
+        if (! (window instanceof JDialog || window instanceof JFrame)) return false;
         
         return SwingUtils.titleContains(window, "Second Factor Authentication");
     }
 
-    private boolean readonlyLoginRequired() {
-        return  Settings.settings().getBoolean("ReadOnlyLogin", false);
-    }
-    
     private void doReadonlyLogin(Window window){
         if (SwingUtils.clickButton(window, "Enter Read Only")) {
             Utils.logToConsole("initiating read-only login.");
