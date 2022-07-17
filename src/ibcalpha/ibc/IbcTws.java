@@ -495,6 +495,11 @@ public class IbcTws {
         if (!sendMarketDataInLots.equals("")) {
             (new ConfigurationTask(new ConfigureSendMarketDataInLotsForUSstocksTask(Settings.settings().getBoolean("SendMarketDataInLotsForUSstocks", true)))).executeAsync();
         }
+        
+        String autoLogoffTime = Settings.settings().getString("AutoLogoffTime", "");
+        if (!autoLogoffTime.equals("")) {
+            (new ConfigurationTask(new ConfigureAutoLogoffTimeTask(autoLogoffTime))).executeAsync();
+        }
 
         Utils.sendConsoleOutputToTwsLog(!Settings.settings().getBoolean("LogToConsole", false));
     }
