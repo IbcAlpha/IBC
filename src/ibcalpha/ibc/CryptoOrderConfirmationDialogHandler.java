@@ -52,6 +52,7 @@ public class CryptoOrderConfirmationDialogHandler implements WindowHandler {
                 } else {
                     Utils.logError("could not cancel cryptocurrency order because we could not find the Cancel button");
                 }
+                break;
             default:
                 Utils.logError("ConfirmCryptoCurrencyOrders setting is invalid");
         }
