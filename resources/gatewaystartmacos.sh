@@ -53,8 +53,9 @@ JAVA_PATH=
 #       Build 10.12.2a, Dec 14, 2021 11:07:54 AM
 #
 #     In the first case, the major version number is 981. In the second case,
-#     it is 1012 (ie ignore the period after the first past of the version
-#     number).
+#     it is 10.12. (Note that this is different from the equivalent Windows
+#     and Linux settings because the macOS installer includes the period in
+#     the install folder name).
 #
 #     Do not include the rest of the version number in this setting.
 
