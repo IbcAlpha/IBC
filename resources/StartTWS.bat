@@ -21,7 +21,7 @@ setlocal enableextensions enabledelayedexpansion
 ::=============================================================================+
 
 
-set TWS_MAJOR_VRSN=981
+set TWS_MAJOR_VRSN=1012
 set CONFIG=%USERPROFILE%\Documents\IBC\config.ini
 set TRADING_MODE=
 set TWOFA_TIMEOUT_ACTION=exit
@@ -86,7 +86,7 @@ set HIDE=
 ::   TWOFA_TIMEOUT_ACTION
 ::
 ::     If you use the IBKR Mobile app for second factor authentication, and
-::     you don't acknowledge the alert before the timeout expires, this
+::     after you acknowledge the alert login fails to proceed, this
 ::     setting determines what action will occur. If you set it to 'restart',
 ::     IBC will be automatically restarted and the authentication sequence
 ::     will be repeated, giving you another opportunity to complete the login.
@@ -96,7 +96,7 @@ set HIDE=
 ::     to periodically restart IBC, you should set this to 'exit'.
 ::
 ::     Note also that if you set this to 'restart', you must also set 
-::     ExitAfterSecondFactorAuthenticationTimeout=yes in your config.ini file.
+::     ReloginAfterSecondFactorAuthenticationTimeout=yes in your config.ini file.
 
 
 ::   IBC_PATH
@@ -129,10 +129,11 @@ set HIDE=
 ::     a valid location, especially when setting up IBC. You must
 ::     have write access to the specified folder.
 ::
-::     Once everything runs properly, you can prevent further logging by 
-::     removing the value as show below (but this is not recommended): 
+::    If the value is set to "CON", log information is sent to the terminal
+::    window.
 ::
-::     set LOG_PATH=
+::    If the setting is removed entirely (or commented out), no log information
+::    is captured at all (but this is not recommended).
 
 
 ::   TWSUSERID

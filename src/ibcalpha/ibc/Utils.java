@@ -20,8 +20,8 @@ package ibcalpha.ibc;
 
 import java.awt.Container;
 import java.io.PrintStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import javax.swing.JDialog;
@@ -32,7 +32,7 @@ import javax.swing.tree.TreePath;
 
 class Utils {
 
-    static final SimpleDateFormat _DateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
+    static final DateTimeFormatter _dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss:SSS");
 
     // set these to the defaults, so that we can continue to use them 
     // even when TWS redirects System.out and System.err to its own logfile
@@ -158,8 +158,12 @@ class Utils {
         }
     }
 
+    static String formatDate(LocalDateTime date) {
+        return _dateFormatter.format(date);
+    }
+    
     private static String formatMessage(String message) {
-        return _DateFormatter.format(new Date()) + " IBC: " + message.substring(0,1).toUpperCase() + message.substring(1);
+        return _dateFormatter.format(LocalDateTime.now()) + " IBC: " + message.substring(0,1).toUpperCase() + message.substring(1);
     }
 
     /**

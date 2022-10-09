@@ -22,6 +22,8 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Window;
 import java.awt.event.WindowEvent;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import javax.swing.ComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -62,16 +64,20 @@ class SwingUtils {
     static boolean clickButton(final Window window, final String buttonText) {
         final JButton button = findButton(window, buttonText);
         if (button == null) return false;
+        clickButton(button);
+        return true;
+    }
 
+    static void clickButton(final JButton button) {
         if (! button.isEnabled()) {
             button.setEnabled(true);
-            Utils.logToConsole("Button was disabled, has been enabled: " + buttonText);
+            Utils.logToConsole("Button was disabled, has been enabled: " + button.getText());
         }
 
-        Utils.logToConsole("Click button: " + buttonText);
+        Utils.logToConsole("Click button: " + button.getText());
         button.doClick();
-        if (! button.isEnabled()) Utils.logToConsole("Button now disabled: " + buttonText);
-        return true;
+        if (! button.isEnabled()) Utils.logToConsole("Button now disabled: " + button.getText());
+        return;
     }
 
     /**
@@ -558,7 +564,11 @@ class SwingUtils {
         try {
             for (Component component : window.getComponents()) appendComponentStructure(component, builder);
         } catch (Exception e) {
-            builder.append("Exception occurred while generating window structure: " + e);
+            builder.append("Exception occurred while generating window structure: ");
+            builder.append(e.toString());
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            builder.append(sw.toString());
         }
         builder.append(NEWLINE);
         builder.append(NEWLINE);
@@ -651,7 +661,7 @@ class SwingUtils {
      */
     static boolean titleEquals(Window window, String text) {
         String title = getWindowTitle(window);
-        return (title != null && title.equals(text));
+        return (title != null && title.equalsIgnoreCase(text));
     }
 
     static String windowEventToString(int eventID) {
@@ -682,7 +692,7 @@ class SwingUtils {
     }
 
     static final String NO_TITLE = "** no title **"; 
-    static String getWindowTitle(Window window) {
+      static String getWindowTitle(Window window) {
         String title = NO_TITLE;
         if (window instanceof JDialog) {
             title = ((JDialog)window).getTitle();

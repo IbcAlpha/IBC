@@ -513,7 +513,7 @@ second factor authentication via the button that it prominently displays.
 
 Once it's registered, every time you login to TWS or Gateway (including when
 IBC does it for you) you'll receive an alert on your device. When you then
-enter your registered PIN into the app, your login will complete.
+acknowledge the alert, your login will complete.
 
 Note that IBC cannot itself assist in the process, so you'll have to actually
 perform the necessary actions on your device yourself, but it's fairly
@@ -523,18 +523,24 @@ TWS, which is helpful if you've used some automated mechanism to start TWS.
 However, if you fail to respond to the alert within a fixed period (currently
 3 minutes), you will not then be able to complete your login without manual
 intervention at TWS, and this is where IBC _can_ help. You can canfigure IBC
-to detect such timeouts and to shut down when this happens. And you can set
-it so that IBC is automatically restarted, thus restarting the normal login
-sequence and thereby giving you another chance to receive the second factor
-authentication alert on your device. This timeout/restart mechanism can
-repeat any number of times.
-
+to detect such timeouts and re-initiate the login process when this happens.
 To enable this behaviour you need this setting in your `config.ini` file:
 
-`ExitAfterSecondFactorAuthenticationTimeout=yes`
+`ReloginAfterSecondFactorAuthenticationTimeout=yes`
 
-This will ensure that IBC exits when it detects a second factor authentication
-timeout. If you also want it to be automatically restarted, you must also
+This timeout/relogin mechanism can repeat any number of times until you
+acknowledge the alert to enable login to succeed.
+
+In some circumstances, even though you acknowledge the alert, login doesn't
+complete successfully. IBC can deal with this situation automatically by
+shutting down and restarting. This repeats the normal login sequence and thus
+gives you another chance to receive the second factor authentication alert
+on your device.
+
+This behaviour is controlled by the
+`SecondFactorAuthenticationExitInterval` setting, which is the number of
+seconds IBC waits for login to complete when the user has acknowledged the
+alert, after which IBC closes down. For automatic restart, you must also
 set the `TWOFA_TIMEOUT_ACTION` variable in your start script file to `restart`
 (see the notes for this variable in the relevant start script).
 

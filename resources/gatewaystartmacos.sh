@@ -18,7 +18,7 @@
 #=============================================================================+
 
 
-TWS_MAJOR_VRSN=981
+TWS_MAJOR_VRSN=1012
 IBC_INI=~/ibc/config.ini
 TRADING_MODE=
 TWOFA_TIMEOUT_ACTION=exit
@@ -53,8 +53,9 @@ JAVA_PATH=
 #       Build 10.12.2a, Dec 14, 2021 11:07:54 AM
 #
 #     In the first case, the major version number is 981. In the second case,
-#     it is 1012 (ie ignore the period after the first past of the version
-#     number).
+#     it is 10.12. (Note that this is different from the equivalent Windows
+#     and Linux settings because the macOS installer includes the period in
+#     the install folder name).
 #
 #     Do not include the rest of the version number in this setting.
 
@@ -84,7 +85,7 @@ JAVA_PATH=
 #   TWOFA_TIMEOUT_ACTION
 #
 #     If you use the IBKR Mobile app for second factor authentication, and
-#     you don't acknowledge the alert before the timeout expires, this
+#     after you acknowledge the alert login fails to proceed, this
 #     setting determines what action will occur. If you set it to 'restart',
 #     IBC will be automatically restarted and the authentication sequence
 #     will be repeated, giving you another opportunity to complete the login.
@@ -93,8 +94,8 @@ JAVA_PATH=
 #     Note that if you have another automated mechanism (such as crontab)
 #     to periodically restart IBC, you should set this to 'exit'.
 #
-#     Note also that if you set this to 'restart', you must also set
-#     ExitAfterSecondFactorAuthenticationTimeout=yes in your config.ini file.
+#     Note also that if you set this to 'restart', you must also set 
+#     ReloginAfterSecondFactorAuthenticationTimeout=yes in your config.ini file.
 
 
 #   IBC_PATH
@@ -127,10 +128,10 @@ JAVA_PATH=
 #     a valid location, especially when setting up IBC. You must
 #     have write access to the specified folder.
 #
-#     Once everything runs properly, you can prevent further logging by
-#     removing the value as show below (but this is not recommended):
+#     If no value is set, log information is sent to the terminal window.
 #
-#     LOG_PATH=
+#     If the setting is removed entirely (or commented out), no log information
+#     is captured at all (but this is not recommended).
 
 
 #   TWSUSERID

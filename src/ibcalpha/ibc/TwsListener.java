@@ -25,17 +25,14 @@ import java.awt.event.WindowEvent;
 import java.util.List;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.JList;
-import javax.swing.JTextArea;
-import javax.swing.ListModel;
 
 class TwsListener
         implements AWTEventListener {
 
     private final List<WindowHandler> windowHandlers;
 
-    private String logStructureScope;
-    private String logStructureWhen;
+    private static String logStructureScope;
+    private static String logStructureWhen;
 
     TwsListener (List<WindowHandler> windowHandlers) {
         this.windowHandlers = windowHandlers;
@@ -50,35 +47,29 @@ class TwsListener
             final Window window;
             window = ((WindowEvent) event).getWindow();
 
-            if (SwingUtils.titleContains(window, "Second Factor Authentication") &&
-                ! Settings.settings().getBoolean("ReadOnlyLogin", false)) {
-                GuiDeferredExecutor.instance().execute(() -> {
+            GuiDeferredExecutor.instance().execute(() -> {
+                try{
                     logWindow(window, eventID);
-                    logWindowStructure(window, eventID, true);
-                    handleSecondFactorAuthenticationDialogue(window, eventID);
-                });
-                return;
-            }
 
-            logWindow(window, eventID);
+                    for (WindowHandler wh : windowHandlers) {
+                        if (wh.recogniseWindow(window))  {
+                                logWindowStructure(window, eventID, true);
+                                if (wh.filterEvent(window, eventID)) wh.handleWindow(window, eventID);
+                            return;
+                        }
+                    }
 
-            for (WindowHandler wh : windowHandlers) {
-                if (wh.recogniseWindow(window))  {
-                    GuiDeferredExecutor.instance().execute(() -> {
-                        logWindowStructure(window, eventID, true);
-                        if (wh.filterEvent(window, eventID)) wh.handleWindow(window, eventID);
-                    });
-                    return;
+                    logWindowStructure(window, eventID, false);
+                } catch (Throwable e) {
+                    Utils.exitWithException(ErrorCodes.ERROR_CODE_UNHANDLED_EXCEPTION, e);
                 }
-            }
-
-            logWindowStructure(window, eventID, false);
+            });
         } catch (Throwable e) {
             Utils.exitWithException(ErrorCodes.ERROR_CODE_UNHANDLED_EXCEPTION, e);
         }
     }
     
-    private void getLogStructureParameters() {
+    private static void getLogStructureParameters() {
         // legacy deprecated setting overrides explicit values of LogStructureScope 
         // and LogStructureWhen
         final String logComponentsSetting = Settings.settings().getString("LogComponents", "ignore").toLowerCase();
@@ -87,8 +78,7 @@ class TwsListener
         logStructureWhen = getLogStructureWhen(logComponentsSetting);
     }
     
-    private String getLogStructureScope(String logComponentsSetting) {
-        String logStructureScope;
+    private static String getLogStructureScope(String logComponentsSetting) {
         if (logComponentsSetting.equals("ignore")) {
             logStructureScope = Settings.settings().getString("LogStructureScope", "known").toLowerCase();
         } else {
@@ -109,8 +99,7 @@ class TwsListener
         return logStructureScope;
     }
     
-    private String getLogStructureWhen(String logComponentsSetting) {
-        String logStructureWhen;
+    private static String getLogStructureWhen(String logComponentsSetting) {
         if (logComponentsSetting.equals("ignore")) {
             logStructureWhen = Settings.settings().getString("LogStructureWhen", "never").toLowerCase();
         } else {
@@ -153,63 +142,12 @@ class TwsListener
         return logStructureWhen;
     }
 
-    private void handleSecondFactorAuthenticationDialogue(final Window window, final int eventID) {
-        // Only handle SFA while ReadOnlyLogin mode is off.
-
-        // Ideally we would handle the Second Factor Authentication dialog event using
-        // a WindowHandler-derived class, as for all the other dialogs. But it turns out that
-        // this does not work for TWS (though it does for Gateway), because it's impossible to
-        // recognise the dialog any time after this point. This is completely bizarre, but I
-        // suspect TWS does something unusual in an attempt to prevent anything interfering
-        // with the dialog. Anyone interested in the background to this discovery should look
-        // at this rather long thread in the IBC User Group:
-        //    https://groups.io/g/ibcalpha/topic/73312303#1165
-
-        Utils.logToConsole("Second Factor Authentication dialog event: " + SwingUtils.windowEventToString(eventID));
-        if (eventID == WindowEvent.WINDOW_OPENED) {
-            Utils.logToConsole("Second Factor Authentication dialog opened");
-
-            JTextArea t = SwingUtils.findTextArea(window, "Select second factor device");
-            if (t != null){
-                // this area appears in the Second Factor Authentication dialog when the
-                // user has enabled more than one second factor authentication method
-                
-                JList<?> deviceList = SwingUtils.findList(window, 0);
-                if (deviceList == null) {
-                    Utils.logError("could not find second factor device list.");
-                    return;
-                }
-                String secondFactorDevice = Settings.settings().getString("SecondFactorDevice", "");
-                if (secondFactorDevice.length() == 0) return;
-                
-                ListModel<?> model = deviceList.getModel();
-                for (int i = 0; i < model.getSize(); i++) {
-                    String entry = model.getElementAt(i).toString().trim();
-                    if (entry.equals(secondFactorDevice)) {
-                        deviceList.setSelectedIndex(i);
-                        
-                        if (!SwingUtils.clickButton(window, "OK")) {
-                            Utils.logError("could not select second factor device: OK button not found");
-                        }
-                        return;
-                    }
-                }
-                Utils.logError("could not find second factor device '" + secondFactorDevice + "' in the list");
-                
-            } else {
-                LoginManager.loginManager().setLoginState(LoginManager.LoginState.TWO_FA_IN_PROGRESS);
-            }
-        } else if (eventID == WindowEvent.WINDOW_CLOSED) {
-            Utils.logToConsole("Second Factor Authentication dialog closed");
-            LoginManager.loginManager().secondFactorAuthenticationDialogClosed();
-        }
-    }
-
-    private void logWindow(Window window, int eventID) {
+    static void logWindow(Window window, int eventID) {
         Utils.logToConsole("detected " + getWindowTypeAndTitle(window) + "; event=" + SwingUtils.windowEventToString(eventID));
     }
 
-    private String getWindowTypeAndTitle(Window window) {
+    private static String getWindowTypeAndTitle(Window window) {
+        if (window == null) throw new NullPointerException("window is null");
         if (window instanceof JFrame) {
             return "frame entitled: " + SwingUtils.getWindowTitle(window);
         } else if (window instanceof JDialog) {
@@ -219,7 +157,7 @@ class TwsListener
         }
     }
 
-    private void logWindowStructure(Window window, int eventID, boolean windowKnown) {
+    static void logWindowStructure(Window window, int eventID, boolean windowKnown) {
         if (logStructureScope.equals("known") && !windowKnown) {
             return;
         } else if (logStructureScope.equals("unknown") && windowKnown) {

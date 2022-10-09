@@ -303,7 +303,7 @@ public class IbcTws {
     }
 
     private static List<WindowHandler> createWindowHandlers() {
-        List<WindowHandler> windowHandlers = new ArrayList<WindowHandler>();
+        List<WindowHandler> windowHandlers = new ArrayList<>();
 
         windowHandlers.add(new AcceptIncomingConnectionDialogHandler());
         windowHandlers.add(new BlindTradingWarningDialogHandler());
@@ -323,7 +323,12 @@ public class IbcTws {
         windowHandlers.add(new ExistingSessionDetectedDialogHandler());
         windowHandlers.add(new ApiChangeConfirmationDialogHandler());
         windowHandlers.add(new SplashFrameHandler());
+
+        // this line must come before the one for SecurityCodeDialogHandler
+        // because both contain an "Enter Read Only" button
+        windowHandlers.add(SecondFactorAuthenticationDialogHandler.getInstance());
         windowHandlers.add(new SecurityCodeDialogHandler());
+        
         windowHandlers.add(new ReloginDialogHandler());
         windowHandlers.add(new NonBrokerageAccountDialogHandler());
         windowHandlers.add(new ExitConfirmationDialogHandler());
@@ -335,7 +340,8 @@ public class IbcTws {
         windowHandlers.add(new LoginErrorDialogHandler());
         windowHandlers.add(new NavigatingAwayDialogHandler());
         windowHandlers.add(new MustEnterValidPriceDialogHandler());
-
+        windowHandlers.add(new CryptoOrderConfirmationDialogHandler());
+        
         return windowHandlers;
     }
 
@@ -490,6 +496,11 @@ public class IbcTws {
         String sendMarketDataInLots = Settings.settings().getString("SendMarketDataInLotsForUSstocks", "");
         if (!sendMarketDataInLots.equals("")) {
             (new ConfigurationTask(new ConfigureSendMarketDataInLotsForUSstocksTask(Settings.settings().getBoolean("SendMarketDataInLotsForUSstocks", true)))).executeAsync();
+        }
+        
+        String autoLogoffTime = Settings.settings().getString("AutoLogoffTime", "");
+        if (!autoLogoffTime.equals("")) {
+            (new ConfigurationTask(new ConfigureAutoLogoffTimeTask(autoLogoffTime))).executeAsync();
         }
 
         Utils.sendConsoleOutputToTwsLog(!Settings.settings().getBoolean("LogToConsole", false));

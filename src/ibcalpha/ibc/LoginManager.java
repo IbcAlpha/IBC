@@ -54,6 +54,15 @@ public abstract class LoginManager {
         AWAITING_CREDENTIALS
     }
 
+    boolean readonlyLoginRequired() {
+        boolean readOnly = Settings.settings().getBoolean("ReadOnlyLogin", false);
+        if (readOnly && MainWindowManager.mainWindowManager().isGateway()) {
+            Utils.logError("Read-only login not supported by Gateway");
+            return false;
+        }
+        return readOnly;
+    }
+    
     void startSession() {
         int loginDialogDisplayTimeout = Settings.settings().getInt("LoginDialogDisplayTimeout", 60);
         Utils.logToConsole("Starting session: will exit if login dialog is not displayed within " + loginDialogDisplayTimeout + " seconds");
@@ -79,6 +88,8 @@ public abstract class LoginManager {
         if (loginState == LoginState.TWO_FA_IN_PROGRESS) {
             Utils.logToConsole("Second Factor Authentication initiated");
             if (LoginStartTime == null) LoginStartTime = Instant.now();
+        } else if (loginState == LoginState.LOGGING_IN) {
+            if (LoginStartTime == null) LoginStartTime = Instant.now();
         } else if (loginState == LoginState.LOGGED_IN) {
             Utils.logToConsole("Login has completed");
             if (shutdownAfterTimeTask != null) {
@@ -91,38 +102,52 @@ public abstract class LoginManager {
     private Instant LoginStartTime;
     private ScheduledFuture<?> shutdownAfterTimeTask;
 
-    public void secondFactorAuthenticationDialogClosed() {
+    void secondFactorAuthenticationDialogClosed() {
+        // Second factor authentication dialog timeout period
+        final int SecondFactorAuthenticationTimeout = Settings.settings().getInt("SecondFactorAuthenticationTimeout", 180);
 
-        if (!Settings.settings().getBoolean("ExitAfterSecondFactorAuthenticationTimeout", false)) {
-            Utils.logToConsole("ExitAfterSecondFactorAuthenticationTimeout is set to 'no'");
-        } else {
-            try {
-                // minimum time (seconds) between attempts to login to ensure no 'Too many
-                // failed login attempts' messages
-                final int LOGIN_RETRY_INTERVAL = 300;
+        // time (seconds) to allow for login to complete before exiting
+        final int exitInterval = Settings.settings().getInt("SecondFactorAuthenticationExitInterval", 40);
 
-                // time (seconds) to allow for login to complete before exiting
-                final int SECOND_FACTOR_AUTHENTICATION_EXIT_INTERVAL = 40;
-                final int exitInterval = Settings.settings().getInt("SecondFactorAuthenticationExitInterval", 
-                                                                    SECOND_FACTOR_AUTHENTICATION_EXIT_INTERVAL);
-                final Duration d = Duration.between(LoginStartTime, Instant.now());
-                LoginStartTime = null;
+        final Duration d = Duration.between(LoginStartTime, Instant.now());
+        LoginStartTime = null;
+        
+        Utils.logToConsole("Duration since login: " + d.getSeconds() + " seconds");
 
-                final int secondsTillTimeout = Math.max(LOGIN_RETRY_INTERVAL - (int)d.getSeconds(),
-                                                        exitInterval);
-
-                Utils.logToConsole("If login has not completed, IBC will exit in " + secondsTillTimeout + " seconds");
-                
-                restartAfterTime(secondsTillTimeout, "IBC closing after Second Factor Authentication dialog timeout");
-
-            } catch (Throwable e) {
-                Utils.exitWithException(99999, e);
-            }
+        if (d.getSeconds() < SecondFactorAuthenticationTimeout) {
+            // The 2FA prompt must have been handled by the user, so authentication
+            // should be under way
+            Utils.logToConsole("If login has not completed, IBC will exit in " + exitInterval + " seconds");
+            restartAfterTime(exitInterval, "IBC closing because login has not completed after Second Factor Authentication");
+            return;
         }
-
+        
+        if (!reloginRequired()) {
+            Utils.logToConsole("Re-login after second factor authentication timeout not required");
+            return;
+        }
+        
+        // The 2FA prompt hasn't been handled by the user, so we re-initiate the login
+        // sequence after a short delay
+        Utils.logToConsole("Re-login after second factor authentication timeout in 5 second");
+        MyScheduledExecutorService.getInstance().schedule(() -> {
+            GuiDeferredExecutor.instance().execute(
+                () -> {getLoginHandler().initiateLogin(getLoginFrame());}
+            );
+        }, 5, TimeUnit.SECONDS);
     }
     
-    public void restartAfterTime(final int secondsTillShutdown, final String message) {
+    private boolean reloginRequired() {
+        if (Settings.settings().getString("ReloginAfterSecondFactorAuthenticationTimeout", "").isEmpty()) {
+            if (!Settings.settings().getString("ExitAfterSecondFactorAuthenticationTimeout", "").isEmpty()) {
+                return Settings.settings().getBoolean("ExitAfterSecondFactorAuthenticationTimeout", false);
+            }
+            return false;
+        }
+        return Settings.settings().getBoolean("ReloginAfterSecondFactorAuthenticationTimeout", false);
+    }
+    
+    void restartAfterTime(final int secondsTillShutdown, final String message) {
         try {
             shutdownAfterTimeTask = MyScheduledExecutorService.getInstance().schedule(()->{
                 GuiExecutor.instance().execute(()->{
@@ -130,7 +155,7 @@ public abstract class LoginManager {
                         Utils.logToConsole("Login has already completed - no need for IBC to exit");
                         return;
                     }
-                    Utils.exitWithError(ErrorCodes.ERROR_CODE_2FA_DIALOG_TIMED_OUT, message);
+                    Utils.exitWithError(ErrorCodes.ERROR_CODE_2FA_LOGIN_TIMED_OUT, message);
                 });
             }, secondsTillShutdown, TimeUnit.SECONDS);
         } catch (Throwable e) {
@@ -151,5 +176,9 @@ public abstract class LoginManager {
     public abstract JFrame getLoginFrame();
 
     public abstract void setLoginFrame(JFrame window);
+    
+    public abstract AbstractLoginHandler getLoginHandler();
+
+    public abstract void setLoginHandler(AbstractLoginHandler handler);
 
 }

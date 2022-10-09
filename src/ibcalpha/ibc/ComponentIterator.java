@@ -79,8 +79,10 @@ class ComponentIterator implements Iterator<Component> {
         Component[] subComponents;
 
         NodeState(Component component) {
-            this.index = 0;
-            if (component instanceof Container) subComponents = ((Container)component).getComponents();
+            synchronized (component.getTreeLock()){
+                this.index = 0;
+                if (component instanceof Container) subComponents = ((Container)component).getComponents();
+            }
         }
     }
 

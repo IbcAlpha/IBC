@@ -16,44 +16,45 @@ echo +
 
 :: determine the logfile path and name (if any)
 if defined LOG_PATH (
-	if not exist "%LOG_PATH%" (
-		set PHASE=Creating logfile folder
-		mkdir "%LOG_PATH%"
-		if errorlevel 1 goto :err
-	)
-	
-	set README=%LOG_PATH%\README.txt
-	if not exist "!README!" (
-		set PHASE=Creating README file
-		(echo You can delete the files in this folder at any time
-		echo.
-		echo Windows will inform you if a file is currently in use
-		echo when you try to delete it.) > "!README!" || set REDIRECTERROR=1
-	
-		if "!REDIRECTERROR!" == "1" goto :err
-	)
-
-	call "%IBC_PATH%\scripts\getDayOfWeek.bat"
-	set LOG_FILE=%LOG_PATH%\IBC-%IBC_VRSN%_%APP%-%TWS_MAJOR_VRSN%_!DAYOFWEEK!.txt
-	if exist "!LOG_FILE!" (
-		for %%? in (!LOG_FILE!) do (
-			set LOGFILETIME=%%~t?
+	if /I "%LOG_PATH%"=="CON" (
+		set LOG_FILE=CON
+	) else (
+		if not exist "%LOG_PATH%" (
+			set PHASE=Creating logfile folder
+			mkdir "%LOG_PATH%"
+			if errorlevel 1 goto :err
 		)
-		set s=%DATE%!LOGFILETIME:*%DATE%=!
-		if not "!s!" == "!LOGFILETIME!" del "!LOG_FILE!"
+	
+		set README=%LOG_PATH%\README.txt
+		if not exist "!README!" (
+			set PHASE=Creating README file
+			(echo You can delete the files in this folder at any time
+			echo.
+			echo Windows will inform you if a file is currently in use
+			echo when you try to delete it.) > "!README!" || set REDIRECTERROR=1
+	
+			if "!REDIRECTERROR!" == "1" goto :err
+		)
+
+		call "%IBC_PATH%\scripts\getDayOfWeek.bat"
+		set LOG_FILE=%LOG_PATH%\IBC-%IBC_VRSN%_%APP%-%TWS_MAJOR_VRSN%_!DAYOFWEEK!.txt
+		if exist "!LOG_FILE!" (
+			for %%? in (!LOG_FILE!) do (
+				set LOGFILETIME=%%~t?
+			)
+			set s=%DATE%!LOGFILETIME:*%DATE%=!
+			if not "!s!" == "!LOGFILETIME!" del "!LOG_FILE!"
+		)
 	)
-) else (
-	set LOG_FILE=NUL
 )
 
-:: if defined LOG_PATH (
+if defined LOG_PATH (
 	echo + Diagnostic information is logged in:
 	echo +
 	echo + %LOG_FILE%
 	echo +
 
 	:: check that the logfile is accessible
-
 	set PHASE=Checking logfile accessiblity
 	(echo.
 	echo ================================================================================
@@ -65,7 +66,10 @@ if defined LOG_PATH (
 	echo.) >> "%LOG_FILE%" || set REDIRECTERROR=1
 	
 	if "%REDIRECTERROR%" == "1" goto :err
-:: )
+) else (
+	set LOG_FILE=NUL
+)
+
 
 echo +
 echo + ** Caution: closing this window will close %APP% %TWS_MAJOR_VRSN% **
