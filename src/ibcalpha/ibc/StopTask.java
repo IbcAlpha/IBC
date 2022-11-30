@@ -18,10 +18,7 @@
 
 package ibcalpha.ibc;
 
-import java.awt.Toolkit;
-import java.awt.event.WindowEvent;
 import java.util.Arrays;
-import javax.swing.JFrame;
 
 class StopTask
         implements Runnable {
