@@ -118,6 +118,7 @@ OS_LINUX=Linux
 OS_OSX='OS X'
 
 entry_point=$ENTRY_POINT_TWS
+program=TWS
 
 if [[ $OSTYPE = [lL]inux* ]]; then
 	os=$OS_LINUX
@@ -133,8 +134,10 @@ for arg
 do
 	if [[ "$arg" = "-g" ]]; then
 		entry_point=$ENTRY_POINT_GATEWAY
+		program=Gateway
 	elif [[ "$arg" = "--gateway" ]]; then
 		entry_point=$ENTRY_POINT_GATEWAY
+		program=Gateway
 	elif [[ "${arg:0:11}" = "--tws-path=" ]]; then
 		tws_path=${arg:11}
 	elif [[ "${arg:0:20}" = "--tws-settings-path=" ]]; then
@@ -167,7 +170,7 @@ do
 done
 
 if [[ -n "${fix_user_id}" || -n "${fix_password}" ]]; then
-	if [[ ! "${entry_point}" = "${ENTRY_POINT_GATEWAY}" ]]; then
+	if [[ ! "${program}" = "GATEWAY" ]]; then
 		error_exit ${E_INVALID_ARG} "FIX user id and FIX password are only valid for the Gateway"
 	fi
 fi
@@ -196,6 +199,7 @@ echo
 echo Arguments:
 echo
 echo -e "TWS version = ${tws_version}"
+echo -e "Program = ${PROGRAM}"
 echo -e "Entry point = ${entry_point}"
 echo -e "--tws-path = ${tws_path}"
 echo -e "--tws-settings-path = ${tws_settings_path}"
@@ -230,75 +234,36 @@ fi
 if [ "$os" = "$OS_LINUX" ]; then
 	if [ "$tws_path" = "" ]; then tws_path=~/Jts ;fi
 	if [ "$tws_settings_path" = "" ]; then tws_settings_path="${tws_path}" ;fi
-elif [ "$os" = "$OS_OSX" ]; then
+	tws_program_path="${tws_path}/${tws_version}"
+	gateway_program_path="${tws_path}/ibgateway/${tws_version}"
+else
 	if [ "$tws_path" = "" ]; then tws_path=~/Applications ;fi
 	if [ "$tws_settings_path" = "" ]; then tws_settings_path=~/Jts ;fi
+	tws_program_path = "${tws_path}/Trader Workstation ${tws_version}"
+	gateway_program_path="${tws_path}/IB Gateway ${tws_version}"
 fi
 if [ "$ibc_path" = "" ]; then ibc_path=/opt/ibc ;fi
 if [ "$ibc_ini" = "" ]; then ibc_ini=~/ibc/config.ini ;fi
 
-# In the following we try to use the correct .vmoptions file for the chosen entrypoint
-# Note that uninstalling TWS or Gateway leaves the relevant .vmoption file in place, so
-# we can still use the correct one.
-
-if [[ "$os" = "$OS_LINUX" ]]; then
-	tws_vmoptions="${tws_path}/${tws_version}/tws.vmoptions"
-	tws_jars="${tws_path}/${tws_version}/jars"
-	tws_install4j="${tws_path}/${tws_version}/.install4j"
-
-	gateway_vmoptions="${tws_path}/ibgateway/${tws_version}/ibgateway.vmoptions"
-	gateway_jars="${tws_path}/ibgateway/${tws_version}/jars"
-	gateway_install4j="${tws_path}/ibgateway/${tws_version}/.install4j"
-elif [[ "$os" = "$OS_OSX" ]]; then
-	if [[ -e "${tws_path}/Trader Workstation ${tws_version}/tws.vmoptions" ]]; then
-		tws_vmoptions="${tws_path}/Trader Workstation ${tws_version}/tws.vmoptions"
-	else
-		# TWS versions before 981
-		tws_vmoptions=~/Jts/tws-${tws_version}.vmoptions
-	fi
-	tws_jars="${tws_path}/Trader Workstation ${tws_version}/jars"
-	tws_install4j="${tws_path}/Trader Workstation ${tws_version}/.install4j"
-
-	if [[ -e "${tws_path}/IB Gateway ${tws_version}/ibgateway.vmoptions" ]]; then
-		gateway_vmoptions="${tws_path}/IB Gateway ${tws_version}/ibgateway.vmoptions"
-	else
-		# Gateway versions before 981
-		gateway_vmoptions=~/Jts/ibgateway-${tws_version}.vmoptions
-	fi
-	gateway_jars="${tws_path}/IB Gateway ${tws_version}/jars"
-	gateway_install4j="${tws_path}/IB Gateway ${tws_version}/.install4j"
+if [[ "${program}" = "TWS" ]] ; then
+	program_path="${tws_program_path}"
+	alt_program_path="${gateway_program_path}"
+	vmoptions_source="${program_path}/tws.vmoptions"
+	alt_vmoptions_source="${alt_program_path}/ibgateway.vmoptions"
+else
+	program_path="${gateway_program_path}"
+	alt_program_path="${tws_program_path}"
+	vmoptions_source="${program_path}/ibgateway.vmoptions"
+	alt_vmoptions_source="${alt_program_path}/tws.vmoptions"
 fi
 
-if [[ "${entry_point}" = "${ENTRY_POINT_TWS}" ]]; then
-	if [[ -e "${tws_vmoptions}" ]]; then
-		vmoptions_source="${tws_vmoptions}"
-	elif [[ -e "${gateway_vmoptions}" ]]; then
-		vmoptions_source="${gateway_vmoptions}"
-	fi
-
-	if [[ -e "${tws_jars}" ]]; then
-		jars="${tws_jars}"
-		install4j="${tws_install4j}"
-	else
-		jars="${gateway_jars}"
-		install4j="${gateway_install4j}"
-	fi
+if [[ ! -e "${program_path}/jars" ]]; then
+	program_path="${alt_program_path}"
+	vmoptions_source="${alt_vmoptions_source}"
 fi
-if [[ "${entry_point}" = "${ENTRY_POINT_GATEWAY}" ]]; then
-	if [[ -e "${gateway_vmoptions}" ]]; then
-		vmoptions_source="${gateway_vmoptions}"
-	elif [[ -e "${tws_vmoptions}" ]]; then
-		vmoptions_source="${tws_vmoptions}"
-	fi
-
-	if [[ -e "${gateway_jars}" ]]; then
-		jars="${gateway_jars}"
-		install4j="${gateway_install4j}"
-	else
-		jars="${tws_jars}"
-		install4j="${tws_install4j}"
-	fi
-fi
+jars="${program_path}/jars"
+install4j="${program_path}/.install4j"
+	
 
 if [[ ! -e "$jars" ]]; then
 	error_exit $E_TWS_VERSION_NOT_INSTALLED "Offline TWS/Gateway version $tws_version is not installed: can't find jars folder" \
@@ -366,9 +331,25 @@ java_vm_options=${vm_options[*]}
 java_vm_options="$java_vm_options -Dtwslaunch.autoupdate.serviceImpl=com.ib.tws.twslaunch.install4j.Install4jAutoUpdateService"
 java_vm_options="$java_vm_options -Dchannel=latest"
 java_vm_options="$java_vm_options -Dexe4j.isInstall4j=true"
-java_vm_options="$java_vm_options -Dinstall4jType=standalone" 
+java_vm_options="$java_vm_options -Dinstall4jType=standalone"
+java_vm_options="$java_vm_options -DjtsConfigDir=${tws_settings_path}"
 
-echo -e "Java VM Options=$java_vm_options"
+function find_auto_restart {
+	autorestart_path=$(find $tws_settings_path -type f -name "autorestart")
+	if [[ -n $autorestart_path ]]; then
+		autorestart_path=$(echo $autorestart_path | xargs dirname | xargs basename)
+		if [ $autorestart_path != "." ]; then
+			echo " -Drestart=${autorestart_path}"
+		else
+			echo ""
+		fi
+	fi
+}
+
+autorestart_option=$(find_auto_restart)
+
+
+echo -e "Java VM Options=$java_vm_options$autorestart_option"
 echo
 
 #======================== Determine the location of java executable ========
@@ -419,7 +400,7 @@ if [[ ! -n "$java_path" ]]; then
 	fi
 
 	if [[ "$system_java" ]]; then
-		if [[ $($system_java -XshowSettings:properties -version 2>&1) == *"Java(TM) SE Runtime Environment"* ]]; then
+		if [[ $($system_java -XshowSettings:properties -version 2>&1) = *"Java(TM) SE Runtime Environment"* ]]; then
 			java_path=$(dirname $(which $system_java))
 		else
 			>&2 echo "System java $system_java is not from Oracle, won't use it"
@@ -449,34 +430,31 @@ elif [[ -n $got_api_credentials ]]; then
 		hidden_credentials="*** ***"
 fi
 
-if [[ "$entry_point" = "$ENTRY_POINT_TWS" ]]; then
-	program=TWS
-else
-	program=Gateway
-fi
-echo "Starting $program with this command:"
-echo -e "\"$java_path/java\" -cp \"$ibc_classpath\" $java_vm_options $entry_point \"$ibc_ini\" $hidden_credentials ${mode}"
-echo
-
 # prevent other Java tools interfering with IBC
 JAVA_TOOL_OPTIONS=
 
 pushd "$tws_settings_path" > /dev/null
 
+echo "Renaming IB's TWS or Gateway start script to prevent restart without IBC"
+mv "${program_path}/tws" "${program_path}/zztws"
+
 while :
 do
+	echo "Starting $program with this command:"
+	echo -e "\"$java_path/java\" -cp \"$ibc_classpath\" $java_vm_options$autorestart_option $entry_point \"$ibc_ini\" $hidden_credentials ${mode}"
+	echo
 
 	# forward signals (see https://veithen.github.io/2014/11/16/sigterm-propagation.html)
 	trap 'kill -TERM $PID' TERM INT
 
 	if [[ -n $got_fix_credentials && -n $got_api_credentials ]]; then
-		"$java_path/java" -cp "$ibc_classpath" $java_vm_options $entry_point "$ibc_ini" "$fix_user_id" "$fix_password" "$ib_user_id" "$ib_password" ${mode} &
+		"$java_path/java" -cp "$ibc_classpath" $java_vm_options$autorestart_option $entry_point "$ibc_ini" "$fix_user_id" "$fix_password" "$ib_user_id" "$ib_password" ${mode} &
 	elif  [[ -n $got_fix_credentials ]]; then
-		"$java_path/java" -cp "$ibc_classpath" $java_vm_options $entry_point "$ibc_ini" "$fix_user_id" "$fix_password" ${mode} &
+		"$java_path/java" -cp "$ibc_classpath" $java_vm_options$autorestart_option $entry_point "$ibc_ini" "$fix_user_id" "$fix_password" ${mode} &
 	elif [[ -n $got_api_credentials ]]; then
-		"$java_path/java" -cp "$ibc_classpath" $java_vm_options $entry_point "$ibc_ini" "$ib_user_id" "$ib_password" ${mode} &
+		"$java_path/java" -cp "$ibc_classpath" $java_vm_options$autorestart_option $entry_point "$ibc_ini" "$ib_user_id" "$ib_password" ${mode} &
 	else
-		"$java_path/java" -cp "$ibc_classpath" $java_vm_options $entry_point "$ibc_ini" ${mode} &
+		"$java_path/java" -cp "$ibc_classpath" $java_vm_options$autorestart_option $entry_point "$ibc_ini" ${mode} &
 	fi
 
 	PID=$!
@@ -489,16 +467,24 @@ do
 
 	if [[ $exit_code -eq $E_LOGIN_DIALOG_DISPLAY_TIMEOUT ]]; then 
 		:
-	elif [[ $exit_code -ne $E_2FA_DIALOG_TIMED_OUT  ]]; then 
-		break;
-	elif [[ ${twofa_to_action_upper} !=  "RESTART" ]]; then 
-		break; 
+	else
+		autorestart_option=$(find_auto_restart)
+		if [[ -n $autorestart_option ]]; then
+			# restart using the TWS/Gateway-generated autorestart file
+			:
+		elif [[ $exit_code -ne $E_2FA_DIALOG_TIMED_OUT  ]]; then 
+			break;
+		elif [[ ${twofa_to_action_upper} !=  "RESTART" ]]; then 
+			break; 
+		fi
 	fi
 	
 	# wait a few seconds before restarting
 	echo IBC will restart shortly
 	echo sleep 2
 done
+
+mv "${program_path}/zztws" "${program_path}/tws"
 
 echo "$program finished"
 echo

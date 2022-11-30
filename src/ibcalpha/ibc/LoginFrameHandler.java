@@ -86,9 +86,11 @@ final class LoginFrameHandler extends AbstractLoginHandler {
                                     window,
                                     STORE_SETTINGS_ON_SERVER_CHECKBOX,
                                     storeSettingsOnServer)) {
-                                Utils.exitWithError(ErrorCodes.ERROR_CODE_CANT_FIND_CONTROL, "could not login: could not find control: " + STORE_SETTINGS_ON_SERVER_CHECKBOX);
+                                // this is expected when autorestarting, so we just log the fact
+                                Utils.logToConsole("could not find control: " + STORE_SETTINGS_ON_SERVER_CHECKBOX + ": this is expected when restarting");
+                            } else {
+                                Utils.logToConsole("Use/store settings on server selected: " + storeSettingsOnServer);
                             }
-                            Utils.logToConsole("Use/store settings on server selected: " + storeSettingsOnServer);
                         });
                     }
                 }

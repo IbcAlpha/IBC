@@ -18,7 +18,7 @@
 #=============================================================================+
 
 
-TWS_MAJOR_VRSN=1012
+TWS_MAJOR_VRSN=1019
 IBC_INI=~/ibc/config.ini
 TRADING_MODE=
 TWOFA_TIMEOUT_ACTION=exit
@@ -43,17 +43,12 @@ HIDE=
 #     Specifies the major version number of TWS to be run. If you are
 #     unsure of which version number to use, run TWS manually from the
 #     icon on the desktop, then click Help > About Trader Workstation. In the
-#     displayed information you'll see a line similar to either this:
+#     displayed information you'll see a line similar to this:
 #
-#       Build 981.3c, Jun 29, 2021 3:57:06 PM
+#       Build 10.19.1f, Oct 28, 2022 3:03:08 PM
 #
-#     or this:
-#
-#       Build 10.12.2a, Dec 14, 2021 11:07:54 AM
-#
-#     In the first case, the major version number is 981. In the second case,
-#     it is 1012 (ie ignore the period after the first past of the version
-#     number).
+#     The major version number is 1019 (ie ignore the period after the first
+#     part of the version number).
 #
 #     Do not include the rest of the version number in this setting.
 
@@ -112,10 +107,26 @@ HIDE=
 
 #   TWS_SETTINGS_PATH
 #
-#     The directory where TWS is to store its settings.  This setting is ignored
-#     if the IbDir setting in the configuration file is specified. If no value
-#     is specified in either place, the settings are stored in the TWS_PATH
-#     directory.
+#     The folder where TWS is to store its settings. By default it uses the
+#     folder specified in TWS_PATH.
+#
+#     Is is also possible to specify this folder via the IbDir setting in
+#     the configuration file. If TWS is set to auto-restart each day
+#     (ie without having to log in again each time), then you must specify
+#     the settings folder here rather than via IbDir: this means that these
+#     two settings must either be identical, or the IbDir setting must be
+#     left unset. If they are different, auto-restart will fail.
+#
+#     The recommended approach is to NOT use the IbDir setting in the
+#     configuration file. 
+#
+#     Note that if multiple IB accounts are used such as live and paper
+#     accounts for the same user, or accounts for different users), then
+#     they should either each have a unique settings folder, or autorestart
+#     must be configured to occur at a different time for each account:
+#     concurrent auto-restarts may interferec and not succeed. You could
+#     achieve this, for example, by having different versions of this file
+#     for different users.
 
 
 #   LOG_PATH

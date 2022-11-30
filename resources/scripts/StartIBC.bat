@@ -39,13 +39,13 @@ echo   /G or /Gateway          Indicates that the IB Gateway is to be loaded rat
 echo                           than TWS
 echo.
 echo   twsPath                 Path to the TWS installation folder. Defaults to
-echo                           C:\Jts
+echo                           %SYSTEMDRIVE%\Jts
 echo.
 echo   twsSettingsPath         Path to the TWS settings folder. Defaults to
 echo                           the twsPath argument
 echo.
 echo   ibcPath                 Path to the IBC installation folder.
-echo                           Defaults to C:\IBC
+echo                           Defaults to %SYSTEMDRIVE%\IBC
 echo.
 echo   configfile              The location and filename of the IBC 
 echo                           configuration file. Defaults to 
@@ -107,6 +107,8 @@ set ENTRY_POINT_GATEWAY=ibcalpha.ibc.IbcGateway
 
 :: Variables to be derived from arguments
 set TWS_VERSION=
+set PROGRAM=TWS
+set PROGRAM_PATH=
 set ENTRY_POINT=%ENTRY_POINT_TWS%
 set TWS_PATH=
 set TWS_SETTINGS_PATH=
@@ -132,8 +134,10 @@ if "%~1" == "" goto :parsingComplete
 set ARG=%~1
 if /I "%ARG%" == "/G" (
 	set ENTRY_POINT=%ENTRY_POINT_GATEWAY%
+	set PROGRAM=Gateway
 ) else if /I "%ARG%" == "/GATEWAY" (
 	set ENTRY_POINT=%ENTRY_POINT_GATEWAY%
+	set PROGRAM=Gateway
 ) else if /I "%ARG:~0,9%" == "/TWSPATH:" (
 	set TWS_PATH=%ARG:~9%
 ) else if /I "%ARG:~0,17%" == "/TWSSETTINGSPATH:" (
@@ -180,7 +184,7 @@ if defined FIX_USER_ID set GOT_FIX_CREDENTIALS=1
 if defined FIX_PASSWORD set GOT_FIX_CREDENTIALS=1
 
 if defined GOT_FIX_CREDENTIALS (
-	if not "%ENTRY_POINT%" == "%ENTRY_POINT_GATEWAY%" (
+	if not "%PROGRAM%" == "GATEWAY" (
 		set ERROR_MESSAGE=FIX user id and FIX password are only valid for the Gateway
 		set ERROR=%E_INVALID_ARG%
 	)
@@ -223,6 +227,7 @@ echo.
 echo Arguments:
 echo.
 echo TWS version = %TWS_VERSION%
+echo Program = %PROGRAM%
 echo Entry point = %ENTRY_POINT%
 echo /TwsPath = %TWS_PATH%
 echo /TwsSettingsPath = %TWS_SETTINGS_PATH%
@@ -255,46 +260,34 @@ if not defined TWS_VERSION (
 	goto :err
 )
 
-if not defined TWS_PATH set TWS_PATH=C:\Jts
+if not defined TWS_PATH set TWS_PATH=%SYSTEMDRIVE%\Jts
 if not defined TWS_SETTINGS_PATH set TWS_SETTINGS_PATH=%TWS_PATH%
-if not defined IBC_PATH set IBC_PATH=C:\IBC
+if not defined IBC_PATH set IBC_PATH=%SYSTEMDRIVE%\IBC
 if not defined CONFIG set CONFIG=%USERPROFILE%\Documents\IBC\config.ini
 
-:: In the following we try to use the correct .vmoptions file for the chosen entrypoint
-:: Note that uninstalling TWS or Gateway leaves the relevant .vmoption file in place, so
-:: we can still use the correct one.
-if /I "%ENTRY_POINT%" == "%ENTRY_POINT_TWS%" (
-	if exist "%TWS_PATH%\%TWS_VERSION%\tws.vmoptions" (
-		set TWS_VMOPTS=%TWS_PATH%\%TWS_VERSION%\tws.vmoptions 
-	) else if exist "%TWS_PATH%\ibgateway\%TWS_VERSION%\ibgateway.vmoptions" (
-		set TWS_VMOPTS=%TWS_PATH%\ibgateway\%TWS_VERSION%\ibgateway.vmoptions 
-	) 
+set TWS_PROGRAM_PATH=%TWS_PATH%\%TWS_VERSION%
+set GATEWAY_PROGRAM_PATH=%TWS_PATH%\ibgateway\%TWS_VERSION%
 
-	if exist "%TWS_PATH%\%TWS_VERSION%\jars" (
-		set TWS_JARS=%TWS_PATH%\%TWS_VERSION%\jars
-		set INSTALL4J=%TWS_PATH%\%TWS_VERSION%\.install4j
-	) else (
-		set TWS_JARS=%TWS_PATH%\ibgateway\%TWS_VERSION%\jars
-		set INSTALL4J=%TWS_PATH%\ibgateway\%TWS_VERSION%\.install4j
-	)
-)
-if /I "%ENTRY_POINT%" == "%ENTRY_POINT_GATEWAY%" (
-	if exist "%TWS_PATH%\ibgateway\%TWS_VERSION%\ibgateway.vmoptions" (
-		set TWS_VMOPTS=%TWS_PATH%\ibgateway\%TWS_VERSION%\ibgateway.vmoptions 
-	) else if exist "%TWS_PATH%\%TWS_VERSION%\tws.vmoptions" (
-		set TWS_VMOPTS=%TWS_PATH%\%TWS_VERSION%\tws.vmoptions 
-	) 
-
-	if exist "%TWS_PATH%\ibgateway\%TWS_VERSION%\jars" (
-		set TWS_JARS=%TWS_PATH%\ibgateway\%TWS_VERSION%\jars
-		set INSTALL4J=%TWS_PATH%\ibgateway\%TWS_VERSION%\.install4j
-	) else (
-		set TWS_JARS=%TWS_PATH%\%TWS_VERSION%\jars
-		set INSTALL4J=%TWS_PATH%\%TWS_VERSION%\.install4j
-	)
+if "%PROGRAM%" == "TWS" (
+	set PROGRAM_PATH=%TWS_PROGRAM_PATH%
+	set ALT_PROGRAM_PATH=%GATEWAY_PROGRAM_PATH%
+	set VMOPTIONS_SOURCE=!PROGRAM_PATH!\tws.vmoptions
+	set ALT_VMOPTIONS_SOURCE=!ALT_PROGRAM_PATH!\ibgateway.vmoptions
+) else (
+	set PROGRAM_PATH=%GATEWAY_PROGRAM_PATH%
+	set ALT_PROGRAM_PATH=%TWS_PROGRAM_PATH%
+	set VMOPTIONS_SOURCE=!PROGRAM_PATH!\ibgateway.vmoptions
+	set ALT_VMOPTIONS_SOURCE=!ALT_PROGRAM_PATH!\tws.vmoptions
 )
 
-if not exist "%TWS_JARS%" (
+if not exist "%PROGRAM_PATH%\JARS" (
+	set PROGRAM_PATH=%ALT_PROGRAM_PATH%
+	set VMOPTIONS_SOURCE=%ALT_VMOPTIONS_SOURCE%
+)
+set JARS=%PROGRAM_PATH%\jars
+set INSTALL4J=%PROGRAM_PATH%\.install4j
+
+if not exist "%JARS%" (
 	set ERROR_MESSAGE=Offline TWS/Gateway version %TWS_VERSION% is not installed: can't find jars folder
 	set ERROR_MESSAGE1=Make sure you install the offline version of TWS/Gateway
 	set ERROR_MESSAGE2=IBC does not work with the auto-updating TWS/Gateway
@@ -318,7 +311,8 @@ if not defined CONFIG (
 	set ERROR=%E_CONFIG_NOT_EXIST%
 	goto :err
 )
-if not exist "%TWS_VMOPTS%" (  
+if not exist "%VMOPTIONS_SOURCE%" (  
+	echo "%VMOPTIONS_SOURCE%" does not exist
 	set ERROR_MESSAGE=Neither tws.vmoptions nor ibgateway.vmoptions could be found
 	set ERROR=%E_TWS_VMOPTIONS_NOT_FOUND%
 	goto :err
@@ -341,7 +335,7 @@ echo Generating the classpath
 set PHASE=Generating the classpath
 
 set IBC_CLASSPATH=
-for %%i in (%TWS_JARS%\*.jar) do (
+for %%i in (%JARS%\*.jar) do (
     if not "!IBC_CLASSPATH!"=="" set IBC_CLASSPATH=!IBC_CLASSPATH!;
     set IBC_CLASSPATH=!IBC_CLASSPATH!%%i
 )
@@ -355,7 +349,7 @@ echo Generating the JAVA VM options
 set PHASE=Generating the JAVA VM options
 
 set JAVA_VM_OPTIONS=
-for /f "tokens=1 delims= " %%i in (%TWS_VMOPTS%) do (
+for /f "tokens=1 delims= " %%i in (%VMOPTIONS_SOURCE%) do (
 	set TOKEN=%%i
 	if not "!TOKEN!"=="" (
 		if not "!TOKEN:~0,1!"=="#" set JAVA_VM_OPTIONS=!JAVA_VM_OPTIONS! %%i
@@ -364,9 +358,13 @@ for /f "tokens=1 delims= " %%i in (%TWS_VMOPTS%) do (
 set JAVA_VM_OPTIONS=%JAVA_VM_OPTIONS% -Dtwslaunch.autoupdate.serviceImpl=com.ib.tws.twslaunch.install4j.Install4jAutoUpdateService
 set JAVA_VM_OPTIONS=%JAVA_VM_OPTIONS% -Dchannel=latest
 set JAVA_VM_OPTIONS=%JAVA_VM_OPTIONS% -Dexe4j.isInstall4j=true
-set JAVA_VM_OPTIONS=%JAVA_VM_OPTIONS%  -Dinstall4jType=standalone 
+set JAVA_VM_OPTIONS=%JAVA_VM_OPTIONS% -Dinstall4jType=standalone
+set JAVA_VM_OPTIONS=%JAVA_VM_OPTIONS% -DjtsConfigDir=%TWS_SETTINGS_PATH%
 
 echo Java VM Options=%JAVA_VM_OPTIONS%
+echo.
+
+call :GetAutoRestartOption
 echo.
 
 ::======================== Determine the location of java.exe ===============
@@ -416,48 +414,78 @@ if defined GOT_FIX_CREDENTIALS (
 )
 	
 
-if "%ENTRY_POINT%"=="%ENTRY_POINT_TWS%" (
-	set PROGRAM=TWS
-) else (
-	set PROGRAM=Gateway
-)
-echo Starting IBC with this command:
-echo "%JAVA_PATH%\java.exe" -cp  "%IBC_CLASSPATH%" %JAVA_VM_OPTIONS% %ENTRY_POINT% "%CONFIG%" %HIDDEN_CREDENTIALS% %MODE%
-echo.
-
 :: prevent other Java tools interfering with IBC
 set JAVA_TOOL_OPTIONS=
 
 pushd %TWS_SETTINGS_PATH%
 
-:startIBC
-if defined GOT_FIX_CREDENTIALS (
-	if defined GOT_API_CREDENTIALS (
-		"%JAVA_PATH%\java.exe" -cp  "%IBC_CLASSPATH%" %JAVA_VM_OPTIONS% %ENTRY_POINT% "%CONFIG%" "%FIX_USER_ID%" "%FIX_PASSWORD%" "%IB_USER_ID%" "%IB_PASSWORD%" %MODE%
-	) else (
-		"%JAVA_PATH%\java.exe" -cp  "%IBC_CLASSPATH%" %JAVA_VM_OPTIONS% %ENTRY_POINT% "%CONFIG%" "%FIX_USER_ID%" "%FIX_PASSWORD%" %MODE%
-	)
-) else if defined GOT_API_CREDENTIALS (
-		"%JAVA_PATH%\java.exe" -cp  "%IBC_CLASSPATH%" %JAVA_VM_OPTIONS% %ENTRY_POINT% "%CONFIG%" "%IB_USER_ID%" "%IB_PASSWORD%" %MODE%
+echo Renaming TWS or Gateway .exe file to prevent restart without IBC
+IF /I "%PROGRAM%"=="TWS" (
+	ren %PROGRAM_PATH%\tws.exe zztws.exe
 ) else (
-		"%JAVA_PATH%\java.exe" -cp  "%IBC_CLASSPATH%" %JAVA_VM_OPTIONS% %ENTRY_POINT% "%CONFIG%" %MODE%
+	ren %PROGRAM_PATH%\ibgateway.exe zzibgateway.exe
 )
 
+:startIBC
+
+echo.
+echo Starting IBC with this command:
+echo "%JAVA_PATH%\java.exe" -cp  "%IBC_CLASSPATH%" %JAVA_VM_OPTIONS% %AUTORESTART_OPTION% %ENTRY_POINT% "%CONFIG%" %HIDDEN_CREDENTIALS% %MODE%
+echo.
+
+if defined GOT_FIX_CREDENTIALS (
+	if defined GOT_API_CREDENTIALS (
+		"%JAVA_PATH%\java.exe" -cp  "%IBC_CLASSPATH%" %JAVA_VM_OPTIONS% %AUTORESTART_OPTION% %ENTRY_POINT% "%CONFIG%" "%FIX_USER_ID%" "%FIX_PASSWORD%" "%IB_USER_ID%" "%IB_PASSWORD%" %MODE%
+	) else (
+		"%JAVA_PATH%\java.exe" -cp  "%IBC_CLASSPATH%" %JAVA_VM_OPTIONS% %AUTORESTART_OPTION% %ENTRY_POINT% "%CONFIG%" "%FIX_USER_ID%" "%FIX_PASSWORD%" %MODE%
+	)
+) else if defined GOT_API_CREDENTIALS (
+		"%JAVA_PATH%\java.exe" -cp  "%IBC_CLASSPATH%" %JAVA_VM_OPTIONS% %AUTORESTART_OPTION% %ENTRY_POINT% "%CONFIG%" "%IB_USER_ID%" "%IB_PASSWORD%" %MODE%
+) else (
+		"%JAVA_PATH%\java.exe" -cp  "%IBC_CLASSPATH%" %JAVA_VM_OPTIONS% %AUTORESTART_OPTION% %ENTRY_POINT% "%CONFIG%" %MODE%
+)
+
+::======================== Handle IBC exit conditions ==============
+
+echo Program has exited
+echo Error level is %ERRORLEVEL%
+
+echo Check for 2FA dialog timed out
 if %ERRORLEVEL% EQU %E_2FA_DIALOG_TIMED_OUT% (
 	if /I "%TWOFA_TO_ACTION%" == "RESTART" (
 		:: wait a few seconds before restarting
-		echo IBC will restart shortly
+		echo IBC will restart shortly due to 2FA completion timeout
 		ping localhost -n 2  >NUL
-		goto :startibc
+		goto :startIBC
 	)
 )
 
+echo Check for login dialog display timeout
 if %ERRORLEVEL% EQU %E_LOGIN_DIALOG_DISPLAY_TIMEOUT% (
 	:: wait a few seconds before restarting
-	echo IBC will restart shortly
+	echo IBC will restart shortly due to login dialog display timeout
 	ping localhost -n 2  >NUL
-	goto :startibc
+	goto :startIBC
 )
+
+echo Check for restart
+echo call :GetAutoRestartOption
+call :GetAutoRestartOption
+if defined AUTORESTART_OPTION (
+	:: wait a few seconds before restarting
+	echo IBC will autorestart shortly
+	ping localhost -n 2  >NUL
+	goto :startIBC
+)
+
+echo Renaming TWS or Gateway .exe file to original name
+if /I "%PROGRAM%"=="TWS" (
+	ren %PROGRAM_PATH%\zztws.exe tws.exe
+) else (
+	ren %PROGRAM_PATH%\zzibgateway.exe ibgateway.exe
+)
+
+echo Normal exit
 
 popd
 
@@ -466,6 +494,26 @@ echo %PROGRAM% finished at %DATE% %TIME%
 echo.
 
 exit /B %ERRORLEVEL%
+
+::======================== Subroutines =============================
+
+:GetAutoRestartOption
+
+echo Finding autorestart file
+set AUTORESTART_OPTION=
+for /f "usebackq" %%I in (`where /R %TWS_SETTINGS_PATH% autorestart`) do (
+	for %%A in ("%%~pI.") do set AUTORESTART_OPTION=-Drestart=%%~nxA
+)
+if not defined AUTORESTART_OPTION (
+	set AUTORESTART_OPTION=
+	echo autorestart file not found 
+) else (
+	for /f "usebackq" %%I in (`where /R %TWS_SETTINGS_PATH% autorestart`) do echo autorestart file found at %%~fI
+	echo AUTORESTART_OPTION is %AUTORESTART_OPTION%
+)
+goto :EOF
+
+::======================== Error termination =======================
 
 :err
 echo.

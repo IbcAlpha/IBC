@@ -30,8 +30,10 @@ public abstract class AbstractLoginHandler implements WindowHandler {
 
     @Override
     public boolean filterEvent(Window window, int eventId) {
+        if (LoginManager.loginManager().getIsRestart()) return false;
         switch (eventId) {
             case WindowEvent.WINDOW_OPENED:
+                Utils.logToConsole("Login dialog WINDOW_OPENED: LoginState is " + LoginManager.loginManager().getLoginState().toString());
                 switch (LoginManager.loginManager().getLoginState()) {
                     case LOGGED_IN:
                         return false;

@@ -338,6 +338,8 @@ public class IbcTws {
         windowHandlers.add(new BidAskLastSizeDisplayUpdateDialogHandler());
         windowHandlers.add(new LoginErrorDialogHandler());
         windowHandlers.add(new CryptoOrderConfirmationDialogHandler());
+        windowHandlers.add(new AutoRestartConfirmationDialog());
+                
         
         return windowHandlers;
     }
@@ -432,6 +434,7 @@ public class IbcTws {
         String[] twsArgs = new String[1];
         twsArgs[0] = getTWSSettingsDirectory();
         try {
+            Utils.logToConsole("Starting Gateway");
             LoginManager.loginManager().startSession();
             ibgateway.GWClient.main(twsArgs);
         } catch (Throwable t) {
@@ -465,6 +468,7 @@ public class IbcTws {
         String[] twsArgs = new String[1];
         twsArgs[0] = getTWSSettingsDirectory();
         try {
+            Utils.logToConsole("Starting TWS");
             LoginManager.loginManager().startSession();
             jclient.LoginFrame.main(twsArgs);
         } catch (Throwable t) {
@@ -496,8 +500,14 @@ public class IbcTws {
         }
         
         String autoLogoffTime = Settings.settings().getString("AutoLogoffTime", "");
-        if (!autoLogoffTime.equals("")) {
-            (new ConfigurationTask(new ConfigureAutoLogoffTimeTask(autoLogoffTime))).executeAsync();
+        String autoRestartTime = Settings.settings().getString("AutoRestartTime", "");
+        if (!autoRestartTime.equals("")) {
+            (new ConfigurationTask(new ConfigureAutoLogoffOrRestartTimeTask("Auto restart", autoRestartTime))).executeAsync();
+            if (!autoLogoffTime.equals("")) {
+                Utils.logToConsole("AutoLogoffTime is ignored because AutoRestartTime is also set");
+            }
+        } else if (!autoLogoffTime.equals("")) {
+            (new ConfigurationTask(new ConfigureAutoLogoffOrRestartTimeTask("Auto logoff", autoLogoffTime))).executeAsync();
         }
 
         Utils.sendConsoleOutputToTwsLog(!Settings.settings().getBoolean("LogToConsole", false));
