@@ -14,17 +14,14 @@ dialog when TWS or Gateway start running, and clicks the Login button
 logon from another computer or device do not succeed
 * It can participate in Two Factor Authentication using IBKR Mobile in such
 a way that users who miss the 2FA alert on their device will automatically
-have another opportunity without needing be at the computer
+have further opportunities without needing to be at the computer
 * It handles various dialog boxes which TWS sometimes displays, to keep
 things running smoothly with no user involvement
-* It can keep TWS version 972 (and earlier) running indefinitely if
-required, by dealing with the autologoff mechanism. This mechanism
-does not work for TWS and Gateway 974 and later versions because Interactive
-Brokers have changed TWS functionality to prevent it
+* It allows TWS and Gateway to be auto-restarted each day during the week,
+without the user having to re-authenticate
+* It allows TWS and Gateway to be shut down at a specified time every day
 * It allows TWS to be shut down at a specified time on a specified day
-of the week (again, this functionality no longer applies for TWS 974
-and later versions)
-* It allows TWS and the Gateway to be shut down at a specified time every day
+of the week
 * It can be remotely instructed to shut down TWS or Gateway, which can
 be useful if they are running in the cloud or on an inaccessible computer
 
@@ -97,7 +94,7 @@ behaviour you're seeing.
 Note that IBC creates a log file that records a lot of useful information
 that can be very helpful in diagnosing users' problems. The location of
 this log file is prominently displayed in the window that appears when you
-run IBC. It is helpful to attach this log file to any problem reports.
+run IBC. Please attach this log file to any problem reports.
 
 Contributing
 ------------
