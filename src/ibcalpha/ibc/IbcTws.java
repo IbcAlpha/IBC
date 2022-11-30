@@ -307,7 +307,6 @@ public class IbcTws {
 
         windowHandlers.add(new AcceptIncomingConnectionDialogHandler());
         windowHandlers.add(new BlindTradingWarningDialogHandler());
-        windowHandlers.add(new ExitSessionFrameHandler());
         windowHandlers.add(new LoginFrameHandler());
         windowHandlers.add(new GatewayLoginFrameHandler());
         windowHandlers.add(new MainWindowFrameHandler());
