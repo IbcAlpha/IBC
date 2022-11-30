@@ -46,8 +46,9 @@ JAVA_PATH=
 #
 #       Build 10.19.1f, Oct 28, 2022 3:03:08 PM
 #
-#     The major version number is 1019 (ie ignore the period after the first
-#     part of the version number).
+#     The major version number is 10.19. (Note that this is different from
+#     the equivalent Windows and Linux settings because the macOS installer
+#     includes the period in the install folder name).
 #
 #     Do not include the rest of the version number in this setting.
 
