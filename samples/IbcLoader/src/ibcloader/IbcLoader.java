@@ -27,7 +27,7 @@ public class IbcLoader {
      */
     public static void main(String[] args) {
         try {
-            setupEnvironment(true);
+            setupEnvironment(args[0]);
             ibcalpha.ibc.IbcTws.load();
         } catch (Exception e) {
             e.printStackTrace();
@@ -35,10 +35,10 @@ public class IbcLoader {
         }
     }
     
-    private static void setupEnvironment(final boolean isGateway) throws Exception {
+    private static void setupEnvironment(final String entryPoint) throws Exception {
         Settings.initialise(new MySettings());
         LoginManager.initialise(new MyLoginManager());
-        MainWindowManager.initialise(new MyMainWindowManager(isGateway));
+        MainWindowManager.initialise(new MyMainWindowManager(entryPoint.equalsIgnoreCase("GATEWAY")));
         TradingModeManager.initialise(new MyTradingModeManager());
     }
 

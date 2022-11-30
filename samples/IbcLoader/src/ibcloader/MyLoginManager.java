@@ -18,12 +18,15 @@
 
 package ibcloader;
 
+import ibcalpha.ibc.AbstractLoginHandler;
 import javax.swing.JFrame;
 
 public class MyLoginManager extends ibcalpha.ibc.LoginManager {
 
     private volatile JFrame loginFrame = null;
     
+    private volatile AbstractLoginHandler loginHandler = null;
+
     @Override
     public void logDiagnosticMessage() {
         System.out.println("using MyLoginManager provider");
@@ -41,12 +44,12 @@ public class MyLoginManager extends ibcalpha.ibc.LoginManager {
 
     @Override
     public String IBAPIPassword() {
-        return "demouser";
+        return "password";
     }
 
     @Override
     public String IBAPIUserName() {
-        return "edemo";
+        return "username";
     }
 
     @Override
@@ -59,4 +62,13 @@ public class MyLoginManager extends ibcalpha.ibc.LoginManager {
         loginFrame = window;
     }
     
+    @Override
+    public AbstractLoginHandler getLoginHandler() {
+        return loginHandler;
+    }
+
+    @Override
+    public void setLoginHandler(AbstractLoginHandler handler) {
+        loginHandler = handler;
+    }
 }
