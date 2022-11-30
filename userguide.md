@@ -1,45 +1,18 @@
 # **IBC USER GUIDE**
 
->IMPORTANT NOTES REGARDING TWS 974 and Gateway 975 and later versions
+>IMPORTANT NOTES REGARDING AUTo-RESTART IN TWS/GATEWAY 1018 and later versions.
 >
->In TWS 974, IBKR have changed the way the autologoff function works within
-TWS. Starting with that version, when the time approaches the configured
-autologoff time, logoff can be deferred once by changing the autologoff time in
-the 'Exit Session Setting' dialog as in earlier versions, but when the new
-autologoff time arrives, TWS will logoff even if the user (or IBC) changes the
-autologoff time again.
+> IBC now has the ability to allow TWS/Gateway to use the autorestart
+> mechansism originally introduced in version 974/975.
 >
->This defeats the mechanism that IBC used with earlier TWS versions to prevent
-autologoff, by changing the configured autologoff each time the 'Exit Session
-Setting' dialog was displayed. Because of this, you should no longer use the
-`IbAutoClosedown=no` setting because it won't work properly.
+> This means that you can now set TWS/Gateway to run all week with a single 
+> login at the start of the week, under the control of IBC.
 >
->Furthermore, in Gateway 975 IBKR have introduced the same autologoff
-functionality as TWS: ie the Gateway will no longer run continuously, and will
-insist on shutting down every day.
->
->Instead you have two options:
->
->1. Restart IBC afresh each day you want to run TWS or Gateway. This option is
-useful if you want to automate login to TWS. You can use Task Scheduler (on
-Windows) or crontab (on Linux) to automatically start IBC at the appropriate
-time. You'll find sections on using Task Scheduler or crontab to start IBC
-towards the end of this document.
->
->2. Abandon the use of IBC and instead use the autorestart mechanism provided
-by TWS 974, Gateway 975 and later versions. To use this, you have to start TWS
-or Gateway with the .exe files or scripts provided by IBKR, because IBC cannot
-work with this mechanism. On Windows, these files are `C:\Jts\nnn\tws.exe` for
-TWS, and `C:\Jts\ibgateway\nnn\ibgateway.exe` for Gateway (note that desktop
-icons are also provided).  On Linux, the files are `~/Jts/nnn/tws` for TWS, and
-`~/Jts/ibgateway/nnn/ibgateway` for Gateway. nnn is the TWS version number.
->
->   Note that as mentioned above, IBC cannot currently work with this
-auto-restart mechanism. The setting for it may appear in the relevant
-TWS/Gateway configuration dialogs, but if you use it then TWS/Gateway will
-actually attempt to relogin at the appropriate time but may not succeed - and
-in any case the restarted process will not include IBC so no IBC functionality
-will work.
+> To configure this behaviour use the `AutoRestart` setting in the `Lock and
+> Exit` section of the TWS/Gateway configuration dialog. Alternatively use the
+> `AutoRestartTime` setting in `config.ini`.
+> 
+
 
 >IMPORTANT
 >
@@ -77,13 +50,13 @@ Here are some of the things IBC does for you:
 - clicks the YES button if the "Accept incoming connection?" dialog is
   displayed
 
-- responds to TWS's 'Exit Session Setting' to prevent autologoff, enabling
-  TWS to be kept running indefinitely. **IMPORTANT** This setting no longer
-  works properly with TWS 974 or later
-
-- shuts down TWS or Gateway tidily at a specified day of the week and time, or
-  at a specified time every day.
-
+- allows TWS or Gateway to automatically restart each day without need for 
+  repeated authentication: authentication is only required the first time
+  during the week that TWS or Gateway run after 01:00 ET on Sunday
+ 
+- allows two-factor authentication using the IBKR Mobile app, including
+  repeated alerts until the user acknowledges
+  
 IBC also responds to certain commands sent to it by another program,
 for example to tell TWS/Gateway to shut itself down cleanly.
 	
@@ -145,20 +118,15 @@ up and running properly.
    To find the TWS major version number, first run TWS or the Gateway manually
    using the IBKR-provided icon, then click `Help > About Trader Workstation`
    or `Help > About IB Gateway`. In the displayed information you'll see a
-   line similar to either this:
+   line similar to this:
 
-       `Build 981.3c, Jun 29, 2021 3:57:06 PM`
+       `Build 10.19.1f, Oct 28, 2022 3:03:08 PM`
 
-   or this:
+   Here the major version number is 1019 (ie ignore the period after the
+   first part of the version number).
 
-       `Build 10.12.2a, Dec 14, 2021 11:07:54 AM`
-
-   In the first case, the major version number is 981. In the second case,
-   it is 1012 (ie ignore the period after the first past of the version
-   number).
-
-   Ignore the rest of the version number. Now open the script files with a
-   text editor and ensure that the TWS_MAJOR_VRSN variable is set correctly.
+   Now open the script files with a text editor and ensure that the
+   TWS_MAJOR_VRSN variable is set correctly.
 
 8. At this stage, everything is set up to run IBC with its default
    settings, which will start TWS and attempt to log it into your
@@ -172,7 +140,7 @@ up and running properly.
    Note that when you start IBC, information about the startup
    process is logged to a file to aid diagnosing any faults that may
    occur. You will be notified of the log file name during the startup
-   sequence.
+   sequence. Please include this file when reporting problems with IBC.
 
 9. Now you can edit the configuration file `config.ini` to make any further
    customisations you need. See *Configuring IBC* for further information.
@@ -185,6 +153,13 @@ up and running properly.
 11. If you intend to run API programs to connect with TWS, you will need
     to manually edit the API settings in TWS's Global Configuration Dialog.
 
+12. If you want TWS to automatically restart every day during the week without
+    you having to re-authenticate, you'll need to ensure the AutoRestart time
+	is set appropriately in the Lock and Exit section of the Global
+	Configuration dialog. Note that the only alternative to auto-restart is
+	auto-logoff: this shuts down TWS completely at the specified time, and
+	it's then up to you to restart it and re-authenticate.
+	
 ### Prerequisites
 
 This section details the other software that is needed to run IBC.
@@ -221,9 +196,9 @@ version of Trader Workstation from the
 The location of the TWS dowloads page on IBKR's website varies from time to
 time, and from country to country.  At the time of writing, on IBKR's US website
 (linked above) you need to click the `Trading` menu near the top of the page,
-then select `Platforms`, and scroll down to the Desktop TWS section which contains
-a download button: currently a valid direct link is
-[Tws Software](https://www.interactivebrokers.com/en/index.php?f=14099#tws-software).
+then select `Platforms`, and then click `Download Software` under the Trader
+Workstation panel. Currently a valid direct link is
+[TWS Software](https://www.interactivebrokers.com/en/index.php?f=14099#tws-software).
 
 IBKR provides two modes of operation for TWS:
 
@@ -442,30 +417,26 @@ here is a list of the settings that you are most likely to need to change:
 | Setting                        | Notes                                       |
 | ------------------------------ | --------------------------------------------|
 | IbLoginID                      | You must set this to your IBKR username     |
-| Password                       | You must set this to your IBKR password       |
+| Password                       | You must set this to your IBKR password     |
 | TradingMode                    | For TWS 955 and later, you must set this to |
 |                                | `paper` if you have supplied the username   |
 |                                | and password for your live account but      |
 |                                | actually want to use your paper account.    |
 |                                | Otherwise you can omit the setting entirely |
-|                                | or set it to `live`                         |
-| IbDir                          | You only need to set this if you want TWS   |
+|                                | or set it to `live`.                        |
+| IbDir                          | You can set this if you want TWS            |
 |                                | to store its settings in a different folder |
-|                                | from the one it's installed in              |
+|                                | from the one it's installed in. However this |
+|                                | usage is now deprecated because auto-restart |
+|                                | does not work when you do this. Instead,    |
+|                                | you should specify the settings folder in   |
+|                                | the TWS_SETTINGS_PATH variable in the       |
+|                                | relevant start script.                      |
 | AcceptIncomingConnectionAction | It is safest to set this to `reject` and to |
 |                                | explicitly configure TWS to specify which   |
 |                                | IP addresses are allowed to connnect to the |
-|                                | API                                         |
-| IbAutoClosedown                | Set this to `no` to prevent TWS's daily     |
-|                                | auto closedown: NB this setting no longer   |
-|                                | works with TWS 974 and later                |
-| ClosedownAt                    | Set this if you want to keep TWS running    |
-|                                | until a specified time of day on a          |
-|                                | particular day of the week, or to specify a |
-|                                | time when Gateway should be shut down every |
-|                                | day (a daily shutdown time for TWS can be   |
-|                                | specified through TWS's own configuration   |
-                                 | dialog.                                     |
+|                                | API, by means of the API settings in the    |
+|                                | TWS/Gateway configuration dialog.           |
 
 
 There are two ways that IBC can locate your edited `config.ini` file.
@@ -473,7 +444,7 @@ There are two ways that IBC can locate your edited `config.ini` file.
 - the simplest way is to tell it where to find the file in the script that
   starts IBC. In this way, you can give the configuration file any name you
   like. This is the recommended approach, and the supplied scripts follow this
-  approach. If you want to change the filename from config.ini, or if you store
+  approach. If you want to change the filename from `config.ini`, or if you store
   it somewhere other than the default location, you'll have to edit the start
   script to declare its new name and location.
 
@@ -577,29 +548,37 @@ for 'Run whether user is logged on or not'.
 Remember also to change the task settings to prevent Windows automatically
 ending it after a certain time.
 
-Also, for versions of TWS earlier than TWS 974, you can use the
-`IbAutoClosedown=no` setting in the IBC configuration file to disable TWS's
-autologoff feature, and the `ClosedownAt=` setting to specify when IBC will
-shut down TWS. The `IbAutoClosedown=no` setting DOES NOT WORK properly with
-TWS 974 and later.
+You can set the AutoRestart time in the Lock and Exit section of the
+configuration dialog: this causes TWS/Gateway to automatically shut down and
+restart without requiring re-authentication at the specified time. When the
+restart time is reached, TWS will shut down (and IBC with it, thus ending the
+task as far as Task Scheduler is concerned). IBC will then be reloaded and it
+will reload TWS with the relevant information needed for it to recover its
+previous session without re-authentication. This will then be repeated each
+day at the same time. Thus TWS can be kept running all week, with automated
+startup and a single authentication at the start of the week.
 
-In this way you can start IBC automatically on Sunday evening or Monday
-morning, keep it running all week and then close down tidily on Friday evening
-or Saturday morning.
+Note that TWS's auto-restart mechanism does not work if TWS is shut down
+abruptly, for example due to power failure or a program bug. This situation can
+be handled by configuring the task to run periodically (say every 10 minutes)
+during the week so that if TWS crashes or is manually shut down, the task will
+be automatically restarted. However if you do this, then you must not set the
+AutoRestart time: this is because, as indicated above, when TWS auto-restarts
+for the first time, the original task is ended, so after that point the next
+periodic task start will actually load another instance of IBC and TWS, which
+will interfere with the auto-restarted TWS with unpredictable results. So
+instead you must set the autologoff time appropiately instead. The next
+periodic task start will then load a new instance of IBC/TWS which will require
+normal full authentication. So while this approach can deal with some rare
+situations where TWS ends unexpectedly, it's at the cost of having to
+authenticate daily.
 
-The Windows Task Scheduler has many powerful features, and some of these can
-be used to provide even better control. For example, you can run the task
-periodically (say every 10 minutes) during the week so that if TWS crashes or
-is manually shut down, it will automatically be restarted. If you also set up
-your computer to log on automatically when it starts, this will ensure TWS is
-restarted after a power outage. (Information about how to make your computer
-log on automatically is easily available on the internet: but make sure you
-understand the security implications of autologon to Windows).
-
-**IMPORTANT** Note that Microsoft have made changes to the Task Scheduler for
-Windows 10. Because of this, it is advisable to set up your Scheduled Task
-differently on Windows 10: see the next section _Running under Task Scheduler
-on Windows 10_.
+Note also that if you set up the task to run at user logon, and you configure
+your computer's BIOS to power on when power is restored after failure, and to
+then log on automatically, this will ensure TWS is restarted after a power
+outage. (Information about how to make your computer log on automatically is
+easily available on the internet: but make sure you understand the security
+implications of autologon to Windows).
 
 **IMPORTANT** Make sure you use the `/INLINE` argument to `StartTWS.bat` or
 `StartGateway.bat` when starting IBC from Task Scheduler.
@@ -613,43 +592,11 @@ by it.
 
 A sample scheduled task is included in the IBC distribution ZIP,
 called `Start TWS Live (daily).xml`. You can import this into your Task
-Scheduler if you are running Windows 7, Windows 8 or Windows 8.1 (see below
-for further information about running on Windows 10). After importing it, you
-will need to enable it and change the user account it runs under. This task
-starts TWS daily at 05:55, and assumes that TWS is set to autologoff at 05:52,
-so the IBC configuration file must include `IbAutoClosedown=yes`: you can
-adjust these times to suit your needs.
-
-#### Running under Task Scheduler on Windows 10
-
-Microsoft have made significant changes to the Task Scheduler in Windows 10.
-Although the management user interface is pretty much the same as in earlier
-Windows versions, there are important changes in some of the 'under the hood'
-operation.
-
-The net effect of these changes is that it is no longer a good idea to start
-IBC under Task Scheduler by running a command file. It will only work
-correctly if the command given to Task Scheduler directly runs IBC.
-
-To set this up, first run IBC manually (using `StartTWS.bat`
-or `StartGateway.bat`), and open the log file in Notepad or any other
-text editor: if using Notepad, make sure that 'Word Wrap' on the Format menu is
-not checked). Now create your scheduled task (it's easiest to import the sample
-included in the IBC download zip file), and open the start action editor.
-Find the line in the log file that reads: 'Starting IBC with this
-command:', then select and copy the first part of the following line (up to but
-not including `-cp`), and paste it into the `Program/script:` field of the
-action editor. Then select and copy the remainder of the line in the log file
-(starting at `-cp`), and paste it into the `Add arguments (optional):` field
-of the action editor. You can now run this scheduled task in the normal way.
-
-Note that running IBC from Task Scheduler via a direct command in this way
-means that there is no permanent IBC log file. Any output from IBC appears in
-the window that Java creates to host the Java console output, but there is no
-way to capture this to a file (note that normal redirection operators `>` and
-`>>` cannot be used in a command in a scheduled task). If you've made sure
-that your IBC installation operates correctly before setting up your scheduled
-task, this should not be too much of a problem.
+Scheduler if you are running Windows. After importing it, you will need to
+enable it and change the user account it runs under. This task starts TWS daily
+from Sunday to Thursday at 22:15, and assumes that TWS is set to autologoff
+shortly before this. It restarts the task every 10 minutes. You can adjust
+these times to suit your needs.
 
 ### Running with crontab (Linux only)
 
@@ -714,19 +661,21 @@ time. So you can run multiple TWS instances with no problem provided each
 instance is logged in to a different username, AND you don't try to run them
 at the same time.
 
-However, by using the `IbDir` setting in the IBC configuration file,
-you can tell TWS to store its settings whereever you like. So to have multiple
-IBC instances operating simultaneously, you need to create a separate
-configuration file for each instance with a different setting for `IbDir`. Note
-that you do not need to copy the TWS .jar files themselves - you can load TWS
-from the same installation folder for each instance.
+However, by using the `TWS_SETTINGS_PATH` setting in the TWS and Gateway start
+scripts, you can tell TWS to store its settings whereever you like. So to have
+multiple IBC instances operating simultaneously, you need to create a separate
+start script for each instance with a different setting for
+`TWS_SETTINGS_PATH`. Note that you do not need to copy the TWS .jar files
+themselves - you can load TWS from the same installation folder for each
+instance.
 
-Because you now have different configuration files, you also need different
-scripts to run each instance (or you could have a single script and pass the
-configuration file details as a parameter). And you need to ensure that the
-different instances don't try to write their log files to the same folder
-(because otherwise they might try to log to the same file, and one instance
-would fail).
+As an alternative to having different scripts to run each instance. you could
+have a single script and pass the value for the `TWS_SETTINGS_PATH` variable
+as a parameter). 
+
+You need to ensure that the different instances don't try to write their log
+files to the same folder (because otherwise they might try to log to the same
+file, and one instance would fail).
 
 As a concrete example, let's take the first scenario described above: you want
 to run both your live and paper trading accounts without them interfering with
@@ -793,7 +742,9 @@ via either the IBC User Group or the GitHub Issue Tracker at:
 
 Please provide as much evidence as you can, especially the versions of
 IBC and TWS/Gateway you're using and a full description of the
-incorrect behaviour you're seeing.
+incorrect behaviour you're seeing. The IBC logile contains a lot of information
+that can often be used to rapidly diagnose the source of a problem, so
+attaching it to your report is always a good idea.
 
 ### Changes from IBController
 
