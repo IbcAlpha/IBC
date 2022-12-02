@@ -239,7 +239,7 @@ if [ "$os" = "$OS_LINUX" ]; then
 else
 	if [ "$tws_path" = "" ]; then tws_path=~/Applications ;fi
 	if [ "$tws_settings_path" = "" ]; then tws_settings_path=~/Jts ;fi
-	tws_program_path = "${tws_path}/Trader Workstation ${tws_version}"
+	tws_program_path="${tws_path}/Trader Workstation ${tws_version}"
 	gateway_program_path="${tws_path}/IB Gateway ${tws_version}"
 fi
 if [ "$ibc_path" = "" ]; then ibc_path=/opt/ibc ;fi
