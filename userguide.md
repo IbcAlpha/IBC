@@ -120,10 +120,16 @@ up and running properly.
    or `Help > About IB Gateway`. In the displayed information you'll see a
    line similar to this:
 
-       `Build 10.19.1f, Oct 28, 2022 3:03:08 PM`
+   ```
+      Build 10.19.1f, Oct 28, 2022 3:03:08 PM
+   ```
 
-   Here the major version number is 1019 (ie ignore the period after the
-   first part of the version number).
+   For Windows and Linux,  the major version number is 1019 (ie ignore the
+   period after the first part of the version number).
+
+   For macOS, the major version number is 10.19. (Note that this is different
+   from the equivalent Windows and Linux settings because the macOS installer
+   includes the period in the install folder name).
 
    Now open the script files with a text editor and ensure that the
    TWS_MAJOR_VRSN variable is set correctly.
