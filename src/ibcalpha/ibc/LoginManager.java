@@ -68,6 +68,15 @@ public abstract class LoginManager {
         return readOnly;
     }
     
+    private volatile JFrame loginFrame = null;
+    JFrame getLoginFrame() {
+        return loginFrame;
+    }
+
+    void setLoginFrame(JFrame window) {
+        loginFrame = window;
+    }
+    
     void startSession() {
         // test to see if the -Drestart VM option has been supplied
         isRestart = ! (System.getProperties().getProperty("restart", "").isEmpty());
@@ -97,17 +106,23 @@ public abstract class LoginManager {
     public void setLoginState(LoginState state) {
         if (state == loginState) return;
         loginState = state;
-        if (loginState == LoginState.TWO_FA_IN_PROGRESS) {
-            Utils.logToConsole("Second Factor Authentication initiated");
-            if (LoginStartTime == null) LoginStartTime = Instant.now();
-        } else if (loginState == LoginState.LOGGING_IN) {
-            if (LoginStartTime == null) LoginStartTime = Instant.now();
-        } else if (loginState == LoginState.LOGGED_IN) {
-            Utils.logToConsole("Login has completed");
-            if (shutdownAfterTimeTask != null) {
-                shutdownAfterTimeTask.cancel(false);
-                shutdownAfterTimeTask = null;
-            }
+        if (null != loginState) switch (loginState) {
+            case TWO_FA_IN_PROGRESS:
+                Utils.logToConsole("Second Factor Authentication initiated");
+                if (LoginStartTime == null) LoginStartTime = Instant.now();
+                break;
+            case LOGGING_IN:
+                if (LoginStartTime == null) LoginStartTime = Instant.now();
+                break;
+            case LOGGED_IN:
+                Utils.logToConsole("Login has completed");
+                loginFrame.setVisible(false);
+                if (shutdownAfterTimeTask != null) {
+                    shutdownAfterTimeTask.cancel(false);
+                    shutdownAfterTimeTask = null;
+                }   break;
+            default:
+                break;
         }
     }
 
@@ -191,10 +206,6 @@ public abstract class LoginManager {
 
     public abstract String IBAPIUserName();
 
-    public abstract JFrame getLoginFrame();
-
-    public abstract void setLoginFrame(JFrame window);
-    
     public abstract AbstractLoginHandler getLoginHandler();
 
     public abstract void setLoginHandler(AbstractLoginHandler handler);

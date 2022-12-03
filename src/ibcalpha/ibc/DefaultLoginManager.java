@@ -62,8 +62,6 @@ public class DefaultLoginManager extends LoginManager {
 
     private final String message;
 
-    private volatile JFrame loginFrame = null;
-    
     private volatile AbstractLoginHandler loginHandler = null;
 
     private final boolean fromSettings;
@@ -127,12 +125,12 @@ public class DefaultLoginManager extends LoginManager {
 
     @Override
     public JFrame getLoginFrame() {
-        return loginFrame;
+        return super.getLoginFrame();
     }
 
     @Override
     public void setLoginFrame(JFrame window) {
-        loginFrame = window;
+        super.setLoginFrame(window);
     }
 
     @Override
