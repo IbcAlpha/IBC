@@ -420,11 +420,9 @@ set JAVA_TOOL_OPTIONS=
 pushd %TWS_SETTINGS_PATH%
 
 echo Renaming TWS or Gateway .exe file to prevent restart without IBC
-IF /I "%PROGRAM%"=="TWS" (
-	ren %PROGRAM_PATH%\tws.exe zztws.exe
-) else (
-	ren %PROGRAM_PATH%\ibgateway.exe zzibgateway.exe
-)
+IF exist "%PROGRAM_PATH%\tws.exe" ren "%PROGRAM_PATH%\tws.exe" tws1.exe
+IF exist "%PROGRAM_PATH%\ibgateway.exe" ren "%PROGRAM_PATH%\ibgateway.exe" ibgateway1.exe
+echo .
 
 :startIBC
 
@@ -453,16 +451,17 @@ echo Error level is %ERRORLEVEL%
 echo Check for 2FA dialog timed out
 if %ERRORLEVEL% EQU %E_2FA_DIALOG_TIMED_OUT% (
 	if /I "%TWOFA_TO_ACTION%" == "RESTART" (
-		:: wait a few seconds before restarting
 		echo IBC will restart shortly due to 2FA completion timeout
 		ping localhost -n 2  >NUL
 		goto :startIBC
+	) else (
+		echo 2FA completion timed-out but TWOFA_TO_ACTION=EXIT so not restarting IBC
+		goto :NormalExit
 	)
 )
 
 echo Check for login dialog display timeout
 if %ERRORLEVEL% EQU %E_LOGIN_DIALOG_DISPLAY_TIMEOUT% (
-	:: wait a few seconds before restarting
 	echo IBC will restart shortly due to login dialog display timeout
 	ping localhost -n 2  >NUL
 	goto :startIBC
@@ -472,18 +471,17 @@ echo Check for restart
 echo call :GetAutoRestartOption
 call :GetAutoRestartOption
 if defined AUTORESTART_OPTION (
-	:: wait a few seconds before restarting
 	echo IBC will autorestart shortly
 	ping localhost -n 2  >NUL
 	goto :startIBC
 )
 
+:NormalExit
+
 echo Renaming TWS or Gateway .exe file to original name
-if /I "%PROGRAM%"=="TWS" (
-	ren %PROGRAM_PATH%\zztws.exe tws.exe
-) else (
-	ren %PROGRAM_PATH%\zzibgateway.exe ibgateway.exe
-)
+IF exist "%PROGRAM_PATH%\tws1.exe" ren "%PROGRAM_PATH%\tws1.exe" tws.exe
+IF exist "%PROGRAM_PATH%\ibgateway1.exe" ren "%PROGRAM_PATH%\ibgateway1.exe" ibgateway.exe
+echo.
 
 echo Normal exit
 
@@ -500,6 +498,7 @@ exit /B %ERRORLEVEL%
 :GetAutoRestartOption
 
 echo Finding autorestart file
+
 set AUTORESTART_OPTION=
 for /f "usebackq" %%I in (`where /R %TWS_SETTINGS_PATH% autorestart`) do (
 	for %%A in ("%%~pI.") do set AUTORESTART_OPTION=-Drestart=%%~nxA

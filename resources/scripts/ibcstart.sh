@@ -436,7 +436,14 @@ JAVA_TOOL_OPTIONS=
 pushd "$tws_settings_path" > /dev/null
 
 echo "Renaming IB's TWS or Gateway start script to prevent restart without IBC"
-mv "${program_path}/tws" "${program_path}/zztws"
+if [[ "$os" = "$OS_LINUX" ]]; then
+	if [[ -e "${program_path}/tws" ]]; then mv "${program_path}/tws" "${program_path}/tws1"; fi
+	if [[ -e "${program_path}/ibgateway" ]]; then mv "${program_path}/ibgateway" "${program_path}/ibgateway1"; fi
+elif [[ "$os" = "$OS_OSX" ]]; then
+	if [[ -e "${program_path}/Trader Workstation ${tws_version}.app" ]]; then mv "${program_path}/Trader Workstation ${tws_version}.app" "${program_path}/Trader Workstation ${tws_version}-1.app"; fi
+	if [[ -e "${program_path}/IB Gateway ${tws_version}.app" ]]; then mv "${program_path}/IB Gateway ${tws_version}.app" "${program_path}/IB Gateway ${tws_version}-1.app"; fi
+fi
+echo
 
 while :
 do
@@ -484,7 +491,15 @@ do
 	echo sleep 2
 done
 
-mv "${program_path}/zztws" "${program_path}/tws"
+echo "Renaming TWS or Gateway .exe file to original name"
+if [[ "$os" = "$OS_LINUX" ]]; then
+	if [[ -e "${program_path}/tws1" ]]; then mv "${program_path}/tws1" "${program_path}/tws"; fi
+	if [[ -e "${program_path}/ibgateway1" ]]; then mv "${program_path}/ibgateway1" "${program_path}/ibgateway"; fi
+elif [[ "$os" = "$OS_OSX" ]]; then
+	if [[ -e "${program_path}/Trader Workstation ${tws_version}.app-1" ]]; then mv "${program_path}/Trader Workstation ${tws_version}.app-1" "${program_path}/Trader Workstation ${tws_version}.app"; fi
+	if [[ -e "${program_path}/IB Gateway ${tws_version}.app-1" ]]; then mv "${program_path}/IB Gateway ${tws_version}.app-1" "${program_path}/IB Gateway ${tws_version}.app"; fi
+fi
+echo
 
 echo "$program finished"
 echo
