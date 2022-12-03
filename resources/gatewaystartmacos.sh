@@ -178,6 +178,15 @@ JAVA_PATH=
 #   End of Notes:
 #==============================================================================
 
+if [[ -x "${IBC_PATH}/scripts/displaybannerandlaunch.sh" ]]; then
+	:
+elif [[ -x "${IBC_PATH}/scripts/ibcstart.sh" ]]; then
+	:
+else
+	>&2 echo -e "Error: no execute permission for scripts in ${IBC_PATH}/scripts"
+	>&2 exit 1
+fi
+
 APP=GATEWAY
 
 export TWS_MAJOR_VRSN

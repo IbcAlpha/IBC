@@ -175,6 +175,15 @@ HIDE=
 #   End of Notes:
 #==============================================================================
 
+if [[ -x "${IBC_PATH}/scripts/displaybannerandlaunch.sh" ]]; then
+	:
+elif [[ -x "${IBC_PATH}/scripts/ibcstart.sh" ]]; then
+	:
+else
+	>&2 echo -e "Error: no execute permission for scripts in ${IBC_PATH}/scripts"
+	>&2 exit 1
+fi
+
 if [[ -n $(/usr/bin/pgrep -f "java.*${IBC_INI}") ]]; then
 	>&2 echo -e "Error: process is already running"
 	>&2 exit 1
