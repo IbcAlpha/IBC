@@ -37,7 +37,7 @@ exit /B
 
 :: Variables to be derived from arguments
 set TWS_VERSION=
-set ENTRY_POINT=/G
+set ENTRY_POINT=TWS
 set TWS_PATH=/TWSPATH:C:\Jts
 set JPATH=
 set ERROR_MESSAGE=
@@ -51,9 +51,9 @@ if "%~1" == "" goto :parsingComplete
 
 set ARG=%~1
 if /I "%ARG%" == "/G" (
-	set ENTRY_POINT=/G
+	set ENTRY_POINT=GATEWAY
 ) else if /I "%ARG%" == "/GATEWAY" (
-	set ENTRY_POINT=/G
+	set ENTRY_POINT=GATEWAY
 ) else if /I "%ARG:~0,9%" == "/TWSPATH:" (
 	set TWS_PATH=%ARG%
 ) else if /I "%ARG:~0,10%" == "/JAVAPATH:" (
@@ -80,9 +80,7 @@ set JAVA_PATH=
 call LocateJavaAndTwsJars.bat %TWS_VERSION% %TWS_PATH% %JPATH%
 if errorlevel 1 goto :err
 
-::pushd C:\Jts
-"%JAVA_PATH%\javaw" -cp IbcLoader.jar;IBC.jar;%TWS_JARS%\* ibcloader.IbcLoader
-::popd
+"%JAVA_PATH%\javaw" -cp IbcLoader.jar;IBC.jar;%TWS_JARS%\* ibcloader.IbcLoader %ENTRY_POINT%
 
 exit /B 0
 

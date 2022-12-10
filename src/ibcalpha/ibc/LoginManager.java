@@ -54,6 +54,11 @@ public abstract class LoginManager {
         AWAITING_CREDENTIALS
     }
 
+    private boolean isRestart;
+    boolean getIsRestart() {
+        return isRestart;
+    }
+    
     boolean readonlyLoginRequired() {
         boolean readOnly = Settings.settings().getBoolean("ReadOnlyLogin", false);
         if (readOnly && MainWindowManager.mainWindowManager().isGateway()) {
@@ -63,18 +68,34 @@ public abstract class LoginManager {
         return readOnly;
     }
     
+    private volatile JFrame loginFrame = null;
+    JFrame getLoginFrame() {
+        return loginFrame;
+    }
+
+    void setLoginFrame(JFrame window) {
+        loginFrame = window;
+    }
+    
     void startSession() {
+        // test to see if the -Drestart VM option has been supplied
+        isRestart = ! (System.getProperties().getProperty("restart", "").isEmpty());
         int loginDialogDisplayTimeout = Settings.settings().getInt("LoginDialogDisplayTimeout", 60);
-        Utils.logToConsole("Starting session: will exit if login dialog is not displayed within " + loginDialogDisplayTimeout + " seconds");
-        MyScheduledExecutorService.getInstance().schedule(()->{
-            GuiExecutor.instance().execute(()->{
-                if (getLoginState() != LoginManager.LoginState.LOGGED_OUT) {
-                    // Login diaog has been shown - no need for IBC to exit
-                    return;
-                }
-                Utils.exitWithError(ErrorCodes.ERROR_CODE_LOGIN_DIALOG_DISPLAY_TIMEOUT, "IBC closing after TWS/Gateway failed to display login dialog");
-            });
-        }, loginDialogDisplayTimeout, TimeUnit.SECONDS);
+        if (isRestart){
+            Utils.logToConsole("Re-starting session");
+            // TWS/Gateway will re-establish the session with no intervention from IBC needed
+        } else {
+            Utils.logToConsole("Starting session: will exit if login dialog is not displayed within " + loginDialogDisplayTimeout + " seconds");
+            MyScheduledExecutorService.getInstance().schedule(()->{
+                GuiExecutor.instance().execute(()->{
+                    if (getLoginState() != LoginManager.LoginState.LOGGED_OUT) {
+                        // Login diaog has been shown - no need for IBC to exit
+                        return;
+                    }
+                    Utils.exitWithError(ErrorCodes.ERROR_CODE_LOGIN_DIALOG_DISPLAY_TIMEOUT, "IBC closing after TWS/Gateway failed to display login dialog");
+                });
+            }, loginDialogDisplayTimeout, TimeUnit.SECONDS);
+        }
     }
 
     private volatile LoginState loginState = LoginState.LOGGED_OUT;
@@ -85,17 +106,23 @@ public abstract class LoginManager {
     public void setLoginState(LoginState state) {
         if (state == loginState) return;
         loginState = state;
-        if (loginState == LoginState.TWO_FA_IN_PROGRESS) {
-            Utils.logToConsole("Second Factor Authentication initiated");
-            if (LoginStartTime == null) LoginStartTime = Instant.now();
-        } else if (loginState == LoginState.LOGGING_IN) {
-            if (LoginStartTime == null) LoginStartTime = Instant.now();
-        } else if (loginState == LoginState.LOGGED_IN) {
-            Utils.logToConsole("Login has completed");
-            if (shutdownAfterTimeTask != null) {
-                shutdownAfterTimeTask.cancel(false);
-                shutdownAfterTimeTask = null;
-            }
+        if (null != loginState) switch (loginState) {
+            case TWO_FA_IN_PROGRESS:
+                Utils.logToConsole("Second Factor Authentication initiated");
+                if (LoginStartTime == null) LoginStartTime = Instant.now();
+                break;
+            case LOGGING_IN:
+                if (LoginStartTime == null) LoginStartTime = Instant.now();
+                break;
+            case LOGGED_IN:
+                Utils.logToConsole("Login has completed");
+                loginFrame.setVisible(false);
+                if (shutdownAfterTimeTask != null) {
+                    shutdownAfterTimeTask.cancel(false);
+                    shutdownAfterTimeTask = null;
+                }   break;
+            default:
+                break;
         }
     }
 
@@ -103,6 +130,12 @@ public abstract class LoginManager {
     private ScheduledFuture<?> shutdownAfterTimeTask;
 
     void secondFactorAuthenticationDialogClosed() {
+        if (LoginStartTime == null) {
+            // login did not proceed from the SecondFactorAuthentication dialog - for
+            // example because no second factor device could be selected
+            return;
+        }
+        
         // Second factor authentication dialog timeout period
         final int SecondFactorAuthenticationTimeout = Settings.settings().getInt("SecondFactorAuthenticationTimeout", 180);
 
@@ -173,10 +206,6 @@ public abstract class LoginManager {
 
     public abstract String IBAPIUserName();
 
-    public abstract JFrame getLoginFrame();
-
-    public abstract void setLoginFrame(JFrame window);
-    
     public abstract AbstractLoginHandler getLoginHandler();
 
     public abstract void setLoginHandler(AbstractLoginHandler handler);

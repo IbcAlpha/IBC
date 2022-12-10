@@ -20,7 +20,6 @@ package ibcalpha.ibc;
 
 import java.awt.Window;
 import javax.swing.JFrame;
-import javax.swing.JRadioButton;
 import javax.swing.JToggleButton;
 
 final class GatewayLoginFrameHandler extends AbstractLoginHandler {
