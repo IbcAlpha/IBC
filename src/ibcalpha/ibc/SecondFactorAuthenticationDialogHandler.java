@@ -67,7 +67,8 @@ public class SecondFactorAuthenticationDialogHandler implements WindowHandler {
         // For TWS this window is a JFrame; for Gateway it is a JDialog
         if (! (window instanceof JDialog || window instanceof JFrame)) return false;
         
-        return SwingUtils.titleContains(window, "Second Factor Authentication");
+        return SwingUtils.titleContains(window, "Second Factor Authentication") ||
+            SwingUtils.titleContains(window, "Security Code Card Authentication");
     }
 
     private void doReadonlyLogin(Window window){
