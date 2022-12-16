@@ -199,7 +199,7 @@ echo
 echo Arguments:
 echo
 echo -e "TWS version = ${tws_version}"
-echo -e "Program = ${PROGRAM}"
+echo -e "Program = ${program}"
 echo -e "Entry point = ${entry_point}"
 echo -e "--tws-path = ${tws_path}"
 echo -e "--tws-settings-path = ${tws_settings_path}"
