@@ -536,7 +536,7 @@ When you define your task, make sure that the option to 'Run only when user
 is logged on' is selected. Doing this will ensure that you can see and interact
 with TWS.
 
-You will then need to log on before the task runs.
+You will then need to log on to Windows before the task runs.
 
 Note that you can set up Windows to log on automatically at startup: this might
 be useful, for example, if your system's BIOS allows you to configure the
@@ -557,27 +557,32 @@ ending it after a certain time.
 You can set the AutoRestart time in the Lock and Exit section of the
 configuration dialog: this causes TWS/Gateway to automatically shut down and
 restart without requiring re-authentication at the specified time. When the
-restart time is reached, TWS will shut down (and IBC with it, thus ending the
-task as far as Task Scheduler is concerned). IBC will then be reloaded and it
-will reload TWS with the relevant information needed for it to recover its
-previous session without re-authentication. This will then be repeated each
-day at the same time. Thus TWS can be kept running all week, with automated
-startup and a single authentication at the start of the week.
+restart time is reached, TWS shuts down (and IBC with it), but this does not
+end the task, because the `StartTWS.bat` or `StartGateway.bat` script continues
+running to restart IBC. The restarted IBC then reloads TWS with the relevant
+information needed for it to recover its previous session without re-
+authentication. This sequence is then repeated each day at the same time. Thus
+TWS can be kept running all week, with automated startup and a single
+authentication at the start of the week. Note that this is all the same task,
+since the start script run by the Task Scheduler keeps running all the time.
 
-Note that TWS's auto-restart mechanism does not work if TWS is shut down
-abruptly, for example due to power failure or a program bug. This situation can
-be handled by configuring the task to run periodically (say every 10 minutes)
-during the week so that if TWS crashes or is manually shut down, the task will
-be automatically restarted. However if you do this, then you must not set the
-AutoRestart time: this is because, as indicated above, when TWS auto-restarts
-for the first time, the original task is ended, so after that point the next
-periodic task start will actually load another instance of IBC and TWS, which
-will interfere with the auto-restarted TWS with unpredictable results. So
-instead you must set the autologoff time appropiately instead. The next
-periodic task start will then load a new instance of IBC/TWS which will require
-normal full authentication. So while this approach can deal with some rare
-situations where TWS ends unexpectedly, it's at the cost of having to
-authenticate daily.
+Finally on the Sunday, if the task has not been ended before then, IB will
+prevent that session running any further because the session credentials expire.
+At this point it is necessary to start a new task to begin the whole cycle over
+again.
+
+Since there is little point having TWS running after Friday evening (because
+the markets are closed), you can use the `ClosedownAt` setting in `config.ini`
+to tidily shut down TWS automatically after the Friday trading session has
+finished.
+
+Note that TWS's auto-restart mechanism does not operate if TWS is shut down
+other than at the auto-restart time: for example via the File | Exit menu, or
+due to power failure or a program bug. This situation can be handled by
+configuring the task to run periodically (say every 10 minutes) during the week
+so that if TWS crashes or is manually shut down, the task is automatically
+restarted. Make sure the task is also configured to prevent a new instance if
+one is already running.
 
 Note also that if you set up the task to run at user logon, and you configure
 your computer's BIOS to power on when power is restored after failure, and to
@@ -587,14 +592,15 @@ easily available on the internet: but make sure you understand the security
 implications of autologon to Windows).
 
 **IMPORTANT** Make sure you use the `/INLINE` argument to `StartTWS.bat` or
-`StartGateway.bat` when starting IBC from Task Scheduler.
-Otherwise IBC will start and run correctly, but Task Scheduler will not
-be aware of it: in particular Task Scheduler will not show the task as running.
-This prevents correct operation of Task Scheduler features such as killing the
-task after a specified elapsed time. The reason for this is that as far as
-Task Scheduler is concerned, the task is simply the command processor process
-that it creates to run the .bat file, and does not include processes created
-by it.
+`StartGateway.bat` when starting IBC from Task Scheduler. Otherwise IBC starts
+and runs correctly, but Task Scheduler is not aware of it: in particular Task
+Scheduler does not show the task as running. This prevents correct operation of
+Task Scheduler features such as killing the task after a specified elapsed
+time, and periodic restarts as described above will result in multiple IBC
+instances being started, with unpredictable results. The reason for this is
+that if `/INLINE` is not used, the start scripts create a new window to run
+IBC in, and Task Scheduler is not aware of this, so the task ends as soon as
+this new window has been created.
 
 A sample scheduled task is included in the IBC distribution ZIP,
 called `Start TWS Live (daily).xml`. You can import this into your Task
