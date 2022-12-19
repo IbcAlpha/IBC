@@ -34,11 +34,6 @@ import javax.swing.SwingUtilities;
 
 public class DefaultMainWindowManager extends MainWindowManager {
 
-    public DefaultMainWindowManager() {
-        this.isGateway = false;
-        message = "parameterless constructor (isGateway = false assumed)";
-    }
-
     public DefaultMainWindowManager(boolean isGateway) {
         this.isGateway = isGateway;
         message = "constructor parameter isGateway=" + isGateway;

@@ -25,17 +25,9 @@ public abstract class MainWindowManager {
 
     private static MainWindowManager _mainWindowManager;
 
-    static {
-        _mainWindowManager = new DefaultMainWindowManager();
-    }
-
     public static void initialise(MainWindowManager mainWindowManager){
         if (mainWindowManager == null) throw new IllegalArgumentException("mainWindowManager");
         _mainWindowManager = mainWindowManager;
-    }
-
-    public static void setDefault() {
-        _mainWindowManager = new DefaultMainWindowManager();
     }
 
     public static MainWindowManager mainWindowManager() {

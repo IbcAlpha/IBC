@@ -22,40 +22,9 @@ public class DefaultTradingModeManager extends TradingModeManager {
 
     private String tradingMode;
 
-    public DefaultTradingModeManager() {
-        fromSettings = false;
-        setTradingMode(TRADING_MODE_LIVE);
-        message = "parameterless constructor (trading mode live assumed)";
-    }
-
-    public DefaultTradingModeManager(String tradingMode) {
-        fromSettings = false;
-        setTradingMode(tradingMode);
-        message = "constructor parameter tradingMode=" + tradingMode;
-    }
-
-    /*
-     * Must be in either args[1] (if there are two args), or args[3] (if there are 
-     * four args), or args[5] (if there are six args)
-    */
     public DefaultTradingModeManager(String[] args) {
-        if (args.length == 0) {
-            setTradingMode(TRADING_MODE_LIVE);
-        } else if (args.length == 2) {
-            setTradingMode(args[1]);
-        } else if (args.length == 4) {
-            setTradingMode(args[3]);
-        } else if (args.length == 6) {
-            setTradingMode(args[5]);
-        }
-
-        if (tradingMode != null) {
-            fromSettings = false;
-            message = "constructor parameter args: tradingMode=" + tradingMode;
-        } else {
-            fromSettings = true;
-            message = "constructor parameter args but trading mode not present - will be taken from settings";
-        }
+        fromSettings = true;
+        message = "trading mode arg will be taken from settings";
     }
 
     private void setTradingMode(String value) {
@@ -75,10 +44,8 @@ public class DefaultTradingModeManager extends TradingModeManager {
 
     @Override
     public String getTradingMode() {
-        if (fromSettings) {
-            setTradingMode( Settings.settings().getString("TradingMode", TRADING_MODE_LIVE));
-            Utils.logToConsole("trading mode from settings: tradingMode=" + tradingMode);
-        }
+        setTradingMode( Settings.settings().getString("TradingMode"));
+        Utils.logToConsole("trading mode from settings: tradingMode=" + tradingMode);
         return tradingMode;
     }
 

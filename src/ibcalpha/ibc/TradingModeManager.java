@@ -21,17 +21,9 @@ package ibcalpha.ibc;
 public abstract class TradingModeManager {
     private static TradingModeManager _TradingModeManager;
 
-    static {
-        _TradingModeManager = new DefaultTradingModeManager();
-    }
-
     public static void initialise(TradingModeManager tradingModeManager){
         if (tradingModeManager == null) throw new IllegalArgumentException("tradingModeManager");
         _TradingModeManager = tradingModeManager;
-    }
-
-    public static void setDefault() {
-        _TradingModeManager = new DefaultTradingModeManager();
     }
 
     public static TradingModeManager tradingModeManager() {

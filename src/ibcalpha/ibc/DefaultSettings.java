@@ -1,21 +1,3 @@
-// This file is part of IBC.
-// Copyright (C) 2004 Steven M. Kearns (skearns23@yahoo.com )
-// Copyright (C) 2004 - 2018 Richard L King (rlking@aultan.com)
-// For conditions of distribution and use, see copyright notice in COPYING.txt
-
-// IBC is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-
-// IBC is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-
-// You should have received a copy of the GNU General Public License
-// along with IBC.  If not, see <http://www.gnu.org/licenses/>.
-
 package ibcalpha.ibc;
 
 import java.io.BufferedInputStream;
@@ -31,16 +13,8 @@ public class DefaultSettings extends Settings {
     private final Properties props = new Properties();
     private String path;
 
-    public DefaultSettings() {
-        load(generateDefaultIniPath());
-    }
-
     public DefaultSettings(String[] args) {
         load(getSettingsPath(args));
-    }
-
-    public DefaultSettings(String path) {
-        load(path);
     }
 
     private void load(String path) {
@@ -69,66 +43,26 @@ public class DefaultSettings extends Settings {
     }
     
     private String getSettingSanitisedValue(String key) {
-        if (key.equalsIgnoreCase("FIXLoginId") ||
-                key.equalsIgnoreCase("FIXPassword") ||
-                key.equalsIgnoreCase("IbLoginId") ||
-                key.equalsIgnoreCase("IbPassword")) {
-            return "***";
-        }
         return props.getProperty(key.toString());
-    }
-
-    static String generateDefaultIniPath() {
-        if (System.getProperty("os.name").startsWith("Windows")) {
-            return System.getenv("HOMEDRIVE") + 
-                    System.getenv("HOMEPATH") + File.separator + 
-                    "Documents" + File.separator + 
-                    "IBC" + File.separator + 
-                    "config.ini";
-        } else {
-            return System.getProperty("user.home") + File.separator + 
-                    "ibc" + File.separator + 
-                    "config.ini";
-        }
     }
 
     static String getSettingsPath(String [] args) {
         String iniPath;
-        if (args.length == 0 || args[0].equalsIgnoreCase("NULL")) {
-            iniPath = getWorkingDirectory() + "config." + getComputerUserName() + ".ini";
-        } else if (args[0].length() == 0) {
-            iniPath = generateDefaultIniPath();
-        } else {// args.length >= 1
+        if args[0].equalsIgnoreCase("NULL") {
+            Utils.logError("path argument is NULL. quitting...");
+            Utils.logRawToConsole("args = " +args);
+            Utils.exitWithError(ErrorCodes.ERROR_CODE_INI_FILE_NOT_EXIST, "path argument is NULL. quitting...");
+        } else {
             iniPath = args[0];
+            File finiPath = new File(iniPath);
+            if (!finiPath.isFile() || !finiPath.exists()) {
+                Utils.exitWithError(ErrorCodes.ERROR_CODE_INI_FILE_NOT_EXIST,  "ini file \"" + iniPath +
+                                "\" either does not exist, or is a directory.  quitting...");
+            }
+            return iniPath;
         }
-        File finiPath = new File(iniPath);
-        if (!finiPath.isFile() || !finiPath.exists()) {
-            Utils.exitWithError(ErrorCodes.ERROR_CODE_INI_FILE_NOT_EXIST,  "ini file \"" + iniPath +
-                               "\" either does not exist, or is a directory.  quitting...");
-        }
-        return iniPath;
     }
 
-    private static String getComputerUserName() {
-        StringBuilder sb = new StringBuilder(System.getProperty("user.name"));
-        int i;
-        for (i = 0; i < sb.length(); i++) {
-            char c = sb.charAt(i);
-            if ((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9')) {
-                continue;
-            }
-            if (c >= 'A' && c <= 'Z') {
-                sb.setCharAt(i, Character.toLowerCase(c));
-            } else {
-                sb.setCharAt(i, '_');
-            }
-        }
-        return sb.toString();
-    }
-
-    private static String getWorkingDirectory() {
-        return System.getProperty("user.dir") + File.separator;
-    }
 
     @Override
     public void logDiagnosticMessage(){
