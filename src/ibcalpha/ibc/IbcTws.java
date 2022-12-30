@@ -339,7 +339,7 @@ public class IbcTws {
         windowHandlers.add(new LoginErrorDialogHandler());
         windowHandlers.add(new CryptoOrderConfirmationDialogHandler());
         windowHandlers.add(new AutoRestartConfirmationDialog());
-                
+        windowHandlers.add(new RestartConfirmationDialogHandler());
         
         return windowHandlers;
     }
@@ -501,12 +501,12 @@ public class IbcTws {
         
         String autoLogoffTime = Settings.settings().getString("AutoLogoffTime", "");
         String autoRestartTime = Settings.settings().getString("AutoRestartTime", "");
-        if (!autoRestartTime.equals("")) {
+        if (autoRestartTime.length() != 0) {
             (new ConfigurationTask(new ConfigureAutoLogoffOrRestartTimeTask("Auto restart", autoRestartTime))).executeAsync();
-            if (!autoLogoffTime.equals("")) {
+            if (autoLogoffTime.length() != 0) {
                 Utils.logToConsole("AutoLogoffTime is ignored because AutoRestartTime is also set");
             }
-        } else if (!autoLogoffTime.equals("")) {
+        } else if (autoLogoffTime.length() != 0) {
             (new ConfigurationTask(new ConfigureAutoLogoffOrRestartTimeTask("Auto logoff", autoLogoffTime))).executeAsync();
         }
 

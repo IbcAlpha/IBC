@@ -19,6 +19,8 @@
 package ibcalpha.ibc;
 
 import java.awt.event.KeyEvent;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.concurrent.TimeUnit;
 import javax.swing.JFrame;
 
@@ -47,6 +49,8 @@ class CommandDispatcher
             	handleReconnectDataCommand();
             } else if (cmd.equalsIgnoreCase("RECONNECTACCOUNT")) {
             	handleReconnectAccountCommand();
+            } else if (cmd.equalsIgnoreCase("RESTART")) {
+            	handleRestartCommand();
             } else {
                 handleInvalidCommand(cmd);
             }
@@ -101,6 +105,28 @@ class CommandDispatcher
 
     private void handleStopCommand() {
         (new StopTask(mChannel, mIsGateway)).run();     // run on the current thread
+    }
+    
+    private void handleRestartCommand() {
+        if (MainWindowManager.mainWindowManager().isGateway()) {
+            LocalTime now = LocalTime.now();
+            LocalTime restartTime;
+            if (now.getSecond() < 20) {
+                restartTime = now.withMinute(now.getMinute() + 1);
+            } else {
+                restartTime = now.withMinute(now.getMinute() + 2);
+            }
+            Utils.logToConsole("Setting auto-restart time to " + restartTime.format(DateTimeFormatter.ofPattern("KK:mm a")));
+            (new ConfigurationTask(new ConfigureAutoLogoffOrRestartTimeTask(
+                                            "Auto restart", 
+                                            restartTime)
+                                    )
+            ).executeAsync();
+        } else {
+            Utils.invokeMenuItem(MainWindowManager.mainWindowManager().getMainWindow(), new String[] {"File", "Restart..."});
+        }
+        mChannel.writeAck("Restart in progress");
+        mChannel.close();
     }
 
 }

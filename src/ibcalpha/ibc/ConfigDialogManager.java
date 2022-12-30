@@ -100,5 +100,7 @@ public abstract class ConfigDialogManager
     public abstract void setConfigDialog(JDialog window);
 
     public abstract void setSplashScreenClosed();
+    
+    public abstract void setNonBrokerageAccountDialogClosed();
 
 }

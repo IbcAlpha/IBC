@@ -70,7 +70,7 @@ class StopTask
                 Utils.invokeMenuItem(MainWindowManager.mainWindowManager().getMainWindow(), closeMenuPath);
             }
             
-        } catch (Exception e) {
+        } catch (IllegalStateException e) {
             Utils.exitWithException(ErrorCodes.ERROR_CODE_UNHANDLED_EXCEPTION, e);
         }
     }

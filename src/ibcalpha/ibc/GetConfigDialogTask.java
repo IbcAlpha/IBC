@@ -18,6 +18,7 @@
 
 package ibcalpha.ibc;
 
+import static java.lang.Thread.sleep;
 import java.util.concurrent.Callable;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -27,7 +28,7 @@ import javax.swing.JFrame;
 
 class GetConfigDialogTask implements Callable<JDialog>{
     private volatile JDialog mConfigDialog;
-    private volatile boolean mGatewayInitialised;
+    private static volatile boolean _GatewayInitialised;
     private final Lock lock = new ReentrantLock();
     private final Condition gotConfigDialog = lock.newCondition();
     private final Condition gatewayInitialised = lock.newCondition();
@@ -46,7 +47,7 @@ class GetConfigDialogTask implements Callable<JDialog>{
              * For the gateway, the main form is loaded right at the start, and long before
              * the menu items become responsive: any attempt to access the Configure > Settings
              * menu item (even after it has been enabled) results in an exception being logged
-             * by TWS. 
+             * by Gateway. 
              * 
              * It's not obvious how long we need to wait before the menu becomes responsive. However the splash
              * frame that appears in front of the gateway main window during initialisation disappears when everything
@@ -58,7 +59,8 @@ class GetConfigDialogTask implements Callable<JDialog>{
 
             lock.lock();
             try {
-                while (!mGatewayInitialised) {
+                while (!_GatewayInitialised) {
+                    sleep(10);
                     gatewayInitialised.await();
                 }
             } finally {
@@ -96,12 +98,31 @@ class GetConfigDialogTask implements Callable<JDialog>{
         }
     }
 
+    private volatile boolean splashScreenClosed;
     void setSplashScreenClosed() {
         if (!isGateway) return;
         lock.lock();
         try {
-            mGatewayInitialised = true;
-            gatewayInitialised.signal();
+            splashScreenClosed = true;
+            if (nonBrokerageAccountDialogClosed) {
+                _GatewayInitialised = true;
+                gatewayInitialised.signal();
+            }
+        } finally {
+            lock.unlock();
+        }
+    }
+    
+    private volatile boolean nonBrokerageAccountDialogClosed;
+    void setNonBrokerageAccountDialogClosed() {
+        if (!isGateway) return;
+        lock.lock();
+        try {
+            nonBrokerageAccountDialogClosed = true;
+            if (splashScreenClosed) {
+                _GatewayInitialised = true;
+                gatewayInitialised.signal();
+            }
         } finally {
             lock.unlock();
         }

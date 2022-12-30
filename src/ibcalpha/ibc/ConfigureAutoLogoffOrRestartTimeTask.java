@@ -37,6 +37,11 @@ class ConfigureAutoLogoffOrRestartTimeTask implements ConfigurationAction {
         this.autoActionTime = autoActionTime;
     }
 
+    ConfigureAutoLogoffOrRestartTimeTask(String autoActionName, LocalTime autoActionTime) {
+        this.autoActionName=autoActionName;
+        this.autoActionTime = autoActionTime.format(DateTimeFormatter.ofPattern("KK:mm a"));
+    }
+
     @Override
     public void initialise(JDialog configDialog) {
         this.configDialog = configDialog;

@@ -28,6 +28,8 @@ public class NonBrokerageAccountDialogHandler  implements WindowHandler {
         switch (eventId) {
             case WindowEvent.WINDOW_OPENED:
                 return true;
+            case WindowEvent.WINDOW_CLOSED:
+                return true;
             default:
                 return false;
         }
@@ -35,6 +37,11 @@ public class NonBrokerageAccountDialogHandler  implements WindowHandler {
 
     @Override
     public void handleWindow(Window window, int eventID) {
+        if (eventID == WindowEvent.WINDOW_CLOSED) {
+            ConfigDialogManager.configDialogManager().setNonBrokerageAccountDialogClosed();
+            return;
+        }
+
         if (! Settings.settings().getBoolean("AcceptNonBrokerageAccountWarning", true)) return;
 
         GuiDeferredExecutor.instance().execute(() -> MainWindowManager.mainWindowManager().iconizeIfRequired());

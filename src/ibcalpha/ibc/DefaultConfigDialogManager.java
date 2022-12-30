@@ -165,9 +165,12 @@ public class DefaultConfigDialogManager extends ConfigDialogManager {
         if (configDialogTask != null) configDialogTask.setSplashScreenClosed();
     }
 
-
+    @Override
+    public void setNonBrokerageAccountDialogClosed() {
+        if (configDialogTask != null) configDialogTask.setNonBrokerageAccountDialogClosed();
+    }
+    
     private boolean apiConfigChangeConfirmationExpected;
-
     @Override
     public boolean getApiConfigChangeConfirmationExpected() {
         return apiConfigChangeConfirmationExpected;
