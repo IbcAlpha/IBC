@@ -77,7 +77,6 @@ class SwingUtils {
         Utils.logToConsole("Click button: " + button.getText());
         button.doClick();
         if (! button.isEnabled()) Utils.logToConsole("Button now disabled: " + button.getText());
-        return;
     }
 
     /**
