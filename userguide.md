@@ -424,12 +424,21 @@ here is a list of the settings that you are most likely to need to change:
 | ------------------------------ | --------------------------------------------|
 | IbLoginID                      | You must set this to your IBKR username     |
 | Password                       | You must set this to your IBKR password     |
-| TradingMode                    | For TWS 955 and later, you must set this to |
-|                                | `paper` if you have supplied the username   |
-|                                | and password for your live account but      |
-|                                | actually want to use your paper account.    |
-|                                | Otherwise you can omit the setting entirely |
-|                                | or set it to `live`.                        |
+| TradingMode                    | You must set this to `paper` if you want to |
+|                                | use your paper-trading account. Otherwise   |
+|                                | you can omit the setting entirely or set it |
+|                                | to `live`.                                  |
+| AcceptNonBrokerageAccountWarning | Logging in to a paper-trading account     |
+|                                | results in TWS displaying a dialog asking   |
+|                                | the user to confirm that they are aware that |
+|                                | this is not a brokerage account. Until this  |
+|                                | dialog has been accepted, TWS will not allow |
+|                                | API connections to succeed. Setting this to |
+|                                | 'yes' (the default) will cause IBC to       |
+|                                | automatically confirm acceptance. Setting   |
+|                                | it to 'no' will leave the dialog on display, |
+|                                | and the user will have to deal with it      |
+|                                | manually.                                   |
 | IbDir                          | You can set this if you want TWS            |
 |                                | to store its settings in a different folder |
 |                                | from the one it's installed in. However this |

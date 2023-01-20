@@ -71,11 +71,13 @@ set HIDE=
 ::
 ::     This indicates whether the live account or the paper trading account 
 ::     corresponding to the supplied credentials is to be used. The values 
-::     allowed here are 'live' and 'paper' (not case-sensitive). For earlier 
-::     versions of TWS, setting this has no effect. If no value is specified 
-::     here, the value is taken from the TradingMode setting in the 
-::     configuration file. If no value is specified there either, the value 
-::     'live' is assumed.
+::     allowed here are 'live' and 'paper' (not case-sensitive). If no value
+::     is specified here, the value is taken from the TradingMode setting in
+::     the configuration file.
+::
+::     If this is set to 'live', then the credentials for the live account
+::     must be supplied. If it is set to 'paper', then either the live or
+::     the paper-trading credentials may be supplied.
 
 
 ::   TWOFA_TIMEOUT_ACTION
