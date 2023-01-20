@@ -218,9 +218,10 @@ public class IbcTws {
     }
 
     static void setupDefaultEnvironment(final String[] args, final boolean isGateway) throws Exception {
+        SessionManager.Initialise(isGateway);
         Settings.initialise(new DefaultSettings(args));
         LoginManager.initialise(new DefaultLoginManager(args));
-        MainWindowManager.initialise(new DefaultMainWindowManager(isGateway));
+        MainWindowManager.initialise(new DefaultMainWindowManager());
         TradingModeManager.initialise(new DefaultTradingModeManager(args));
     }
 
@@ -273,17 +274,15 @@ public class IbcTws {
             TradingModeManager.tradingModeManager().logDiagnosticMessage();
             ConfigDialogManager.configDialogManager().logDiagnosticMessage();
 
-            boolean isGateway = MainWindowManager.mainWindowManager().isGateway();
+            startCommandServer();
 
-            startCommandServer(isGateway);
-
-            startShutdownTimerIfRequired(isGateway);
+            startShutdownTimerIfRequired();
 
             createToolkitListener();
 
             startSavingTwsSettingsAutomatically();
 
-            startTwsOrGateway(isGateway);
+            startTwsOrGateway();
         } catch (IllegalStateException e) {
             if (e.getMessage().equalsIgnoreCase("Shutdown in progress")) {
                 // an exception with this message can occur if a STOP command is
@@ -435,7 +434,7 @@ public class IbcTws {
         twsArgs[0] = getTWSSettingsDirectory();
         try {
             Utils.logToConsole("Starting Gateway");
-            LoginManager.loginManager().startSession();
+            SessionManager.startSession();
             ibgateway.GWClient.main(twsArgs);
         } catch (Throwable t) {
             Utils.logError("Can't find the Gateway entry point: ibgateway.GWClient.main. Gateway is not correctly installed.");
@@ -444,19 +443,19 @@ public class IbcTws {
         }
     }
 
-    private static void startCommandServer(boolean isGateway) {
-        MyCachedThreadPool.getInstance().execute(new CommandServer(isGateway));
+    private static void startCommandServer() {
+        MyCachedThreadPool.getInstance().execute(new CommandServer());
     }
 
-    private static void startShutdownTimerIfRequired(boolean isGateway) {
+    private static void startShutdownTimerIfRequired() {
         Date shutdownTime = getShutdownTime();
         if (! (shutdownTime == null)) {
             long delay = shutdownTime.getTime() - System.currentTimeMillis();
-            Utils.logToConsole((isGateway ? "Gateway" : "TWS") +
+            Utils.logToConsole(SessionManager.isGateway() ? "Gateway" : "TWS" +
                             " will be shut down at " +
                            (new SimpleDateFormat("yyyy/MM/dd HH:mm")).format(shutdownTime));
             MyScheduledExecutorService.getInstance().schedule(() -> {
-                MyCachedThreadPool.getInstance().execute(new StopTask(null, isGateway));
+                MyCachedThreadPool.getInstance().execute(new StopTask(null));
             }, delay, TimeUnit.MILLISECONDS);
         }
     }
@@ -469,7 +468,7 @@ public class IbcTws {
         twsArgs[0] = getTWSSettingsDirectory();
         try {
             Utils.logToConsole("Starting TWS");
-            LoginManager.loginManager().startSession();
+            SessionManager.startSession();
             jclient.LoginFrame.main(twsArgs);
         } catch (Throwable t) {
             Utils.logError("Can't find the TWS entry point: jclient.LoginFrame.main; TWS is not correctly installed.");
@@ -478,10 +477,10 @@ public class IbcTws {
         }
     }
 
-    private static void startTwsOrGateway(boolean isGateway) {
+    private static void startTwsOrGateway() {
         Utils.logToConsole("TWS Settings directory is: " + getTWSSettingsDirectory());
         JtsIniManager.initialise(getJtsIniFilePath());
-        if (isGateway) {
+        if (SessionManager.isGateway()) {
             startGateway();
         } else {
             startTws();

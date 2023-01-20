@@ -26,11 +26,9 @@ class StopTask
     private static final SwitchLock _Running = new SwitchLock();
 
     private final CommandChannel mChannel;
-    private final boolean mIsGateway;
 
-    public StopTask(final CommandChannel channel, boolean isGateway) {
+    StopTask(final CommandChannel channel) {
         mChannel = channel;
-        mIsGateway = isGateway;
     }
 
     @Override
@@ -65,7 +63,7 @@ class StopTask
                 Utils.logToConsole("Login has not completed: exiting immediately");
                 System.exit(0);
             } else {
-                String[] closeMenuPath = mIsGateway ? new String[] {"File", "Close"} : new String[] {"File", "Exit"};
+                String[] closeMenuPath = SessionManager.isGateway() ? new String[] {"File", "Close"} : new String[] {"File", "Exit"};
                 Utils.logToConsole("Login has completed: exiting via " + Arrays.deepToString(closeMenuPath) + " menu");
                 Utils.invokeMenuItem(MainWindowManager.mainWindowManager().getMainWindow(), closeMenuPath);
             }

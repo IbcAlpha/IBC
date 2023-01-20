@@ -34,14 +34,11 @@ class CommandServer
     private ServerSocket mSocket = null;
     private volatile boolean mQuitting = false;
 
-    private final boolean isGateway;
-
     private static CommandServer _commandServer;
 
 
-    CommandServer(boolean isGateway) {
+    CommandServer() {
         if (_commandServer != null) throw new IllegalArgumentException();
-        this.isGateway = isGateway;
         _commandServer = this;
     }
     
@@ -68,7 +65,7 @@ class CommandServer
                 Socket socket = getClient();
 
                 if (socket != null) {
-                    MyCachedThreadPool.getInstance().execute(new CommandDispatcher(new CommandChannel(socket), isGateway));
+                    MyCachedThreadPool.getInstance().execute(new CommandDispatcher(new CommandChannel(socket)));
                 }
             }
         }

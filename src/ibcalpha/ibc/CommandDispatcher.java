@@ -19,8 +19,6 @@
 package ibcalpha.ibc;
 
 import java.awt.event.KeyEvent;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.concurrent.TimeUnit;
 import javax.swing.JFrame;
 
@@ -28,11 +26,9 @@ class CommandDispatcher
         implements Runnable {
 
     private final CommandChannel mChannel;
-    private final boolean mIsGateway;
 
-    CommandDispatcher(CommandChannel channel, boolean isGateway) {
+    CommandDispatcher(CommandChannel channel) {
         mChannel = channel;
-        mIsGateway = isGateway;
     }
 
     @Override public void run() {
@@ -66,7 +62,7 @@ class CommandDispatcher
     }
 
     private void handleEnableAPICommand() {
-        if (mIsGateway) {
+        if (SessionManager.isGateway()) {
             mChannel.writeNack("ENABLEAPI is not valid for the IB Gateway");
             return;
         }
@@ -104,7 +100,7 @@ class CommandDispatcher
     }
 
     private void handleStopCommand() {
-        (new StopTask(mChannel, mIsGateway)).run();     // run on the current thread
+        (new StopTask(mChannel)).run();     // run on the current thread
     }
     
     private void handleRestartCommand() {

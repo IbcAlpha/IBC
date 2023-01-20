@@ -85,8 +85,6 @@ public abstract class MainWindowManager {
      */
     public abstract JFrame getMainWindow() throws IllegalStateException;
 
-    public abstract boolean isGateway();
-
     public abstract void setMainWindow(JFrame window);
 
     public abstract void iconizeIfRequired();

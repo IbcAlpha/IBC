@@ -51,6 +51,7 @@ public class DefaultConfigDialogManager extends ConfigDialogManager {
      */
     @Override
     public void clearConfigDialog() {
+        openedByUser = false;
         configDialog = null;
     }
 
@@ -98,7 +99,7 @@ public class DefaultConfigDialogManager extends ConfigDialogManager {
                     Utils.logToConsole("Waiting for config dialog future to complete");
             } else {
                 Utils.logToConsole("Creating config dialog future");
-                configDialogTask = new GetConfigDialogTask(MainWindowManager.mainWindowManager().isGateway());
+                configDialogTask = new GetConfigDialogTask();
                 ExecutorService exec = Executors.newSingleThreadExecutor();
                 configDialogFuture = exec.submit((Callable<JDialog>)configDialogTask);
                 exec.shutdown();
@@ -147,12 +148,13 @@ public class DefaultConfigDialogManager extends ConfigDialogManager {
         return getConfigDialog(-1, TimeUnit.MILLISECONDS);
     }
 
+    private boolean openedByUser;
     @Override
     public void setConfigDialog(JDialog window) {
         configDialog = window;
         if (configDialogTask == null) {
             // config dialog opened by user
-            incrementUsage();
+            openedByUser = true;
         } else {
             configDialogTask.setConfigDialog(window);
             configDialogTask = null;
@@ -160,16 +162,6 @@ public class DefaultConfigDialogManager extends ConfigDialogManager {
         }
     }
 
-    @Override
-    public void setSplashScreenClosed() {
-        if (configDialogTask != null) configDialogTask.setSplashScreenClosed();
-    }
-
-    @Override
-    public void setNonBrokerageAccountDialogClosed() {
-        if (configDialogTask != null) configDialogTask.setNonBrokerageAccountDialogClosed();
-    }
-    
     private boolean apiConfigChangeConfirmationExpected;
     @Override
     public boolean getApiConfigChangeConfirmationExpected() {
@@ -197,6 +189,7 @@ public class DefaultConfigDialogManager extends ConfigDialogManager {
 
     private synchronized void decrementUsage() {
         usageCount--;
+        if (openedByUser) return;
         if (usageCount == 0){
             GuiDeferredExecutor.instance().execute(() -> {
                 SwingUtils.clickButton(configDialog, "OK");

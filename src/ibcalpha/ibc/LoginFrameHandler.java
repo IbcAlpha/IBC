@@ -39,7 +39,7 @@ final class LoginFrameHandler extends AbstractLoginHandler {
                 SwingUtils.titleEquals(window, "Login")) &&
                 (SwingUtils.findButton(window, "Log In") != null ||
                 SwingUtils.findButton(window, "Paper Log In") != null ||
-                LoginManager.loginManager().getIsRestart()));
+                SessionManager.IsRestart()));
     }
     
     private boolean listeningForUsernameChange;

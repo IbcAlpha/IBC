@@ -54,14 +54,9 @@ public abstract class LoginManager {
         AWAITING_CREDENTIALS
     }
 
-    private boolean isRestart;
-    boolean getIsRestart() {
-        return isRestart;
-    }
-    
     boolean readonlyLoginRequired() {
         boolean readOnly = Settings.settings().getBoolean("ReadOnlyLogin", false);
-        if (readOnly && MainWindowManager.mainWindowManager().isGateway()) {
+        if (readOnly && SessionManager.isGateway()) {
             Utils.logError("Read-only login not supported by Gateway");
             return false;
         }
@@ -77,27 +72,6 @@ public abstract class LoginManager {
         loginFrame = window;
     }
     
-    void startSession() {
-        // test to see if the -Drestart VM option has been supplied
-        isRestart = ! (System.getProperties().getProperty("restart", "").isEmpty());
-        int loginDialogDisplayTimeout = Settings.settings().getInt("LoginDialogDisplayTimeout", 60);
-        if (isRestart){
-            Utils.logToConsole("Re-starting session");
-            // TWS/Gateway will re-establish the session with no intervention from IBC needed
-        } else {
-            Utils.logToConsole("Starting session: will exit if login dialog is not displayed within " + loginDialogDisplayTimeout + " seconds");
-            MyScheduledExecutorService.getInstance().schedule(()->{
-                GuiExecutor.instance().execute(()->{
-                    if (getLoginState() != LoginManager.LoginState.LOGGED_OUT) {
-                        // Login diaog has been shown - no need for IBC to exit
-                        return;
-                    }
-                    Utils.exitWithError(ErrorCodes.ERROR_CODE_LOGIN_DIALOG_DISPLAY_TIMEOUT, "IBC closing after TWS/Gateway failed to display login dialog");
-                });
-            }, loginDialogDisplayTimeout, TimeUnit.SECONDS);
-        }
-    }
-
     private volatile LoginState loginState = LoginState.LOGGED_OUT;
     public LoginState getLoginState() {
         return loginState;

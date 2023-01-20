@@ -57,7 +57,7 @@ public abstract class AbstractLoginHandler implements WindowHandler {
         switch (LoginManager.loginManager().getLoginState()){
             case LOGGED_OUT:
                 // don't initiate login if we're auto-restarting
-                if (! LoginManager.loginManager().getIsRestart()) initiateLogin(window);
+                if (! SessionManager.IsRestart()) initiateLogin(window);
         }
     }
 

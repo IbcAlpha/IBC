@@ -39,7 +39,7 @@ class ConfigureAutoLogoffOrRestartTimeTask implements ConfigurationAction {
 
     ConfigureAutoLogoffOrRestartTimeTask(String autoActionName, LocalTime autoActionTime) {
         this.autoActionName=autoActionName;
-        this.autoActionTime = autoActionTime.format(DateTimeFormatter.ofPattern("KK:mm a"));
+        this.autoActionTime = autoActionTime.format(DateTimeFormatter.ofPattern("hh:mm a"));
     }
 
     @Override
@@ -52,7 +52,7 @@ class ConfigureAutoLogoffOrRestartTimeTask implements ConfigurationAction {
         try {
             Utils.logToConsole("Setting " + autoActionName  + " time");
             
-            DateTimeFormatter timeFormatter12HourAmPm = DateTimeFormatter.ofPattern("KK:mm a");
+            DateTimeFormatter timeFormatter12HourAmPm = DateTimeFormatter.ofPattern("hh:mm a");
 
             LocalTime newAutoActionTime;
             try {
@@ -77,7 +77,7 @@ class ConfigureAutoLogoffOrRestartTimeTask implements ConfigurationAction {
             JRadioButton pm = SwingUtils.findRadioButton(c, "PM");
             if (tf == null || autoAction == null || am == null || pm == null) throw new IbcException("could not find auto logoff/restart time controls");
 
-            DateTimeFormatter timeFormatter12Hour = DateTimeFormatter.ofPattern("KK:mm");
+            DateTimeFormatter timeFormatter12Hour = DateTimeFormatter.ofPattern("hh:mm");
             String time = newAutoActionTime.format(timeFormatter12Hour);
 
             DateTimeFormatter ampmFormatter = DateTimeFormatter.ofPattern("a");
