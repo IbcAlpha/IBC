@@ -159,6 +159,7 @@ exit
 
 :SetScreenColors
 :: set the screen background and text colors
+set PHASE=Setting screen colors
 if "%~1" == "" (
 	color 0A
 	goto :eof
@@ -168,6 +169,7 @@ if /I "%ARG%" == "/COLOR" (
 	echo. >nul
 ) else if /I "%ARG:~0,7%" == "/COLOR:" (
 	color %ARG:~7%
+	if errorlevel 1 goto :err
 )
 goto :eof
 

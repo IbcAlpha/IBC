@@ -12,6 +12,14 @@ setlocal enableextensions enabledelayedexpansion
 ::   window. (If you are using Task Scheduler to run this, you MUST supply the +
 ::   /INLINE argument to ensure correct operation.)                            +
 ::                                                                             +
+::   If you supply /COLOR:<colorcode> as an argument, the window displaying    +
+::   the information has its colors set as specified by <colorcode>, which     +
+::   must be two hex digits (use the 'help color' command for further          +
+::   information). If you supply /COLOR with no <colorcode>, the window's      +
+::   colors are not changed. If you don't supply /COLOR at all, the window has +
+::   a black ground with light green text (as if /COLOR:0A had been            +
+::   specified).                                                               +
+::                                                                             +
 ::   The following lines, beginning with 'set', are the only ones you may      +
 ::   need to change, and you probably only need to change the first one.       +
 ::                                                                             +
@@ -192,7 +200,7 @@ if /I "%HIDE%" == "YES" (
 )
 
 if /I "%~1" == "/INLINE" (
-	"%IBC_PATH%\scripts\DisplayBannerAndLaunch.bat"
+	"%IBC_PATH%\scripts\DisplayBannerAndLaunch.bat" %~2
 ) else (
-	start "%TITLE%" %MIN% "%IBC_PATH%\scripts\DisplayBannerAndLaunch.bat"
+	start "%TITLE%" %MIN% "%IBC_PATH%\scripts\DisplayBannerAndLaunch.bat" %~1
 )
