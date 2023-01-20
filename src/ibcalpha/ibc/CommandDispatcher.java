@@ -104,25 +104,7 @@ class CommandDispatcher
     }
     
     private void handleRestartCommand() {
-        if (MainWindowManager.mainWindowManager().isGateway()) {
-            LocalTime now = LocalTime.now();
-            LocalTime restartTime;
-            if (now.getSecond() < 20) {
-                restartTime = now.withMinute(now.getMinute() + 1);
-            } else {
-                restartTime = now.withMinute(now.getMinute() + 2);
-            }
-            Utils.logToConsole("Setting auto-restart time to " + restartTime.format(DateTimeFormatter.ofPattern("KK:mm a")));
-            (new ConfigurationTask(new ConfigureAutoLogoffOrRestartTimeTask(
-                                            "Auto restart", 
-                                            restartTime)
-                                    )
-            ).executeAsync();
-        } else {
-            Utils.invokeMenuItem(MainWindowManager.mainWindowManager().getMainWindow(), new String[] {"File", "Restart..."});
-        }
-        mChannel.writeAck("Restart in progress");
-        mChannel.close();
+        (new RestartTask(mChannel)).run();     // run on the current thread
     }
-
+    
 }
