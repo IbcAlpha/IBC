@@ -263,8 +263,8 @@ The distribution ZIP file contains:
 * Top-level script files that run IBC to start TWS or the Gateway. These files
  are specific to the platform (ie Windows, Linux or macOS) to which the
  ZIP file relates
-* A script file that can be used to tidily shut down TWS or Gateway from the
- same or another computer.
+* Windows script files that can be used to tidily shut down or restart TWS or
+ Gateway from the same or another computer.
 * A sample Windows Task Scheduler file (named similar to
 `Start TWS Live (daily).xml`), which can be used to automate starting TWS
  or Gateway on Windows systems (not present in the Linux and macOS ZIPs)
