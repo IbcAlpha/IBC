@@ -36,9 +36,10 @@ public class IbcLoader {
     }
     
     private static void setupEnvironment(final String entryPoint) throws Exception {
+        SessionManager.initialise(entryPoint.equalsIgnoreCase("GATEWAY"));
         Settings.initialise(new MySettings());
         LoginManager.initialise(new MyLoginManager());
-        MainWindowManager.initialise(new MyMainWindowManager(entryPoint.equalsIgnoreCase("GATEWAY")));
+        MainWindowManager.initialise(new MyMainWindowManager());
         TradingModeManager.initialise(new MyTradingModeManager());
     }
 

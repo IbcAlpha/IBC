@@ -51,16 +51,6 @@ public class MyLoginManager extends ibcalpha.ibc.LoginManager {
     public String IBAPIUserName() {
         return "username";
     }
-
-    @Override
-    public JFrame getLoginFrame() {
-        return loginFrame;
-    }
-
-    @Override
-    public void setLoginFrame(JFrame window) {
-        loginFrame = window;
-    }
     
     @Override
     public AbstractLoginHandler getLoginHandler() {
