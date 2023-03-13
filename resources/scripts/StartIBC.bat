@@ -419,12 +419,12 @@ set JAVA_TOOL_OPTIONS=
 
 pushd %TWS_SETTINGS_PATH%
 
+:startIBC
+
 echo Renaming TWS or Gateway .exe file to prevent restart without IBC
 IF exist "%PROGRAM_PATH%\tws.exe" ren "%PROGRAM_PATH%\tws.exe" tws1.exe
 IF exist "%PROGRAM_PATH%\ibgateway.exe" ren "%PROGRAM_PATH%\ibgateway.exe" ibgateway1.exe
-echo .
-
-:startIBC
+echo.
 
 echo.
 echo Starting IBC with this command:
@@ -478,11 +478,6 @@ if defined AUTORESTART_OPTION (
 
 :NormalExit
 
-echo Renaming TWS or Gateway .exe file to original name
-IF exist "%PROGRAM_PATH%\tws1.exe" ren "%PROGRAM_PATH%\tws1.exe" tws.exe
-IF exist "%PROGRAM_PATH%\ibgateway1.exe" ren "%PROGRAM_PATH%\ibgateway1.exe" ibgateway.exe
-echo.
-
 echo Normal exit
 
 popd
@@ -501,13 +496,20 @@ echo Finding autorestart file
 
 set AUTORESTART_OPTION=
 for /f "usebackq" %%I in (`where /R %TWS_SETTINGS_PATH% autorestart`) do (
-	for %%A in ("%%~pI.") do set AUTORESTART_OPTION=-Drestart=%%~nxA
+	set X=%%~dpI.
+	set Y=!X:%TWS_SETTINGS_PATH%=!
+	for /f "tokens=1,2 delims=\" %%B in ("!!Y!!") do (
+		if "%%C"=="." (
+			set F=%%~fI
+			set AUTORESTART_OPTION=-Drestart=%%B
+		)
+	)
 )
 if not defined AUTORESTART_OPTION (
 	set AUTORESTART_OPTION=
 	echo autorestart file not found 
 ) else (
-	for /f "usebackq" %%I in (`where /R %TWS_SETTINGS_PATH% autorestart`) do echo autorestart file found at %%~fI
+	echo autorestart file found at %F%
 	echo AUTORESTART_OPTION is %AUTORESTART_OPTION%
 )
 goto :EOF
