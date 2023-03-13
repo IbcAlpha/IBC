@@ -218,7 +218,7 @@ public class IbcTws {
     }
 
     static void setupDefaultEnvironment(final String[] args, final boolean isGateway) throws Exception {
-        SessionManager.Initialise(isGateway);
+        SessionManager.initialise(isGateway);
         Settings.initialise(new DefaultSettings(args));
         LoginManager.initialise(new DefaultLoginManager(args));
         MainWindowManager.initialise(new DefaultMainWindowManager());

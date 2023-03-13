@@ -26,7 +26,7 @@ import javax.swing.JFrame;
 
 public class SessionManager {
     
-    static void Initialise(boolean isGateway) {
+    public static void initialise(boolean isGateway) {
         _isGateway = isGateway;
     }
     
