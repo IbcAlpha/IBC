@@ -421,9 +421,14 @@ pushd %TWS_SETTINGS_PATH%
 
 :startIBC
 
-echo Renaming TWS or Gateway .exe file to prevent restart without IBC
-IF exist "%PROGRAM_PATH%\tws.exe" ren "%PROGRAM_PATH%\tws.exe" tws1.exe
-IF exist "%PROGRAM_PATH%\ibgateway.exe" ren "%PROGRAM_PATH%\ibgateway.exe" ibgateway1.exe
+IF exist "%PROGRAM_PATH%\tws.exe" (
+	echo Renaming TWS.exe file to prevent restart without IBC
+	ren "%PROGRAM_PATH%\tws.exe" tws1.exe
+)
+IF exist "%PROGRAM_PATH%\ibgateway.exe" (
+	echo Renaming Gateway.exe file to prevent restart without IBC
+	ren "%PROGRAM_PATH%\ibgateway.exe" ibgateway1.exe
+)
 echo.
 
 echo.
@@ -470,7 +475,8 @@ if %ERRORLEVEL% EQU %E_LOGIN_DIALOG_DISPLAY_TIMEOUT% (
 echo Check for restart
 echo call :GetAutoRestartOption
 call :GetAutoRestartOption
-if defined AUTORESTART_OPTION (
+if defined RESTART_NEEDED (
+	set RESTART_NEEDED=
 	echo IBC will autorestart shortly
 	ping localhost -n 2  >NUL
 	goto :startIBC
@@ -495,22 +501,46 @@ exit /B %ERRORLEVEL%
 echo Finding autorestart file
 
 set AUTORESTART_OPTION=
+set F=
+set RESTART_NEEDED=
 for /f "usebackq" %%I in (`where /R %TWS_SETTINGS_PATH% autorestart`) do (
 	set X=%%~dpI.
 	set Y=!X:%TWS_SETTINGS_PATH%=!
 	for /f "tokens=1,2 delims=\" %%B in ("!!Y!!") do (
 		if "%%C"=="." (
-			set F=%%~fI
-			set AUTORESTART_OPTION=-Drestart=%%B
+			if not defined F (
+				set F=%%~fI
+				echo autorestart file found at !!F!!
+				set AUTORESTART_OPTION=-Drestart=%%B
+			) else (
+				set AUTORESTART_OPTION=
+				echo "WARNING: deleting extra autorestart file found at %%~fI"
+				del %%~fI
+				echo "WARNING: deleting first autorestart file found"
+				del !!F!!
+			)
 		)
 	)
 )
 if not defined AUTORESTART_OPTION (
-	set AUTORESTART_OPTION=
-	echo autorestart file not found 
+	if defined F (
+		echo *******************************************************************************
+		echo WARNING: More than one autorestart file was found. IBC can't determine which is
+		echo          the right one, so they've all been deleted. Full authentication will
+		echo          be required.
+		echo.
+		echo          If you have two or more TWS/Gateway instances with the same setting
+		echo          for TWS_SETTINGS_PATH, you should ensure that they are configured with
+		echo          different autorestart times, to avoid creation of multiple autorestart
+		echo          files.
+		echo *******************************************************************************
+		set RESTART_NEEDED=yes
+	) else (
+		echo autorestart file not found
+		set RESTART_NEEDED=
+	)
 ) else (
-	echo autorestart file found at %F%
-	echo AUTORESTART_OPTION is %AUTORESTART_OPTION%
+	set RESTART_NEEDED=yes
 )
 goto :EOF
 

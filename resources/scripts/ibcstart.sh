@@ -335,19 +335,55 @@ java_vm_options="$java_vm_options -Dinstall4jType=standalone"
 java_vm_options="$java_vm_options -DjtsConfigDir=${tws_settings_path}"
 
 function find_auto_restart {
-	autorestart_path=$(find $tws_settings_path -type f -name "autorestart")
-	if [[ -n $autorestart_path ]]; then
-		autorestart_path=$(echo $autorestart_path | xargs dirname | xargs basename)
-		if [ $autorestart_path != "." ]; then
-			echo " -Drestart=${autorestart_path}"
-		else
-			echo ""
+	local autorestart_path=""
+	local f=""
+	restarted_needed=
+	for i in $(find $tws_settings_path -type f -name "autorestart"); do
+		local x=${i/$tws_settings_path/}
+		local y=$(echo $x | xargs dirname)/.
+		local e=$(echo "$y" | cut -d/ -f3)
+		if [[ "$e" = "." ]]; then
+			if [[ -z $f ]]; then
+				f="$i"
+				echo "autorestart file found at $f"
+				autorestart_path=$(echo "$y" | cut -d/ -f2)
+			else
+				autorestart_path=
+				echo "WARNING: deleting extra autorestart file found at $i"
+				rm $i
+				echo "WARNING: deleting first autorestart file found"
+				rm $f
+			fi
 		fi
+	done
+
+	if [[ -z $autorestart_path ]]; then
+		if [[ -n $f ]]; then
+			echo "*******************************************************************************"
+			echo "WARNING: More than one autorestart file was found. IBC can't determine which is"
+			echo "         the right one, so they've all been deleted. Full authentication will"
+			echo "         be required."
+			echo
+			echo "         If you have two or more TWS/Gateway instances with the same setting"
+			echo "         for TWS_SETTINGS_PATH, you should ensure that they are configured with"
+			echo "         different autorestart times, to avoid creation of multiple autorestart"
+			echo "         files."
+			echo "*******************************************************************************"
+			echo
+			restarted_needed=yes
+		else 
+			echo "autorestart file not found"
+			echo
+			restarted_needed=
+		fi
+	else
+		echo "AUTORESTART_OPTION is -Drestart=${autorestart_path}"
+		autorestart_option=" -Drestart=${autorestart_path}"
+		restarted_needed=yes
 	fi
 }
 
-autorestart_option=$(find_auto_restart)
-
+find_auto_restart
 
 echo -e "Java VM Options=$java_vm_options$autorestart_option"
 echo
@@ -475,8 +511,9 @@ do
 	if [[ $exit_code -eq $E_LOGIN_DIALOG_DISPLAY_TIMEOUT ]]; then 
 		:
 	else
-		autorestart_option=$(find_auto_restart)
-		if [[ -n $autorestart_option ]]; then
+		find_auto_restart
+		if [[ -n $restarted_needed ]]; then
+			restarted_needed=
 			# restart using the TWS/Gateway-generated autorestart file
 			:
 		elif [[ $exit_code -ne $E_2FA_DIALOG_TIMED_OUT  ]]; then 
@@ -490,16 +527,6 @@ do
 	echo IBC will restart shortly
 	echo sleep 2
 done
-
-echo "Renaming TWS or Gateway .exe file to original name"
-if [[ "$os" = "$OS_LINUX" ]]; then
-	if [[ -e "${program_path}/tws1" ]]; then mv "${program_path}/tws1" "${program_path}/tws"; fi
-	if [[ -e "${program_path}/ibgateway1" ]]; then mv "${program_path}/ibgateway1" "${program_path}/ibgateway"; fi
-elif [[ "$os" = "$OS_OSX" ]]; then
-	if [[ -e "${program_path}/Trader Workstation ${tws_version}.app-1" ]]; then mv "${program_path}/Trader Workstation ${tws_version}.app-1" "${program_path}/Trader Workstation ${tws_version}.app"; fi
-	if [[ -e "${program_path}/IB Gateway ${tws_version}.app-1" ]]; then mv "${program_path}/IB Gateway ${tws_version}.app-1" "${program_path}/IB Gateway ${tws_version}.app"; fi
-fi
-echo
 
 echo "$program finished"
 echo
