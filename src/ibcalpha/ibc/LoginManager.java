@@ -124,6 +124,13 @@ public abstract class LoginManager {
         if (d.getSeconds() < SecondFactorAuthenticationTimeout) {
             // The 2FA prompt must have been handled by the user, so authentication
             // should be under way
+            
+            if (SessionManager.isFIX()) {
+                // no Splash screen is dislayed for FIX Gateway - just let things run
+                LoginManager.loginManager().setLoginState(LoginManager.LoginState.LOGGED_IN);
+                return;
+            }
+            
             Utils.logToConsole("If login has not completed, IBC will exit in " + exitInterval + " seconds");
             restartAfterTime(exitInterval, "IBC closing because login has not completed after Second Factor Authentication");
             return;

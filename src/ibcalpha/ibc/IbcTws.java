@@ -434,10 +434,9 @@ public class IbcTws {
         twsArgs[0] = getTWSSettingsDirectory();
         try {
             Utils.logToConsole("Starting Gateway");
-            SessionManager.startSession();
             ibgateway.GWClient.main(twsArgs);
         } catch (Throwable t) {
-            Utils.logError("Can't find the Gateway entry point: ibgateway.GWClient.main. Gateway is not correctly installed.");
+            Utils.logError("Exception occurred at Gateway entry point: ibgateway.GWClient.main");
             t.printStackTrace(Utils.getErrStream());
             Utils.exitWithError(ErrorCodes.ERROR_CODE_CANT_FIND_ENTRYPOINT);
         }
@@ -468,10 +467,9 @@ public class IbcTws {
         twsArgs[0] = getTWSSettingsDirectory();
         try {
             Utils.logToConsole("Starting TWS");
-            SessionManager.startSession();
             jclient.LoginFrame.main(twsArgs);
         } catch (Throwable t) {
-            Utils.logError("Can't find the TWS entry point: jclient.LoginFrame.main; TWS is not correctly installed.");
+            Utils.logError("Exception occurred at TWS entry point: jclient.LoginFrame.main");
             t.printStackTrace(Utils.getErrStream());
             Utils.exitWithError(ErrorCodes.ERROR_CODE_CANT_FIND_ENTRYPOINT);
         }
@@ -479,6 +477,7 @@ public class IbcTws {
 
     private static void startTwsOrGateway() {
         Utils.logToConsole("TWS Settings directory is: " + getTWSSettingsDirectory());
+        SessionManager.startSession();
         JtsIniManager.initialise(getJtsIniFilePath());
         if (SessionManager.isGateway()) {
             startGateway();
@@ -486,20 +485,36 @@ public class IbcTws {
             startTws();
         }
 
-        int portNumber = Settings.settings().getInt("OverrideTwsApiPort", 0);
-        if (portNumber != 0) (new ConfigurationTask(new ConfigureTwsApiPortTask(portNumber))).executeAsync();
-
-        if (!Settings.settings().getString("ReadOnlyApi", "").equals("")) {
-            (new ConfigurationTask(new ConfigureReadOnlyApiTask(Settings.settings().getBoolean("ReadOnlyApi",true)))).executeAsync();
-        }
-
-        String sendMarketDataInLots = Settings.settings().getString("SendMarketDataInLotsForUSstocks", "");
-        if (!sendMarketDataInLots.equals("")) {
-            (new ConfigurationTask(new ConfigureSendMarketDataInLotsForUSstocksTask(Settings.settings().getBoolean("SendMarketDataInLotsForUSstocks", true)))).executeAsync();
-        }
+        configureApiPort();
+        configureReadOnlyApi();
+        configureSendMarketDataInLotsForUSstocks();
+        configureAutoLogoffOrRestart();
         
+        Utils.sendConsoleOutputToTwsLog(!Settings.settings().getBoolean("LogToConsole", false));
+    }
+    
+    private static void configureApiPort() {
+        String configName = "OverrideTwsApiPort";
+        int portNumber = Settings.settings().getInt(configName, 0);
+        if (portNumber != 0) {
+            if (SessionManager.isFIX()){
+                Utils.logToConsole(configName + " - ignored for FIX");
+                return;
+            }
+            (new ConfigurationTask(new ConfigureTwsApiPortTask(portNumber))).executeAsync();
+        }
+    }
+    
+    private static void configureAutoLogoffOrRestart() {
+        String configName = "AutoLogoffTime Or AutoRestartTime";
         String autoLogoffTime = Settings.settings().getString("AutoLogoffTime", "");
         String autoRestartTime = Settings.settings().getString("AutoRestartTime", "");
+        if (autoRestartTime.length() != 0 || autoLogoffTime.length() != 0) {
+            if (SessionManager.isFIX()){
+                Utils.logToConsole(configName + " - ignored for FIX");
+                return;
+            }
+        }
         if (autoRestartTime.length() != 0) {
             (new ConfigurationTask(new ConfigureAutoLogoffOrRestartTimeTask("Auto restart", autoRestartTime))).executeAsync();
             if (autoLogoffTime.length() != 0) {
@@ -508,9 +523,31 @@ public class IbcTws {
         } else if (autoLogoffTime.length() != 0) {
             (new ConfigurationTask(new ConfigureAutoLogoffOrRestartTimeTask("Auto logoff", autoLogoffTime))).executeAsync();
         }
-
-        Utils.sendConsoleOutputToTwsLog(!Settings.settings().getBoolean("LogToConsole", false));
     }
+    
+    private static void configureReadOnlyApi() {
+        String configName = "ReadOnlyApi";
+        if (!Settings.settings().getString(configName, "").equals("")) {
+            if (SessionManager.isFIX()){
+                Utils.logToConsole(configName + " - ignored for FIX");
+                return;
+            }
+            (new ConfigurationTask(new ConfigureReadOnlyApiTask(Settings.settings().getBoolean(configName,true)))).executeAsync();
+        }
+    }
+    
+    private static void configureSendMarketDataInLotsForUSstocks(){
+        String configName = "SendMarketDataInLotsForUSstocks";
+        String sendMarketDataInLots = Settings.settings().getString(configName, "");
+        if (!sendMarketDataInLots.equals("")) {
+            if (SessionManager.isFIX()){
+                Utils.logToConsole(configName + " - ignored for FIX");
+                return;
+            }
+            (new ConfigurationTask(new ConfigureSendMarketDataInLotsForUSstocksTask(Settings.settings().getBoolean(configName, true)))).executeAsync();
+        }
+    }
+    
 
     private static void startSavingTwsSettingsAutomatically() {
         TwsSettingsSaver.getInstance().initialise();

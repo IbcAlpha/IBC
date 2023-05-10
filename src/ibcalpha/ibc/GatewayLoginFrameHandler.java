@@ -48,7 +48,7 @@ final class GatewayLoginFrameHandler extends AbstractLoginHandler {
     @Override
     protected final boolean preLogin(final Window window, int eventID) throws IbcException {
         boolean result;
-        if (Settings.settings().getBoolean("FIX", false)) {
+        if (SessionManager.isFIX()) {
             result = setMissingFIXCredentials(window);
         } else {
             result = setMissingIBAPICredentials(window);
@@ -90,20 +90,26 @@ final class GatewayLoginFrameHandler extends AbstractLoginHandler {
 
     @Override
     protected final boolean setFields(Window window, int eventID) throws IbcException {
-        if (Settings.settings().getBoolean("FIX", false)) {
+        if (SessionManager.isFIX()) {
+            Utils.logToConsole("Setting FIX user name");
             setCredential(window, "FIX user name", 0, LoginManager.loginManager().FIXUserName());
+            Utils.logToConsole("Setting FIX password");
             setCredential(window, "FIX password", 1, LoginManager.loginManager().FIXPassword());
+            Utils.logToConsole("Setting API user name");
             setCredential(window, "IBAPI user name", 2, LoginManager.loginManager().IBAPIUserName());
+            Utils.logToConsole("Setting API password");
             setCredential(window, "IBAPI password", 3, LoginManager.loginManager().IBAPIPassword());
         } else {
+            Utils.logToConsole("Setting user name");
             setCredential(window, "IBAPI user name", 0, LoginManager.loginManager().IBAPIUserName());
+            Utils.logToConsole("Setting password");
             setCredential(window, "IBAPI password", 1, LoginManager.loginManager().IBAPIPassword());
         }
         return true;
     }
 
     private void selectGatewayMode(Window window) throws IbcException {
-        if (Settings.settings().getBoolean("FIX", false)) {
+        if (SessionManager.isFIX()) {
             switchToFIX(window);
         } else {
             switchToIBAPI(window);

@@ -46,9 +46,10 @@ public class ExistingSessionDetectedDialogHandler implements WindowHandler {
 
         if (setting.equalsIgnoreCase("secondary")) {
             Utils.logToConsole("End this session and let the other session proceed (scenario 2)");
-                if (!SwingUtils.clickButton(window, "Cancel") && !SwingUtils.clickButton(window, "Exit Application")) {
-                    Utils.logError("could not handle 'Existing session detected' dialog because the 'Cancel' or 'Exit Application' button wasn't found.");
-                }
+            if (!SwingUtils.clickButton(window, "Cancel") && !SwingUtils.clickButton(window, "Exit Application")) {
+                Utils.logError("could not handle 'Existing session detected' dialog because the 'Cancel' or 'Exit Application' button wasn't found.");
+            }
+            return;
         }
 
         /* The handling of this dialog is based on the following observed
