@@ -489,6 +489,9 @@ public class IbcTws {
         int portNumber = Settings.settings().getInt("OverrideTwsApiPort", 0);
         if (portNumber != 0) (new ConfigurationTask(new ConfigureTwsApiPortTask(portNumber))).executeAsync();
 
+        String masterClientID = Settings.settings().getString("OverrideMasterClientID", "");
+        if (!masterClientID.equals("")) (new ConfigurationTask(new ConfigureTwsMasterClientIDTask(masterClientID))).executeAsync();
+
         if (!Settings.settings().getString("ReadOnlyApi", "").equals("")) {
             (new ConfigurationTask(new ConfigureReadOnlyApiTask(Settings.settings().getBoolean("ReadOnlyApi",true)))).executeAsync();
         }
