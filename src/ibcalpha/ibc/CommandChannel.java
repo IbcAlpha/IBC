@@ -41,8 +41,6 @@ final class CommandChannel {
         if (! setupStreams()) return;
 
         writeInfo("IBC Command Server");
-        writePrompt();
-
     }
 
     void close() {

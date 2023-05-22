@@ -43,6 +43,9 @@ class JtsIniManager {
     final static String USESSL_SETTING_TRUE = USESSL_SETTING + "=true";
     final static String APIONLY_SETTING = "ApiOnly";
     final static String APIONLY_SETTING_TRUE = APIONLY_SETTING + "=true";
+    final static String APIONLY_SETTING_FALSE = APIONLY_SETTING + "=false";
+    final static String TRUSTED_IPS_SETTING = "TrustedIPs";
+    final static String LOCAL_SERVER_PORT = "LocalServerPort";
 
     private static String jtsIniFilePath;
     private static File jtsIniFile;
@@ -180,21 +183,36 @@ class JtsIniManager {
     private static List<JtsIniSectionSetting> getMissingSettings() {
         List<JtsIniSectionSetting> missingSettings = new ArrayList<>();
 
-        if (! findSettingAndLog(LOGON_SECTION_HEADER, S3STORE_SETTING, "true", false))
-            missingSettings.add(new JtsIniSectionSetting(LOGON_SECTION_HEADER, S3STORE_SETTING_TRUE));
+        if (SessionManager.isFIX()) {
+            if (! findSettingAndLog(IBGATEWAY_SECTION_HEADER, APIONLY_SETTING, "true", true)) 
+                missingSettings.add(new JtsIniSectionSetting(IBGATEWAY_SECTION_HEADER, APIONLY_SETTING_FALSE));
+            
+            String trustedIPs = Settings.settings().getString("TrustedTwsApiClientIPs", "");
+            trustedIPs = "127.0.0.1" + (trustedIPs.equals("") ? "" : "," + trustedIPs);
+            if (! findSettingAndLog(IBGATEWAY_SECTION_HEADER, TRUSTED_IPS_SETTING, trustedIPs, true))
+                missingSettings.add(new JtsIniSectionSetting(IBGATEWAY_SECTION_HEADER, TRUSTED_IPS_SETTING + "=" + trustedIPs));
+        
+            String apiPort = Settings.settings().getString("OverrideTwsApiPort", "");
+            if (! "".equals(apiPort)) {
+                if (! findSettingAndLog(IBGATEWAY_SECTION_HEADER, LOCAL_SERVER_PORT, apiPort, true))
+                    missingSettings.add(new JtsIniSectionSetting(IBGATEWAY_SECTION_HEADER, TRUSTED_IPS_SETTING + "=" + apiPort));
+            }
+        } else {
+            if (! findSettingAndLog(LOGON_SECTION_HEADER, S3STORE_SETTING, "true", false))
+                missingSettings.add(new JtsIniSectionSetting(LOGON_SECTION_HEADER, S3STORE_SETTING_TRUE));
 
-        if (! findSettingAndLog(LOGON_SECTION_HEADER, LOCALE_SETTING, "en", true)) 
-            missingSettings.add(new JtsIniSectionSetting(LOGON_SECTION_HEADER, LOCALE_SETTING_EN));
+            if (! findSettingAndLog(LOGON_SECTION_HEADER, LOCALE_SETTING, "en", true)) 
+                missingSettings.add(new JtsIniSectionSetting(LOGON_SECTION_HEADER, LOCALE_SETTING_EN));
 
-        if (! findSettingAndLog(LOGON_SECTION_HEADER, DISPLAYEDPROXYMSG_SETTING, "1", true))
-            missingSettings.add(new JtsIniSectionSetting(LOGON_SECTION_HEADER, DISPLAYEDPROXYMSG_SETTING_1));
+            if (! findSettingAndLog(LOGON_SECTION_HEADER, DISPLAYEDPROXYMSG_SETTING, "1", true))
+                missingSettings.add(new JtsIniSectionSetting(LOGON_SECTION_HEADER, DISPLAYEDPROXYMSG_SETTING_1));
 
-        if (! findSettingAndLog(LOGON_SECTION_HEADER, USESSL_SETTING, "true", true))
-            missingSettings.add(new JtsIniSectionSetting(LOGON_SECTION_HEADER, USESSL_SETTING_TRUE));
+            if (! findSettingAndLog(LOGON_SECTION_HEADER, USESSL_SETTING, "true", true))
+                missingSettings.add(new JtsIniSectionSetting(LOGON_SECTION_HEADER, USESSL_SETTING_TRUE));
 
-        if (! findSettingAndLog(IBGATEWAY_SECTION_HEADER, APIONLY_SETTING, "true", true)) 
-            missingSettings.add(new JtsIniSectionSetting(IBGATEWAY_SECTION_HEADER, APIONLY_SETTING_TRUE));
-
+            if (! findSettingAndLog(IBGATEWAY_SECTION_HEADER, APIONLY_SETTING, "true", true)) 
+                missingSettings.add(new JtsIniSectionSetting(IBGATEWAY_SECTION_HEADER, APIONLY_SETTING_TRUE));
+        }
         return missingSettings;
     }
 

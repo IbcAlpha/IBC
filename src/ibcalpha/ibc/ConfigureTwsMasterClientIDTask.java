@@ -40,7 +40,7 @@ class ConfigureTwsMasterClientIDTask implements ConfigurationAction{
 
             Utils.selectApiSettings(configDialog);
 
-            Component comp = SwingUtils.findComponent(configDialog, "Master Client ID");
+            Component comp = SwingUtils.findComponent(configDialog, "Master API client ID");
             if (comp == null) throw new IbcException("could not find Master Client ID component");
 
             JTextField tf = SwingUtils.findTextField((Container)comp, 0);

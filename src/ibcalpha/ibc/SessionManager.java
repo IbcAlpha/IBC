@@ -34,17 +34,29 @@ public class SessionManager {
     public static boolean isGateway() {
         return _isGateway;
     };
+    
+    private static boolean _isFIX = false;
+    public static boolean isFIX() {
+        if (!_isSessionStarted) Utils.exitWithError(ErrorCodes.ERROR_CODE_INVALID_STATE, "isFix() called before session has started");
+        return _isFIX;
+    }
 
-    private static boolean isRestart;
-    static boolean IsRestart() {
-        return isRestart;
+    private static boolean _isRestart;
+    static boolean isRestart() {
+        if (!_isSessionStarted) Utils.exitWithError(ErrorCodes.ERROR_CODE_INVALID_STATE, "isRestart() called before session has started");
+        return _isRestart;
     }
     
+    private static boolean _isSessionStarted = false;
     static void startSession() {
+        _isSessionStarted = true;
+        
+        _isFIX = Settings.settings().getBoolean("FIX", false);
+        
         // test to see if the -Drestart VM option has been supplied
-        isRestart = ! (System.getProperties().getProperty("restart", "").isEmpty());
+        _isRestart = ! (System.getProperties().getProperty("restart", "").isEmpty());
         int loginDialogDisplayTimeout = Settings.settings().getInt("LoginDialogDisplayTimeout", 60);
-        if (isRestart){
+        if (_isRestart){
             Utils.logToConsole("Re-starting session");
             // TWS/Gateway will re-establish the session with no intervention from IBC needed
         } else {

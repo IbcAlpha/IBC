@@ -72,6 +72,10 @@ class CommandDispatcher
    }
 
     private void handleReconnectDataCommand() {
+        if (SessionManager.isFIX()) {
+            mChannel.writeNack("RECONNECTDATA is not valid for the FIX Gateway");
+            return;
+        }
         JFrame jf = MainWindowManager.mainWindowManager().getMainWindow(1, TimeUnit.MILLISECONDS);
 
         int modifiers = KeyEvent.CTRL_DOWN_MASK | KeyEvent.ALT_DOWN_MASK;
@@ -86,6 +90,10 @@ class CommandDispatcher
    }
 
     private void handleReconnectAccountCommand() {
+        if (SessionManager.isFIX()) {
+            mChannel.writeNack("RECONNECTACCOUNT is not valid for the FIX Gateway");
+            return;
+        }
         JFrame jf = MainWindowManager.mainWindowManager().getMainWindow();
 
         int modifiers = KeyEvent.CTRL_DOWN_MASK | KeyEvent.ALT_DOWN_MASK;
@@ -104,6 +112,10 @@ class CommandDispatcher
     }
     
     private void handleRestartCommand() {
+        if (SessionManager.isFIX()) {
+            mChannel.writeNack("RESTART is not valid for the FIX Gateway");
+            return;
+        }
         (new RestartTask(mChannel)).run();     // run on the current thread
     }
     

@@ -163,7 +163,7 @@ class Utils {
     }
     
     private static String formatMessage(String message) {
-        return _dateFormatter.format(LocalDateTime.now()) + " IBC: " + message.substring(0,1).toUpperCase() + message.substring(1);
+        return _dateFormatter.format(LocalDateTime.now()) + " IBC: " + message;
     }
 
     /**

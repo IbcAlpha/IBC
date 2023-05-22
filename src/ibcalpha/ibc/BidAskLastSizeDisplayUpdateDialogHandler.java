@@ -46,8 +46,9 @@ public class BidAskLastSizeDisplayUpdateDialogHandler implements WindowHandler {
                 JCheckBox cb = (SwingUtils.findCheckBox(window, "Don't display this message again."));
                 if (cb == null) {
                     Utils.logError("could not set 'Don't display this message again': checkbox not found");
+                } else {
+                    cb.setSelected(true);
                 }
-                cb.setSelected(true);
                 break;
             case "defer":
                 break;

@@ -26,28 +26,25 @@ public class DefaultLoginManager extends LoginManager {
         /* don't actually get the credentials yet because the settings 
          * provider might be changed
          */
-        fromSettings = true;
-        message = "getting username and password from settings";
+        ibapiCredentialsFromArgs = false;
+        fixCredentialsFromArgs = false;
+        message = "will get username and password from settings";
     }
 
     public DefaultLoginManager(String[] args) {
-        if (isFIX()) {
-            getTWSUserNameAndPasswordFromArguments(args);
-            fromSettings = !getFIXUserNameAndPasswordFromArguments(args);
-        } else {
-            fromSettings = !getTWSUserNameAndPasswordFromArguments(args);
-        }
-        if (fromSettings) {
-            message = "getting username and password from args but not found. Will get from settings";
-        } else {
-            message = "getting username and password from args";
-        }
+        ibapiCredentialsFromArgs = getTWSUserNameAndPasswordFromArguments(args);
+        fixCredentialsFromArgs = getFIXUserNameAndPasswordFromArguments(args);
+        message = "will get username and password from " + 
+                (fixCredentialsFromArgs ? "args" : "settings") + 
+                "; FIX username and password (if required) from " + 
+                (fixCredentialsFromArgs ? "args" : "settings");
     }
 
     public DefaultLoginManager(String username, String password) {
         IBAPIUserName = username;
         IBAPIPassword = password;
-        fromSettings = false;
+        ibapiCredentialsFromArgs = true;
+        fixCredentialsFromArgs = false;
         message = "getting username and password from constructor";
     }
 
@@ -56,7 +53,8 @@ public class DefaultLoginManager extends LoginManager {
         this.FIXPassword = FIXPassword;
         this.IBAPIUserName = IBAPIUsername;
         this.IBAPIPassword = IBAPIPassword;
-        fromSettings = false;
+        ibapiCredentialsFromArgs = true;
+        fixCredentialsFromArgs = true;
         message = "getting username and password from constructor (including FIX)";
     }
 
@@ -64,7 +62,8 @@ public class DefaultLoginManager extends LoginManager {
 
     private volatile AbstractLoginHandler loginHandler = null;
 
-    private final boolean fromSettings;
+    private final boolean ibapiCredentialsFromArgs;
+    private final boolean fixCredentialsFromArgs;
 
     /**
      * IBAPI username - can either be supplied from the .ini file or as args[1]
@@ -101,26 +100,26 @@ public class DefaultLoginManager extends LoginManager {
 
     @Override
     public String FIXPassword() {
-        if (fromSettings) return getFIXPasswordFromSettings();
-        return FIXPassword;
+        if (fixCredentialsFromArgs) return FIXPassword;
+        return getFIXPasswordFromSettings();
     }
 
     @Override
     public String FIXUserName() {
-        if (fromSettings) return getFIXUserNameFromSettings();
-        return FIXUserName;
+        if (fixCredentialsFromArgs) return FIXUserName;
+        return getFIXUserNameFromSettings();
     }
 
     @Override
     public String IBAPIPassword() {
-        if (fromSettings) return getTWSPasswordFromSettings();
-        return IBAPIPassword;
+        if (ibapiCredentialsFromArgs) return IBAPIPassword;
+        return getTWSPasswordFromSettings();
     }
 
     @Override
     public String IBAPIUserName() {
-        if (fromSettings) return getTWSUserNameFromSettings();
-        return IBAPIUserName;
+        if (ibapiCredentialsFromArgs) return IBAPIUserName;
+        return getTWSUserNameFromSettings();
     }
 
     @Override
@@ -172,33 +171,27 @@ public class DefaultLoginManager extends LoginManager {
     }
 
     private boolean getTWSUserNameAndPasswordFromArguments(String[] args) {
-        if (isFIX()) {
-            if (args.length == 5 || args.length == 6) {
-                IBAPIUserName = args[3];
-                IBAPIPassword = args[4];
-                return true;
-            } else {
-                return false;
-            }
-        } else if (args.length == 3 || args.length == 4) {
+        if (args.length == 5 || args.length == 6) {
+            IBAPIUserName = args[3];
+            IBAPIPassword = args[4];
+            return true;
+        
+        }
+        if (args.length == 3 || args.length == 4) {
             IBAPIUserName = args[1];
             IBAPIPassword = args[2];
             return true;
-        } else if (args.length == 5 || args.length == 6) {
-            Utils.logError("Incorrect number of arguments passed. quitting...");
-            Utils.logRawToConsole("Number of arguments = " +args.length + " which is only permitted if FIX=yes");
-            for (String arg : args) {
-                Utils.logRawToConsole(arg);
-            }
-            Utils.exitWithError(ErrorCodes.ERROR_CODE_INCORRECT_NUMBER_OF_ARGUMENTS);
-            return false;
-        } else {
+        }
+        if (args.length <= 2) {
             return false;
         }
-    }
-
-    private static boolean isFIX() {
-        return Settings.settings().getBoolean("FIX", false);
+        Utils.logError("Incorrect number of arguments passed. quitting...");
+        Utils.logRawToConsole("Number of arguments = " +args.length);
+        for (int i = 0; i < args.length; i++) {
+            Utils.logRawToConsole("arg[" + i + "]=" + args[i]);
+        }
+        Utils.exitWithError(ErrorCodes.ERROR_CODE_INCORRECT_NUMBER_OF_ARGUMENTS);
+        return false;
     }
 
 }

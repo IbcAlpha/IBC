@@ -57,7 +57,10 @@ public class SecondFactorAuthenticationDialogHandler implements WindowHandler {
                 LoginManager.loginManager().setLoginState(LoginManager.LoginState.TWO_FA_IN_PROGRESS);
             }
         } else if (eventID == WindowEvent.WINDOW_CLOSED) {
-            if (LoginManager.loginManager().readonlyLoginRequired()) return;
+            if (LoginManager.loginManager().readonlyLoginRequired()) {
+                LoginManager.loginManager().setLoginState(LoginManager.LoginState.LOGGED_IN);
+                return;
+            }
             LoginManager.loginManager().secondFactorAuthenticationDialogClosed();
         }
     }
