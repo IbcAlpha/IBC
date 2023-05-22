@@ -508,13 +508,13 @@ public class IbcTws {
     
     private static void configureMasterClientID() {
         String configName = "OverrideTwsMasterClientID";
-        String portNumber = Settings.settings().getString(configName, "");
+        String masterClientID = Settings.settings().getString(configName, "");
         if (!masterClientID.equals("")) {
             if (SessionManager.isFIX()){
                 Utils.logToConsole(configName + " - ignored for FIX");
                 return;
             }
-            (new ConfigurationTask(new ConfigurationTask(new ConfigureTwsMasterClientIDTask(masterClientID))).executeAsync();
+            (new ConfigurationTask(new ConfigureTwsMasterClientIDTask(masterClientID))).executeAsync();
         }
     }
 
