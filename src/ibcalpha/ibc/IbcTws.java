@@ -488,6 +488,7 @@ public class IbcTws {
 
         configureResetOrderIdsAtStart();
         configureApiPort();
+        configureMasterClientID();
         configureReadOnlyApi();
         configureSendMarketDataInLotsForUSstocks();
         configureAutoLogoffOrRestart();
@@ -520,6 +521,18 @@ public class IbcTws {
         }
     }
     
+    private static void configureMasterClientID() {
+        String configName = "OverrideTwsMasterClientID";
+        String masterClientID = Settings.settings().getString(configName, "");
+        if (!masterClientID.equals("")) {
+            if (SessionManager.isFIX()){
+                Utils.logToConsole(configName + " - ignored for FIX");
+                return;
+            }
+            (new ConfigurationTask(new ConfigureTwsMasterClientIDTask(masterClientID))).executeAsync();
+        }
+    }
+
     private static void configureAutoLogoffOrRestart() {
         String configName = "AutoLogoffTime Or AutoRestartTime";
         String autoLogoffTime = Settings.settings().getString("AutoLogoffTime", "");
