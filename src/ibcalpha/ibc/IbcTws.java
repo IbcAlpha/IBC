@@ -339,6 +339,7 @@ public class IbcTws {
         windowHandlers.add(new CryptoOrderConfirmationDialogHandler());
         windowHandlers.add(new AutoRestartConfirmationDialog());
         windowHandlers.add(new RestartConfirmationDialogHandler());
+        windowHandlers.add(new ResetOrderIdConfirmationDialogHandler());
         
         return windowHandlers;
     }
@@ -485,12 +486,26 @@ public class IbcTws {
             startTws();
         }
 
+        configureResetOrderIdsAtStart();
         configureApiPort();
         configureReadOnlyApi();
         configureSendMarketDataInLotsForUSstocks();
         configureAutoLogoffOrRestart();
         
         Utils.sendConsoleOutputToTwsLog(!Settings.settings().getBoolean("LogToConsole", false));
+    }
+    
+    private static void configureResetOrderIdsAtStart() {
+        String configName= "ResetOrderIdsAtStart";
+        boolean resetOrderIds = Settings.settings().getBoolean(configName, false);
+        if (resetOrderIds) {
+            if (SessionManager.isFIX()) {
+                Utils.logToConsole(configName + " - ignored for FIX");
+                return;
+            }
+            (new ConfigurationTask(new ConfigureResetOrderIdsTask(resetOrderIds))).executeAsync();
+        }
+            
     }
     
     private static void configureApiPort() {
