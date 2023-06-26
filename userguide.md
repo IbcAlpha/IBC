@@ -278,6 +278,12 @@ they are freely available from the
 
 ### Installing IBC
 
+> IMPORTANT (June 2023)
+>
+> The default installation process for IBC does not work for the latest IB 
+> Gateway. To use 10.22 or later, you must follow the manual steps described 
+> [here](https://groups.io/g/ibcalpha/message/2042)  
+
 Installing IBC is just a matter of extracting the contents of the
 downloaded ZIP file to wherever you want to install it. You will make things
 easiest for yourself if you use the locations described in 'Default Paths'
@@ -486,6 +492,13 @@ Windows users can execute a shell script in a number of ways, including:
 If you used the default locations to install IBC and TWS, and to store your
 config.ini file, you should not need to edit the shell scripts. If you do need
 to change them, they are commented to help you.
+
+> NOTE
+>
+> IBC renames the TWS/Gateway startup executable file when it runs, in order to 
+> support *autorestart*. If your setup relies on a fixed path to TWS/Gateway, 
+> you may need to make adjustments. Obviously, you will lose all the benefits of
+> IBC if running TWS/Gateway directly 
 
 ## Other Topics
 
