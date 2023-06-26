@@ -1,9 +1,11 @@
 # **IBC USER GUIDE**
 
->IMPORTANT NOTES REGARDING AUTo-RESTART IN TWS/GATEWAY 1018 and later versions.
+IMPORTANT 
+
+>NOTES REGARDING AUTO-RESTART IN TWS/GATEWAY 1018 and later versions.
 >
-> IBC now has the ability to allow TWS/Gateway to use the autorestart
-> mechansism originally introduced in version 974/975.
+> Starting with version 3.15.0, IBC now has the ability to allow TWS/Gateway to
+> use the autorestart mechanism originally introduced in version 974/975.
 >
 > This means that you can now set TWS/Gateway to run all week with a single 
 > login at the start of the week, under the control of IBC.
@@ -11,16 +13,15 @@
 > To configure this behaviour use the `AutoRestart` setting in the `Lock and
 > Exit` section of the TWS/Gateway configuration dialog. Alternatively use the
 > `AutoRestartTime` setting in `config.ini`.
-> 
+>
+> This support for auto-restart can lead to confusion if you sometimes want to
+> start TWS/Gateway without using IBC. For advice on this, see the section
+> entitled **How to run TWS/Gateway without IBC when IBC is installed** towards
+> the end of this document.
 
 
->IMPORTANT
->
->If you have previously been using IBController and are switching over to IBC,
-there are some differences that you need to be aware of: there is more
-information about this in the **Changes from IBController** section at the end
-of this document.
->
+IMPORTANT
+
 >Make sure you read the information in the **Scope of this User Guide** section.
 >
 >Note that in the remainder of this document, 'Unix' is used to refer to all
@@ -747,6 +748,42 @@ number.
 
 Then follow the advice in the previous section and ensure that each script
 file has the correct value for the `TWS_MAJOR_VRSN` variable.
+
+
+### How to run TWS/Gateway without IBC when IBC is installed
+
+In order for auto-restart to work properly with IBC, the scripts that run IBC
+rename the TWS/Gateway executables, by appending a '1' digit to the filename
+(the file extension on Windows is unchanged). If these files have their
+original names when auto-restart occurs, then TWS/Gateway do indeed restart
+but they will not be running under IBC, so all the benefits of IBC will be
+lost. Note that for this reason you should not attempt to rename these files
+back to their original names while IBC is running.
+
+The scripts do not rename the executables to their original names when IBC
+exits.
+
+This causes a potential confusion if you then want to subsequently run
+TWS/Gateway without using IBC. Here are some suggestions:
+
+- you can rename the excutables back to their original names before running
+them
+
+- you can run TWS/Gateway directly from the renamed executables. For example
+in Windows you can double-click on C:\\Jts\\1022\\tws1.exe and it will run fine
+
+- you can edit the IB-supplied desktop shortcuts to refer to the renamed
+executable; or you could create additional shortcuts to the renamed executables
+
+- if you have a script to run TWS/Gateway without IBC, you can modify the
+script to use either the original or renamed executable, which ever currently
+exists
+
+- you could install an additional copy of TWS/Gateway into a different root
+folder, and only run that instance without IBC. You can use the
+TWS_SETTINGS_PATH variable in the IBC script to ensure that the same settings
+are used for both instances.
+
 
 ### Any Questions?
 
