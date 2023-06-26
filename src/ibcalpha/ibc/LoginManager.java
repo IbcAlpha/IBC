@@ -114,7 +114,7 @@ public abstract class LoginManager {
         final int SecondFactorAuthenticationTimeout = Settings.settings().getInt("SecondFactorAuthenticationTimeout", 180);
 
         // time (seconds) to allow for login to complete before exiting
-        final int exitInterval = Settings.settings().getInt("SecondFactorAuthenticationExitInterval", 40);
+        final int exitInterval = Settings.settings().getInt("SecondFactorAuthenticationExitInterval", 60);
 
         final Duration d = Duration.between(LoginStartTime, Instant.now());
         LoginStartTime = null;
@@ -131,12 +131,17 @@ public abstract class LoginManager {
                 return;
             }
             
+            if (!reloginPermitted()) {
+                // just let loading continue
+                return;
+            }
+
             Utils.logToConsole("If login has not completed, IBC will exit in " + exitInterval + " seconds");
             restartAfterTime(exitInterval, "IBC closing because login has not completed after Second Factor Authentication");
             return;
         }
         
-        if (!reloginRequired()) {
+        if (!reloginPermitted()) {
             Utils.logToConsole("Re-login after second factor authentication timeout not required");
             return;
         }
@@ -151,7 +156,7 @@ public abstract class LoginManager {
         }, 5, TimeUnit.SECONDS);
     }
     
-    private boolean reloginRequired() {
+    private boolean reloginPermitted() {
         if (Settings.settings().getString("ReloginAfterSecondFactorAuthenticationTimeout", "").isEmpty()) {
             if (!Settings.settings().getString("ExitAfterSecondFactorAuthenticationTimeout", "").isEmpty()) {
                 return Settings.settings().getBoolean("ExitAfterSecondFactorAuthenticationTimeout", false);
