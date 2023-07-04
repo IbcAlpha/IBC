@@ -299,6 +299,12 @@ if not exist "%TWS_SETTINGS_PATH%" (
 	set ERROR=%E_TWS_SETTINGS_PATH_NOT_EXIST%
 	goto :err
 )
+pushd %TWS_SETTINGS_PATH%
+:: ensure TWS_SETTINGS_PATH contains no double backslashes: they cause
+:: problems when trying to find the autorestart file
+set TWS_SETTINGS_PATH=%CD%
+popd
+
 if not exist "%IBC_PATH%" (
 	set ERROR_MESSAGE=IBC path: %IBC-PATH% does not exist
 	set ERROR=%E_IBC_PATH_NOT_EXIST%
