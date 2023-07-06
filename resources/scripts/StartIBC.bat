@@ -427,12 +427,22 @@ pushd %TWS_SETTINGS_PATH%
 
 :startIBC
 
-IF exist "%PROGRAM_PATH%\tws.exe" (
-	echo Renaming TWS.exe file to prevent restart without IBC
+if exist "%PROGRAM_PATH%\tws.exe" (
+	echo Renaming tws.exe file to prevent restart without IBC
+	if exist "%PROGRAM_PATH%\tws1.exe" (
+		echo First delete existing tws1.exe file
+		del "%PROGRAM_PATH%\tws1.exe"
+	)
+	echo Rename tws.exe to tws1.exe
 	ren "%PROGRAM_PATH%\tws.exe" tws1.exe
 )
-IF exist "%PROGRAM_PATH%\ibgateway.exe" (
-	echo Renaming Gateway.exe file to prevent restart without IBC
+if exist "%PROGRAM_PATH%\ibgateway.exe" (
+	echo Renaming ibgateway.exe file to prevent restart without IBC
+	if exist "%PROGRAM_PATH%\ibgateway1.exe" (
+		echo First delete existing ibgateway1.exe file
+		del "%PROGRAM_PATH%\ibgateway1.exe"
+	)
+	echo Rename ibgateway.exe to ibgateway1.exe
 	ren "%PROGRAM_PATH%\ibgateway.exe" ibgateway1.exe
 )
 echo.
