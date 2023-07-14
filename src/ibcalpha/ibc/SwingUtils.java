@@ -93,7 +93,7 @@ class SwingUtils {
         ComponentIterator iter = new ComponentIterator(container);
         while (iter.hasNext()) {
             Component component = iter.next();
-            if (component instanceof JButton && text.equals(((JButton)component).getText())) return (JButton)component;
+            if (component instanceof JButton && text.equalsIgnoreCase(((JButton)component).getText())) return (JButton)component;
         }
         return null;
     }
@@ -112,7 +112,7 @@ class SwingUtils {
         ComponentIterator iter = new ComponentIterator(container);
         while (iter.hasNext()) {
             Component component = iter.next();
-            if (component instanceof JCheckBox && text.equals(((JCheckBox)component).getText())) return (JCheckBox)component;
+            if (component instanceof JCheckBox && text.equalsIgnoreCase(((JCheckBox)component).getText())) return (JCheckBox)component;
         }
         return null;
     }
@@ -153,7 +153,7 @@ class SwingUtils {
         ComponentIterator iter = new ComponentIterator(container);
         while (iter.hasNext()) {
             Component component = iter.next();
-            if (text.equals(component.getName())) return component;
+            if (text.equalsIgnoreCase(component.getName())) return component;
         }
         return null;
     }
@@ -172,7 +172,7 @@ class SwingUtils {
         ComponentIterator iter = new ComponentIterator(container);
         while (iter.hasNext()) {
             Component component = iter.next();
-            if (component instanceof JRadioButton && text.equals(((JRadioButton)component).getText())) return (JRadioButton)component;
+            if (component instanceof JRadioButton && text.equalsIgnoreCase(((JRadioButton)component).getText())) return (JRadioButton)component;
         }
         return null;
     }
@@ -191,7 +191,7 @@ class SwingUtils {
         ComponentIterator iter = new ComponentIterator(container);
         while (iter.hasNext()) {
             Component component = iter.next();
-            if (component instanceof JLabel && ((JLabel)component).getText() != null &&  ((JLabel)component).getText().contains(text)) return (JLabel)component;
+            if (component instanceof JLabel && ((JLabel)component).getText() != null &&  ((JLabel)component).getText().toLowerCase().contains(text.toLowerCase())) return (JLabel)component;
         }
         return null;
     }
@@ -234,7 +234,7 @@ class SwingUtils {
             Component component = iter.next();
             if (component instanceof JTextArea) {
                 String content = ((JTextArea)component).getText();
-                if (content != null && content.contains(text)) {
+                if (content != null && content.toLowerCase().contains(text.toLowerCase())) {
                     return (JTextArea)component;
                 }
             }
@@ -280,7 +280,7 @@ class SwingUtils {
             Component component = iter.next();
             if (component instanceof JTextPane) {
                 String content = ((JTextPane)component).getText();
-                if (content != null && content.contains(text)) {
+                if (content != null && content.toLowerCase().contains(text.toLowerCase())) {
                     return (JTextPane)component;
                 }
             }
@@ -302,7 +302,7 @@ class SwingUtils {
         ComponentIterator iter = new ComponentIterator(container);
         while (iter.hasNext()) {
             Component component = iter.next();
-            if (component instanceof JToggleButton && text.equals(((JToggleButton)component).getText())) return (JToggleButton)component;
+            if (component instanceof JToggleButton && text.equalsIgnoreCase(((JToggleButton)component).getText())) return (JToggleButton)component;
         }
         return null;
     }
@@ -362,7 +362,7 @@ class SwingUtils {
         for (MenuElement element : elements) {
             if (element instanceof JMenuItem) {
                 JMenuItem button = (JMenuItem) element;
-                if (button.getText().equals(text)) {
+                if (button.getText().equalsIgnoreCase(text)) {
                     return button;
                 }
             } else {
@@ -493,7 +493,7 @@ class SwingUtils {
     static Object findChildNode(TreeModel model, Object node, String text) {
         for (int i = 0; i < model.getChildCount(node); i++) {
             Object currNode = model.getChild(node, i);
-            if (currNode.toString() != null && currNode.toString().equals(text)) return currNode;
+            if (currNode.toString() != null && currNode.toString().equalsIgnoreCase(text)) return currNode;
         }
         return null;
     }
@@ -646,7 +646,7 @@ class SwingUtils {
      */
     static boolean titleContains(Window window, String text) {
         String title = getWindowTitle(window);
-        return (title != null && title.contains(text));
+        return (title != null && title.toLowerCase().contains(text.toLowerCase()));
     }
 
     /**
