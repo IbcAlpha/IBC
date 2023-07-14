@@ -492,6 +492,7 @@ public class IbcTws {
         configureReadOnlyApi();
         configureSendMarketDataInLotsForUSstocks();
         configureAutoLogoffOrRestart();
+        configureApiPrecautions();
         
         Utils.sendConsoleOutputToTwsLog(!Settings.settings().getBoolean("LogToConsole", false));
     }
@@ -576,6 +577,45 @@ public class IbcTws {
         }
     }
     
+    private static void configureApiPrecautions() {
+        String configName = "ApiPrecautions";
+
+        String bypassOrderPrecautions = Settings.settings().getString("BypassOrderPrecautions", "");
+        String bypassBondWarning = Settings.settings().getString("BypassBondWarning", "");
+        String bypassNegativeYieldToWorstConfirmation = Settings.settings().getString("BypassNegativeYieldToWorstConfirmation", "");
+        String bypassCalledBondWarning = Settings.settings().getString("BypassCalledBondWarning", "");
+        String bypassSameActionPairTradeWarning = Settings.settings().getString("BypassSameActionPairTradeWarning", "");
+        String bypassPriceBasedVolatilityRiskWarning = Settings.settings().getString("BypassPriceBasedVolatilityRiskWarning", "");
+        String bypassUSStocksMarketDataInSharesWarning = Settings.settings().getString("BypassUSStocksMarketDataInSharesWarning", "");
+        String bypassRedirectOrderWarning = Settings.settings().getString("BypassRedirectOrderWarning", "");
+        String bypassNoOverfillProtectionPrecaution = Settings.settings().getString("BypassNoOverfillProtectionPrecaution", "");
+        
+        if (!bypassOrderPrecautions.equals("") ||
+                !bypassBondWarning.equals("") ||
+                !bypassNegativeYieldToWorstConfirmation.equals("") ||
+                !bypassCalledBondWarning.equals("") ||
+                !bypassSameActionPairTradeWarning.equals("") ||
+                !bypassPriceBasedVolatilityRiskWarning.equals("") ||
+                !bypassUSStocksMarketDataInSharesWarning.equals("") ||
+                !bypassRedirectOrderWarning.equals("") ||
+                !bypassNoOverfillProtectionPrecaution.equals("")) {
+            if (SessionManager.isFIX()){
+                Utils.logToConsole(configName + " - ignored for FIX");
+                return;
+            }
+            (new ConfigurationTask(new ConfigureApiPrecautionsTask(
+                                    bypassOrderPrecautions,
+                                    bypassBondWarning,
+                                    bypassNegativeYieldToWorstConfirmation,
+                                    bypassCalledBondWarning,
+                                    bypassSameActionPairTradeWarning,
+                                    bypassPriceBasedVolatilityRiskWarning,
+                                    bypassUSStocksMarketDataInSharesWarning,
+                                    bypassRedirectOrderWarning,
+                                    bypassNoOverfillProtectionPrecaution))).executeAsync();
+            
+        }
+    }
 
     private static void startSavingTwsSettingsAutomatically() {
         TwsSettingsSaver.getInstance().initialise();
