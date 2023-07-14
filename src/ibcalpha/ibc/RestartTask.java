@@ -59,7 +59,7 @@ class RestartTask
             restart();
         } catch (Exception ex) {
             writeNack(ex.getMessage());
-            Utils.exitWithException(ErrorCodes.ERROR_CODE_UNHANDLED_EXCEPTION, ex);
+            Utils.exitWithException(ErrorCodes.UNHANDLED_EXCEPTION, ex);
         }
     }
     

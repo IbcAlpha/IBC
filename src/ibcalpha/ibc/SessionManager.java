@@ -37,13 +37,13 @@ public class SessionManager {
     
     private static boolean _isFIX = false;
     public static boolean isFIX() {
-        if (!_isSessionStarted) Utils.exitWithError(ErrorCodes.ERROR_CODE_INVALID_STATE, "isFix() called before session has started");
+        if (!_isSessionStarted) Utils.exitWithError(ErrorCodes.INVALID_STATE, "isFix() called before session has started");
         return _isFIX;
     }
 
     private static boolean _isRestart;
     static boolean isRestart() {
-        if (!_isSessionStarted) Utils.exitWithError(ErrorCodes.ERROR_CODE_INVALID_STATE, "isRestart() called before session has started");
+        if (!_isSessionStarted) Utils.exitWithError(ErrorCodes.INVALID_STATE, "isRestart() called before session has started");
         return _isRestart;
     }
     
@@ -67,7 +67,7 @@ public class SessionManager {
                         // Login diaog has been shown - no need for IBC to exit
                         return;
                     }
-                    Utils.exitWithError(ErrorCodes.ERROR_CODE_LOGIN_DIALOG_DISPLAY_TIMEOUT, "IBC closing after TWS/Gateway failed to display login dialog");
+                    Utils.exitWithError(ErrorCodes.LOGIN_DIALOG_DISPLAY_TIMED_OUT, "IBC closing after TWS/Gateway failed to display login dialog");
                 });
             }, loginDialogDisplayTimeout, TimeUnit.SECONDS);
         }

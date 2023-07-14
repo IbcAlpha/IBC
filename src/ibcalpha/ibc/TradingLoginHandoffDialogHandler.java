@@ -71,9 +71,9 @@ public class TradingLoginHandoffDialogHandler implements WindowHandler {
                 Utils.logError(String.format(COULD_NOT_HANDLE_MESSAGE, "the 'Disconnect Other Session' button wasn't found."));
             }
         } else if (setting.equalsIgnoreCase("primaryoverride")) {
-            Utils.exitWithError(ErrorCodes.ERROR_CODE_INVALID_STATE, String.format(ERROR_MESSAGE, "ExistingSessionDetectedAction=primaryoverride"));
+            Utils.exitWithError(ErrorCodes.INVALID_STATE, String.format(ERROR_MESSAGE, "ExistingSessionDetectedAction=primaryoverride"));
         } else if (setting.equalsIgnoreCase("secondary")) {
-            Utils.exitWithError(ErrorCodes.ERROR_CODE_INVALID_STATE, String.format(ERROR_MESSAGE, "ExistingSessionDetectedAction=secondary"));
+            Utils.exitWithError(ErrorCodes.INVALID_STATE, String.format(ERROR_MESSAGE, "ExistingSessionDetectedAction=secondary"));
         } else if (setting.equalsIgnoreCase("manual")) {
             Utils.logToConsole(String.format(INFO_MESSAGE, "user must choose whether to continue with this session"));
             // nothing to do

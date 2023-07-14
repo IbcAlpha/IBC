@@ -32,7 +32,7 @@ class ComponentIterator implements Iterator<Component> {
     Component mCurrent;
 
     ComponentIterator(Container container) {
-        if (container == null) Utils.exitWithException(ErrorCodes.ERROR_CODE_UNHANDLED_EXCEPTION,new NullPointerException());
+        if (container == null) Utils.exitWithException(ErrorCodes.UNHANDLED_EXCEPTION,new NullPointerException());
         mStack.push(new NodeState(container));
     }
 

@@ -150,7 +150,7 @@ class JtsIniManager {
     private static void loadIniFile() {
         jtsIniFile = new File(jtsIniFilePath);
         if (jtsIniFile.isDirectory()) {
-            Utils.exitWithError(ErrorCodes.ERROR_CODE_INVALID_JTSINI_PATH, 
+            Utils.exitWithError(ErrorCodes.INVALID_JTSINI_PATH, 
                                 jtsIniFilePath + " already exists but is a directory");
         }
         if (jtsIniFile.isFile()) {
@@ -248,7 +248,7 @@ class JtsIniManager {
         try {
             linesList = Files.readAllLines(jtsIniFile.toPath());
         } catch (IOException e) {
-            Utils.exitWithError(ErrorCodes.ERROR_CODE_IO_EXCEPTION_ON_JTSINI, 
+            Utils.exitWithError(ErrorCodes.IO_EXCEPTION_ON_JTSINI, 
                                 "Unexpected IOException on " + jtsIniFile + ": " + e.getMessage());
         }
         return linesList;
@@ -266,7 +266,7 @@ class JtsIniManager {
             writeIniFileLine(IBGATEWAY_SECTION_HEADER, w);
             writeIniFileLine(APIONLY_SETTING_TRUE, w);
         } catch (IOException e) {
-            Utils.exitWithError(ErrorCodes.ERROR_CODE_IO_EXCEPTION_ON_JTSINI, 
+            Utils.exitWithError(ErrorCodes.IO_EXCEPTION_ON_JTSINI, 
                                 "Problem creating " + jtsIniFilePath + ": " + e.getMessage());
         }
     }
@@ -278,7 +278,7 @@ class JtsIniManager {
             updateExistingSections(missingSettings, w);
             updateUnprocessedSettings(getUnprocessedSettings(missingSettings), w);
         } catch (IOException e){
-            Utils.exitWithError(ErrorCodes.ERROR_CODE_IO_EXCEPTION_ON_JTSINI, 
+            Utils.exitWithError(ErrorCodes.IO_EXCEPTION_ON_JTSINI, 
                                 "Problem writing to " + jtsIniFilePath + ": " + e.getMessage());
         }
     }

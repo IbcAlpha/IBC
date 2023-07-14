@@ -61,11 +61,11 @@ class TwsListener
 
                     logWindowStructure(window, eventID, false);
                 } catch (Throwable e) {
-                    Utils.exitWithException(ErrorCodes.ERROR_CODE_UNHANDLED_EXCEPTION, e);
+                    Utils.exitWithException(ErrorCodes.UNHANDLED_EXCEPTION, e);
                 }
             });
         } catch (Throwable e) {
-            Utils.exitWithException(ErrorCodes.ERROR_CODE_UNHANDLED_EXCEPTION, e);
+            Utils.exitWithException(ErrorCodes.UNHANDLED_EXCEPTION, e);
         }
     }
     

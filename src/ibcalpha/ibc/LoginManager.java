@@ -174,7 +174,7 @@ public abstract class LoginManager {
                         Utils.logToConsole("Login has already completed - no need for IBC to exit");
                         return;
                     }
-                    Utils.exitWithError(ErrorCodes.ERROR_CODE_2FA_LOGIN_TIMED_OUT, message);
+                    Utils.exitWithError(ErrorCodes.SECOND_FACTOR_AUTH_LOGIN_TIMED_OUT, message);
                 });
             }, secondsTillShutdown, TimeUnit.SECONDS);
         } catch (Throwable e) {

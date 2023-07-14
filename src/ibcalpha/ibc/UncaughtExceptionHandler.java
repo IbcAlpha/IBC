@@ -22,7 +22,7 @@ public final class UncaughtExceptionHandler implements Thread.UncaughtExceptionH
 
     @Override
     public void uncaughtException(Thread thread, Throwable t) {
-        Utils.exitWithException(ErrorCodes.ERROR_CODE_UNHANDLED_EXCEPTION, t);
+        Utils.exitWithException(ErrorCodes.UNHANDLED_EXCEPTION, t);
     }
 
 }

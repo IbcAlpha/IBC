@@ -45,7 +45,7 @@ class StopTask
             stop();
         } catch (Exception ex) {
             writeNack(ex.getMessage());
-            Utils.exitWithException(ErrorCodes.ERROR_CODE_UNHANDLED_EXCEPTION, ex);
+            Utils.exitWithException(ErrorCodes.UNHANDLED_EXCEPTION, ex);
         }
     }
 
@@ -69,7 +69,7 @@ class StopTask
             }
             
         } catch (IllegalStateException e) {
-            Utils.exitWithException(ErrorCodes.ERROR_CODE_UNHANDLED_EXCEPTION, e);
+            Utils.exitWithException(ErrorCodes.UNHANDLED_EXCEPTION, e);
         }
     }
 

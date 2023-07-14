@@ -258,7 +258,7 @@ public class IbcTws {
             for (String arg : args) {
                 Utils.logRawToConsole(arg);
             }
-            Utils.exitWithError(ErrorCodes.ERROR_CODE_INCORRECT_NUMBER_OF_ARGUMENTS);
+            Utils.exitWithError(ErrorCodes.INCORRECT_NUMBER_OF_ARGS);
         }
     }
 
@@ -385,7 +385,7 @@ public class IbcTws {
                     }
                 }
             } catch (ParseException e) {
-                Utils.exitWithError(ErrorCodes.ERROR_CODE_INVALID_CLOSEDOWN_AT_SETTING, 
+                Utils.exitWithError(ErrorCodes.INVALID_SETTING_VALUE, 
                                     "Invalid ClosedownAt setting: '" + shutdownTimeSetting + "'; format should be: <[day ]hh:mm>   eg 22:00 or Friday 22:00");
             }
             return cal.getTime();
@@ -401,10 +401,10 @@ public class IbcTws {
         try {
             Files.createDirectories(Paths.get(path));
         } catch (FileAlreadyExistsException ex) {
-            Utils.exitWithError(ErrorCodes.ERROR_CODE_CANT_CREATE_TWS_SETTINGS_DIRECTORY, 
+            Utils.exitWithError(ErrorCodes.CANT_CREATE_TWS_SETTINGS_DIR, 
                                 "Failed to create TWS settings directory at: " + path + "; a file of that name already exists");
         } catch (IOException ex) {
-            Utils.exitWithException(ErrorCodes.ERROR_CODE_CANT_CREATE_TWS_SETTINGS_DIRECTORY, ex);
+            Utils.exitWithException(ErrorCodes.CANT_CREATE_TWS_SETTINGS_DIR, ex);
         }
         return path;
     }
@@ -439,7 +439,7 @@ public class IbcTws {
         } catch (Throwable t) {
             Utils.logError("Exception occurred at Gateway entry point: ibgateway.GWClient.main");
             t.printStackTrace(Utils.getErrStream());
-            Utils.exitWithError(ErrorCodes.ERROR_CODE_CANT_FIND_ENTRYPOINT);
+            Utils.exitWithError(ErrorCodes.CANT_FIND_ENTRYPOINT);
         }
     }
 
@@ -472,7 +472,7 @@ public class IbcTws {
         } catch (Throwable t) {
             Utils.logError("Exception occurred at TWS entry point: jclient.LoginFrame.main");
             t.printStackTrace(Utils.getErrStream());
-            Utils.exitWithError(ErrorCodes.ERROR_CODE_CANT_FIND_ENTRYPOINT);
+            Utils.exitWithError(ErrorCodes.CANT_FIND_ENTRYPOINT);
         }
     }
 

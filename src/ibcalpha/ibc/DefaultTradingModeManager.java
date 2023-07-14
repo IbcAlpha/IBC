@@ -60,7 +60,7 @@ public class DefaultTradingModeManager extends TradingModeManager {
 
     private void setTradingMode(String value) {
         if (!(value.equalsIgnoreCase(TRADING_MODE_LIVE) || value.equalsIgnoreCase(TRADING_MODE_PAPER))) {
-                Utils.exitWithError(ErrorCodes.ERROR_CODE_INVALID_TRADING_MODE, "Invalid Trading Mode argument or .ini file setting: " + tradingMode);
+                Utils.exitWithError(ErrorCodes.INVALID_TRADING_MODE, "Invalid Trading Mode argument or .ini file setting: " + tradingMode);
         }
         tradingMode = value;
     }

@@ -92,7 +92,7 @@ public class SecondFactorAuthenticationDialogHandler implements WindowHandler {
     private void selectSecondFactorDevice(Window window) {
         JList<?> deviceList = SwingUtils.findList(window, 0);
         if (deviceList == null) {
-            Utils.exitWithError(ErrorCodes.ERROR_CODE_CANT_FIND_CONTROL, "could not find second factor device list.");
+            Utils.exitWithError(ErrorCodes.CANT_FIND_CONTROL, "could not find second factor device list.");
             return;
         }
 

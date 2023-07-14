@@ -20,17 +20,17 @@ package ibcalpha.ibc;
 
 public final class ErrorCodes {
 
-    public static final int ERROR_CODE_UNHANDLED_EXCEPTION = 1100;
-    public static final int ERROR_CODE_CANT_FIND_CONTROL = 1101;
-    public static final int ERROR_CODE_INCORRECT_NUMBER_OF_ARGUMENTS = 1102;
-    public static final int ERROR_CODE_INI_FILE_NOT_EXIST = 1103;
-    public static final int ERROR_CODE_INVALID_TRADING_MODE = 1104;
-    public static final int ERROR_CODE_INVALID_CLOSEDOWN_AT_SETTING = 1105;
-    public static final int ERROR_CODE_CANT_CREATE_TWS_SETTINGS_DIRECTORY = 1106;
-    public static final int ERROR_CODE_CANT_FIND_ENTRYPOINT = 1107;
-    public static final int ERROR_CODE_INVALID_JTSINI_PATH = 1108;
-    public static final int ERROR_CODE_IO_EXCEPTION_ON_JTSINI = 1109;
-    public static final int ERROR_CODE_INVALID_STATE = 1110;
-    public static final int ERROR_CODE_2FA_LOGIN_TIMED_OUT = 1111;
-    public static final int ERROR_CODE_LOGIN_DIALOG_DISPLAY_TIMEOUT = 1112;
+    public static final int UNHANDLED_EXCEPTION = 1100;
+    public static final int CANT_FIND_CONTROL = 1101;
+    public static final int INCORRECT_NUMBER_OF_ARGS = 1102;
+    public static final int INI_FILE_DOES_NOT_EXIST = 1103;
+    public static final int INVALID_TRADING_MODE = 1104;
+    public static final int INVALID_SETTING_VALUE = 1105;
+    public static final int CANT_CREATE_TWS_SETTINGS_DIR = 1106;
+    public static final int CANT_FIND_ENTRYPOINT = 1107;
+    public static final int INVALID_JTSINI_PATH = 1108;
+    public static final int IO_EXCEPTION_ON_JTSINI = 1109;
+    public static final int INVALID_STATE = 1110;
+    public static final int SECOND_FACTOR_AUTH_LOGIN_TIMED_OUT = 1111;
+    public static final int LOGIN_DIALOG_DISPLAY_TIMED_OUT = 1112;
 }

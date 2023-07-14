@@ -190,7 +190,7 @@ public class DefaultLoginManager extends LoginManager {
         for (int i = 0; i < args.length; i++) {
             Utils.logRawToConsole("arg[" + i + "]=" + args[i]);
         }
-        Utils.exitWithError(ErrorCodes.ERROR_CODE_INCORRECT_NUMBER_OF_ARGUMENTS);
+        Utils.exitWithError(ErrorCodes.INCORRECT_NUMBER_OF_ARGS);
         return false;
     }
 

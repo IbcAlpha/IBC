@@ -79,7 +79,7 @@ public abstract class AbstractLoginHandler implements WindowHandler {
             Utils.logToConsole("Login attempt: " + ++loginAttemptNumber);
             doLogin(window);
         } catch (IbcException e) {
-            Utils.exitWithError(ErrorCodes.ERROR_CODE_CANT_FIND_CONTROL, "could not login: could not find control: " + e.getMessage());
+            Utils.exitWithError(ErrorCodes.CANT_FIND_CONTROL, "could not login: could not find control: " + e.getMessage());
         }
     }
 

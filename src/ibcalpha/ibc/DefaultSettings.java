@@ -103,7 +103,7 @@ public class DefaultSettings extends Settings {
         }
         File finiPath = new File(iniPath);
         if (!finiPath.isFile() || !finiPath.exists()) {
-            Utils.exitWithError(ErrorCodes.ERROR_CODE_INI_FILE_NOT_EXIST,  "ini file \"" + iniPath +
+            Utils.exitWithError(ErrorCodes.INI_FILE_DOES_NOT_EXIST,  "ini file \"" + iniPath +
                                "\" either does not exist, or is a directory.  quitting...");
         }
         return iniPath;
