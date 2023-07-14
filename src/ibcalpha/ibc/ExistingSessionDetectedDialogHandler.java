@@ -36,15 +36,31 @@ public class ExistingSessionDetectedDialogHandler implements WindowHandler {
     }
 
     public void handleWindow(Window window, int eventID) {
-        String setting = Settings.settings().getString("ExistingSessionDetectedAction", "manual");
+        final String MANUAL = "manual";
+        final String PRIMARY = "primary";
+        final String PRIMARY_OVERRIDE = "primaryoverride";
+        final String SECONDARY = "secondary";
+        
+        String setting = Settings.settings().getString("ExistingSessionDetectedAction", "manual").toLowerCase();
+        
+        switch (setting) {
+            case MANUAL:
+            case PRIMARY:
+            case PRIMARY_OVERRIDE:
+            case SECONDARY:
+                break;
+            default:
+                Utils.logToConsole("ExistingSessionDetectedAction has an invalid value: " + setting + ": assuming 'secondary'");
+                setting = SECONDARY;
+        }
 
-        if (setting.equalsIgnoreCase("manual")) {
+        if (setting.equals(MANUAL)) {
             Utils.logToConsole("User must choose whether to continue with this session (scenario 1)");
             // nothing to do
             return;
         }
 
-        if (setting.equalsIgnoreCase("secondary")) {
+        if (setting.equals(SECONDARY)) {
             Utils.logToConsole("End this session and let the other session proceed (scenario 2)");
             if (!SwingUtils.clickButton(window, "Cancel") && !SwingUtils.clickButton(window, "Exit Application")) {
                 Utils.logError("could not handle 'Existing session detected' dialog because the 'Cancel' or 'Exit Application' button wasn't found.");
@@ -73,7 +89,7 @@ public class ExistingSessionDetectedDialogHandler implements WindowHandler {
         */
 
         if (LoginManager.loginManager().getLoginState() != LoginManager.LoginState.LOGGED_IN){
-            /* The login has not yet been completed, so this is a new IBC instance,ie we are
+            /* The login has not yet been completed, so this is a new IBC instance, ie we are
                session B.
 
                We don't know the type of session A, so we continue this one.
@@ -101,19 +117,19 @@ public class ExistingSessionDetectedDialogHandler implements WindowHandler {
         } else {
             /* The login has already been completed so we are session A. The
                case where we are Secondary has already been handled, so we must
-               be either Primary or PrimaryOverride (but we don't know which. If
+               be either Primary or PrimaryOverride. If
                we are primary we must continue this session. If we are
-               secondary, we must allow the other session to proceed in case it
+               PrimaryOverride, we must allow the other session to proceed in case it
                is primary.
             */
-            if (setting.equalsIgnoreCase("primary")) {
+            if (setting.equals(PRIMARY)) {
                 Utils.logToConsole("Continue this session and let the other session exit (scenario 5)");
                 if (!SwingUtils.clickButton(window, "OK") &&
                         !SwingUtils.clickButton(window, "Continue Login") &&
                         !SwingUtils.clickButton(window, "Reconnect This Session"))  {
                     Utils.logError("could not handle 'Existing session detected' dialog because the 'OK' or 'Continue Login' or 'Reconnect This Session' button wasn't found.");
                 }
-            } else {
+            } else if (setting.equals(PRIMARY_OVERRIDE)) {
                 Utils.logToConsole("Other session may be primary, so end this session and let the other one proceed (scenario 6)");
 
                 // ideally we'd just click the "Exit Application" button, but TWS doesn't react to
@@ -121,7 +137,8 @@ public class ExistingSessionDetectedDialogHandler implements WindowHandler {
                 if (!SwingUtils.clickButton(window, "Cancel") && !SwingUtils.clickButton(window, "Exit Application")) {
                     Utils.logError("could not handle 'Existing session detected' dialog because the 'Cancel' or 'Exit Application' button wasn't found.");
                 }
-  //              System.exit(0);
+            } else {
+                Utils.exitWithError(ErrorCodes.INVALID_STATE, "Unexpected setting value: " + setting);
             }
         }
     }
