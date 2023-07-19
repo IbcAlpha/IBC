@@ -90,27 +90,32 @@ up and running properly.
    **self-updating version: IBC DOES NOT WORK with the self-updating version**
    **of TWS.**
 
-2. Download the appropriate IBC distribution ZIP file for your operating
+2. On Linux, you'll need to install xterm if it isn't already installed (to
+   check, enter the command 'xterm' in a terminal session). Check your Linux
+   documentation for how to install xterm. (Note the xterm is not used on
+   macOS.)
+   
+3. Download the appropriate IBC distribution ZIP file for your operating
    system (see the *Where to get IBC* section).
 
-3. Install IBC (see the *Installing IBC* section). Please note
+4. Install IBC (see the *Installing IBC* section). Please note
    that if you already have an existing IBC installation, it's wise to
    rename its folder before installing the new version in case you need to
    revert to it later.
 
-4. Create an encrypted folder called `ibc` in your personal
+5. Create an encrypted folder called `ibc` in your personal
    filestore (see *Protecting the Password* in the *Password Security* section).
 
-5. Copy the configuration file (called `config.ini`) from the
+6. Copy the configuration file (called `config.ini`) from the
    IBC installation folder to the encrypted folder created in
    step 4.
 
-6. Edit the `config.ini` file,using a text editor such as Notepad, to set
+7. Edit the `config.ini` file,using a text editor such as Notepad, to set
    your username and password in the `IbLoginId` and `IbPassword` settings.
    It's advisable to use your paper-trading credentials at first to check
    things out, and for this you'll also need to set the `TradingMode` setting.
 
-7. Check that the correct major version number for TWS is set in the shell
+8. Check that the correct major version number for TWS is set in the shell
    script files in the IBC installation folder: these files are
    `StartTWS.bat` and `StartGateway.bat` on Windows, `twsstart.sh` and
    `gatewaystart.sh` on Unix, `twsstartmacos.sh` and `gatewaystartmacos.sh`
@@ -135,7 +140,7 @@ up and running properly.
    Now open the script files with a text editor and ensure that the
    TWS_MAJOR_VRSN variable is set correctly.
 
-8. At this stage, everything is set up to run IBC with its default
+9. At this stage, everything is set up to run IBC with its default
    settings, which will start TWS and attempt to log it into your
    paper-trading user. It is worthwhile doing this to check that everything
    works before further customising it to suit your needs. To do this, run the
@@ -149,18 +154,18 @@ up and running properly.
    occur. You will be notified of the log file name during the startup
    sequence. Please include this file when reporting problems with IBC.
 
-9. Now you can edit the configuration file `config.ini` to make any further
+10. Now you can edit the configuration file `config.ini` to make any further
    customisations you need. See *Configuring IBC* for further information.
 
-10. If you did not install TWS and IBC in their default locations,
+11. If you did not install TWS and IBC in their default locations,
    and store the configuration file in the recommended location, you will
    have to edit the shell scripts in the IBC installation folder
    accordingly. They contain comments that will help you do this correctly.
 
-11. If you intend to run API programs to connect with TWS, you will need
+1. If you intend to run API programs to connect with TWS, you will need
     to manually edit the API settings in TWS's Global Configuration Dialog.
 
-12. If you want TWS to automatically restart every day during the week without
+13. If you want TWS to automatically restart every day during the week without
     you having to re-authenticate, you'll need to ensure the AutoRestart time
 	is set appropriately in the Lock and Exit section of the Global
 	Configuration dialog. Note that the only alternative to auto-restart is
