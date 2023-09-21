@@ -61,9 +61,7 @@ HIDE=
 #     This file should be in a folder in your personal filestore, so that
 #     other users of your computer can't access it. This folder and its
 #     contents should also be encrypted so that even users with administrator
-#     privileges can't see the contents. Note that you can use the HOMEPATH
-#     environment variable to address the root of your personal filestore
-#     (HOMEPATH is set automatically by Windows).
+#     privileges can't see the contents.
 
 
 #   TRADING_MODE
@@ -104,19 +102,19 @@ HIDE=
 #   TWS_PATH
 #
 #     The folder where Gateway is installed. The Gateway installer always
-#     installs to ~/Jts. Note that even if you have installed from a Gateway
-#     download rather than a TWS download, you should still use this default
-#     setting. It is possible to move the TWS installation to a different
+#     installs to ~/Jts. Note that even if you have installed from a TWS
+#     download rather than a Gateway download, you should still use this default
+#     setting. It is possible to move the Gateway installation to a different
 #     folder, but there are virtually no good reasons for doing so.
 
 
 #   TWS_SETTINGS_PATH
 #
-#     The folder where TWS is to store its settings. By default it uses the
+#     The folder where Gateway is to store its settings. By default it uses the
 #     folder specified in TWS_PATH.
 #
 #     Is is also possible to specify this folder via the IbDir setting in
-#     the configuration file. If TWS is set to auto-restart each day
+#     the configuration file. If Gateway is set to auto-restart each day
 #     (ie without having to log in again each time), then you must specify
 #     the settings folder here rather than via IbDir: this means that these
 #     two settings must either be identical, or the IbDir setting must be
@@ -151,7 +149,7 @@ HIDE=
 #   TWSUSERID
 #   TWSPASSWORD
 #
-#     If your TWS user id and password are not included in your IBC
+#     If your IBKR user id and password are not included in your IBC
 #     configuration file, you can set them here. However you are strongly
 #     advised not to set them here because this file is not normally in a
 #     protected location.
@@ -180,7 +178,7 @@ HIDE=
 #   HIDE
 #
 #     If set to YES or TRUE, the diagnostic window that contains information
-#     about the running TWS, and where to find the log file, will be iconified.
+#     about the running Gateway, and where to find the log file, will be iconified.
 #     If not set, or set to any other value, the window will be displayed.
 #     Values are not case-sensitive so for example yEs and yes are interpeted
 #     as YES. (Note that when the -inline argument is supplied, this setting

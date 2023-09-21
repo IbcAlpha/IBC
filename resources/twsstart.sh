@@ -5,7 +5,7 @@
 #   This command file starts the Interactive Brokers' Trader Workstation.     +
 #                                                                             +
 #   If you run it without any arguments it will display a new window showing  +
-#   useful information and then start the Gateway. If you supply -inline as   +
+#   useful information and then start TWS. If you supply -inline as           +
 #   the first argument, the information will be displayed in the current      +
 #   terminal window.                                                          +
 #                                                                             +
@@ -59,9 +59,7 @@ HIDE=
 #     This file should be in a folder in your personal filestore, so that
 #     other users of your computer can't access it. This folder and its
 #     contents should also be encrypted so that even users with administrator
-#     privileges can't see the contents. Note that you can use the HOMEPATH
-#     environment variable to address the root of your personal filestore
-#     (HOMEPATH is set automatically by Windows).
+#     privileges can't see the contents.
 
 
 #   TRADING_MODE
@@ -149,7 +147,7 @@ HIDE=
 #   TWSUSERID
 #   TWSPASSWORD
 #
-#     If your TWS user id and password are not included in your IBC
+#     If your IBKR user id and password are not included in your IBC
 #     configuration file, you can set them here (do not encrypt the password).
 #     However you are strongly advised not to set them here because this file
 #     is not normally in a protected location.

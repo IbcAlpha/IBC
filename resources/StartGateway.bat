@@ -9,10 +9,10 @@ setlocal enableextensions enabledelayedexpansion
 ::   interface.                                                                +
 ::                                                                             +
 ::   If you run it without any arguments it will display a new window showing  +
-::   useful information and then start TWS. If you supply /INLINE as the first +
-::   argument, the information will be displayed in the current command prompt +
-::   window. (If you are using Task Scheduler to run this, you MUST supply the +
-::   /INLINE argument to ensure correct operation.)                            +
+::   useful information and then start Gateway. If you supply /INLINE as the   +
+::   first argument, the information will be displayed in the current command  +
+::   prompt window. (If you are using Task Scheduler to run this, you MUST     +
+:::  supply the INLINE argument to ensure correct operation.)                  +
 ::                                                                             +
 ::   If you supply /COLOR:<colorcode> as an argument, the window displaying    +
 ::   the information has its colors set as specified by <colorcode>, which     +
@@ -116,17 +116,17 @@ set HIDE=
 
 ::   TWS_PATH
 ::
-::     The folder where TWS is installed. The TWS installer always installs to 
-::     C:\Jts. Note that even if you have installed from a Gateway download
-::     rather than a TWS download, you should still use this default setting.
-::     It is possible to move the TWS installation to a different folder, but
-::     there are virtually no good reasons for doing so.
+::     The folder where Gateway is installed. The Gateway installer always
+::     installs to C:\Jts. Note that even if you have installed from a TWS
+::     download rather than a Gateway download, you should still use this
+::     default setting. It is possible to move the Gateway installation to a
+::     different folder, but there are virtually no good reasons for doing so.
 
 
 ::   TWS_SETTINGS_PATH
 ::
-::     The folder where TWS is to store its settings. By default it uses the
-::     folder specified in TWS_PATH.
+::     The folder where Gateway is to store its settings. By default it uses
+::     the folder specified in TWS_PATH.
 ::
 ::     Is is also possible to specify this folder via the IbDir setting in
 ::     the configuration file. If TWS is set to auto-restart each day
@@ -164,7 +164,7 @@ set HIDE=
 ::   TWSUSERID
 ::   TWSPASSWORD
 ::
-::     If your TWS user id and password are not included in your IBC 
+::     If your IBKR user id and password are not included in your IBC 
 ::     configuration file, you can set them here. However you are strongly 
 ::     advised not to set them here because this file is not normally in a 
 ::     protected location.
@@ -193,7 +193,7 @@ set HIDE=
 ::   HIDE
 ::
 ::     If set to YES or TRUE, the diagnostic window that contains information 
-::     about the running TWS, and where to find the log file, will be minimized 
+::     about the running Gateway, and where to find the log file, will be minimized 
 ::     to the taskbar. If not set, or set to any other value, the window will be 
 ::     displayed. Values are not case-sensitive so for example yEs and yes will 
 ::     be interpeted as YES. (Note that when the /INLINE argument is supplied,

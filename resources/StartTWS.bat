@@ -112,7 +112,7 @@ set HIDE=
 ::   TWS_PATH
 ::
 ::     The folder where TWS is installed. The TWS installer always installs to 
-::     C:\Jts. Note that even if you have installed from a Gateway download
+::     C:\Jts. Note that even if you have installed from a TWS download
 ::     rather than a TWS download, you should still use this default setting.
 ::     It is possible to move the TWS installation to a different folder, but
 ::     there are virtually no good reasons for doing so.
@@ -160,7 +160,7 @@ set HIDE=
 ::   TWSUSERID
 ::   TWSPASSWORD
 ::
-::     If your TWS user id and password are not included in your IBC 
+::     If your IBKR user id and password are not included in your IBC 
 ::     configuration file, you can set them here. However you are strongly 
 ::     advised not to set them here because this file is not normally in a 
 ::     protected location.
