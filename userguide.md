@@ -92,7 +92,7 @@ up and running properly.
 
 2. On Linux, you'll need to install xterm if it isn't already installed (to
    check, enter the command 'xterm' in a terminal session). Check your Linux
-   documentation for how to install xterm. (Note the xterm is not used on
+   documentation for how to install xterm. (Note that xterm is not used on
    macOS.)
    
 3. Download the appropriate IBC distribution ZIP file for your operating
@@ -162,7 +162,7 @@ up and running properly.
    have to edit the shell scripts in the IBC installation folder
    accordingly. They contain comments that will help you do this correctly.
 
-1. If you intend to run API programs to connect with TWS, you will need
+12. If you intend to run API programs to connect with TWS, you will need
     to manually edit the API settings in TWS's Global Configuration Dialog.
 
 13. If you want TWS to automatically restart every day during the week without
