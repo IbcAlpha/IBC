@@ -18,7 +18,7 @@
 #=============================================================================+
 
 
-TWS_MAJOR_VRSN=1019
+TWS_MAJOR_VRSN=10.19
 IBC_INI=~/ibc/config.ini
 TRADING_MODE=
 TWOFA_TIMEOUT_ACTION=exit
