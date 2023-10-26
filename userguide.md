@@ -569,6 +569,10 @@ for 'Run whether user is logged on or not'.
 Remember also to change the task settings to prevent Windows automatically
 ending it after a certain time.
 
+If you want to stop using a Scheduled Task, without losing its definition, you
+can right click on the task's entry in the Task Scheduler console and click
+'Disable'. Clicking 'Enable' will make it available again.
+
 You can set the AutoRestart time in the Lock and Exit section of the
 configuration dialog: this causes TWS/Gateway to automatically shut down and
 restart without requiring re-authentication at the specified time. When the
@@ -617,14 +621,46 @@ that if `/INLINE` is not used, the start scripts create a new window to run
 IBC in, and Task Scheduler is not aware of this, so the task ends as soon as
 this new window has been created.
 
-A sample scheduled task is included in the IBC distribution ZIP,
-called `Start TWS Live (daily).xml`. You can import this into your Task
-Scheduler if you are running Windows. After importing it, you will need to
-enable it and change the user account it runs under. This task starts TWS daily
-from Sunday to Thursday at 22:15, and assumes that TWS is set to autologoff
-shortly before this. It restarts the task every 10 minutes. You can adjust
-these times to suit your needs.
+A sample scheduled task is included in the IBC distribution ZIP, called `Start
+TWS (autorestart).xml`. You can import this into your Task Scheduler if you
+are running Windows. After importing it, you will need to enable it and change
+the user account it runs under. 
 
+Here is a description of how this task works. It is easiest to understand this
+if you first import the task and view the details in the Task Scheduler
+console, rather than examining the xml file.
+
+* The task starts TWS on Sunday at 22:15 (there is nothing special about this
+time: choose whatever is convenient for you). As far as Task Scheduler is
+concerned, the task is the instantiation of the StartTWS.bat script (rather
+than the instantiation of IBC by the script), and when auto-restart is
+configured the script instantiation persists right through the various auto-
+restarts until TWS is shut down without auto-restart. Thus once the task is
+started it continues until the script ends, for example as a result of normal
+user exit from TWS (eg File | Exit), or a STOP command sent to IBC's command
+server, or a system crash.
+
+* If there is a premature exit during the week, we would like the task to be
+restarted automatically. So the task specification tells Task Scheduler to
+restart the task every 10 minutes, but only if there isn't an instance already
+running.
+
+* We don't want the task to repeat forever, so we limit the repetition to just
+less than 1 day (23 hours 55 mins).
+
+* We add extra starts for Monday to Thursday, at the same time as the 'main'
+start (ie 22:15). This, coupled with the repetition limit, ensures that the
+task is restarted if it ends at any point up to 22:10 on Friday.
+
+* We also allow the task to be started 'on demand', ie by running it manually
+from the Task Scheduler console.
+
+This is not a complete description of all the task's properties, but it should
+be enough for you to undertand the principles behind it. There are other
+properties that you may want to consider using: for example, you could add
+another trigger to start the task as soon as the relevant user logs on.
+ 
+ 
 ### Running with crontab (Linux only)
 
 On Linux you can use `crontab` to run `twsstart.sh` or `gatewaystart.sh`
