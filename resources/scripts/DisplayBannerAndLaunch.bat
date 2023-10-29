@@ -5,7 +5,9 @@ call :SetScreenColors %1
 
 :: get the IBC version
 
-for /f "tokens=1 delims=" %%i in (%IBC_PATH%\version) do set IBC_VRSN=%%i
+pushd "%IBC_PATH%"
+for /f "tokens=1 delims=" %%i in (version) do set IBC_VRSN=%%i
+popd
 
 echo +==============================================================================
 echo +

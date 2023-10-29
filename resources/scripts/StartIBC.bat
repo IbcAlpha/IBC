@@ -341,7 +341,7 @@ echo Generating the classpath
 set PHASE=Generating the classpath
 
 set IBC_CLASSPATH=
-for %%i in (%JARS%\*.jar) do (
+for %%i in ("%JARS%\*.jar") do (
     if not "!IBC_CLASSPATH!"=="" set IBC_CLASSPATH=!IBC_CLASSPATH!;
     set IBC_CLASSPATH=!IBC_CLASSPATH!%%i
 )
@@ -355,7 +355,7 @@ echo Generating the JAVA VM options
 set PHASE=Generating the JAVA VM options
 
 set JAVA_VM_OPTIONS=
-for /f "tokens=1 delims= " %%i in (%VMOPTIONS_SOURCE%) do (
+for /f "usebackq tokens=1 delims= " %%i in ("%VMOPTIONS_SOURCE%") do (
 	set TOKEN=%%i
 	if not "!TOKEN!"=="" (
 		if not "!TOKEN:~0,1!"=="#" set JAVA_VM_OPTIONS=!JAVA_VM_OPTIONS! %%i
@@ -365,7 +365,7 @@ set JAVA_VM_OPTIONS=%JAVA_VM_OPTIONS% -Dtwslaunch.autoupdate.serviceImpl=com.ib.
 set JAVA_VM_OPTIONS=%JAVA_VM_OPTIONS% -Dchannel=latest
 set JAVA_VM_OPTIONS=%JAVA_VM_OPTIONS% -Dexe4j.isInstall4j=true
 set JAVA_VM_OPTIONS=%JAVA_VM_OPTIONS% -Dinstall4jType=standalone
-set JAVA_VM_OPTIONS=%JAVA_VM_OPTIONS% -DjtsConfigDir=%TWS_SETTINGS_PATH%
+set JAVA_VM_OPTIONS=%JAVA_VM_OPTIONS% -DjtsConfigDir="%TWS_SETTINGS_PATH%"
 
 echo Java VM Options=%JAVA_VM_OPTIONS%
 echo.
@@ -380,14 +380,14 @@ set PHASE=Determining the location of java.exe
 
 if not defined JAVA_PATH (
 	if exist "%INSTALL4J%\pref_jre.cfg" (
-		for /f "tokens=1 delims=" %%i in (%INSTALL4J%\pref_jre.cfg) do set JAVA_PATH=%%i\bin
+		for /f "usebackq tokens=1 delims=" %%i in ("%INSTALL4J%\pref_jre.cfg") do set JAVA_PATH=%%i\bin
 		if not exist "!JAVA_PATH!\java.exe" set JAVA_PATH=
 	)
 )
 
 if not defined JAVA_PATH (
 	if exist "%INSTALL4J%\inst_jre.cfg" (
-		for /f "tokens=1 delims=" %%i in (%INSTALL4J%\inst_jre.cfg) do set JAVA_PATH=%%i\bin
+		for /f "usebackq tokens=1 delims=" %%i in ("%INSTALL4J%\inst_jre.cfg") do set JAVA_PATH=%%i\bin
 		if not exist "!JAVA_PATH!\java.exe" set JAVA_PATH=
 	)
 )
@@ -401,7 +401,6 @@ if not defined JAVA_PATH (
 	set ERROR=%E_NO_JAVA%
 	goto :err
 )
-
 echo Location of java.exe=%JAVA_PATH%
 echo.
 
@@ -519,7 +518,7 @@ echo Finding autorestart file
 set AUTORESTART_OPTION=
 set F=
 set RESTART_NEEDED=
-for /f "usebackq" %%I in (`where /R %TWS_SETTINGS_PATH% autorestart`) do (
+for /f "usebackq delims=" %%I in (`where /R "%TWS_SETTINGS_PATH%" autorestart`) do (
 	set X=%%~dpI.
 	set Y=!X:%TWS_SETTINGS_PATH%=!
 	for /f "tokens=1,2 delims=\" %%B in ("!!Y!!") do (
