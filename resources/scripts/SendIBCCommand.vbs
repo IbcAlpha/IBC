@@ -5,19 +5,22 @@ set OBJECT=WScript.CreateObject("WScript.Shell")
 
 OBJECT.AppActivate WScript.Arguments(0)
 
-' STOP IBC
+' Send command
 OBJECT.SendKeys UCase(WScript.Arguments(1)) & "{ENTER}" 
 
-' Send an EXIT command if required (note that STOP and
-' RESTART command automatically close the telnet
+' Send an EXIT command if required (note that for STOP and
+' RESTART commands IBC automatically closes the telnet
 ' connection)
 
-if WScript.Arguments.Count=3 then
-	if UCASE(WScript.Arguments(2)) = "EXIT" then OBJECT.SendKeys "EXIT{ENTER}" 
+if WScript.Arguments(1) = "STOP" then
+elseif WScript.Arguments(1) = "RESTART" then
+else
+	WScript.sleep 200 
+	OBJECT.SendKeys "EXIT{ENTER}" 
 end if
 
+' terminate the telnet session
 WScript.sleep 200 
+OBJECT.SendKeys "q" 
 
-' close telnet window
-OBJECT.SendKeys "q{ENTER}" 
 

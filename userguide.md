@@ -826,6 +826,85 @@ TWS_SETTINGS_PATH variable in the IBC script to ensure that the same settings
 are used for both instances.
 
 
+### Command Server
+
+IBC incorporates a command server that enables some aspects of its operation to
+be influenced by commands from external sources.
+
+To issue a command to the command server, the command source must first
+establish a TCP/IP connection to the relevant port, which is specified in the 
+`CommandServerPort` setting in `config.ini`.
+
+The source then sends the required command (see below) as plain text, and may
+then read the socket for any returned data.
+
+The source may send more than one consecutive command. When it is finished, it
+should send an EXIT command (though this is not necessary after a STOP command
+since that closes the socket automatically). 
+
+A simple way to use the command server is to make use of the `telnet` operating
+system command. Simple scripts are provided in the download zip for each of the
+commands. To use these commands, you should first edit the SendCommand.bat (for
+Windows) or commandsend.sh (for Unix) files to ensure the IP address and port
+number are correct.
+
+The available commands are listed below. Note that none of these commands have
+any parameters.
+
+STOP
+
+>  Tells IBC to shut down TWS tidily, as if the user had invoked the File | Exit
+>  menu command.
+
+RESTART
+
+> Initiates an auto-restart of TWS, as if the time specified in TWS's auto-
+> restart setting (in the Lock and Exit section of the Global Configuration
+> Dialog) has arrived. Note that auto-restart (and hence the RESTART command)
+> does not require 2nd factor authentication because the credentials from the
+> current session are re-used. Note that this command canot be used to bypass
+> the IBKR requirement that TWS be shut down completely at some point during
+> Sundays.
+  
+> For TWS, the RESTART command is implemented by using the File | Restart...
+> menu command, and the restart is initiated immediately.
+  
+> For the Gateway, this is not possible, because it does not have this menu
+> command. So in this case, IBC sets the auto-restart value in the Lock and
+> Exit section of the Global Configuration Dialog: the value used is the start
+> of the next minute if less than 58 seconds into the current minute; otherwise
+> the start of the minute after that. Gateway also displays a transparent
+> overlay with a countdown timer over the Gateway main window.
+  
+> Note that for Gateway this auto-restart time will still be in force after the
+> restart: to avoid further restarts at that time, you should use the
+> `AutoRestartTime` setting in `config.ini' to override the carried-forward
+> time. Alternatively issue another RESTART command after restart has completed
+> to set the auto-restart time to its usual value.
+
+ENABLEAPI 
+
+> Ensures that the ‘Enable ActiveX and Socket Clients’ checkbox in the API
+> configuration is set. Note that this command is a leftover from the earliest
+> days of IBC, and is of little (if any) use nowadays.
+
+RECONNECTDATA
+
+> Tells TWS/Gateway to refresh all its market data connections. This is the
+> same as the user pressing Ctrl-Alt-F.
+
+RECONNECTACCOUNT
+
+> Tells TWS/Gateway to reconnect to the IB login server. This is the same as
+> the user pressing Ctrl-Alt-R.
+  
+EXIT
+
+> Closes the connection to the command server.
+
+
+
+
 ### Any Questions?
 
 If you need assistance with running IBC, or have any queries or
