@@ -5,7 +5,7 @@ IMPORTANT
 >NOTES REGARDING AUTO-RESTART IN TWS/GATEWAY 1018 and later versions.
 >
 > Starting with version 3.15.0, IBC now has the ability to allow TWS/Gateway to
-> use the autorestart mechanism originally introduced in version 974/975.
+> use the autorestart mechanism originally introduced in TWS version 974/975.
 >
 > This means that you can now set TWS/Gateway to run all week with a single 
 > login at the start of the week, under the control of IBC.
@@ -205,7 +205,7 @@ Before running IBC, you will need to download and install the **offline**
 version of Trader Workstation from the
 [Interactive Brokers](http://www.interactivebrokers.com/) website.
 
-The location of the TWS dowloads page on IBKR's website varies from time to
+The location of the TWS downloads page on IBKR's website varies from time to
 time, and from country to country.  At the time of writing, on IBKR's US website
 (linked above) you need to click the `Trading` menu near the top of the page,
 then select `Platforms`, and then click `Download Software` under the Trader
