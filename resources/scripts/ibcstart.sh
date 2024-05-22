@@ -334,6 +334,10 @@ java_vm_options="$java_vm_options -Dexe4j.isInstall4j=true"
 java_vm_options="$java_vm_options -Dinstall4jType=standalone"
 java_vm_options="$java_vm_options -DjtsConfigDir=${tws_settings_path}"
 
+ibc_session_id=$(mktemp -u XXXXXXXX)
+java_vm_options="$java_vm_options -Dibcsessionid=$ibc_session_id"
+
+
 function find_auto_restart {
 	local autorestart_path=""
 	local f=""
@@ -510,6 +514,10 @@ do
 
 	if [[ $exit_code -eq $E_LOGIN_DIALOG_DISPLAY_TIMEOUT ]]; then 
 		:
+	elif [[ -e "$tws-settings-path/COLDRESTART$ibc_session_id" ]]; then
+		rm "$tws-settings-path/COLDRESTART$ibc_session_id"
+		autorestart_option=
+		echo "IBC will cold-restart shortly"
 	else
 		find_auto_restart
 		if [[ -n $restarted_needed ]]; then

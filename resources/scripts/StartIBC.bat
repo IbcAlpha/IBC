@@ -367,6 +367,9 @@ set JAVA_VM_OPTIONS=%JAVA_VM_OPTIONS% -Dexe4j.isInstall4j=true
 set JAVA_VM_OPTIONS=%JAVA_VM_OPTIONS% -Dinstall4jType=standalone
 set JAVA_VM_OPTIONS=%JAVA_VM_OPTIONS% -DjtsConfigDir="%TWS_SETTINGS_PATH%"
 
+set IBC_SESSION_ID="%RANDOM%%RANDOM%"
+set JAVA_VM_OPTIONS=%JAVA_VM_OPTIONS% -Dibcsessionid=%IBC_SESSION_ID%
+
 echo Java VM Options=%JAVA_VM_OPTIONS%
 echo.
 
@@ -494,6 +497,14 @@ if defined RESTART_NEEDED (
 	set RESTART_NEEDED=
 	echo IBC will autorestart shortly
 	ping localhost -n 2  >NUL
+	goto :startIBC
+)
+
+echo Check for cold restart
+if exist "%TWS_SETTINGS_PATH%\COLDRESTART%IBC_SESSION_ID%" (
+	del "%TWS_SETTINGS_PATH%\COLDRESTART%IBC_SESSION_ID%"
+	set AUTORESTART_OPTION=
+	echo IBC will cold-restart shortly
 	goto :startIBC
 )
 

@@ -343,6 +343,41 @@ public class IbcTws {
         
         return windowHandlers;
     }
+    
+    private static Date getColdRestartTime() {
+        String coldRestartTimeSetting = Settings.settings().getString("ColdRestartTime", "");
+        if (coldRestartTimeSetting.length() == 0) {
+            return null;
+        } 
+
+            int shutdownDayOfWeek = Calendar.SUNDAY;
+            int shutdownHour;
+            int shutdownMinute;
+            Calendar cal = Calendar.getInstance();
+            try {
+                try {
+                    cal.setTime((new SimpleDateFormat("HH:mm")).parse(coldRestartTimeSetting));
+                } catch (ParseException e) {
+                    throw e;
+                }
+                shutdownHour = cal.get(Calendar.HOUR_OF_DAY);
+                shutdownMinute = cal.get(Calendar.MINUTE);
+                cal.setTimeInMillis(System.currentTimeMillis());
+                cal.set(Calendar.HOUR_OF_DAY, shutdownHour);
+                cal.set(Calendar.MINUTE, shutdownMinute);
+                cal.set(Calendar.SECOND, 0);
+                cal.add(Calendar.DAY_OF_MONTH,
+                        (shutdownDayOfWeek + 7 -
+                         cal.get(Calendar.DAY_OF_WEEK)) % 7);
+                if (!cal.getTime().after(new Date())) {
+                    cal.add(Calendar.DAY_OF_MONTH, 7);
+                }
+            } catch (ParseException e) {
+                Utils.exitWithError(ErrorCodes.INVALID_SETTING_VALUE, 
+                                    "Invalid ColdRestartTime setting: '" + coldRestartTimeSetting + "'; format should be: <hh:mm>   eg 13:00");
+            }
+            return cal.getTime();
+    }
 
     private static Date getShutdownTime() {
         String shutdownTimeSetting = Settings.settings().getString("ClosedownAt", "");
@@ -447,17 +482,27 @@ public class IbcTws {
         MyCachedThreadPool.getInstance().execute(new CommandServer());
     }
 
+    private static boolean isColdRestart = false;
     private static void startShutdownTimerIfRequired() {
         Date shutdownTime = getShutdownTime();
-        if (! (shutdownTime == null)) {
-            long delay = shutdownTime.getTime() - System.currentTimeMillis();
-            Utils.logToConsole(SessionManager.isGateway() ? "Gateway" : "TWS" +
-                            " will be shut down at " +
-                           (new SimpleDateFormat("yyyy/MM/dd HH:mm")).format(shutdownTime));
-            MyScheduledExecutorService.getInstance().schedule(() -> {
-                MyCachedThreadPool.getInstance().execute(new StopTask(null));
-            }, delay, TimeUnit.MILLISECONDS);
+        Date coldRestartTime = getColdRestartTime();
+        if (shutdownTime == null && coldRestartTime == null) return;
+        if (shutdownTime == null && coldRestartTime != null) {
+            isColdRestart = true;
+            shutdownTime = coldRestartTime;
+        } else if (shutdownTime != null && coldRestartTime != null) {
+            if (coldRestartTime.before(shutdownTime)) {
+                isColdRestart = true;
+                shutdownTime = coldRestartTime;
+            }
         }
+        long delay = shutdownTime.getTime() - System.currentTimeMillis();
+        Utils.logToConsole(SessionManager.isGateway() ? "Gateway" : "TWS" +
+                        " will be " + (isColdRestart ? "cold restarted" : "shut down") + " at " +
+                       (new SimpleDateFormat("yyyy/MM/dd HH:mm")).format(shutdownTime));
+        MyScheduledExecutorService.getInstance().schedule(() -> {
+            MyCachedThreadPool.getInstance().execute(new StopTask(null, isColdRestart, "ColdRestartTime setting"));
+        }, delay, TimeUnit.MILLISECONDS);
     }
 
     private static void startTws() {

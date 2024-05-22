@@ -18,6 +18,7 @@
 
 package ibcalpha.ibc;
 
+import java.io.File;
 import java.util.Arrays;
 
 class StopTask
@@ -26,9 +27,13 @@ class StopTask
     private static final SwitchLock _Running = new SwitchLock();
 
     private final CommandChannel mChannel;
+    private final boolean mForceColdRestart;
+    private final String mReason;
 
-    StopTask(final CommandChannel channel) {
+    StopTask(final CommandChannel channel, final boolean forceColdRestart, final String reason) {
         mChannel = channel;
+        mForceColdRestart = forceColdRestart;
+        mReason = reason;
     }
 
     @Override
@@ -42,10 +47,23 @@ class StopTask
 
         try {
             writeInfo("Closing IBC");
-            stop();
+            if (mForceColdRestart) createColdRestartFlagFile();
+            stop(mReason);
         } catch (Exception ex) {
             writeNack(ex.getMessage());
             Utils.exitWithException(ErrorCodes.UNHANDLED_EXCEPTION, ex);
+        }
+    }
+    
+    private void createColdRestartFlagFile() {
+        try {
+        new File(System.getProperty("jtsConfigDir") + 
+                 File.separator + 
+                 "COLDRESTART" + 
+                 System.getProperty("ibcsessionid"))
+                .createNewFile();
+        } catch (java.io.IOException e) {
+            Utils.exitWithException(ErrorCodes.UNHANDLED_EXCEPTION, e);
         }
     }
 
@@ -54,9 +72,9 @@ class StopTask
         return _Running.query();
     }
 
-    private void stop() {
+    private void stop(String reason) {
         try {
-            writeAck("Shutting down");
+            writeAck("Shutting down: " + reason);
             if (mChannel != null) mChannel.close();
             if (LoginManager.loginManager().getLoginState() != LoginManager.LoginState.LOGGED_IN) {
                 CommandServer.commandServer().shutdown();
