@@ -108,7 +108,7 @@ class CommandDispatcher
     }
 
     private void handleStopCommand() {
-        (new StopTask(mChannel)).run();     // run on the current thread
+        (new StopTask(mChannel, false, "STOP command")).run();     // run on the current thread
     }
     
     private void handleRestartCommand() {

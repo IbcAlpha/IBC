@@ -242,6 +242,22 @@ class SwingUtils {
         return null;
     }
 
+    static String getTexts(Container container) {
+        ComponentIterator iter = new ComponentIterator(container);
+        String s = "";
+        while (iter.hasNext()) {
+            Component component = iter.next();
+            if (component instanceof JTextArea) {
+                String content = ((JTextArea)component).getText();
+                if (content != null) {
+                    if (s.length() != 0) s += NEWLINE;
+                    s += content;
+                }
+            }
+        }
+        return s;
+    }
+
     /**
      * Traverses a container hierarchy and returns the ith JTextField
      * (0 based indexing).

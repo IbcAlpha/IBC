@@ -90,7 +90,6 @@ public abstract class LoginManager {
                 break;
             case LOGGED_IN:
                 Utils.logToConsole("Login has completed");
-                loginFrame.setVisible(false);
                 if (shutdownAfterTimeTask != null) {
                     shutdownAfterTimeTask.cancel(false);
                     shutdownAfterTimeTask = null;

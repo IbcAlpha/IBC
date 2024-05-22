@@ -43,10 +43,13 @@ public class LoginFailedDialogHandler implements WindowHandler  {
         if (eventID == WindowEvent.WINDOW_OPENED) {
             Utils.logToConsole("Login failed");
             LoginManager.loginManager().setLoginState(LoginManager.LoginState.LOGIN_FAILED);
-        } else {
-            if ((LoginManager.loginManager().getLoginFrame().getExtendedState() & Frame.ICONIFIED) == Frame.ICONIFIED) {
-                Utils.logToConsole("Ensure login frame visible");
-                LoginManager.loginManager().getLoginFrame().setExtendedState(Frame.NORMAL);
+
+            Utils.logToConsole("Ensure login frame visible");
+            LoginManager.loginManager().getLoginFrame().setVisible(true);
+            LoginManager.loginManager().getLoginFrame().setExtendedState(Frame.NORMAL);
+
+            if (! SwingUtils.clickButton(window, "OK")) {
+                Utils.logError("could not dismiss Login Failed dialog because we could not find the OK button");
             }
         }
     }

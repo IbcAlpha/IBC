@@ -22,7 +22,6 @@ import java.awt.Window;
 import java.awt.event.WindowEvent;
 import java.util.concurrent.TimeUnit;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
@@ -37,7 +36,7 @@ public abstract class AbstractLoginHandler implements WindowHandler {
                     case LOGGED_IN:
                         return false;
                     case LOGIN_FAILED:
-                        return false;
+                        return true;
                     case LOGGING_IN:
                         return false;
                     case TWO_FA_IN_PROGRESS:
@@ -84,7 +83,6 @@ public abstract class AbstractLoginHandler implements WindowHandler {
     }
 
     private void doLogin(final Window window) throws IbcException {
-        final boolean readOnlyLoginRequired = LoginManager.loginManager().readonlyLoginRequired();
         
         // this JLabel is only present for the 1016+ versions
         final JLabel initialTitleLabel = SwingUtils.findLabel(window, "LOGIN");
@@ -94,24 +92,23 @@ public abstract class AbstractLoginHandler implements WindowHandler {
             LoginManager.loginManager().setLoginState(LoginManager.LoginState.LOGGING_IN);
             SwingUtils.clickButton(loginButton);
         });
-
-        if (readOnlyLoginRequired && initialTitleLabel != null) {
+        
+        String tradingMode = TradingModeManager.tradingModeManager().getTradingMode();
+        if (tradingMode.equalsIgnoreCase(TradingModeManager.TRADING_MODE_PAPER)) {
+            // paper trading mode doesn't use Second Factor Authentication, so nothing
+            // to do here
+        } else if (initialTitleLabel != null) {
             // Starting with TWS 1016, there is no longer a separate Second Factor
             // Authentication dialog. Instead, TWS replaces the Login frame's controls
             // with the controls that used to be in the 2FA dialog (so the Login frame
             // effectively becomes the 2FA frame). This doesn't generate any events
             // that IBC normally handles, so it goes undetected, and thus IBC doesn't
-            // know when to click the 'Enter Read Only' button. 
+            // know when to process the Second Factor Authentication dialog. 
             //
             // To avoid this problem, we make a periodic check that the JLabel that
             // initially contained "LOGIN" has changed to "SECOND FACTOR AUTHENTICATION":
             // when this happens, we can pass the window to the SecondFactorAuthenticationDialogHandler
             // to be actioned.
-            //
-            // (Note that if we don't want readonly login and the 2FA prompt is handled at
-            // the IBKR Mobile app, the event generated when the Login frame closes is
-            // actually detected by the SecndFactorAuthenticationDialogHandler, so we
-            // don't need to do anything special for that.)
 
             Utils.logToConsole("Waiting for Login frame to become SecondFactorAuthenticationDialog");
             MyScheduledExecutorService.getInstance().schedule(
@@ -164,7 +161,7 @@ public abstract class AbstractLoginHandler implements WindowHandler {
         if (! SwingUtils.setTextField(window, credentialIndex, value)) throw new IbcException(credentialName);
     }
 
-    protected final void setTradingMode(final Window window) {
+    protected final boolean setTradingMode(final Window window) {
         String tradingMode = TradingModeManager.tradingModeManager().getTradingMode();
 
         if (SwingUtils.findToggleButton(window, "Live Trading") != null && 
@@ -176,22 +173,30 @@ public abstract class AbstractLoginHandler implements WindowHandler {
             } else {
                 SwingUtils.findToggleButton(window, "Paper Trading").doClick();
             }
+            return true;
         } else {
-            JComboBox<?> tradingModeCombo;
-            if (Settings.settings().getBoolean("FIX", false)) {
-                tradingModeCombo = SwingUtils.findComboBox(window, 1);
-            } else {
-                tradingModeCombo = SwingUtils.findComboBox(window, 0);
-            }
-
-            if (tradingModeCombo != null ) {
-                Utils.logToConsole("Setting Trading mode = " + tradingMode);
-                if (tradingMode.equalsIgnoreCase(TradingModeManager.TRADING_MODE_LIVE)) {
-                    tradingModeCombo.setSelectedItem("Live Trading");
-                } else {
-                    tradingModeCombo.setSelectedItem("Paper Trading");
-                }
-            }
+            // the dialog appears to have been deconstructed, stop tidily
+            // and do a cold restart
+            
+            Utils.logToConsole("Login dialog has been invslidated - initiate cold restart");
+            GuiDeferredExecutor.instance().execute(new StopTask(null, true, "Login Error dialog encountered"));
+            return false;
+            
+//            JComboBox<?> tradingModeCombo;
+//            if (Settings.settings().getBoolean("FIX", false)) {
+//                tradingModeCombo = SwingUtils.findComboBox(window, 1);
+//            } else {
+//                tradingModeCombo = SwingUtils.findComboBox(window, 0);
+//            }
+//
+//            if (tradingModeCombo != null ) {
+//                Utils.logToConsole("Setting Trading mode = " + tradingMode);
+//                if (tradingMode.equalsIgnoreCase(TradingModeManager.TRADING_MODE_LIVE)) {
+//                    tradingModeCombo.setSelectedItem("Live Trading");
+//                } else {
+//                    tradingModeCombo.setSelectedItem("Paper Trading");
+//                }
+//            }
         }
     }
     

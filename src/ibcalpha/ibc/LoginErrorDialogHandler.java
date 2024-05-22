@@ -18,6 +18,7 @@
 
 package ibcalpha.ibc;
 
+import java.awt.Frame;
 import java.awt.Window;
 import java.awt.event.WindowEvent;
 import javax.swing.JDialog;
@@ -36,9 +37,28 @@ public class LoginErrorDialogHandler implements WindowHandler {
 
     @Override
     public void handleWindow(Window window, int eventID) {
-        if (SwingUtils.clickButton(window, "OK")) {
-        } else {
-            Utils.logError("could not retry Login because we could not find the OK button");
+        Utils.logToConsole("Login error message:" + SwingUtils.NEWLINE + SwingUtils.getTexts(window));
+        if (SwingUtils.findTextArea(window, "Server disconnected, please try again") != null) {
+            LoginManager.loginManager().setLoginState(LoginManager.LoginState.LOGIN_FAILED);
+
+            Utils.logToConsole("Ensure login frame visible");
+            LoginManager.loginManager().getLoginFrame().setVisible(true);
+            LoginManager.loginManager().getLoginFrame().setExtendedState(Frame.NORMAL);
+            if (SwingUtils.clickButton(window, "OK")) {
+            } else {
+                Utils.logError("could not dismiss Login Error dialog because we could not find the OK button");
+            }
+            return;
+        }
+        if (SwingUtils.findTextArea(window, "Login failed - Soft token=0 received instead of expected permanent") != null) {
+            // this means that the authentication credentials have expired, so a full 2FA login is needed
+
+            // stop tidily and do a cold restart
+            GuiDeferredExecutor.instance().execute(new StopTask(null, true, "Cold restart after Login Error dialog encountered"));
+        
+            if (! SwingUtils.clickButton(window, "OK")) {
+                Utils.logError("could not dismiss Login Error dialog because we could not find the OK button");
+            }
         }
     }
 
@@ -46,10 +66,7 @@ public class LoginErrorDialogHandler implements WindowHandler {
     public boolean recogniseWindow(Window window) {
         if (! (window instanceof JDialog)) return false;
 
-        return (SwingUtils.titleContains(window, "Login Error") &&
-                    SwingUtils.findTextArea(window, "Login failed - Server disconnected, please try again") != null) 
-                ||
-                (SwingUtils.findTextArea(window, "Connection to server failed: Server disconnected, please try again") != null);
+        return (SwingUtils.titleContains(window, "Login Error"));
     }
     
 }
