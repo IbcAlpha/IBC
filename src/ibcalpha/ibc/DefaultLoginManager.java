@@ -35,7 +35,7 @@ public class DefaultLoginManager extends LoginManager {
         ibapiCredentialsFromArgs = getTWSUserNameAndPasswordFromArguments(args);
         fixCredentialsFromArgs = getFIXUserNameAndPasswordFromArguments(args);
         message = "will get username and password from " + 
-                (fixCredentialsFromArgs ? "args" : "settings") + 
+                (ibapiCredentialsFromArgs ? "args" : "settings") + 
                 "; FIX username and password (if required) from " + 
                 (fixCredentialsFromArgs ? "args" : "settings");
     }

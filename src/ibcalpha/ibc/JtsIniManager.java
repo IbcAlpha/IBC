@@ -30,22 +30,24 @@ import static java.util.stream.Collectors.toList;
 
 class JtsIniManager {
 
-    final static String LOGON_SECTION_HEADER = "[Logon]";
-    final static String IBGATEWAY_SECTION_HEADER = "[IBGateway]";
-    final static String DISPLAYEDPROXYMSG_SETTING = "displayedproxymsg";
-    final static String DISPLAYEDPROXYMSG_SETTING_1 = DISPLAYEDPROXYMSG_SETTING + "=1";
-    final static String LOCALE_SETTING = "Locale";
-    final static String LOCALE_SETTING_EN = LOCALE_SETTING + "=en";
-    final static String S3STORE_SETTING = "s3store";
-    final static String S3STORE_SETTING_FALSE = S3STORE_SETTING + "=false";
-    final static String S3STORE_SETTING_TRUE = S3STORE_SETTING + "=true";
-    final static String USESSL_SETTING = "UseSSL";
-    final static String USESSL_SETTING_TRUE = USESSL_SETTING + "=true";
-    final static String APIONLY_SETTING = "ApiOnly";
-    final static String APIONLY_SETTING_TRUE = APIONLY_SETTING + "=true";
-    final static String APIONLY_SETTING_FALSE = APIONLY_SETTING + "=false";
-    final static String TRUSTED_IPS_SETTING = "TrustedIPs";
-    final static String LOCAL_SERVER_PORT = "LocalServerPort";
+    private final static String LOGON_SECTION_HEADER = "[Logon]";
+    private final static String IBGATEWAY_SECTION_HEADER = "[IBGateway]";
+    private final static String DISPLAYEDPROXYMSG_SETTING = "displayedproxymsg";
+    private final static String DISPLAYEDPROXYMSG_SETTING_1 = DISPLAYEDPROXYMSG_SETTING + "=1";
+    private final static String LOCALE_SETTING = "Locale";
+    private final static String LOCALE_SETTING_EN = LOCALE_SETTING + "=en";
+    private final static String S3STORE_SETTING = "s3store";
+    private final static String S3STORE_SETTING_FALSE = S3STORE_SETTING + "=false";
+    private final static String S3STORE_SETTING_TRUE = S3STORE_SETTING + "=true";
+    private final static String USESSL_SETTING = "UseSSL";
+    private final static String USESSL_SETTING_TRUE = USESSL_SETTING + "=true";
+    private final static String APIONLY_SETTING = "ApiOnly";
+    private final static String APIONLY_SETTING_TRUE = APIONLY_SETTING + "=true";
+    private final static String APIONLY_SETTING_FALSE = APIONLY_SETTING + "=false";
+    private final static String TRUSTED_IPS_SETTING = "TrustedIPs";
+    private final static String LOCAL_SERVER_PORT = "LocalServerPort";
+    
+    private final static String LOCAL_HOST = "127.0.0.1";
 
     private static String jtsIniFilePath;
     private static File jtsIniFile;
@@ -188,14 +190,14 @@ class JtsIniManager {
                 missingSettings.add(new JtsIniSectionSetting(IBGATEWAY_SECTION_HEADER, APIONLY_SETTING_FALSE));
             
             String trustedIPs = Settings.settings().getString("TrustedTwsApiClientIPs", "");
-            trustedIPs = "127.0.0.1" + (trustedIPs.equals("") ? "" : "," + trustedIPs);
+            trustedIPs = LOCAL_HOST + (trustedIPs.equals("") ? "" : "," + trustedIPs);
             if (! findSettingAndLog(IBGATEWAY_SECTION_HEADER, TRUSTED_IPS_SETTING, trustedIPs, true))
                 missingSettings.add(new JtsIniSectionSetting(IBGATEWAY_SECTION_HEADER, TRUSTED_IPS_SETTING + "=" + trustedIPs));
         
             String apiPort = Settings.settings().getString("OverrideTwsApiPort", "");
             if (! "".equals(apiPort)) {
                 if (! findSettingAndLog(IBGATEWAY_SECTION_HEADER, LOCAL_SERVER_PORT, apiPort, true))
-                    missingSettings.add(new JtsIniSectionSetting(IBGATEWAY_SECTION_HEADER, TRUSTED_IPS_SETTING + "=" + apiPort));
+                    missingSettings.add(new JtsIniSectionSetting(IBGATEWAY_SECTION_HEADER, LOCAL_SERVER_PORT + "=" + apiPort));
             }
         } else {
             if (! findSettingAndLog(LOGON_SECTION_HEADER, S3STORE_SETTING, "true", false))
@@ -212,6 +214,13 @@ class JtsIniManager {
 
             if (! findSettingAndLog(IBGATEWAY_SECTION_HEADER, APIONLY_SETTING, "true", true)) 
                 missingSettings.add(new JtsIniSectionSetting(IBGATEWAY_SECTION_HEADER, APIONLY_SETTING_TRUE));
+            
+            if (SessionManager.isGateway()){
+                String trustedIPs = Settings.settings().getString("TrustedTwsApiClientIPs", "");
+                trustedIPs = LOCAL_HOST + (trustedIPs.equals("") ? "" : "," + trustedIPs);
+                if (! findSettingAndLog(IBGATEWAY_SECTION_HEADER, TRUSTED_IPS_SETTING, trustedIPs, true))
+                    missingSettings.add(new JtsIniSectionSetting(IBGATEWAY_SECTION_HEADER, TRUSTED_IPS_SETTING + "=" + trustedIPs));
+            }
         }
         return missingSettings;
     }

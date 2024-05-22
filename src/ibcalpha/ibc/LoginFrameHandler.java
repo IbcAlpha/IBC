@@ -46,7 +46,7 @@ final class LoginFrameHandler extends AbstractLoginHandler {
 
     @Override
     protected final boolean initialise(final Window window, int eventID) throws IbcException {
-        setTradingMode(window);
+        if (!setTradingMode(window)) return false;
 
         JtsIniManager.reload();     // because TWS/Gateway modify the jts.ini file before this point
 
