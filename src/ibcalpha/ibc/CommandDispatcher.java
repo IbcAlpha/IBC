@@ -18,6 +18,7 @@
 
 package ibcalpha.ibc;
 
+import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.util.concurrent.TimeUnit;
 import javax.swing.JFrame;
@@ -27,6 +28,9 @@ class CommandDispatcher
 
     private final CommandChannel mChannel;
 
+    private final static int SHORTCUT_MODIFIERS = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | KeyEvent.ALT_DOWN_MASK;
+
+            
     CommandDispatcher(CommandChannel channel) {
         mChannel = channel;
     }
@@ -78,10 +82,9 @@ class CommandDispatcher
         }
         JFrame jf = MainWindowManager.mainWindowManager().getMainWindow(1, TimeUnit.MILLISECONDS);
 
-        int modifiers = KeyEvent.CTRL_DOWN_MASK | KeyEvent.ALT_DOWN_MASK;
-        KeyEvent pressed=new KeyEvent(jf,  KeyEvent.KEY_PRESSED, System.currentTimeMillis(), modifiers, KeyEvent.VK_F, KeyEvent.CHAR_UNDEFINED);
-        KeyEvent typed=new KeyEvent(jf, KeyEvent.KEY_TYPED, System.currentTimeMillis(), modifiers, KeyEvent.VK_UNDEFINED, 'F' );
-        KeyEvent released=new KeyEvent(jf, KeyEvent.KEY_RELEASED, System.currentTimeMillis(), modifiers, KeyEvent.VK_F,  KeyEvent.CHAR_UNDEFINED );
+        KeyEvent pressed=new KeyEvent(jf,  KeyEvent.KEY_PRESSED, System.currentTimeMillis(), SHORTCUT_MODIFIERS, KeyEvent.VK_F, KeyEvent.CHAR_UNDEFINED);
+        KeyEvent typed=new KeyEvent(jf, KeyEvent.KEY_TYPED, System.currentTimeMillis(), SHORTCUT_MODIFIERS, KeyEvent.VK_UNDEFINED, 'F' );
+        KeyEvent released=new KeyEvent(jf, KeyEvent.KEY_RELEASED, System.currentTimeMillis(), SHORTCUT_MODIFIERS, KeyEvent.VK_F,  KeyEvent.CHAR_UNDEFINED );
         jf.dispatchEvent(pressed);
         jf.dispatchEvent(typed);
         jf.dispatchEvent(released);
@@ -96,10 +99,9 @@ class CommandDispatcher
         }
         JFrame jf = MainWindowManager.mainWindowManager().getMainWindow();
 
-        int modifiers = KeyEvent.CTRL_DOWN_MASK | KeyEvent.ALT_DOWN_MASK;
-        KeyEvent pressed=new KeyEvent(jf,  KeyEvent.KEY_PRESSED, System.currentTimeMillis(), modifiers, KeyEvent.VK_R, KeyEvent.CHAR_UNDEFINED);
-        KeyEvent typed=new KeyEvent(jf, KeyEvent.KEY_TYPED, System.currentTimeMillis(), modifiers, KeyEvent.VK_UNDEFINED, 'R' );
-        KeyEvent released=new KeyEvent(jf, KeyEvent.KEY_RELEASED, System.currentTimeMillis(), modifiers, KeyEvent.VK_R,  KeyEvent.CHAR_UNDEFINED );
+        KeyEvent pressed=new KeyEvent(jf,  KeyEvent.KEY_PRESSED, System.currentTimeMillis(), SHORTCUT_MODIFIERS, KeyEvent.VK_R, KeyEvent.CHAR_UNDEFINED);
+        KeyEvent typed=new KeyEvent(jf, KeyEvent.KEY_TYPED, System.currentTimeMillis(), SHORTCUT_MODIFIERS, KeyEvent.VK_UNDEFINED, 'R' );
+        KeyEvent released=new KeyEvent(jf, KeyEvent.KEY_RELEASED, System.currentTimeMillis(), SHORTCUT_MODIFIERS, KeyEvent.VK_R,  KeyEvent.CHAR_UNDEFINED );
         jf.dispatchEvent(pressed);
         jf.dispatchEvent(typed);
         jf.dispatchEvent(released);
