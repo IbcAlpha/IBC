@@ -20,6 +20,7 @@ package ibcalpha.ibc;
 
 import java.awt.Window;
 import javax.swing.JFrame;
+import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 
 final class GatewayLoginFrameHandler extends AbstractLoginHandler {
@@ -135,6 +136,22 @@ final class GatewayLoginFrameHandler extends AbstractLoginHandler {
             Utils.logToConsole("Clicking FIX CTCI selector");
             button.doClick();
         }
+    }
+
+    @Override
+    protected boolean isUserIdDisabledOrAbsent(Window window) {
+        int index = SessionManager.isFIX() ? 2 : 0;
+        JTextField userID = SwingUtils.findTextField(window, index);
+        if (userID == null) return true;
+        return ! userID.isEnabled();
+    }
+
+    @Override
+    protected boolean isPasswordDisabledOrAbsent(Window window) {
+        int index = SessionManager.isFIX() ? 3 : 1;
+        JTextField password = SwingUtils.findTextField(window, index);
+        if (password == null) return true;
+        return ! password.isEnabled();
     }
 
 }

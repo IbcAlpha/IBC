@@ -124,5 +124,19 @@ final class LoginFrameHandler extends AbstractLoginHandler {
         return true;
     }
 
+    @Override
+    protected boolean isUserIdDisabledOrAbsent(Window window) {
+        JTextField userID = SwingUtils.findTextField(window, 0);
+        if (userID == null) return true;
+        return ! userID.isEnabled();
+    }
+
+    @Override
+    protected boolean isPasswordDisabledOrAbsent(Window window) {
+        JTextField password = SwingUtils.findTextField(window, 1);
+        if (password == null) return true;
+        return ! password.isEnabled();
+    }
+
 }
 
