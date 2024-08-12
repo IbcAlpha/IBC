@@ -2,7 +2,7 @@
     <property environment="env"/>
     <fail unless="env.IBC_BIN" message="Environment variable 'IBC_BIN' not set (set it to the fully-qualified directory name containing the TWS jar files)."/>
 
-    <property name="ver" value="3.19.0"/>
+    <property name="ver" value="3.20.0"/>
     <property name="src" location="src"/>
     <property name="resources" location="resources"/>
     <property name="target" location="target"/>
