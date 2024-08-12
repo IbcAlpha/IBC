@@ -31,8 +31,6 @@ public class LoginFailedDialogHandler implements WindowHandler  {
         switch (eventId) {
             case WindowEvent.WINDOW_OPENED:
                 return true;
-            case WindowEvent.WINDOW_CLOSED:
-                return true;
             default:
                 return false;
         }
@@ -40,17 +38,13 @@ public class LoginFailedDialogHandler implements WindowHandler  {
 
     @Override
     public void handleWindow(Window window, int eventID) {
-        if (eventID == WindowEvent.WINDOW_OPENED) {
-            Utils.logToConsole("Login failed");
-            LoginManager.loginManager().setLoginState(LoginManager.LoginState.LOGIN_FAILED);
+        Utils.logToConsole("Login failed");
+        Utils.logToConsole("Cold restart in progress");
+        // stop tidily and do a cold restart
+        MyCachedThreadPool.getInstance().execute(new StopTask(null, true, "Cold restart after Login Failed dialog encountered"));
 
-            Utils.logToConsole("Ensure login frame visible");
-            LoginManager.loginManager().getLoginFrame().setVisible(true);
-            LoginManager.loginManager().getLoginFrame().setExtendedState(Frame.NORMAL);
-
-            if (! SwingUtils.clickButton(window, "OK")) {
-                Utils.logError("could not dismiss Login Failed dialog because we could not find the OK button");
-            }
+        if (! SwingUtils.clickButton(window, "OK")) {
+            Utils.logError("could not dismiss Login Failed dialog because we could not find the OK button");
         }
     }
 
