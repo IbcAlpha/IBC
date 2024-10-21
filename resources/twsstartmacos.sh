@@ -174,6 +174,11 @@ else
 	>&2 exit 1
 fi
 
+if [[ -n $(/usr/bin/pgrep -f "java.*${IBC_INI}") ]]; then
+	>&2 echo -e "Error: process is already running"
+	>&2 exit 0
+fi
+
 APP=TWS
 
 export TWS_MAJOR_VRSN
