@@ -128,7 +128,9 @@ else
 	error_exit $E_UNKNOWN_OPERATING_SYSTEM "Can't detect operating system"
 fi
 
-shopt -s nocasematch
+shopt -s nocasematch extglob
+
+echo "Parsing arguments"
 
 for arg
 do
@@ -142,6 +144,7 @@ do
 		tws_path=${arg:11}
 	elif [[ "${arg:0:20}" = "--tws-settings-path=" ]]; then
 		tws_settings_path=${arg:20}
+		tws_settings_path=${tws_settings_path%%+(/)}
 	elif [[ "${arg:0:11}" = "--ibc-path=" ]]; then
 		ibc_path=${arg:11}
 	elif [[ "${arg:0:10}" = "--ibc-ini=" ]]; then
@@ -264,6 +267,9 @@ fi
 jars="${program_path}/jars"
 install4j="${program_path}/.install4j"
 	
+if [[ ! -e "$tws_settings_path" ]]; then
+	error_exit $E_IBC_PATH_NOT_EXIST "TWS settings path: $tws_settings_path does not exist"
+fi
 
 if [[ ! -e "$jars" ]]; then
 	error_exit $E_TWS_VERSION_NOT_INSTALLED "Offline TWS/Gateway version $tws_version is not installed: can't find jars folder" \
