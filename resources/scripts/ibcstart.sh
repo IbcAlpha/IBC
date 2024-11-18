@@ -520,8 +520,8 @@ do
 
 	if [[ $exit_code -eq $E_LOGIN_DIALOG_DISPLAY_TIMEOUT ]]; then 
 		:
-	elif [[ -e "$tws-settings-path/COLDRESTART$ibc_session_id" ]]; then
-		rm "$tws-settings-path/COLDRESTART$ibc_session_id"
+	elif [[ -e "$tws_settings_path/COLDRESTART$ibc_session_id" ]]; then
+		rm "$tws_settings_path/COLDRESTART$ibc_session_id"
 		autorestart_option=
 		echo "IBC will cold-restart shortly"
 	else
