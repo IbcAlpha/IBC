@@ -497,7 +497,7 @@ public class IbcTws {
             }
         }
         long delay = shutdownTime.getTime() - System.currentTimeMillis();
-        Utils.logToConsole(SessionManager.isGateway() ? "Gateway" : "TWS" +
+        Utils.logToConsole((SessionManager.isGateway() ? "Gateway" : "TWS") +
                         " will be " + (isColdRestart ? "cold restarted" : "shut down") + " at " +
                        (new SimpleDateFormat("yyyy/MM/dd HH:mm")).format(shutdownTime));
         MyScheduledExecutorService.getInstance().schedule(() -> {
