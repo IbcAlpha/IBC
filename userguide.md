@@ -690,6 +690,27 @@ setting in `config.ini`, to automatically restart it if using the IBKR Mobile
 app or the Client Portal on the IBKR Account Management page causes your
 TWS/Gateway session to be shut down.
 
+### Running with launchd (macOS only)
+
+On macOS, you can use `launchd` to run `twsstart.sh` or `gatewaystart.sh`
+automatically.
+
+Starting with IBC 3.20.1, the `twsstartmacos.sh` and `gatewaystartmacos.sh` 
+scripts include a check to see if IBC is already running with the same 
+`config.ini` file: if it is, a new instance is not started.
+
+This enables a job entry that will periodically attempt to start IBC, but only 
+succeed if it is not already running. For an example `launchd` config, see 
+[local.ibc-gateway.plist](resources/local.ibc-gateway.plist). This shows a user 
+level job (would be installed at `~/Library/LaunchAgents/`) that attempts to 
+start the gateway on the hour, every weekday. See [this 
+guide](https://www.launchd.info/) for more details on the various options 
+available.
+
+Note that macOS has security controls around applications that run in the 
+background. The first time `launchd` attempts to start `ibc`, the OS will likely 
+request additional user interaction or permissions.
+
 ### Multiple IBC Instances
 
 You may want to run more than one instance of TWS or the Gateway on the same
