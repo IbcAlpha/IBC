@@ -56,40 +56,51 @@ public abstract class AbstractLoginHandler implements WindowHandler {
         LoginManager.loginManager().setLoginFrame((JFrame) window);
         switch (LoginManager.loginManager().getLoginState()){
             case LOGGED_OUT:
-                if (SessionManager.isRestart()) {
+                if (! SessionManager.isRestart()) {
+                    initiateLogin(window);
+                } else {
                     // IBC thinks we're auto-restarting because of the existence
-                    // of the autorestart file. If the autorestart file contains
-                    // valid credentials, TWS does everything automatically and
-                    // there is nothing for IBC to do: in this case, the userid,
-                    // and password fields are disabled (and sometimes aren't
-                    // present at all).
+                    // of the autorestart file. 
+                    // 
+                    // If the autorestart file contains
+                    // valid credentials, TWS/Gateway do everything automatically
+                    // and there is nothing for IBC to do: in this case, the 
+                    // userid, and password fields are disabled(and sometimes
+                    // aren't present at all).
                     //
                     // However, if the autorestart file contains invalid or
-                    // expired credentials, TWS just displays the normal login
-                    // dialog and waits for userid and password to be supplied
-                    // (ie a normal full login). In this case, the user id and
-                    // password fields are enabled and empty.
+                    // expired credentials TWS/Gateway just displays the normal
+                    // login dialog with enabled and empty username and
+                    // password, and waits for userid and password to be
+                    // supplied (ie a normal full login).
                     
                     if (isUserIdDisabledOrAbsent(window) && isPasswordDisabledOrAbsent(window)) {
-                        // nothing to do so get out
-                        break;
+                        initiateLogin(window);
+                    } else {
+
+                        // the autorestart file is invalid. TWS doesn't remove
+                        // it, so we need to delete it before proceeding with a
+                        // normal login
+
+                        Utils.logToConsole("Autorestart file contains invalid credentials: performing full login");
+                        Utils.logToConsole("Deleting Autorestart file");
+                        File autorestartFile = new File(System.getProperty("jtsConfigDir") +
+                                                        File.separator +
+                                                        System.getProperty("restart") +
+                                                        File.separator +
+                                                        "autorestart");
+                        autorestartFile.delete();
+
+                        if (SessionManager.isGateway()) {
+                            // do a cold restart
+                            MyCachedThreadPool.getInstance().execute(new StopTask(null, true, "Cold restart after invalid autorestart file"));
+                        } else {
+                            // this is a slightly quicker way to continue but it
+                            // doesn't seem to work for Gateway
+                            initiateLogin(window);
+                        }
                     }
-
-                    // the autorestart file is invalid. TWS doesn't remove
-                    // it, so we need to delete it before proceeding with a
-                    // normal login
-                    
-                    Utils.logToConsole("Autorestart file contains invalid credentials: performing full login");
-                    Utils.logToConsole("Deleting Autorestart file");
-                    File autorestartFile = new File(System.getProperty("jtsConfigDir") +
-                                                    File.separator +
-                                                    System.getProperty("restart") +
-                                                    File.separator +
-                                                    "autorestart");
-                    autorestartFile.delete();
-                };
-
-                initiateLogin(window);
+                }
         }
     }
 
@@ -215,7 +226,7 @@ public abstract class AbstractLoginHandler implements WindowHandler {
             // the dialog appears to have been deconstructed, stop tidily
             // and do a cold restart
             
-            Utils.logToConsole("Login dialog has been invslidated - initiate cold restart");
+            Utils.logToConsole("Login dialog has been invalidated - initiate cold restart");
             MyCachedThreadPool.getInstance().execute(new StopTask(null, true, "Login Error dialog encountered"));
             return false;
         }

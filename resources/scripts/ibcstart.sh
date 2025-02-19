@@ -128,7 +128,9 @@ else
 	error_exit $E_UNKNOWN_OPERATING_SYSTEM "Can't detect operating system"
 fi
 
-shopt -s nocasematch
+shopt -s nocasematch extglob
+
+echo "Parsing arguments"
 
 for arg
 do
@@ -142,6 +144,7 @@ do
 		tws_path=${arg:11}
 	elif [[ "${arg:0:20}" = "--tws-settings-path=" ]]; then
 		tws_settings_path=${arg:20}
+		tws_settings_path=${tws_settings_path%%+(/)}
 	elif [[ "${arg:0:11}" = "--ibc-path=" ]]; then
 		ibc_path=${arg:11}
 	elif [[ "${arg:0:10}" = "--ibc-ini=" ]]; then
@@ -264,6 +267,9 @@ fi
 jars="${program_path}/jars"
 install4j="${program_path}/.install4j"
 	
+if [[ ! -e "$tws_settings_path" ]]; then
+	error_exit $E_IBC_PATH_NOT_EXIST "TWS settings path: $tws_settings_path does not exist"
+fi
 
 if [[ ! -e "$jars" ]]; then
 	error_exit $E_TWS_VERSION_NOT_INSTALLED "Offline TWS/Gateway version $tws_version is not installed: can't find jars folder" \
@@ -429,22 +435,14 @@ elif [[ "$os" = "$OS_OSX" ]]; then
 	fi
 fi
 
-# alternatively use installed java, if it's from oracle (openJDK causes problems with TWS)
+# alternatively use installed java
 if [[ ! -n "$java_path" ]]; then
 	if type -p java > /dev/null; then
 		echo Found java executable in PATH
-		system_java=java
+		java_path=$(which java)
 	elif [[ -n "$JAVA_HOME" ]] && [[ -x "$JAVA_HOME/bin/java" ]];  then
 		echo Found java executable in JAVA_HOME
-		system_java="$JAVA_HOME/bin/java"
-	fi
-
-	if [[ "$system_java" ]]; then
-		if [[ $($system_java -XshowSettings:properties -version 2>&1) = *"Java(TM) SE Runtime Environment"* ]]; then
-			java_path=$(dirname $(which $system_java))
-		else
-			>&2 echo "System java $system_java is not from Oracle, won't use it"
-		fi
+		java_path="$JAVA_HOME/bin/java"
 	fi
 fi
 
@@ -453,6 +451,13 @@ if [[ -z "$java_path" ]]; then
 elif [[ ! -e "$java_path/java" ]]; then
 	error_exit $E_NO_JAVA "No java executable found in supplied path $java_path"
 fi
+
+if [[ $($java_path.java -XshowSettings:properties 2>&1) = *"java.runtime.version = 1.8"* ]]; then
+	useJava8="yes"
+else
+	useJava8="no"
+fi
+
 
 echo Location of java executable=$java_path
 echo
@@ -485,23 +490,27 @@ elif [[ "$os" = "$OS_OSX" ]]; then
 fi
 echo
 
+if [[ $useJava8 != "yes" ]]; then
+moduleAccess="--add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.util.concurrent=ALL-UNNAMED --add-exports=java.base/sun.util=ALL-UNNAMED --add-exports=java.desktop/com.sun.java.swing.plaf.motif=ALL-UNNAMED --add-opens=java.desktop/java.awt=ALL-UNNAMED --add-opens=java.desktop/java.awt.dnd=ALL-UNNAMED --add-opens=java.desktop/javax.swing=ALL-UNNAMED --add-opens=java.desktop/javax.swing.event=ALL-UNNAMED --add-opens=java.desktop/javax.swing.plaf.basic=ALL-UNNAMED --add-opens=java.desktop/javax.swing.table=ALL-UNNAMED --add-opens=java.desktop/sun.awt=ALL-UNNAMED --add-exports=java.desktop/sun.awt.X11=ALL-UNNAMED --add-exports=java.desktop/sun.swing=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --add-exports=javafx.media/com.sun.media.jfxmedia=ALL-UNNAMED --add-exports=javafx.media/com.sun.media.jfxmedia.events=ALL-UNNAMED --add-exports=javafx.media/com.sun.media.jfxmedia.locator=ALL-UNNAMED --add-exports=javafx.media/com.sun.media.jfxmediaimpl=ALL-UNNAMED --add-exports=javafx.web/com.sun.javafx.webkit=ALL-UNNAMED --add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED"
+fi
+
 while :
 do
 	echo "Starting $program with this command:"
-	echo -e "\"$java_path/java\" -cp \"$ibc_classpath\" $java_vm_options$autorestart_option $entry_point \"$ibc_ini\" $hidden_credentials ${mode}"
+	echo -e "\"$java_path/java\" $moduleAccess -cp \"$ibc_classpath\" $java_vm_options$autorestart_option $entry_point \"$ibc_ini\" $hidden_credentials ${mode}"
 	echo
 
 	# forward signals (see https://veithen.github.io/2014/11/16/sigterm-propagation.html)
 	trap 'kill -TERM $PID' TERM INT
 
 	if [[ -n $got_fix_credentials && -n $got_api_credentials ]]; then
-		"$java_path/java" -cp "$ibc_classpath" $java_vm_options$autorestart_option $entry_point "$ibc_ini" "$fix_user_id" "$fix_password" "$ib_user_id" "$ib_password" ${mode} &
+		"$java_path/java" $moduleAccess -cp "$ibc_classpath" $java_vm_options$autorestart_option $entry_point "$ibc_ini" "$fix_user_id" "$fix_password" "$ib_user_id" "$ib_password" ${mode} &
 	elif  [[ -n $got_fix_credentials ]]; then
-		"$java_path/java" -cp "$ibc_classpath" $java_vm_options$autorestart_option $entry_point "$ibc_ini" "$fix_user_id" "$fix_password" ${mode} &
+		"$java_path/java" $moduleAccess -cp "$ibc_classpath" $java_vm_options$autorestart_option $entry_point "$ibc_ini" "$fix_user_id" "$fix_password" ${mode} &
 	elif [[ -n $got_api_credentials ]]; then
-		"$java_path/java" -cp "$ibc_classpath" $java_vm_options$autorestart_option $entry_point "$ibc_ini" "$ib_user_id" "$ib_password" ${mode} &
+		"$java_path/java" $moduleAccess -cp "$ibc_classpath" $java_vm_options$autorestart_option $entry_point "$ibc_ini" "$ib_user_id" "$ib_password" ${mode} &
 	else
-		"$java_path/java" -cp "$ibc_classpath" $java_vm_options$autorestart_option $entry_point "$ibc_ini" ${mode} &
+		"$java_path/java" $moduleAccess -cp "$ibc_classpath" $java_vm_options$autorestart_option $entry_point "$ibc_ini" ${mode} &
 	fi
 
 	PID=$!
@@ -514,8 +523,8 @@ do
 
 	if [[ $exit_code -eq $E_LOGIN_DIALOG_DISPLAY_TIMEOUT ]]; then 
 		:
-	elif [[ -e "$tws-settings-path/COLDRESTART$ibc_session_id" ]]; then
-		rm "$tws-settings-path/COLDRESTART$ibc_session_id"
+	elif [[ -e "$tws_settings_path/COLDRESTART$ibc_session_id" ]]; then
+		rm "$tws_settings_path/COLDRESTART$ibc_session_id"
 		autorestart_option=
 		echo "IBC will cold-restart shortly"
 	else

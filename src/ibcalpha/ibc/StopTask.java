@@ -79,15 +79,14 @@ class StopTask
             if (LoginManager.loginManager().getLoginState() != LoginManager.LoginState.LOGGED_IN) {
                 CommandServer.commandServer().shutdown();
                 Utils.logToConsole("Login has not completed: exiting immediately");
-                System.exit(0);
+                Runtime.getRuntime().halt(0);
             } else {
                 String[] closeMenuPath = SessionManager.isGateway() ? new String[] {"File", "Close"} : new String[] {"File", "Exit"};
                 Utils.logToConsole("Login has completed: exiting via " + Arrays.deepToString(closeMenuPath) + " menu");
                 Utils.invokeMenuItem(MainWindowManager.mainWindowManager().getMainWindow(), closeMenuPath);
             }
             
-        } catch (IllegalStateException e) {
-            Utils.exitWithException(ErrorCodes.UNHANDLED_EXCEPTION, e);
+        } catch (Exception e) {
         }
     }
 
