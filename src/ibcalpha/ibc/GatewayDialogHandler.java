@@ -1,6 +1,6 @@
 // This file is part of IBC.
 // Copyright (C) 2004 Steven M. Kearns (skearns23@yahoo.com )
-// Copyright (C) 2004 - 2021 Richard L King (rlking@aultan.com)
+// Copyright (C) 2004 - 2025 Richard L King (rlking@aultan.com)
 // For conditions of distribution and use, see copyright notice in COPYING.txt
 
 // IBC is free software: you can redistribute it and/or modify
@@ -22,8 +22,8 @@ import java.awt.Window;
 import java.awt.event.WindowEvent;
 import javax.swing.JDialog;
 
-public class LoginErrorDialogHandler implements WindowHandler {
-
+public class GatewayDialogHandler implements WindowHandler {
+    
     @Override
     public boolean filterEvent(Window window, int eventId) {
         switch (eventId) {
@@ -36,11 +36,14 @@ public class LoginErrorDialogHandler implements WindowHandler {
 
     @Override
     public void handleWindow(Window window, int eventID) {
-        Utils.logToConsole("Login error message:" + SwingUtils.NEWLINE + SwingUtils.getTexts(window));
-        Utils.logToConsole("Cold restart in progress");
-        // stop tidily and do a cold restart
-        MyCachedThreadPool.getInstance().execute(new StopTask(null, true, "Cold restart after Login Error dialog encountered"));
-
+        String text = SwingUtils.getLabelTexts(window);
+        Utils.logToConsole(text);
+        if (text.startsWith("Connection to server failed")) {
+            Utils.logToConsole("Cold restart in progress");
+            // stop tidily and do a cold restart
+            MyCachedThreadPool.getInstance().execute(new StopTask(null, true, "Cold restart after Connection to server failed"));
+        }
+        
         if (! SwingUtils.clickButton(window, "OK")) {
             Utils.logError("could not dismiss Login Error dialog because we could not find the OK button");
         }
@@ -50,7 +53,7 @@ public class LoginErrorDialogHandler implements WindowHandler {
     public boolean recogniseWindow(Window window) {
         if (! (window instanceof JDialog)) return false;
 
-        return (SwingUtils.titleContains(window, "Login Error"));
+        return (SwingUtils.titleContains(window, "Gateway"));
     }
     
 }

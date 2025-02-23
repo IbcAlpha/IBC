@@ -59,47 +59,9 @@ public abstract class AbstractLoginHandler implements WindowHandler {
                 if (! SessionManager.isRestart()) {
                     initiateLogin(window);
                 } else {
-                    // IBC thinks we're auto-restarting because of the existence
-                    // of the autorestart file. 
-                    // 
-                    // If the autorestart file contains
-                    // valid credentials, TWS/Gateway do everything automatically
-                    // and there is nothing for IBC to do: in this case, the 
-                    // userid, and password fields are disabled(and sometimes
-                    // aren't present at all).
-                    //
-                    // However, if the autorestart file contains invalid or
-                    // expired credentials TWS/Gateway just displays the normal
-                    // login dialog with enabled and empty username and
-                    // password, and waits for userid and password to be
-                    // supplied (ie a normal full login).
-                    
-                    if (isUserIdDisabledOrAbsent(window) && isPasswordDisabledOrAbsent(window)) {
-                        initiateLogin(window);
-                    } else {
 
-                        // the autorestart file is invalid. TWS doesn't remove
-                        // it, so we need to delete it before proceeding with a
-                        // normal login
+                    // allow automatic relogin to ptoceed
 
-                        Utils.logToConsole("Autorestart file contains invalid credentials: performing full login");
-                        Utils.logToConsole("Deleting Autorestart file");
-                        File autorestartFile = new File(System.getProperty("jtsConfigDir") +
-                                                        File.separator +
-                                                        System.getProperty("restart") +
-                                                        File.separator +
-                                                        "autorestart");
-                        autorestartFile.delete();
-
-                        if (SessionManager.isGateway()) {
-                            // do a cold restart
-                            MyCachedThreadPool.getInstance().execute(new StopTask(null, true, "Cold restart after invalid autorestart file"));
-                        } else {
-                            // this is a slightly quicker way to continue but it
-                            // doesn't seem to work for Gateway
-                            initiateLogin(window);
-                        }
-                    }
                 }
         }
     }

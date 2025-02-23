@@ -242,6 +242,22 @@ class SwingUtils {
         return null;
     }
 
+    static String getLabelTexts(Container container) {
+        ComponentIterator iter = new ComponentIterator(container);
+        String s = "";
+        while (iter.hasNext()) {
+            Component component = iter.next();
+            if (component instanceof JLabel) {
+                String content = ((JLabel)component).getText();
+                if (content != null) {
+                    if (s.length() != 0) s += NEWLINE;
+                    s += content;
+                }
+            }
+        }
+        return s;
+    }
+
     static String getTexts(Container container) {
         ComponentIterator iter = new ComponentIterator(container);
         String s = "";

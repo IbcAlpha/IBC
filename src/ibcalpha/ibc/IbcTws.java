@@ -341,6 +341,7 @@ public class IbcTws {
         windowHandlers.add(new RestartConfirmationDialogHandler());
         windowHandlers.add(new ResetOrderIdConfirmationDialogHandler());
         windowHandlers.add(new ReconnectDataOrAccountConfirmationDialogHandler());
+        windowHandlers.add(new GatewayDialogHandler());
         return windowHandlers;
     }
     
