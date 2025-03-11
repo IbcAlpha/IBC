@@ -37,15 +37,19 @@ public class GatewayDialogHandler implements WindowHandler {
     @Override
     public void handleWindow(Window window, int eventID) {
         String text = SwingUtils.getLabelTexts(window);
+        // since this is a generic dialog, we always log the text
         Utils.logToConsole(text);
         if (text.startsWith("Connection to server failed")) {
             Utils.logToConsole("Cold restart in progress");
             // stop tidily and do a cold restart
             MyCachedThreadPool.getInstance().execute(new StopTask(null, true, "Cold restart after Connection to server failed"));
-        }
-        
-        if (! SwingUtils.clickButton(window, "OK")) {
-            Utils.logError("could not dismiss Login Error dialog because we could not find the OK button");
+
+            if (! SwingUtils.clickButton(window, "OK")) {
+                Utils.logError("could not dismiss Login Error dialog because we could not find the OK button");
+            }
+        } else {
+            // for other instances of this dialog, just leave it on display for the user to handle. For example,
+            // it is used when setting Trusted IP addresses in the Gateway
         }
     }
 
