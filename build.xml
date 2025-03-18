@@ -50,6 +50,7 @@ public class IbcVersionInfo {
             <fileset dir="${resources}">
                 <include name="**/*"/>
                 <exclude name="**/*.sh"/>
+                <exclude name="**/*.plist"/>
             </fileset>
 	</copy>
         <zip destfile="${dist}/IBCWin-${ver}.zip" basedir="${target}/IBCWin" includes="**"/>
@@ -62,6 +63,7 @@ public class IbcVersionInfo {
                 <exclude name="**/*macos.sh"/>
                 <exclude name="**/*.xml"/>
                 <exclude name="**/IBC (*"/>
+                <exclude name="**/*.plist"/>
             </fileset>
 	</copy>
         <zip destfile="${dist}/IBCLinux-${ver}.zip" basedir="${target}/IBCLinux" includes="**"/>
