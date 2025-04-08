@@ -130,10 +130,10 @@ up and running properly.
       Build 10.19.1f, Oct 28, 2022 3:03:08 PM
    ```
 
-   For Windows and Linux,  the major version number is 1019 (ie ignore the
+   For Windows and Linux, the major version number for the above example would be 1019 (ie ignore the
    period after the first part of the version number).
 
-   For macOS, the major version number is 10.19. (Note that this is different
+   For macOS, the major version number for the above example would be 10.19. (Note that this is different
    from the equivalent Windows and Linux settings because the macOS installer
    includes the period in the install folder name).
 
