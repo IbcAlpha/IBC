@@ -219,7 +219,7 @@ echo ===========================================================================
 echo.
 echo Starting IBC version %IBC_VRSN% on %DATE% at %TIME%
 echo.
-for /f "usebackq tokens=* skip=1" %%a in (`wmic OS get Caption^,Version^,OSArchitecture ^| findstr "." `) do echo Operating system:  %%a
+for /f "usebackq tokens=* skip=3" %%a in (`powershell -command "Get-CimInstance Win32_OperatingSystem | Select-Object Caption, Version, OSArchitecture"`) do echo Operating system:  %%a
 echo.
 
 :: log the arguments
