@@ -68,14 +68,14 @@ public class ConfigureApiPrecautionsTask implements ConfigurationAction {
             Utils.selectConfigSection(configDialog, new String[] {"API", "Precautions"});
 
             doSetting("Bypass Order Precautions for API Orders", bypassOrderPrecautions.toLowerCase());
-            doSetting("Bypass Bond warning for API Orders", bypassBondWarning.toLowerCase());
-            doSetting("Bypass negative yield to worst confirmation for API Orders", bypassNegativeYieldToWorstConfirmation.toLowerCase());
+            doSetting("Bypass Bond warning for API Orders.", bypassBondWarning.toLowerCase());
+            doSetting("Bypass negative yield to worst confirmation for API Orders.", bypassNegativeYieldToWorstConfirmation.toLowerCase());
             doSetting("Bypass Called Bond warning for API Orders", bypassCalledBondWarning.toLowerCase());
             doSetting("Bypass \"same action pair trade\" warning for API orders.", bypassSameActionPairTradeWarning.toLowerCase());
-            doSetting("Bypass price-based volatility risk warning for API Orders", bypassPriceBasedVolatilityRiskWarning.toLowerCase());
-            doSetting("Bypass US Stocks market data in shares warning for API Orders", bypassUSStocksMarketDataInSharesWarning.toLowerCase());
+            doSetting("Bypass price-based volatility risk warning for API Orders.", bypassPriceBasedVolatilityRiskWarning.toLowerCase());
+            doSetting("Bypass US Stocks market data in shares warning for API Orders.", bypassUSStocksMarketDataInSharesWarning.toLowerCase());
             doSetting("Bypass Redirect Order warning for Stock API Orders", bypassRedirectOrderWarning.toLowerCase());
-            doSetting("Bypass No Overfill Protection precaution for destinations where implied natively", bypassNoOverfillProtectionPrecaution.toLowerCase());
+            doSetting("Bypass No Overfill Protection precaution for destinations where implied natively.", bypassNoOverfillProtectionPrecaution.toLowerCase());
             
         } catch (IbcException e) {
             Utils.exitWithError(ErrorCodes.UNHANDLED_EXCEPTION, "Can't find API - Precautions settings");
