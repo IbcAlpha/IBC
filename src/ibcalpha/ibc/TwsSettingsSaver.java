@@ -72,7 +72,7 @@ class TwsSettingsSaver {
     }
 
     private static List<Date> convertSuppliedTimes(String[] times) throws IbcException {
-        List<Date> saveTimes = new ArrayList<Date>();
+        List<Date> saveTimes = new ArrayList<>();
         for (String time : times) {
             saveTimes.add(adjustCalendar(getCalendarForTime(time)).getTime());
         }
