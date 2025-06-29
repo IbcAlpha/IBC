@@ -547,7 +547,7 @@ for /f "usebackq delims=" %%I in (`where /R "%TWS_SETTINGS_PATH%" autorestart`) 
 		if "%%C"=="." (
 			if not defined F (
 				set F=%%~fI
-				echo autorestart file found at !!F!!
+				echo autorestart file found at !!F!!: authentication will not be required
 				set AUTORESTART_OPTION=-Drestart=%%B
 			) else (
 				set AUTORESTART_OPTION=
@@ -573,7 +573,7 @@ if not defined AUTORESTART_OPTION (
 		echo *******************************************************************************
 		set RESTART_NEEDED=yes
 	) else (
-		echo autorestart file not found
+		echo autorestart file not found: full authentication will be required
 		set RESTART_NEEDED=
 	)
 ) else (

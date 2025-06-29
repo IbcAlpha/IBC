@@ -343,8 +343,10 @@ java_vm_options="$java_vm_options -DjtsConfigDir=${tws_settings_path}"
 ibc_session_id=$(mktemp -u XXXXXXXX)
 java_vm_options="$java_vm_options -Dibcsessionid=$ibc_session_id"
 
+echo -e "Java VM Options=$java_vm_options$autorestart_option"
 
 function find_auto_restart {
+	echo "Finding autorestart file"
 	local autorestart_path=""
 	local f=""
 	restarted_needed=
@@ -355,7 +357,7 @@ function find_auto_restart {
 		if [[ "$e" = "." ]]; then
 			if [[ -z $f ]]; then
 				f="$i"
-				echo "autorestart file found at $f"
+				echo "autorestart file found at $f: authentication will not be required"
 				autorestart_path=$(echo "$y" | cut -d/ -f2)
 			else
 				autorestart_path=
@@ -382,7 +384,7 @@ function find_auto_restart {
 			echo
 			restarted_needed=yes
 		else 
-			echo "autorestart file not found"
+			echo "autorestart file not found: full authentication will be required"
 			echo
 			restarted_needed=
 		fi
@@ -395,7 +397,6 @@ function find_auto_restart {
 
 find_auto_restart
 
-echo -e "Java VM Options=$java_vm_options$autorestart_option"
 echo
 
 #======================== Determine the location of java executable ========
