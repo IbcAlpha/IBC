@@ -539,8 +539,6 @@ public class IbcTws {
         configureSendMarketDataInLotsForUSstocks();
         configureAutoLogoffOrRestart();
         configureApiPrecautions();
-        
-        Utils.sendConsoleOutputToTwsLog(!Settings.settings().getBoolean("LogToConsole", false));
     }
     
     private static void configureResetOrderIdsAtStart() {
