@@ -473,8 +473,7 @@ public class IbcTws {
             Utils.logToConsole("Starting Gateway");
             ibgateway.GWClient.main(twsArgs);
         } catch (Throwable t) {
-            Utils.logError("Exception occurred at Gateway entry point: ibgateway.GWClient.main");
-            t.printStackTrace(Utils.getErrStream());
+            Utils.logException(t);
             Utils.exitWithError(ErrorCodes.CANT_FIND_ENTRYPOINT);
         }
     }
@@ -516,8 +515,7 @@ public class IbcTws {
             Utils.logToConsole("Starting TWS");
             jclient.LoginFrame.main(twsArgs);
         } catch (Throwable t) {
-            Utils.logError("Exception occurred at TWS entry point: jclient.LoginFrame.main");
-            t.printStackTrace(Utils.getErrStream());
+            Utils.logException(t);
             Utils.exitWithError(ErrorCodes.CANT_FIND_ENTRYPOINT);
         }
     }
