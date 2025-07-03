@@ -73,7 +73,7 @@ public class ConfigureApiPrecautionsTask implements ConfigurationAction {
             doSetting("Bypass Called Bond warning for API Orders", bypassCalledBondWarning.toLowerCase());
             doSetting("Bypass \"same action pair trade\" warning for API orders.", bypassSameActionPairTradeWarning.toLowerCase());
             doSetting("Bypass price-based volatility risk warning for API Orders.", bypassPriceBasedVolatilityRiskWarning.toLowerCase());
-            doSetting("Bypass US Stocks market data in shares warning for API Orders.", bypassUSStocksMarketDataInSharesWarning.toLowerCase());
+            doSetting("Bypass US Stocks market data in shares warning for API Orders", bypassUSStocksMarketDataInSharesWarning.toLowerCase());
             doSetting("Bypass Redirect Order warning for Stock API Orders", bypassRedirectOrderWarning.toLowerCase());
             doSetting("Bypass No Overfill Protection precaution for destinations where implied natively.", bypassNoOverfillProtectionPrecaution.toLowerCase());
             
