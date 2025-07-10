@@ -38,13 +38,15 @@ echo -e "${light_green}+========================================================
 echo "+"
 echo -e "+ IBC version ${IBC_VRSN}"
 echo "+"
-echo -e "+ Running ${APP} ${TWS_MAJOR_VRSN}"
+echo -e "+ Starting ${APP} ${TWS_MAJOR_VRSN} (currently in login window)"
 echo "+"
+
 if [[ -n "$LOG_PATH" ]]; then
 	echo "+ Diagnostic information is logged in:"
 	echo "+"
 	echo -e "+ ${log_file}"
 	echo "+"
+	echo -e "${light_green}+ Awaiting Second Factor Authentication..."
 fi
 echo -e "+${normal}"
 
@@ -55,7 +57,27 @@ fi
 export IBC_VRSN
 
 # forward signals (see https://veithen.github.io/2014/11/16/sigterm-propagation.html)
-trap 'kill -TERM $PID' TERM INT
+trap 'pkill -P $$' TERM INT
+
+first_message_seen=0
+tail -n 0 -F "$log_file" | while read -r line; do
+    if echo "$line" | grep -q "Second Factor Authentication; event=Closed"; then
+        first_message_seen=1
+    fi
+
+    if [[ "$first_message_seen" -eq 1 ]] && echo "$line" | grep -q "Downloading settings from server; event=Closed"; then
+        echo -e "${light_green}+ Second Factor Authentication succeeded. Starting the TWS main window..."
+        echo "+"
+        first_message_seen=0  # reset in case TWS restarts again
+    fi
+
+    if echo "$line" | grep -q "Login has completed"; then
+        echo -e "${light_green}+ The TWS main window is up and running!"
+        echo -e "+${normal}"
+        pkill -P $$ tail
+    fi
+done &
+TAIL_PID=$!
 
 if [[ -z ${LOG_PATH+x} ]]; then
 "${IBC_PATH}/scripts/ibcstart.sh" "${TWS_MAJOR_VRSN}" ${gw_flag} \
@@ -75,6 +97,9 @@ PID=$!
 wait $PID
 trap - TERM INT
 wait $PID
+
+kill "$TAIL_PID" 2>/dev/null
+wait "$TAIL_PID" 2>/dev/null
 
 exit_code=$?
 if [ "$exit_code" == "0" ]; then
