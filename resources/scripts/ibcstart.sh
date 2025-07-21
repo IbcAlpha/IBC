@@ -349,7 +349,7 @@ function find_auto_restart {
 	echo "Finding autorestart file"
 	local autorestart_path=""
 	local f=""
-	restarted_needed=
+	restart_needed=
 	for i in $(find $tws_settings_path -type f -name "autorestart"); do
 		local x=${i/$tws_settings_path/}
 		local y=$(echo $x | xargs dirname)/.
@@ -382,16 +382,16 @@ function find_auto_restart {
 			echo "         files."
 			echo "*******************************************************************************"
 			echo
-			restarted_needed=yes
+			restart_needed=yes
 		else 
 			echo "autorestart file not found: full authentication will be required"
 			echo
-			restarted_needed=
+			restart_needed=
 		fi
 	else
 		echo "AUTORESTART_OPTION is -Drestart=${autorestart_path}"
 		autorestart_option=" -Drestart=${autorestart_path}"
-		restarted_needed=yes
+		restart_needed=yes
 	fi
 }
 
@@ -530,8 +530,14 @@ do
 		echo "IBC will cold-restart shortly"
 	else
 		find_auto_restart
-		if [[ -n $restarted_needed ]]; then
-			restarted_needed=
+		if [[ -n $restart_needed ]]; then
+			restart_needed=
+			if [[ -e "$tws_settings_path/PAUSE$ibc_session_id" ]]; then
+				rm "$tws_settings_path/PAUSE$ibc_session_id"
+				echo "IBC is paused"
+				break;
+			fi
+
 			# restart using the TWS/Gateway-generated autorestart file
 			:
 		elif [[ $exit_code -ne $E_2FA_DIALOG_TIMED_OUT  ]]; then 
