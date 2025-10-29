@@ -476,6 +476,21 @@ elif [[ -n $got_api_credentials ]]; then
 		hidden_credentials="*** ***"
 fi
 
+# Set credentials as environment variables instead of command-line arguments
+# to prevent them from appearing in process lists
+if [[ -n $fix_user_id ]]; then
+	export FIXUSERID="$fix_user_id"
+fi
+if [[ -n $fix_password ]]; then
+	export FIXPASSWORD="$fix_password"
+fi
+if [[ -n $ib_user_id ]]; then
+	export TWSUSERID="$ib_user_id"
+fi
+if [[ -n $ib_password ]]; then
+	export TWSPASSWORD="$ib_password"
+fi
+
 # prevent other Java tools interfering with IBC
 JAVA_TOOL_OPTIONS=
 
@@ -504,15 +519,9 @@ do
 	# forward signals (see https://veithen.github.io/2014/11/16/sigterm-propagation.html)
 	trap 'kill -TERM $PID' TERM INT
 
-	if [[ -n $got_fix_credentials && -n $got_api_credentials ]]; then
-		"$java_path/java" $moduleAccess -cp "$ibc_classpath" $java_vm_options$autorestart_option $entry_point "$ibc_ini" "$fix_user_id" "$fix_password" "$ib_user_id" "$ib_password" ${mode} 2>/dev/null &
-	elif  [[ -n $got_fix_credentials ]]; then
-		"$java_path/java" $moduleAccess -cp "$ibc_classpath" $java_vm_options$autorestart_option $entry_point "$ibc_ini" "$fix_user_id" "$fix_password" ${mode} 2>/dev/null &
-	elif [[ -n $got_api_credentials ]]; then
-		"$java_path/java" $moduleAccess -cp "$ibc_classpath" $java_vm_options$autorestart_option $entry_point "$ibc_ini" "$ib_user_id" "$ib_password" ${mode} 2>/dev/null &
-	else
-		"$java_path/java" $moduleAccess -cp "$ibc_classpath" $java_vm_options$autorestart_option $entry_point "$ibc_ini" ${mode} 2>/dev/null &
-	fi
+	# Start IBC without passing credentials as command-line arguments
+	# Credentials are now passed via environment variables (TWSUSERID, TWSPASSWORD, FIXUSERID, FIXPASSWORD)
+	"$java_path/java" $moduleAccess -cp "$ibc_classpath" $java_vm_options$autorestart_option $entry_point "$ibc_ini" ${mode} 2>/dev/null &
 
 	PID=$!
 	wait $PID

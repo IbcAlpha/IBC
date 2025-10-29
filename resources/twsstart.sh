@@ -18,16 +18,16 @@
 #=============================================================================+
 
 
-TWS_MAJOR_VRSN=1019
+TWS_MAJOR_VRSN=1037
 IBC_INI=~/ibc/config.ini
 TRADING_MODE=
-TWOFA_TIMEOUT_ACTION=exit
+TWOFA_TIMEOUT_ACTION="exit"
 IBC_PATH=/opt/ibc
 TWS_PATH=~/Jts
 TWS_SETTINGS_PATH=
 LOG_PATH=~/ibc/logs
-TWSUSERID=
-TWSPASSWORD=
+TWSUSERID=${TWSUSERID:-}
+TWSPASSWORD=${TWSPASSWORD:-}
 JAVA_PATH=
 HIDE=
 
@@ -47,7 +47,7 @@ HIDE=
 #
 #       Build 10.19.1f, Oct 28, 2022 3:03:08 PM
 #
-#     The major version number is 1019 (ie ignore the period after the first
+#     The major version number is 1037 (ie ignore the period after the first
 #     part of the version number).
 #
 #     Do not include the rest of the version number in this setting.

@@ -31,7 +31,7 @@ setlocal enableextensions enabledelayedexpansion
 ::=============================================================================+
 
 
-set TWS_MAJOR_VRSN=1019
+set TWS_MAJOR_VRSN=1037
 set CONFIG=%USERPROFILE%\Documents\IBC\config.ini
 set TRADING_MODE=
 set TWOFA_TIMEOUT_ACTION=exit
@@ -62,7 +62,7 @@ set HIDE=
 ::
 ::       Build 10.19.1f, Oct 28, 2022 3:03:08 PM
 ::
-::     The major version number is 1019 (ie ignore the period after the first
+::     The major version number is 1037 (ie ignore the period after the first
 ::     part of the version number).
 ::
 ::     Do not include the rest of the version number in this setting.

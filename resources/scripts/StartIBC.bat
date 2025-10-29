@@ -420,7 +420,13 @@ if defined GOT_FIX_CREDENTIALS (
 ) else if defined GOT_API_CREDENTIALS (
 	set HIDDEN_CREDENTIALS="***" "***"
 )
-	
+
+:: Set credentials as environment variables instead of command-line arguments
+:: to prevent them from appearing in process lists
+if defined IB_USER_ID set TWSUSERID=%IB_USER_ID%
+if defined IB_PASSWORD set TWSPASSWORD=%IB_PASSWORD%
+if defined FIX_USER_ID set FIXUSERID=%FIX_USER_ID%
+if defined FIX_PASSWORD set FIXPASSWORD=%FIX_PASSWORD%
 
 :: prevent other Java tools interfering with IBC
 set JAVA_TOOL_OPTIONS=
@@ -465,17 +471,9 @@ echo Starting IBC with this command:
 echo "%JAVA_PATH%\java.exe" %moduleaccess% -cp  "%IBC_CLASSPATH%" %JAVA_VM_OPTIONS% %AUTORESTART_OPTION% %ENTRY_POINT% "%CONFIG%" %HIDDEN_CREDENTIALS% %MODE%
 echo.
 
-if defined GOT_FIX_CREDENTIALS (
-	if defined GOT_API_CREDENTIALS (
-		"%JAVA_PATH%\java.exe" %moduleaccess% -cp  "%IBC_CLASSPATH%" %JAVA_VM_OPTIONS% %AUTORESTART_OPTION% %ENTRY_POINT% "%CONFIG%" "%FIX_USER_ID%" "%FIX_PASSWORD%" "%IB_USER_ID%" "%IB_PASSWORD%" %MODE% 2>NUL
-	) else (
-		"%JAVA_PATH%\java.exe" %moduleaccess% -cp  "%IBC_CLASSPATH%" %JAVA_VM_OPTIONS% %AUTORESTART_OPTION% %ENTRY_POINT% "%CONFIG%" "%FIX_USER_ID%" "%FIX_PASSWORD%" %MODE% 2>NUL
-	)
-) else if defined GOT_API_CREDENTIALS (
-		"%JAVA_PATH%\java.exe" %moduleaccess% -cp  "%IBC_CLASSPATH%" %JAVA_VM_OPTIONS% %AUTORESTART_OPTION% %ENTRY_POINT% "%CONFIG%" "%IB_USER_ID%" "%IB_PASSWORD%" %MODE% 2>NUL
-) else (
-		"%JAVA_PATH%\java.exe" %moduleaccess% -cp  "%IBC_CLASSPATH%" %JAVA_VM_OPTIONS% %AUTORESTART_OPTION% %ENTRY_POINT% "%CONFIG%" %MODE% 2>NUL
-)
+:: Start IBC without passing credentials as command-line arguments
+:: Credentials are now passed via environment variables (TWSUSERID, TWSPASSWORD, FIXUSERID, FIXPASSWORD)
+"%JAVA_PATH%\java.exe" %moduleaccess% -cp  "%IBC_CLASSPATH%" %JAVA_VM_OPTIONS% %AUTORESTART_OPTION% %ENTRY_POINT% "%CONFIG%" %MODE% 2>NUL
 
 ::======================== Handle IBC exit conditions ==============
 

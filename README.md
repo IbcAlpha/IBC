@@ -59,10 +59,78 @@ there are separate release files for Windows, macOS and Linux.
 Users who want to make changes to IBC should clone this repository
 in the usual way.
 
+Setup and Usage
+---------------
+
+### Environment Variables for Credentials
+
+For security, you can specify your Interactive Brokers credentials using environment variables instead of hardcoding them in the configuration file:
+
+```bash
+export TWSUSERID="your_username"
+export TWSPASSWORD="your_password"
+```
+
+For FIX CTCI Gateway:
+
+```bash
+export FIXUSERID="your_fix_username"
+export FIXPASSWORD="your_fix_password"
+```
+
+These environment variables will be read by the startup scripts (`gatewaystart.sh`, `twsstart.sh`, etc.) and override any credentials in the `config.ini` file.
+
+### Configuration File
+
+Edit the `config.ini` file to set your preferences. Key settings include:
+
+- `IbLoginId` and `IbPassword` - Your IBKR credentials (or use environment variables)
+- `TradingMode` - Set to `live` or `paper`
+- `FIX` - Set to `yes` for FIX CTCI Gateway
+
+See the comments in `resources/config.ini` for all available options.
+
+### Running the Scripts
+
+**Linux/macOS:**
+
+Start Gateway:
+```bash
+./resources/gatewaystart.sh
+```
+
+Start TWS:
+```bash
+./resources/twsstart.sh
+```
+
+Other useful scripts:
+- `./resources/stop.sh` - Stop IBC
+- `./resources/restart.sh` - Restart IBC
+- `./resources/commandsend.sh` - Send commands to running IBC
+
+**Windows:**
+
+Use the `.bat` equivalents in the `resources` folder:
+- `StartGateway.bat`
+- `StartTWS.bat`
+- `Stop.bat`
+- `Restart.bat`
+
+### Script Configuration
+
+Before running, edit the script files to set:
+
+- `TWS_MAJOR_VRSN` - Your TWS/Gateway version number
+- `IBC_INI` - Path to your config.ini file
+- `IBC_PATH` - Path to IBC installation
+- `TWS_PATH` - Path to TWS/Gateway installation
+- `LOG_PATH` - Where to store log files
+
 User Guide
 ----------
 
-Please see the [IBC User Guide](userguide.md) for installation and
+Please see the [IBC User Guide](userguide.md) for complete installation and
 usage instructions. The User Guide is also included as a PDF file in the
 download ZIPs.
 

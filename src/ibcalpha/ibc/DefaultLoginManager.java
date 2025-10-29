@@ -32,12 +32,17 @@ public class DefaultLoginManager extends LoginManager {
     }
 
     public DefaultLoginManager(String[] args) {
-        ibapiCredentialsFromArgs = getTWSUserNameAndPasswordFromArguments(args);
-        fixCredentialsFromArgs = getFIXUserNameAndPasswordFromArguments(args);
-        message = "will get username and password from " + 
-                (ibapiCredentialsFromArgs ? "args" : "settings") + 
-                "; FIX username and password (if required) from " + 
-                (fixCredentialsFromArgs ? "args" : "settings");
+        boolean ibapiCredentialsFromEnv = getTWSUserNameAndPasswordFromEnvironment();
+        boolean fixCredentialsFromEnv = getFIXUserNameAndPasswordFromEnvironment();
+        
+        ibapiCredentialsFromArgs = ibapiCredentialsFromEnv || getTWSUserNameAndPasswordFromArguments(args);
+        fixCredentialsFromArgs = fixCredentialsFromEnv || getFIXUserNameAndPasswordFromArguments(args);
+        
+        String ibapiSource = ibapiCredentialsFromEnv ? "environment" : (ibapiCredentialsFromArgs ? "args" : "settings");
+        String fixSource = fixCredentialsFromEnv ? "environment" : (fixCredentialsFromArgs ? "args" : "settings");
+        
+        message = "will get username and password from " + ibapiSource + 
+                "; FIX username and password (if required) from " + fixSource;
     }
 
     public DefaultLoginManager(String username, String password) {
@@ -191,6 +196,28 @@ public class DefaultLoginManager extends LoginManager {
             Utils.logRawToConsole("arg[" + i + "]=" + args[i]);
         }
         Utils.exitWithError(ErrorCodes.INCORRECT_NUMBER_OF_ARGS);
+        return false;
+    }
+
+    private boolean getTWSUserNameAndPasswordFromEnvironment() {
+        String username = System.getenv("TWSUSERID");
+        String password = System.getenv("TWSPASSWORD");
+        if (username != null && !username.isEmpty() && password != null && !password.isEmpty()) {
+            IBAPIUserName = username;
+            IBAPIPassword = password;
+            return true;
+        }
+        return false;
+    }
+
+    private boolean getFIXUserNameAndPasswordFromEnvironment() {
+        String username = System.getenv("FIXUSERID");
+        String password = System.getenv("FIXPASSWORD");
+        if (username != null && !username.isEmpty() && password != null && !password.isEmpty()) {
+            FIXUserName = username;
+            FIXPassword = password;
+            return true;
+        }
         return false;
     }
 

@@ -32,6 +32,6 @@ if [[ -z "$1" ]]; then
 fi
 
 # send the required command to IBC 
-(echo "$1"; sleep 1; echo "EXIT"; echo "quit" ) | /usr/local/bin/telnet "$server_address" $command_server_port
+(echo "$1"; sleep 1; echo "EXIT"; echo "quit" ) | /usr/bin/env telnet "$server_address" $command_server_port
 
 
