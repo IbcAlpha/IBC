@@ -73,7 +73,8 @@ public class DefaultSettings extends Settings {
         if (key.equalsIgnoreCase("FIXLoginId") ||
                 key.equalsIgnoreCase("FIXPassword") ||
                 key.equalsIgnoreCase("IbLoginId") ||
-                key.equalsIgnoreCase("IbPassword")) {
+                key.equalsIgnoreCase("IbPassword") ||
+                key.equalsIgnoreCase("TotpSecret")) {
             if (!value.isEmpty()) {
                 return "***";
             }
