@@ -23,6 +23,7 @@ import java.awt.event.WindowEvent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JList;
+import javax.swing.JTextField;
 import javax.swing.ListModel;
 
 public class SecondFactorAuthenticationDialogHandler implements WindowHandler {
@@ -53,6 +54,8 @@ public class SecondFactorAuthenticationDialogHandler implements WindowHandler {
                 doReadonlyLogin(window);
             } else if (secondFactorDeviceSelectionRequired(window)) {
                 selectSecondFactorDevice(window);
+            } else if (totpCodeEntryRequired(window)) {
+                enterTotpCode(window);
             } else {
                 LoginManager.loginManager().setLoginState(LoginManager.LoginState.TWO_FA_IN_PROGRESS);
             }
@@ -116,5 +119,37 @@ public class SecondFactorAuthenticationDialogHandler implements WindowHandler {
         }
         Utils.logError("could not find second factor device '" + secondFactorDevice + "' in the list");
     }
-    
+
+    private boolean totpCodeEntryRequired(Window window) {
+        return SwingUtils.findTextField(window, 0) != null;
+    }
+
+    private void enterTotpCode(Window window) {
+        String totpSecret = Settings.settings().getString("TotpSecret", "");
+        if (totpSecret.isEmpty()) {
+            Utils.logToConsole("TOTP code entry dialog detected but TotpSecret is not configured");
+            LoginManager.loginManager().setLoginState(LoginManager.LoginState.TWO_FA_IN_PROGRESS);
+            return;
+        }
+
+        try {
+            String code = Totp.generateCode(totpSecret);
+            Utils.logToConsole("Entering TOTP code");
+
+            JTextField textField = SwingUtils.findTextField(window, 0);
+            if (textField == null) {
+                Utils.logError("TOTP code entry field not found");
+                return;
+            }
+            textField.setText(code);
+
+            if (!SwingUtils.clickButton(window, "OK")) {
+                Utils.logError("could not find OK button in TOTP code entry dialog");
+            }
+        } catch (Exception e) {
+            Utils.logError("TOTP code generation failed: " + e.getMessage());
+            LoginManager.loginManager().setLoginState(LoginManager.LoginState.TWO_FA_IN_PROGRESS);
+        }
+    }
+
 }
