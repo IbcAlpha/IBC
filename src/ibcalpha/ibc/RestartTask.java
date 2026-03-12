@@ -48,9 +48,11 @@ class RestartTask
 
     RestartTask(final CommandChannel channel,
                 final boolean pauseOnly) {
+        Utils.logToConsole("RestartTask: pauseOnly = " + pauseOnly);
         mChannel = channel;
         mPauseOnly = pauseOnly;
         mVerb = mPauseOnly ? "PAUSE" : "RESTART";
+        Utils.logToConsole("RestartTask: verb = " + mVerb);
     }
 
     @Override
@@ -63,10 +65,13 @@ class RestartTask
         }
 
         try {
-            writeInfo("Restarting TWS");
             if (mPauseOnly) {
+                writeInfo("Pausing TWS");
                 createPauseFlagFile();
+            } else {
+                writeInfo("Restarting TWS");
             }
+            writeAck(mVerb + " in progress");
             restart(mPauseOnly);
         } catch (Exception ex) {
             writeNack(ex.getMessage());
@@ -86,9 +91,8 @@ class RestartTask
         }
     }
     
-    void restart(boolean pauseOnly) {
+    void restart(final boolean pauseOnly) {
         if (Utils.invokeMenuItem(MainWindowManager.mainWindowManager().getMainWindow(), new String[] {"File", "Restart..."})) {
-            writeAck(mVerb + " in progress");
             mChannel.close();
             return;
         }
@@ -131,8 +135,7 @@ class RestartTask
         
         RestartTask.Countdown countdown = new RestartTask.Countdown(actionTime.isBefore(LocalTime.now()) 
                                             ? actionTime.atDate(LocalDate.now().plusDays(1)) 
-                                            : actionTime.atDate(LocalDate.now()),
-                                            mPauseOnly);
+                                            : actionTime.atDate(LocalDate.now()));
         window.setGlassPane(countdown);
         countdown.setVisible(true);
     }    
@@ -147,10 +150,8 @@ class RestartTask
         private final Font font = new Font("Arial", Font.BOLD, 36);
         private final LocalDateTime countdownTo;
         private Duration secsRemaining;
-        private final boolean mPauseOnly;
         
-        public Countdown(final LocalDateTime countdownTo, final boolean pauseOnly) {
-            mPauseOnly = pauseOnly;
+        public Countdown(final LocalDateTime countdownTo) {
             this.setSize(250, 250);
             this.setOpaque(false);
             this.countdownTo = countdownTo;
