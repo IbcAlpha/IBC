@@ -44,7 +44,7 @@ class TwsSettingsSaver {
 
         String[] times = timesSetting.split("[ ]+");
 
-        List<Date> saveTimes = null;
+        List<Date> saveTimes;
 
         try {
             if (!times[0].equalsIgnoreCase("Every")){
