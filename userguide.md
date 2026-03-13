@@ -913,6 +913,27 @@ RESTART
 > time. Alternatively issue another RESTART command after restart has completed
 > to set the auto-restart time to its usual value.
 
+PAUSE
+
+> Tells IBC to shut down TWS tidily, similarly to the STOP command, but
+> preserves the user's current login credentials so that when IBC is next
+> started, the user's session will be resumed without the need to login.
+>
+> The primary intended use of the PAUSE command is for situations wheere the 
+> computer is powered by an Uninterruptible Power Supply (UPS). In the event of
+> impending power failure, arrangements can be made for a notification to be
+> received by various means, and whatever receives the notofication can send a
+> PAUSE command to IBC. When power is recovered, IBC can be restarted
+> automatically and the previous TWS session will be resumed.
+>
+> There are many ways for such notifications to be caused: this topic is beyond
+> the scope of this User Guide.
+>
+> Note that you cannot use PAUSE and a subsequent IBC restart to bypass the
+> IBKR requirement for TWS to be fully shut down on Sunday. Credentials
+> preserved by use of PAUSE will be invalidated at the start of the next week,
+> and it will not be possible to restart the session.
+
 ENABLEAPI 
 
 > Ensures that the ‘Enable ActiveX and Socket Clients’ checkbox in the API

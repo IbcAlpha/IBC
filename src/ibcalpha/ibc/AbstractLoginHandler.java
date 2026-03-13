@@ -20,7 +20,6 @@ package ibcalpha.ibc;
 
 import java.awt.Window;
 import java.awt.event.WindowEvent;
-import java.io.File;
 import java.util.concurrent.TimeUnit;
 import javax.swing.JButton;
 import javax.swing.JFrame;

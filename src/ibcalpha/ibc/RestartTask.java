@@ -24,6 +24,7 @@ import java.awt.Graphics;
 import static java.awt.GraphicsDevice.WindowTranslucency.TRANSLUCENT;
 import java.awt.GraphicsEnvironment;
 import java.awt.IllegalComponentStateException;
+import java.io.File;
 import static java.lang.Thread.sleep;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -40,32 +41,58 @@ class RestartTask
     private static final SwitchLock _Running = new SwitchLock();
 
     private final CommandChannel mChannel;
+    
+    private final boolean mPauseOnly;
 
-    RestartTask(final CommandChannel channel) {
+    private final String mVerb;
+
+    RestartTask(final CommandChannel channel,
+                final boolean pauseOnly) {
+        Utils.logToConsole("RestartTask: pauseOnly = " + pauseOnly);
         mChannel = channel;
+        mPauseOnly = pauseOnly;
+        mVerb = mPauseOnly ? "PAUSE" : "RESTART";
+        Utils.logToConsole("RestartTask: verb = " + mVerb);
     }
 
     @Override
     public void run() {
         if (! _Running.set()) {
-            Utils.logToConsole("RESTART already in progress");
-            writeNack("RESTART already in progress");
+            Utils.logToConsole(mVerb + " already in progress");
+            writeNack(mVerb + " already in progress");
             mChannel.close();
             return;
         }
 
         try {
-            writeInfo("Restarting TWS");
-            restart();
+            if (mPauseOnly) {
+                writeInfo("Pausing TWS");
+                createPauseFlagFile();
+            } else {
+                writeInfo("Restarting TWS");
+            }
+            writeAck(mVerb + " in progress");
+            restart(mPauseOnly);
         } catch (Exception ex) {
             writeNack(ex.getMessage());
             Utils.exitWithException(ErrorCodes.UNHANDLED_EXCEPTION, ex);
         }
     }
     
-    void restart() {
+    private void createPauseFlagFile() {
+        try {
+        new File(System.getProperty("jtsConfigDir") + 
+                 File.separator + 
+                 "PAUSE" + 
+                 System.getProperty("ibcsessionid"))
+                .createNewFile();
+        } catch (java.io.IOException e) {
+            Utils.exitWithException(ErrorCodes.UNHANDLED_EXCEPTION, e);
+        }
+    }
+    
+    void restart(final boolean pauseOnly) {
         if (Utils.invokeMenuItem(MainWindowManager.mainWindowManager().getMainWindow(), new String[] {"File", "Restart..."})) {
-            writeAck("Restart in progress");
             mChannel.close();
             return;
         }
@@ -85,16 +112,16 @@ class RestartTask
         if (newHour > 23) {
             newHour = newHour - 24;
         }
-        LocalTime restartTime = now.withHour(newHour).withMinute(newMinute).withSecond(0);
+        LocalTime actionTime = now.withHour(newHour).withMinute(newMinute).withSecond(0);
 
-        Utils.logToConsole("Setting auto-restart time to " + restartTime.format(DateTimeFormatter.ofPattern("hh:mm a")));
+        Utils.logToConsole("Setting auto-restart time to " + actionTime.format(DateTimeFormatter.ofPattern("hh:mm a")));
         (new ConfigurationTask(new ConfigureAutoLogoffOrRestartTimeTask(
                                         "Auto restart", 
-                                        restartTime)
+                                        actionTime)
                                 )
         ).executeAsync();
 
-        writeAck("Restarting at "  + restartTime.format(DateTimeFormatter.ofPattern("hh:mm a")));
+        writeAck(mVerb + " at "  + actionTime.format(DateTimeFormatter.ofPattern("hh:mm a")));
         mChannel.close();
 
         try {
@@ -106,9 +133,9 @@ class RestartTask
         JFrame window = MainWindowManager.mainWindowManager().getMainWindow();
         window.setOpacity(0.80f);
         
-        RestartTask.Countdown countdown = new RestartTask.Countdown(restartTime.isBefore(LocalTime.now()) 
-                                            ? restartTime.atDate(LocalDate.now().plusDays(1)) 
-                                            : restartTime.atDate(LocalDate.now()));
+        RestartTask.Countdown countdown = new RestartTask.Countdown(actionTime.isBefore(LocalTime.now()) 
+                                            ? actionTime.atDate(LocalDate.now().plusDays(1)) 
+                                            : actionTime.atDate(LocalDate.now()));
         window.setGlassPane(countdown);
         countdown.setVisible(true);
     }    
@@ -144,9 +171,9 @@ class RestartTask
             g.setColor(Color.WHITE);
             g.setFont(font);
             if (secsRemaining.isNegative()) {
-                g.drawString("Restart in progress", 50, 300);
+                g.drawString(mVerb + " in progress", 50, 300);
             } else {
-                g.drawString("Restarting in " + secsRemaining.getSeconds() + " seconds", 50, 300);
+                g.drawString(mVerb + " in " + secsRemaining.getSeconds() + " seconds", 50, 300);
             }
         }  
     }

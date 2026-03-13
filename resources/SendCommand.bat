@@ -22,15 +22,14 @@ set ServerAddress=127.0.0.1
 set CommandServerPort=7462
 
 
-:: IMPORTANT NOTE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+:: IMPORTANT NOTE
 :: ==============
 ::
 :: The following uses the telnet utility, which is not enabled in
-:: Windows 'out of the box'. To enable it, run the 'Programs and Features' applet in
-:: Control Panel. Click the 'Turn Windows features on or off' link in the left hand
-:: panel. Then locate the 'Telnet client' entry in the list of Windows features and
-:: ensure the checkbox in the entry is ticked. Click 'OK' and Windows will 
-:: enable it. This command file should then run successfully.
+:: Windows 'out of the box'. To enable it, run the 'Settings' applet, go to 
+:: 'System > Optional features', and click 'More windows features'; scroll down
+:: to 'Telnet Client', ensure the checkbox is ticked, and click 'OK'. This
+:: command file should now run successfully.
 
 
 :: You shouldn't need to change anything below this line.

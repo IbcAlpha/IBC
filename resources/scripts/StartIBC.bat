@@ -506,17 +506,24 @@ echo call :GetAutoRestartOption
 call :GetAutoRestartOption
 if defined RESTART_NEEDED (
 	set RESTART_NEEDED=
-	echo IBC will autorestart shortly
-	ping localhost -n 2  >NUL
-	goto :startIBC
-)
+	echo Check for pause only
+	if exist "%TWS_SETTINGS_PATH%\PAUSE%IBC_SESSION_ID%" (
+		del "%TWS_SETTINGS_PATH%\PAUSE%IBC_SESSION_ID%"
+		echo IBC is paused
+	) else (
+		echo IBC will autorestart shortly
+		ping localhost -n 2  >NUL
+		goto :startIBC
+	)
+) else (
 
-echo Check for cold restart
-if exist "%TWS_SETTINGS_PATH%\COLDRESTART%IBC_SESSION_ID%" (
-	del "%TWS_SETTINGS_PATH%\COLDRESTART%IBC_SESSION_ID%"
-	set AUTORESTART_OPTION=
-	echo IBC will cold-restart shortly
-	goto :startIBC
+	echo Check for cold restart
+	if exist "%TWS_SETTINGS_PATH%\COLDRESTART%IBC_SESSION_ID%" (
+		del "%TWS_SETTINGS_PATH%\COLDRESTART%IBC_SESSION_ID%"
+		set AUTORESTART_OPTION=
+		echo IBC will cold-restart shortly
+		goto :startIBC
+	)
 )
 
 :NormalExit

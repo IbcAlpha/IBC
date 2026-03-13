@@ -532,6 +532,12 @@ do
 		find_auto_restart
 		if [[ -n $restart_needed ]]; then
 			restart_needed=
+			if [[ -e "$tws_settings_path/PAUSE$ibc_session_id" ]]; then
+				rm "$tws_settings_path/PAUSE$ibc_session_id"
+				echo "IBC is paused"
+				break;
+			fi
+
 			# restart using the TWS/Gateway-generated autorestart file
 			:
 		elif [[ $exit_code -ne $E_2FA_DIALOG_TIMED_OUT  ]]; then 
