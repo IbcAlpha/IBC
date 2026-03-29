@@ -11,16 +11,46 @@
     dialog handling, 2FA assistance, scheduled restarts, and remote shutdown.
   </p>
 
-  <p>
-    <a href="https://github.com/IbcAlpha/IBC/releases/latest">
-      <img src="https://img.shields.io/badge/Download-Latest%20Release-2ea44f?style=for-the-badge" alt="Latest Release" />
-    </a>
-    <img src="https://img.shields.io/badge/Java-Required-orange?style=for-the-badge&logo=openjdk" alt="Java Required" />
-    <img src="https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-blue?style=for-the-badge" alt="Windows macOS Linux" />
-    <a href="http://www.gnu.org/licenses/gpl.html">
-      <img src="https://img.shields.io/badge/License-GPLv3-blueviolet?style=for-the-badge" alt="GPLv3" />
-    </a>
-  </p>
+<p>
+  <a href="https://github.com/IbcAlpha/IBC/releases/latest">
+    <img
+      alt="Latest release"
+      src="https://img.shields.io/github/v/release/IbcAlpha/IBC?style=for-the-badge&logo=starship&color=C9CBFF&logoColor=D9E0EE&labelColor=302D41&include_prerelease&sort=semver"
+    />
+  </a>
+  <a href="https://github.com/IbcAlpha/IBC/stargazers">
+    <img
+      alt="Stars"
+      src="https://img.shields.io/github/stars/IbcAlpha/IBC?style=for-the-badge&logo=starship&color=c69ff5&logoColor=D9E0EE&labelColor=302D41"
+    />
+  </a>
+  <a href="https://github.com/IbcAlpha/IBC/issues">
+    <img
+      alt="Issues"
+      src="https://img.shields.io/github/issues/IbcAlpha/IBC?style=for-the-badge&logo=bilibili&color=F5E0DC&logoColor=D9E0EE&labelColor=302D41"
+    />
+  </a>
+  <a href="https://github.com/IbcAlpha/IBC">
+    <img
+      alt="Repo Size"
+      src="https://img.shields.io/github/repo-size/IbcAlpha/IBC?color=%23DDB6F2&label=SIZE&logo=codesandbox&style=for-the-badge&logoColor=D9E0EE&labelColor=302D41"
+    />
+  </a>
+  <a href="http://www.gnu.org/licenses/gpl.html">
+    <img
+      alt="License"
+      src="https://img.shields.io/badge/License-GPLv3-ee999f?style=for-the-badge&logo=starship&logoColor=D9E0EE&labelColor=302D41"
+    />
+  </a>
+  <img
+    alt="Java Required"
+    src="https://img.shields.io/badge/Java-Required-8bd5ca?style=for-the-badge&logo=openjdk&logoColor=D9E0EE&labelColor=302D41"
+  />
+  <img
+    alt="Windows macOS Linux"
+    src="https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-8aadf3?style=for-the-badge&logoColor=D9E0EE&labelColor=302D41"
+  />
+</p>
 </div>
 
 <p align="center">
