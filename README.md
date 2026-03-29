@@ -24,8 +24,9 @@
 </div>
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/94fcb50a-672a-4582-82ca-26a572709900" alt="IBC Demo GIF" />
+  <img src="https://github.com/user-attachments/assets/3d978978-f850-4ac4-88ee-5b77aebacb39" alt="IBC Demo GIF" width="960" height="540"/>
 </p>
+
 
 ---
 
