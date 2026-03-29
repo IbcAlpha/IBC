@@ -1,3 +1,31 @@
+<div align="center">
+  <h1>IBC</h1>
+  <p>
+    <strong>
+      Automation for <a href="https://www.interactivebrokers.com">Interactive Brokers</a>
+      <a href="https://www.interactivebrokers.com/en/index.php?f=14099#tws-software">Trader Workstation, and Gateway</a>.
+    </strong>
+  </p>
+  <p>
+    Built for automated trading workflows, with support for login automation,
+    dialog handling, 2FA assistance, scheduled restarts, and remote shutdown.
+  </p>
+
+  <p>
+    <a href="https://github.com/IbcAlpha/IBC/releases/latest">
+      <img src="https://img.shields.io/badge/Download-Latest%20Release-2ea44f?style=for-the-badge" alt="Latest Release" />
+    </a>
+    <img src="https://img.shields.io/badge/Java-Required-orange?style=for-the-badge&logo=openjdk" alt="Java Required" />
+    <img src="https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-blue?style=for-the-badge" alt="Windows macOS Linux" />
+    <a href="http://www.gnu.org/licenses/gpl.html">
+      <img src="https://img.shields.io/badge/License-GPLv3-blueviolet?style=for-the-badge" alt="GPLv3" />
+    </a>
+  </p>
+</div>
+![demoIBC](https://github.com/user-attachments/assets/411bc283-9291-4808-a943-ec1b66e2749b)
+
+---
+
 **Download the
 [latest official release here](https://github.com/IbcAlpha/IBC/releases/latest)**
 
