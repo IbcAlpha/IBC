@@ -53,9 +53,7 @@
 </p>
 </div>
 
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/3d978978-f850-4ac4-88ee-5b77aebacb39" alt="IBC Demo GIF" width="960" height="540"/>
-</p>
+https://github.com/user-attachments/assets/b2d7db62-7b98-47f7-8d04-3138a090a19b
 
 
 ---
