@@ -22,7 +22,10 @@
     </a>
   </p>
 </div>
-![demoIBC](https://github.com/user-attachments/assets/411bc283-9291-4808-a943-ec1b66e2749b)
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/94fcb50a-672a-4582-82ca-26a572709900" alt="IBC Demo GIF" />
+</p>
 
 ---
 
