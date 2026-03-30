@@ -1,17 +1,6 @@
 <div align="center">
   <h1>IBC</h1>
   <p>
-    <strong>
-      Automation for <a href="https://www.interactivebrokers.com">Interactive Brokers</a>
-      <a href="https://www.interactivebrokers.com/en/index.php?f=14099#tws-software">Trader Workstation, and Gateway</a>.
-    </strong>
-  </p>
-  <p>
-    Built for automated trading workflows, with support for login automation,
-    dialog handling, 2FA assistance, scheduled restarts, and remote shutdown.
-  </p>
-
-<p>
   <a href="https://github.com/IbcAlpha/IBC/releases/latest">
     <img
       alt="Latest release"
@@ -51,6 +40,18 @@
     src="https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-8aadf3?style=for-the-badge&logoColor=D9E0EE&labelColor=302D41"
   />
 </p>
+  <p>
+    <strong>
+      Automation for <a href="https://www.interactivebrokers.com">Interactive Brokers</a>
+      <a href="https://www.interactivebrokers.com/en/index.php?f=14099#tws-software">Trader Workstation, and Gateway</a>.
+    </strong>
+  </p>
+  <p>
+    Built for automated trading workflows, with support for login automation,
+    dialog handling, 2FA assistance, scheduled restarts, and remote shutdown.
+  </p>
+
+
 </div>
 
 https://github.com/user-attachments/assets/b2d7db62-7b98-47f7-8d04-3138a090a19b
