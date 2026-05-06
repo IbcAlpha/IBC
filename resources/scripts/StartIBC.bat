@@ -540,7 +540,7 @@ echo Finding autorestart file
 set AUTORESTART_OPTION=
 set F=
 set RESTART_NEEDED=
-for /f "usebackq delims=" %%I in (`where /R "%TWS_SETTINGS_PATH%" autorestart`) do (
+for /f "usebackq delims=" %%I in (`where /R "%TWS_SETTINGS_PATH%" autorestart 2^>nul`) do (
 	set X=%%~dpI.
 	set Y=!X:%TWS_SETTINGS_PATH%=!
 	for /f "tokens=1,2 delims=\" %%B in ("!!Y!!") do (
