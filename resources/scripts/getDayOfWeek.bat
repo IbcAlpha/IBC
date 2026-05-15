@@ -4,7 +4,7 @@
 :: for the current day of the week
 ::
 
-for /f %%a in ('wmic path win32_localtime get DAYOFWEEK /format:list ^| findstr "="') do (set %%a)
+for /f %%a in ('powershell -NoProfile -Command "[int](Get-Date).DayOfWeek"') do set DAYOFWEEK=%%a
 
 if "%DAYOFWEEK%" == "0" set DAYOFWEEK=SUNDAY
 if "%DAYOFWEEK%" == "1" set DAYOFWEEK=MONDAY
