@@ -26,7 +26,7 @@ if defined LOG_PATH (
 			mkdir "%LOG_PATH%"
 			if errorlevel 1 goto :err
 		)
-	
+
 		set README=%LOG_PATH%\README.txt
 		if not exist "!README!" (
 			set PHASE=Creating README file
@@ -34,11 +34,11 @@ if defined LOG_PATH (
 			echo.
 			echo Windows will inform you if a file is currently in use
 			echo when you try to delete it.) > "!README!" || set REDIRECTERROR=1
-	
+
 			if "!REDIRECTERROR!" == "1" goto :err
 		)
 
-		call "%IBC_PATH%\scripts\getDayOfWeek.bat"
+		for /f %%a in ('powershell -NoProfile -Command "(Get-Date).DayOfWeek.ToString().ToUpper()"') do set DAYOFWEEK=%%a
 		set LOG_FILE=%LOG_PATH%\IBC-%IBC_VRSN%_%APP%-%TWS_MAJOR_VRSN%_!DAYOFWEEK!.txt
 		if exist "!LOG_FILE!" (
 			for %%? in (!LOG_FILE!) do (
@@ -66,7 +66,7 @@ if defined LOG_PATH (
 	echo.
 	echo     %LOG_FILE%
 	echo.) >> "%LOG_FILE%" || set REDIRECTERROR=1
-	
+
 	if "%REDIRECTERROR%" == "1" goto :err
 ) else (
 	set LOG_FILE=NUL
@@ -138,14 +138,14 @@ if defined LOG_FILE (
 	) else (
 		if not "%ERROR_MESSAGE%"=="" (
 			echo +
-			echo + Error: %ERROR_MESSAGE% 
+			echo + Error: %ERROR_MESSAGE%
 			if not "%ERROR_MESSAGE1%"=="" (
 				echo +        %ERROR_MESSAGE1%
 			)
 			if not "%ERROR_MESSAGE2%"=="" (
 				echo +        %ERROR_MESSAGE2%
 			)
-		) 
+		)
 		echo +
 		echo + Please look in the diagnostics file mentioned above for further information
 	)
