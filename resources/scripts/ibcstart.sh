@@ -343,6 +343,23 @@ java_vm_options="$java_vm_options -DjtsConfigDir=${tws_settings_path}"
 ibc_session_id=$(mktemp -u XXXXXXXX)
 java_vm_options="$java_vm_options -Dibcsessionid=$ibc_session_id"
 
+# The TWS/Gateway desktop login renders passkey (WebAuthn) second-factor authentication in an
+# embedded browser (JxBrowser). The official install4j launcher starts the JVM with
+# -DjxBrowserKey=<license key>; IBC builds its own java command and so omits it. Without the
+# key, JxBrowser cannot initialise (IllegalArgumentException in EngineOptions.licenseKey ->
+# "Failed to create browser") and passkey login fails. As IBKR Securities Japan makes passkey
+# the only login 2FA from 2026-06-30, IBC must pass this key too. It is embedded in the
+# install and is version-specific, so read it dynamically rather than hardcoding. This does
+# NOT bypass 2FA - the user still completes the passkey ceremony.
+if [[ -z "$jxbrowser_key" && -r "${install4j}/i4jparams.conf" ]]; then
+	# The key sits in i4jparams.conf as -DjxBrowserKey=<key>" (terminated by a quote/space);
+	# capture it up to that terminator so the whole key is taken regardless of its characters.
+	jxbrowser_key=$(grep -aoE 'DjxBrowserKey=[^" ]+' "${install4j}/i4jparams.conf" | head -n 1 | sed 's/^DjxBrowserKey=//')
+fi
+if [[ -n "$jxbrowser_key" ]]; then
+	java_vm_options="$java_vm_options -DjxBrowserKey=$jxbrowser_key"
+fi
+
 echo -e "Java VM Options=$java_vm_options$autorestart_option"
 
 function find_auto_restart {
