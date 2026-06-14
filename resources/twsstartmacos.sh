@@ -44,9 +44,9 @@ JAVA_PATH=
 #     icon on the desktop, then click Help > About Trader Workstation. In the
 #     displayed information you'll see a line similar to this:
 #
-#       Build 10.19.1f, Oct 28, 2022 3:03:08 PM
+#       Build 10.45.1g, May 27, 2026 4:00:50 PM
 #
-#     The major version number is 10.19. (Note that this is different from
+#     The major version number is 10.45. (Note that this is different from
 #     the equivalent Windows and Linux settings because the macOS installer
 #     includes the period in the install folder name).
 #
@@ -121,10 +121,10 @@ JAVA_PATH=
 #     configuration file. 
 #
 #     Note that if multiple IB accounts are used such as live and paper
-#     accounts for the same user, or accounts for different users), then
+#     accounts for the same user, or accounts for different users, then
 #     they should either each have a unique settings folder, or autorestart
 #     must be configured to occur at a different time for each account:
-#     concurrent auto-restarts may interferec and not succeed. You could
+#     concurrent auto-restarts may interfere and not succeed. You could
 #     achieve this, for example, by having different versions of this file
 #     for different users.
 
