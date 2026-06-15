@@ -30,11 +30,13 @@ final class GatewayLoginFrameHandler extends AbstractLoginHandler {
         if (! (window instanceof JFrame)) return false;
 
         return ((SwingUtils.titleContains(window, "IBKR Gateway") ||
-                    SwingUtils.titleContains(window, "IB Gateway") || 
+                    SwingUtils.titleContains(window, "IBKR-Gateway") ||      // Gateway 1037+
+                    SwingUtils.titleContains(window, "IB Gateway") ||
                     SwingUtils.titleContains(window, "Interactive Brokers Gateway")) &&
                (SwingUtils.findButton(window, "Login") != null ||
                 SwingUtils.findButton(window, "Log In") != null ||          // TWS 974+
-                SwingUtils.findButton(window, "Paper Log In") != null));    // TWS 974+
+                SwingUtils.findButton(window, "Paper Log In") != null ||    // TWS 974+
+                SwingUtils.findButton(window, "Paper-Login") != null));     // Gateway 1037+ (hyphenated)
     }
 
     @Override
@@ -119,6 +121,7 @@ final class GatewayLoginFrameHandler extends AbstractLoginHandler {
 
     private void switchToFIX(Window window) throws IbcException {
         JToggleButton button = SwingUtils.findToggleButton(window, "FIX CTCI");
+        if (button == null) button = SwingUtils.findToggleButton(window, "FIX-CTCI");   // Gateway 1037+
         if (button == null) throw new IbcException("FIX CTCI selector");
 
         if (! button.isSelected()) {
