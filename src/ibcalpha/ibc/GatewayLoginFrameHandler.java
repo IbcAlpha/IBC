@@ -133,7 +133,7 @@ final class GatewayLoginFrameHandler extends AbstractLoginHandler {
         if (button == null) throw new IbcException("IB API selector");
 
         if (! button.isSelected()) {
-            Utils.logToConsole("Clicking FIX CTCI selector");
+            Utils.logToConsole("Clicking IB API selector");
             button.doClick();
         }
     }
