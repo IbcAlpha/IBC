@@ -453,6 +453,7 @@ elif [[ ! -e "$java_path/java" ]]; then
 	error_exit $E_NO_JAVA "No java executable found in supplied path $java_path"
 fi
 
+"$java_path/java" -XshowSettings:properties 2>&1 |grep '^ *java.runtime.version ='
 if [[ $("$java_path/java" -XshowSettings:properties 2>&1) = *"java.runtime.version = 1.8"* ]]; then
 	useJava8="yes"
 else
