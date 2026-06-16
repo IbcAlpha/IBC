@@ -370,6 +370,26 @@ set JAVA_VM_OPTIONS=%JAVA_VM_OPTIONS% -DjtsConfigDir="%TWS_SETTINGS_PATH%"
 set IBC_SESSION_ID="%RANDOM%%RANDOM%"
 set JAVA_VM_OPTIONS=%JAVA_VM_OPTIONS% -Dibcsessionid=%IBC_SESSION_ID%
 
+rem The TWS/Gateway desktop login renders passkey (WebAuthn) second-factor authentication in
+rem an embedded browser (JxBrowser). The official install4j launcher starts the JVM with
+rem -DjxBrowserKey=<license key>; IBC builds its own java command and so omits it. Without the
+rem key, JxBrowser cannot initialise ("Failed to create browser") and passkey login fails. As
+rem IBKR Securities Japan makes passkey the only login 2FA from 2026-06-30, IBC must pass this
+rem key too. It is embedded in the install and is version-specific, so read it dynamically.
+rem This does NOT bypass 2FA - the user still completes the passkey ceremony.
+set "JXBROWSER_OPT="
+if exist "%INSTALL4J%\i4jparams.conf" (
+	for /f "usebackq delims=" %%L in (`findstr /C:"-DjxBrowserKey=" "%INSTALL4J%\i4jparams.conf"`) do (
+		rem Keep everything after the first -DjxBrowserKey= . In i4jparams.conf the key is
+		rem terminated by a double-quote, so replace that quote with a space and take token 1.
+		set "JXLINE=%%L"
+		set "JXTAIL=!JXLINE:*-DjxBrowserKey=!"
+		set JXTAIL=!JXTAIL:"= !
+		for /f "tokens=1" %%K in ("!JXTAIL!") do set "JXBROWSER_OPT=-DjxBrowserKey=%%K"
+	)
+)
+if defined JXBROWSER_OPT set "JAVA_VM_OPTIONS=%JAVA_VM_OPTIONS% %JXBROWSER_OPT%"
+
 echo Java VM Options=%JAVA_VM_OPTIONS%
 echo.
 
@@ -547,7 +567,7 @@ echo Finding autorestart file
 set AUTORESTART_OPTION=
 set F=
 set RESTART_NEEDED=
-for /f "usebackq delims=" %%I in (`where /R "%TWS_SETTINGS_PATH%" autorestart`) do (
+for /f "usebackq delims=" %%I in (`where /R "%TWS_SETTINGS_PATH%" autorestart 2^>nul`) do (
 	set X=%%~dpI.
 	set Y=!X:%TWS_SETTINGS_PATH%=!
 	for /f "tokens=1,2 delims=\" %%B in ("!!Y!!") do (
