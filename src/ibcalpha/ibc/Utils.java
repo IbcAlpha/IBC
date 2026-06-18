@@ -91,8 +91,8 @@ class Utils {
     }
 
     static void exitWithError(int errorCode) {
-        logToConsole("Exiting with exit code=" + errorCode);
-        System.exit(errorCode);
+        logToConsole("Exiting after error with exit code=" + errorCode);
+        Runtime.getRuntime().halt(errorCode);
     }
 
     static void exitWithError(int errorCode, String message) {
