@@ -337,7 +337,6 @@ public class IbcTws {
         windowHandlers.add(new BidAskLastSizeDisplayUpdateDialogHandler());
         windowHandlers.add(new LoginErrorDialogHandler());
         windowHandlers.add(new CryptoOrderConfirmationDialogHandler());
-        windowHandlers.add(new AutoRestartConfirmationDialog());
         windowHandlers.add(new RestartConfirmationDialogHandler());
         windowHandlers.add(new ResetOrderIdConfirmationDialogHandler());
         windowHandlers.add(new ReconnectDataOrAccountConfirmationDialogHandler());
