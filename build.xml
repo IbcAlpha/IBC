@@ -2,7 +2,7 @@
     <property environment="env"/>
     <fail unless="env.IBC_BIN" message="Environment variable 'IBC_BIN' not set (set it to the fully-qualified directory name containing the TWS jar files)."/>
 
-    <property name="ver" value="3.24.0"/>
+    <property name="ver" value="3.24.1"/>
     <property name="src" location="src"/>
     <property name="resources" location="resources"/>
     <property name="target" location="target"/>
@@ -33,7 +33,8 @@ public class IbcVersionInfo {
 
     <target name="compile" depends="init" description="compile the source ">
         <mkdir dir="${target}/classes"/>
-        <javac srcdir="${src}" destdir="${target}/classes" source="8" target="8" deprecation="" includeantruntime="false">
+        <!-- <javac srcdir="${src}" destdir="${target}/classes" source="10" target="10" deprecation="" includeantruntime="false"> -->
+        <javac srcdir="${src}" destdir="${target}/classes" release="17" includeantruntime="false">
             <classpath refid="external.classpath"/>
             <compilerarg value="-Xlint:all"/>
         </javac>

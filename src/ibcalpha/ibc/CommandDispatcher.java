@@ -28,7 +28,7 @@ class CommandDispatcher
 
     private final CommandChannel mChannel;
 
-    private final static int SHORTCUT_MODIFIERS = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | KeyEvent.ALT_DOWN_MASK;
+    private static final int SHORTCUT_MODIFIERS = Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx() | KeyEvent.ALT_DOWN_MASK; 
 
             
     CommandDispatcher(CommandChannel channel) {
