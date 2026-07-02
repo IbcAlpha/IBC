@@ -385,7 +385,7 @@ if exist "%INSTALL4J%\i4jparams.conf" (
 		set "JXLINE=%%L"
 		set "JXTAIL=!JXLINE:*-DjxBrowserKey=!"
 		set JXTAIL=!JXTAIL:"= !
-		for /f "tokens=1" %%K in ("!JXTAIL!") do set "JXBROWSER_OPT=-DjxBrowserKey=%%K"
+		for /f "tokens=1" %%K in ("!JXTAIL!") do set "JXBROWSER_OPT=-DjxBrowserKey%%K"
 	)
 )
 if defined JXBROWSER_OPT set "JAVA_VM_OPTIONS=%JAVA_VM_OPTIONS% %JXBROWSER_OPT%"
