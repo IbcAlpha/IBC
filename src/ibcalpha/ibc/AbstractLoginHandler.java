@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JToggleButton;
 
 public abstract class AbstractLoginHandler implements WindowHandler {
 
@@ -156,6 +157,7 @@ public abstract class AbstractLoginHandler implements WindowHandler {
         JButton b = SwingUtils.findButton(window, "Login");
         if (b == null) b = SwingUtils.findButton(window, "Log In");
         if (b == null) b = SwingUtils.findButton(window, "Paper Log In");
+        if (b == null) b = SwingUtils.findButton(window, "Paper-Login");    // Gateway 1037+ (hyphenated)
         return b;
     }
 
@@ -173,14 +175,18 @@ public abstract class AbstractLoginHandler implements WindowHandler {
     protected final boolean setTradingMode(final Window window) {
         String tradingMode = TradingModeManager.tradingModeManager().getTradingMode();
 
-        if (SwingUtils.findToggleButton(window, "Live Trading") != null && 
-                SwingUtils.findToggleButton(window, "Paper Trading") != null) {
+        // Gateway 1037+ uses hyphenated names; older Gateway/TWS uses space-separated.
+        JToggleButton liveBtn  = SwingUtils.findToggleButton(window, "Live Trading");
+        if (liveBtn  == null) liveBtn  = SwingUtils.findToggleButton(window, "Live-Trading");
+        JToggleButton paperBtn = SwingUtils.findToggleButton(window, "Paper Trading");
+        if (paperBtn == null) paperBtn = SwingUtils.findToggleButton(window, "Paper-Trading");
+        if (liveBtn != null && paperBtn != null) {
             // TWS 974 onwards uses toggle buttons rather than a combo box
             Utils.logToConsole("Setting Trading mode = " + tradingMode);
             if (tradingMode.equalsIgnoreCase(TradingModeManager.TRADING_MODE_LIVE)) {
-                SwingUtils.findToggleButton(window, "Live Trading").doClick();
+                liveBtn.doClick();
             } else {
-                SwingUtils.findToggleButton(window, "Paper Trading").doClick();
+                paperBtn.doClick();
             }
             return true;
         } else {

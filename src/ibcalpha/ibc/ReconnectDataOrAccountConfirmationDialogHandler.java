@@ -46,10 +46,12 @@ public class ReconnectDataOrAccountConfirmationDialogHandler implements WindowHa
     public boolean recogniseWindow(Window window) {
         if (! (window instanceof JDialog)) return false;
 
-        return ((SwingUtils.titleContains(window, "IBKR Trader Workstation") 
+        return ((SwingUtils.titleContains(window, "IBKR Trader Workstation")
                 ||
-                SwingUtils.titleContains(window, "IBKR Gateway"))
-                && 
+                SwingUtils.titleContains(window, "IBKR Gateway")
+                ||
+                SwingUtils.titleContains(window, "IBKR-Gateway"))                       // Gateway 1037+
+                &&
                 (SwingUtils.findLabel(window, "Are you sure you want to execute \"simulate") != null)
                 );
     }
