@@ -453,9 +453,9 @@ public class IbcTws {
             String props = (String) i.nextElement();
             String vals = (String) p.get(props);
             if (props.equals("sun.java.command")) {
-                //hide credentials 
+                //hide credentials
                 String[] args = vals.split(" ");
-                for (int j = 2; j < args.length - 1; j++) {
+                for (int j = 2; j < args.length; j++) {
                     args[j] = "***";
                 }
                 vals = String.join(" ", args);
