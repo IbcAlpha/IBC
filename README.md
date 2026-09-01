@@ -29,7 +29,7 @@ at that date and fixing any significant newly reported bugs.**
 **Download the
 [latest official release here](https://github.com/IbcAlpha/IBC/releases/latest)**
 
-IBC automates many aspects of running [Interactive Brokers](https://www.interactivebrokers.com) [Trader Workstation and Gateway](https://www.interactivebrokers.com/en/index.php?f=14099#tws-software)
+IBC (Interactive Brokers Controller) automates many aspects of running [Interactive Brokers](https://www.interactivebrokers.com) [Trader Workstation and Gateway](https://www.interactivebrokers.com/en/index.php?f=14099#tws-software)
 that would otherwise involve manual intervention. It's especially useful for
 those who run automated trading systems based on the [Interactive Brokers API](http://interactivebrokers.github.io),
 but many manual traders find it helpful as well.
