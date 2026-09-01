@@ -150,7 +150,17 @@ public abstract class LoginManager {
         Utils.logToConsole("Re-login after second factor authentication timeout in 5 second");
         MyScheduledExecutorService.getInstance().schedule(() -> {
             GuiDeferredExecutor.instance().execute(
-                () -> {getLoginHandler().initiateLogin(getLoginFrame());}
+                () -> {
+                    // The login may have completed by itself during this delay: TWS/Gateway
+                    // sometimes closes the 2FA dialog right on the timeout boundary and then
+                    // proceeds to log in anyway. Re-initiating the login here would take the
+                    // session back out of LOGGED_IN, and it never returns to it.
+                    if (getLoginState() == LoginState.LOGGED_IN) {
+                        Utils.logToConsole("Login has already completed - no need to re-login");
+                        return;
+                    }
+                    getLoginHandler().initiateLogin(getLoginFrame());
+                }
             );
         }, 5, TimeUnit.SECONDS);
     }
@@ -167,6 +177,14 @@ public abstract class LoginManager {
     
     void restartAfterTime(final int secondsTillShutdown, final String message) {
         try {
+            // Only one shutdown task may be outstanding. Overwriting the field without
+            // cancelling leaves the previous task scheduled but unreachable, so the
+            // LOGGED_IN handler can no longer cancel it: it fires later and kills a
+            // perfectly healthy session that happens not to be LOGGED_IN at that instant.
+            if (shutdownAfterTimeTask != null) {
+                shutdownAfterTimeTask.cancel(false);
+                shutdownAfterTimeTask = null;
+            }
             shutdownAfterTimeTask = MyScheduledExecutorService.getInstance().schedule(()->{
                 GuiExecutor.instance().execute(()->{
                     if (getLoginState() == LoginManager.LoginState.LOGGED_IN) {
